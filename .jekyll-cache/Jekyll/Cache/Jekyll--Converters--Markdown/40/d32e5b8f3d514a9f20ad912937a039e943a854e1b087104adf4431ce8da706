@@ -1,0 +1,91 @@
+I"<h2 id="my-projects">My Projects</h2>
+
+<div class="row">
+<h3>The   Science through Technology Enhanced Play (STEP)  Project</h3>
+
+  <div class="left">
+  <img src="/assets/img/project_logos/step_logo.png" alt="Project logo for STEP" width="150" />
+  </div>
+
+<div class="right">
+  <p>In the Science through Technology Enhanced Play (STEP) project, we are investigating how embodied play among elementary school students can be used to help them understand scientific phenomena (e.g., the working of forces, complex behaviors of bees).</p> <p>[<a href="/projects/step">more about STEP</a>]</p>
+  </div>
+</div>
+
+<div class="row">
+<h3>The  Net.Create  Project</h3>
+
+  <div class="left">
+  <img src="/assets/img/project_logos/net_create.svg" alt="Project logo for Net.Create" width="150" />
+  </div>
+
+<div class="right">
+  <p>Net.Create is a collaborative network visualization tool developed to help users explore a large corpus of data together, concurrently. This was originally implemented in undergraduate history classrooms.</p> <p>[<a href="/projects/netcreate">more about Net.Create</a>]</p>
+  </div>
+</div>
+
+<div class="row">
+<h3>The   Scaffolding Explanations and Epistemic Development for Systems (SEEDS)  Project</h3>
+
+  <div class="left">
+  <img src="/assets/img/project_logos/seeds_logo.png" alt="Project logo for SEEDS" width="150" />
+  </div>
+
+<div class="right">
+  <p>In the Scaffolding Explanations and Epistemic Development for Systems (SEEDS) project, we are exploring how elementary students (5th grade) think about different kinds of evidence as important for helping them create and revise models of scientific phenomena. To study this, we developed the Model and Evidence Mapping Environment (MEME).</p> <p>[<a href="/projects/seeds">more about SEEDS</a>]</p>
+  </div>
+</div>
+
+<div class="row">
+<h3>The   Representations for Teachers as Learners (RepTal)  Project</h3>
+
+  <div class="left">
+  <img src="/assets/img/project_logos/reptal_logo.png" alt="Project logo for RepTal" width="150" />
+  </div>
+
+<div class="right">
+  <p>The Representations for Teachers as Learners (RepTal) project aims to better understand how elementary teachers think about representations as part of their science teaching.</p> <p>[<a href="/projects/RepTal">more about RepTal</a>]</p>
+  </div>
+</div>
+
+<div class="row">
+<h3>The   Cities on the Edge of War  Project</h3>
+
+  <div class="left">
+  <img src="/assets/img/project_logos/cities_logo.png" alt="Project logo for Cities on the Edge" width="150" />
+  </div>
+
+<div class="right">
+  <p>This is a bespoke semester-long board and roleplaying game we developed to help undergraduate history students explore the period leading up to and during the Peloponnesian war.</p> <p>[<a href="/projects/cities">more about Cities on the Edge</a>]</p>
+  </div>
+</div>
+
+<div class="row">
+<h3>The  BeeSign  Project</h3>
+
+  <div class="left">
+  <img src="/assets/img/project_logos/beesign_logo.png" alt="Project logo for BeeSign" width="150" />
+  </div>
+
+<div class="right">
+  <p>BeeSign is a computer simulation designed to help young students observe the behavior of honeybees as they collect nectar and experiment with the result of changing either the behavior of the bees or the environment in which the hive is located. As a research project, BeeSign was designed to help early elementary students (grades k-2) explore complex systems concepts in intuitive ways.</p> <p>[<a href="/projects/beesign">more about BeeSign</a>]</p>
+  </div>
+</div>
+
+<div class="row">
+<h3>The  BioSim  Project</h3>
+
+<div class="right">
+  <p>Our goal in the BioSim project is to help early elementary students (k-2) explore complex systems concepts by engaging in participatory simulations where they take on the role of honeybees (BeeSim) or ants (AntSim) foraging for food. To support students in embodying these roles, they work with electronic puppets that help track their food collection activities and provide real-time feedback to them.</p> 
+  </div>
+</div>
+
+<div class="row">
+<h3>The   Learning Physics through Play (LPP)  Project</h3>
+
+<div class="right">
+  <p>In the Learning Physics through Play project, we first explored the potential of computer vision coupled with embodied play as a means for supporting students in learning complex science concepts. This project focused on force and motion with 1st and 2nd grade students.</p> 
+  </div>
+</div>
+
+:ET

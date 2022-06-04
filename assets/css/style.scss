@@ -1,0 +1,277 @@
+---
+---
+@import "{{ site.theme }}";
+
+.header {
+	background-image: "/assets/img/background.jpg"
+}
+
+h1 {
+    color:#23395D;
+    font-family: 'Libre Bodoni', serif;
+}
+
+h2, h3, h4, h5, h6 {
+    color: #254512;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+}
+
+a {
+    color:#23395D
+}
+
+a:hover {
+    color:#254512
+}
+
+a:hover, a:active {
+    outline:0
+}
+
+#-------nav bar
+
+header ul {
+	all: unset;
+}
+
+header ul {
+    list-style: none;
+    padding: 0;
+    background: #ffffff;
+    border:0px;
+    height: 0px;
+}
+
+header li {
+    border:0px;
+    display:block;
+    width: 100%;
+    float: left;
+    background-color:#ffffff;
+    height:40px;
+	border-top: 2px solid #23395D;
+    color:#254512;
+	border-radius: 0px;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+}
+
+header li:first-child a {
+	border-radius: 0px;
+	border-left: 0px;
+	border-right: 0px;
+}
+
+header li:last-child a {
+	border-radius: 0px;
+}
+
+.pubicon {
+    margin: 4px 4px 10px 20px;
+}
+
+header ul li a {
+    border:0px;
+    line-height: 1;
+    display: block;
+    text-align: center;
+    padding-top: 6px;
+    height:34px;
+}
+
+header ul li a:hover, header ul li a:focus {
+    background-color: #D3DFCD;
+    font-weight:normal;
+	border-top: 2px solid #23395D;
+}
+
+header ul a:active {
+}
+
+header ul li + li + li {
+    width:100%;
+}
+
+header ul a strong {
+    font-size: 14px;
+    display: block;
+    color:#222
+}
+
+
+
+@media print, screen and (max-width: 960px) {
+    header ul {
+        position: absolute;
+        right: 50px;
+        top:50px;
+        width:270px;
+    }
+}
+
+@media print, screen and (max-width: 720px) {
+    header ul {
+        position:static;
+        width:100%;
+    }
+    header li {
+        width:25%;
+    }
+	header ul li + li + li {
+        width:25%;
+	}
+}
+
+@media print, screen and (max-width: 480px) {
+    header li {
+        width:25%;
+    }
+}
+
+.myButton {
+	box-shadow: 0px 10px 14px -7px #cdcdcd;
+	background-color:#23395d;
+	border-radius:8px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:20px;
+	font-weight:bold;
+	padding:13px 32px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #660c3e;
+}
+
+.myButton:hover {
+	background-color:#660c3e;
+	color:#ffffff;
+}
+
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+footer {
+	bottom:0px;
+}
+
+.left {
+    @media print, screen and (min-width: 40em) {
+        float:left;
+        display:inline;
+        width: 35%;
+    }
+}
+
+
+.thinLeft {
+    @media print, screen and (min-width: 40em) {
+        float:left;
+        display:inline;
+        width: 25%;
+    }
+}
+
+.right {
+    @media print, screen and (min-width: 40em) {
+        float:left;
+        display:inline;
+        width: 65%;
+    }
+}
+
+ul.pubs {
+    list-style-type: none;
+}
+ul.pubs li {
+    text-indent: -2em; 
+    margin: 0.33em 1em 0.5em 3em;
+}
+
+.row {
+    margin-top: .7em;
+}
+.row h2 {
+    margin-bottom:0px;
+    padding-bottom:0px;
+}
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+
+.responsive-card-table {
+    border-collapse: collapse;
+  }
+  
+  .responsive-card-table.unstriped tbody {
+    background-color: transparent;
+  }
+  
+  .responsive-card-table th {
+    background-color: #e6e6e6;
+  }
+  
+  .responsive-card-table tr,
+  .responsive-card-table th,
+  .responsive-card-table td {
+    border: 1px solid #0a0a0a;
+  }
+  
+  @media screen and (max-width: 640px) {
+    .responsive-card-table {
+      
+    }
+    .responsive-card-table thead tr {
+      position: absolute;
+      top: -9999em;
+      left: -9999em;
+    }
+    .responsive-card-table tr {
+      border: 1px solid #0a0a0a;
+      display: block;
+    }
+    .responsive-card-table tr + tr {
+      margin-top: 1.5rem;
+    }
+    .responsive-card-table td {
+      border: none;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-justify-content: flex-start;
+          -ms-flex-pack: start;
+              justify-content: flex-start;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+      border-bottom: 1px solid #0a0a0a;
+      padding-left: 50%;
+      position: relative;
+    }
+    .responsive-card-table td:before {
+      content: attr(data-label);
+      display: inline-block;
+      font-weight: bold;
+      line-height: 1.5;
+      margin-left: -100%;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .responsive-card-table td:after {
+      content: '';
+      position: absolute;
+      background: #e6e6e6;
+      width: 45%;
+      height: 95%;
+      left: 1px;
+      top: 1px;
+      z-index: 0;
+    }
+  }
+  
+  

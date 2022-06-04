@@ -1,0 +1,16 @@
+{% assign projects = site.data.projects | where: "name", page.projectName %}
+{% for project in projects %}
+
+<div class="row">
+  <h3>The {% if project.full_name %}  {{project.full_name}} {% else %} {{project.name}} {% endif %} Project</h3>
+  {% if project.logo %}
+    <div class="left">
+      <img src="/assets/img/project_logos/{{project.logo}}" alt="Project logo for {{project.name}}" width="150" >
+    </div>
+  {% endif %}
+  <div class="right">
+    <p>{{project.blurb}}</p> {% if project.url %}<p>[<a href="{{ project.url }}" target="_blank">{{project.name}} Website</a>]</p>{% endif %}
+  </div>
+</div>
+
+{% endfor %}

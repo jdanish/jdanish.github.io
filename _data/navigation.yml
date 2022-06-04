@@ -1,0 +1,16 @@
+# Site navigation links
+
+- title: HOME
+  url: /
+  excerpt:
+  image:
+
+- title: PROJECTS
+  url: /projects
+  excerpt:
+  image:
+
+- title: PUBLICATIONS and CV
+  url: /publications
+  excerpt:
+  image:

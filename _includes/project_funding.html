@@ -1,0 +1,32 @@
+{% assign projects = site.data.projects | where: "name", page.projectName %}
+{% for project in projects %}
+{%  assign grants = project.grants %}
+
+{% if grants.size > 0%}
+
+<h3>Funding for the the iterations of the {{page.projectName}} Project</h3>
+
+<table class="responsive-card-table unstriped">
+	<thead>
+	  <tr>
+		<th>Grant Name</th>
+		<th>Funding Agency</th>
+		<th>Grant Number</th>
+		<th>Co-PIs</th>
+	  </tr>
+	</thead>
+	<tbody>
+{% for grant in grants %}
+	  <tr>
+		<td data-label="Grant Name">{{ grant.name }}</td>
+		<td data-label="Funuding Agency">{{ grant.agency }}</td>
+		<td data-label="Grant Number">{{ grant.ids }}</td>
+		<td data-label="Co-PIs">{{ grant.pis }}</td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+  </table>
+  
+{% endif %}
+
+{% endfor %}
