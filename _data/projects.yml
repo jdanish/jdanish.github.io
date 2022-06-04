@@ -90,10 +90,26 @@
 
 - name: BioSim
   blurb: 'Our goal in the BioSim project is to help early elementary students (k-2) explore complex systems concepts by engaging in participatory simulations where they take on the role of honeybees (BeeSim) or ants (AntSim) foraging for food. To support students in embodying these roles, they work with electronic puppets that help track their food collection activities and provide real-time feedback to them.'
+  more: /projects/biosim
+  logo: biosim.png  
+  grants:
+    - grant:
+      name: 'DIP: BioSim: Developing a Wearable Toolkit for Teaching Complex Science Through Embodied Play'
+      agency: NSF
+      ids: 0018093000
+      pis: 'Joshua Danish, Kylie Peppler, Armin Moczek'
 
 - name: LPP
   full_name: Learning Physics through Play (LPP)
   blurb: 'In the Learning Physics through Play project, we first explored the potential of computer vision coupled with embodied play as a means for supporting students in learning complex science concepts. This project focused on force and motion with 1st and 2nd grade students.'
+  more: /projects/lpp
+  logo: lpp.png  
+  grants:
+    - grant:
+      name: 'Semiotic Pivots and Activity Spaces for Elementary Science (SPASES)'
+      agency: NSF
+      ids: 0733218
+      pis: 'Joshua Danish, Noel Enyedy, Fabien Wagmeister, Jeff Burke'
 
 - name: Other
   full_name: Other Projects

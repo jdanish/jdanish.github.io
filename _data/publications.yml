@@ -630,3 +630,24 @@
   type: 'Conference Presentation'
   visibility: 'All'
   date: '2009'
+
+- citation: 'Danish, J. A., Enyedy, N., Saleh, A., & Lee, C. (2016). Designing for Activity. In V. Svihla & R. Reeve (Eds.), Design as Scholarship: Case Studies from the Learning Sciences (p. 26). Routledge.'
+  project: 'LPP'
+  type: 'Book Chapter'
+  visibility: 'All'
+  date: '2016'
+
+- citation: 'Enyedy, N., Danish, J. A., & DeLiema, D. (2015). Liminal Blends: How students blend symbols, experiences, and their own bodies together in order to co-construct meaning in a collaborative augmented-reality learning environment. International Journal of Computer Supported Collaborative Learning'
+  project: 'LPP'
+  type: 'Journal Article'
+  visibility: 'All'
+  date: '2015'
+  links:
+  - url: 'http://doi.org/10.1007/s11412-015-9207-1'
+    linklabel: 'paper'
+
+- citation: 'Enyedy, N., & Danish, J. A. (2015). Learning Physics through Play and Embodied Reflection in an mixed-reality learning environment. In V. Lee (Ed.), Learning Technologies and the Body: Integration and Implementation in Formal and Informal Learning Environments. New York, NY.: Routledge.'
+  project: 'LPP'
+  type: 'Book Chapter'
+  visibility: 'All'
+  date: '2015'
