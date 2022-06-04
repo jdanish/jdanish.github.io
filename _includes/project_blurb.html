@@ -2,7 +2,7 @@
 {% for project in projects %}
 
 <div class="row">
-  <h3>The {% if project.full_name %}  {{project.full_name}} {% else %} {{project.name}} {% endif %} Project</h3>
+  <h3><a href="/projects/">Projects</a>: {% if project.full_name %}  {{project.full_name}} {% else %} {{project.name}} {% endif %} </h3>
   {% if project.logo %}
     <div class="left">
       <img src="/assets/img/project_logos/{{project.logo}}" alt="Project logo for {{project.name}}" width="150" >
