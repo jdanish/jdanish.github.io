@@ -4,7 +4,7 @@ permalink: /publications/
 visibility: 'All'
 ---
 
-## Publications
+## Publications 
 
 You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">CV as a PDF</a>.
 
