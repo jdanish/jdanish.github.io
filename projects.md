@@ -19,3 +19,6 @@ permalink: /projects/
   </div>
 </div>
 {% endfor %}
+
+## RAPT Lab
+I direct the Representations, Activity, Play and Technology (RAPT) Lab, and do most of this wwork in collaboration with my team. You can see more about the lab at  <a href="https://raptlab.github.io" target="_blank">RAPTLab.org</a>
