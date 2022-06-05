@@ -40,7 +40,12 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
         
         {% assign project_infosPrimary = site.data.projects | where: "name", item.project %}
         {% assign project_infosSecondary = site.data.projects | where: "name", item.secondaryProject %}
-        {% assign project_infos = project_infosPrimary | concat: project_infosSecondary  %}
+        {% if project_infosSecondary.size > 0 %}
+          {% assign project_infos = project_infosPrimary | concat: project_infosSecondary  %}
+        {% else %}
+         {% assign project_infos = project_infosPrimary  %}
+        {% endif %}
+
 
         {% for project_info in project_infos %}
           {% if project_info.more %}[<a href="{{project_info.more}}">{{project_info.name}} project info</a>]{% endif %}

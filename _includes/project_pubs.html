@@ -7,9 +7,15 @@
 
 {% assign itemsSortedPrimary = citation.items | where: "project",page.projectName %}
 {% assign itemsSortedSecondary = citation.items | where: "secondaryProject",page.projectName %}
-{% assign itemsSorted = itemsSortedPrimary | concat: itemsSortedSecondary %}
+{% if itemsSortedSecondary.size > 0 %}
+  {% assign itemsSorted = itemsSortedPrimary | concat: itemsSortedSecondary %}
+{% else %}
+  {% assign itemsSorted = itemsSortedPrimary %}
+{% endif %}
+
 
 {% if itemsSorted.size > 0 %}
+
 <h3>{{ citation.name }}</h3>
   <ul class="pubs">
   {% for item in itemsSorted %}
