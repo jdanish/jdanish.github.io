@@ -744,3 +744,15 @@
   type: 'Conference Proceedings'
   visibility: 'All'
   date: '2010'
+
+- citation: 'Peppler, K., Thompson, N., Danish, J., Moczek, A., & Corrigan, S. (2020). Comparing first- and third-person perspectives in early elementary learning of honeybee systems. Instructional Science. doi: 10.1007/s11251-020-09511-8'
+  project: 'BioSim'
+  type: 'Journal Article'
+  visibility: 'All'
+  date: '2020'
+  links:
+  - url: 'https://doi.org/10.1007/s11251-020-09511-8'
+    linklabel: 'paper'
+
+
+   
