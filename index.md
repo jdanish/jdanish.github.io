@@ -20,4 +20,4 @@ To unpack the process through which individual students engage in and learn thro
 Most of my projects combine these ideas together! 
 
 ## RAPT Lab
-I direct the Representations, Activity, Play and Technology (RAPT) Lab, and do most of this wwork in collaboration with my team. You can see more about the lab at  <a href="https://raptlab.github.io" target="_blank">RAPTLab.org</a>.
+I direct the Representations, Activity, Play and Technology (RAPT) Lab, and do most of this wwork in collaboration with my team. You can see more about the lab at  <a href="http://theraptlab.org" target="_blank">RAPTLab.org</a>.

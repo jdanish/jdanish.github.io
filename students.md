@@ -5,7 +5,7 @@ permalink: /students/
 
 ## Students and Postdoctoral Scholars
 
-None of my work would be possible without amazing collaborators including the past and present students I've had the pleasure to work with. We work together within the  <a href="https://raptlab.github.io" target="_blank">Representations, Activity, Play and Technology (RAPT) Lab</a> where you can see more about our work, and our team.
+None of my work would be possible without amazing collaborators including the past and present students I've had the pleasure to work with. We work together within the  <a href="http://theraptlab.org" target="_blank">Representations, Activity, Play and Technology (RAPT) Lab</a> where you can see more about our work, and our team.
 
 {% assign groups = site.data.members | group_by: "status" | sort: "value" %}
 {% for group in groups %}

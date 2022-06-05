@@ -3,7 +3,7 @@
 - name: STEP
   full_name: Science through Technology Enhanced Play (STEP)
   blurb: In the Science through Technology Enhanced Play (STEP) project, we are investigating how embodied play among elementary school students can be used to help them understand scientific phenomena (e.g., the working of forces, complex behaviors of bees).
-  url: https://embodiedplay.github.io
+  url: https://embodiedplay.org
   logo: step_logo.png
   more: /projects/step
   grants:
