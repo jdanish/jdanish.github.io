@@ -5,7 +5,7 @@
 {% assign citations = site.data.publications |  sort: "date" | reverse | group_by: "date" %}
 {% for citation in citations %}
 
-{% assign itemsSorted = citation.items | where_exp: "item","page.projectName == item.project or page.projectName == item.secondaryProject" %}
+{% assign itemsSorted = citation.items | where: "project",page.projectName %}
 
 {% if itemsSorted.size > 0 %}
 
