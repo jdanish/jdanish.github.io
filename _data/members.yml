@@ -44,16 +44,17 @@
   role: Graduate Researcher
   status: Current Lab Member
   affiliation: Indiana University Bloomington
-
-- last: Ryan
-  first: Zach
-  role: Graduate Researcher
-  status: Current Lab Member
-  affiliation: Indiana University Bloomington
   
 - last: Steinberg
   first: Selena
   role: Graduate Researcher
+  status: Current Lab Member
+  affiliation: Indiana University Bloomington
+
+- last: Stiso
+  first: Christina
+  role: Graduate Researcher
+  url:  http://christinastiso.com
   status: Current Lab Member
   affiliation: Indiana University Bloomington
   
