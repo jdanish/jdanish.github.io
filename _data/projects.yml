@@ -115,3 +115,8 @@
   full_name: Other Projects
   blurb: 'This is a placeholder for any work that was not part of a larger, core project'
   hide: true
+
+- name: Representations
+  full_name: Exploring Representations
+  blurb: 'A series of studies exploring how children create and learn about representations '
+  hide: true
