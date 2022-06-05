@@ -38,11 +38,14 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
           {% if link.url %}[<a href="{{link.url}}" target="_blank">{{link.linklabel}}</a>]{% endif %}
         {% endfor %}
         
-        {% assign project_infos = site.data.projects | where: "name", item.project %}
-          {% for project_info in project_infos %}
-            {% if project_info.more %}[<a href="{{project_info.more}}">{{project_info.name}} project info</a>]{% endif %}
-            {% if project_info.url %}[<a href="{{project_info.url}}" target="_blank">{{project_info.name}} website</a>]{% endif %}
-          {% endfor %}
+        {% assign project_infosPrimary = site.data.projects | where: "name", item.project %}
+        {% assign project_infosSecondary = site.data.projects | where: "name", item.secondaryProject %}
+        {% assign project_infos = project_infosPrimary | concat: project_infosSecondary  %}
+
+        {% for project_info in project_infos %}
+          {% if project_info.more %}[<a href="{{project_info.more}}">{{project_info.name}} project info</a>]{% endif %}
+          {% if project_info.url %}[<a href="{{project_info.url}}" target="_blank">{{project_info.name}} website</a>]{% endif %}
+        {% endfor %}
     </li>
   
   {% endfor %}

@@ -4,7 +4,10 @@
 
 {% assign citations = site.data.publications |  sort: "date" | reverse | group_by: "date" %}
 {% for citation in citations %}
-{% assign itemsSorted = citation.items | where: "project",page.projectName %}
+
+{% assign itemsSortedPrimary = citation.items | where: "project",page.projectName %}
+{% assign itemsSortedSecondary = citation.items | where: "secondaryProject",page.projectName %}
+{% assign itemsSorted = itemsSortedPrimary | concat: itemsSortedSecondary %}
 
 {% if itemsSorted.size > 0 %}
 <h3>{{ citation.name }}</h3>
