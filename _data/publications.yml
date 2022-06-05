@@ -754,5 +754,12 @@
   - url: 'https://doi.org/10.1007/s11251-020-09511-8'
     linklabel: 'paper'
 
-
-   
+- citation: 'Danish, J. A., & Hmelo-Silver, C. E. (2020). On Activities and Affordances for Mobile Learning. Journal of Contemporary Educational Psychology.'
+  project: 'Other'
+  type: 'Journal Article'
+  visibility: 'All'
+  date: '2020'
+  links:
+  - url: 'https://doi.org/10.1016/j.cedpsych.2019.101829'
+    linklabel: 'paper'
+  
