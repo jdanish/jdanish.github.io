@@ -38,7 +38,7 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
           {% if link.url %}[<a href="{{link.url}}" target="_blank">{{link.linklabel}}</a>]{% endif %}
         {% endfor %}
         
-        {% assign project_infos = site.data.projects | where_exp: "project","project.name == item.project or project.name == item.secondaryProject" %}
+        {% assign project_infos = site.data.projects | where_exp: "proj","proj.name == item.project or proj.name == item.secondaryProject" %}
 
         {% for project_info in project_infos %}
           {% if project_info.more %}[<a href="{{project_info.more}}">{{project_info.name}} project info</a>]{% endif %}
