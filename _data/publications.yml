@@ -835,3 +835,12 @@
   links:
   - url: 'https://repository.isls.org/bitstream/1/7500/1/434-441.pdf'
     linklabel: 'paper'
+
+- citation: 'Jen, T., Lee, S., Cosic, L., Askew, R., Daniel, B., & Enyedy, N. (2021). Friends as Flowers: How Perspective-Taking and Empathy Transform Children’s Relationships to Science and Nature. In de Vries, E., Hod, Y., & Ahn, J. (Eds.), Proceedings of the 15th International Conference of the Learning Sciences - ICLS 2021. (pp. 155-162). Bochum, Germany: International Society of the Learning Sciences.'
+  project: 'STEP'
+  visibility: 'Project'
+  type: 'Conference Proceedings'
+  date: '2021'
+  links:
+  - url: 'https://repository.isls.org/handle/1/7460'
+    linklabel: 'paper'
