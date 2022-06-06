@@ -79,7 +79,7 @@ header ul li a {
 }
 
 header ul li a:hover, header ul li a:focus {
-    background-color: #D3DFCD;
+    background-color: #d6e7f2;
     font-weight:normal;
 	border-top: 2px solid #23395D;
 }
@@ -274,4 +274,18 @@ ul.pubs li {
     }
   }
   
-  
+  table.stack th {
+    background: #dedede;}
+    
+  @media print, screen and (max-width: 39.99875em) {
+    table.stack tfoot {
+      display: none; }
+    table.stack tr,
+    table.stack td {
+      display: block; }
+    table.stack td {
+      border-top: 0; }
+      table.stack tr:nth-child(even) {
+        background-color:#dedede; }
+    
+    }
