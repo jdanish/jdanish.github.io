@@ -758,3 +758,80 @@
   - url: 'https://doi.org/10.1016/j.cedpsych.2019.101829'
     linklabel: 'paper'
   
+- citation: 'Stiso, C., Ryan, Z., Danish, J., & Robinson, E. (2020). Fostering Perspective-taking in History Students Through Board Games. Paper presented at the The Interdisciplinarity of the Learning Sciences, 14th International Conference of the Learning Sciences (ICLS), Nashville, Tennessee.'
+  project: 'Cities on the Edge'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2020'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/6310/1/1165-1172.pdf'
+    linklabel: 'paper'
+
+- citation: 'Craig, K., Mahoney, C., & Danish, J. A. (2017). Correcting for Presentism in Student Reading of Historical Accounts Through Digital-History Methodologies. Paper presented at the Annual Meeting of the American Educational Research Association, San Antonio, TX.'
+  project: 'Black Death'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2017'
+  links:
+  - url: 'http://www.kalanicraig.com/publications/AERA-dh-and-presentism/'
+    linklabel: 'paper'
+
+- citation: 'Bae, H., Craig, K., Danish, J., Hmelo-Silver, C., Uttamchandani, S., & Szostalo, M. (2019). Mediating Collaboration in History with Network Analysis. In Lund, K., Niccolai, G. P., Lavoué, E., Hmelo-Silver, C., Gweon, G., & Baker, M. (Eds.), A Wide Lens: Combining Embodied, Enactive, Extended, and Embedded Learning in Collaborative Settings, 13th International Conference on Computer Supported Collaborative Learning (CSCL) 2019, Volume 2 (pp. 949-950). Lyon, France: International Society of the Learning Sciences.'
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2019'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/4580/1/949-950.pdf'
+    linklabel: 'poster abstract'  
+
+- citation: 'Bae, H., Craig, K., Danish, J., Hmelo-Silver, C. E., Uttamchandani, S., Szostalo, M., & McCranie, A. (2019). The Power of Network Analysis Tool for Collaborative Learning. In Lund, K., Niccolai, G. P., Lavoué, E., Hmelo-Silver, C., Gweon, G., & Baker, M. (Eds.), A Wide Lens: Combining Embodied, Enactive, Extended, and Embedded Learning in Collaborative Settings, 13th International Conference on Computer Supported Collaborative Learning (CSCL) 2019, Volume 2 (pp. 1025-1028). Lyon, France: International Society of the Learning Sciences.'
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2019'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/4389/1/1025-1028.pdf'
+    linklabel: 'paper'  
+
+- citation: 'Mccranie, A., Bae, H., Craig, K., Danish, J., Uttamchandani, S., Szostalo, M., & Hmelo-Silver, C. E. (2019). How to Support Network Capta and Collaborative Data Entry through Net.Create, Open Source Software. Paper presented at the NetSci, Burlington, VT. '
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2019'
+
+- citation: 'Craig, K. (2017). Analog tools in digital history classrooms: An activity-theory case study of learning opportunities in digital humanities. International Journal for the Scholarship of Teaching and Learning, 11(1), n1. '
+  project: 'Net.Create'
+  visibility: 'Lab'
+  type: 'Journal Article'
+  date: '2017'
+
+- citation: 'Craig, K., Danish, J., Humburg, M., Szostalo, M., McCranie, A., & Hmelo-Silver, C. E. (2020). Net. Create: network analysis in collaborative co-construction of historical context in a large undergraduate classroom. Paper presented at the International Conference of the Learning Sciences (ICLS), Nashville, TN.'
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2020'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/6293/1/1055-1062.pdf'
+    linklabel: 'paper'
+
+- citation: 'Craig, K., Danish, J., Bae, H., Szostalo, M., Humburg, M. A., Hmelo-Silver, C. E., & McCranie, A. (2020). Net.Create: Network Analysis in Collaborative Co-Construction of Historical Context in a Large Undergraduate Classroom. Paper presented at the 2020 Annual Meeting of the American Educational Research Association (AERA), San Francisco, CA (Conference cancelled due to COVID-19). '
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2020'
+
+- citation: 'Humburg, M. A., Craig, K., Danish, J., & Szostalo, M. (2021). Fostering Historical Empathy Through Network Analysis: Personal Experiences as a Lens for Understanding the Past. Paper presented at the 2021 Annual Meeting of the American Educational Research Association (AERA), held virtually (due to COVID-19). '
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2021'
+
+- citation: 'Humburg, M., Craig, K., Szostalo, M., Danish, J., Hmelo-Silver, C., & McCranie, A. (2021). Noticing, Understanding, and Encouraging Positive Engagement with Collaborative History Learning. Paper presented at the 2021 Annual Meeting of the International Society of the Learning Sciences (ISLS), Bochum, Germany (held virtually due to COVID-19).'
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2021'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/7500/1/434-441.pdf'
+    linklabel: 'paper'
