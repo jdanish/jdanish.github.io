@@ -5,14 +5,15 @@ permalink: /teaching/
 
 ## Teaching
 
-I am generally interested in teaching courses about learning theory, and the design of learning environments.
+I am generally interested in teaching courses about learning theory and / or the design of learning environments.
 
-Some previously taught courses include:
+Some courses I teach or have taught include:
 
+- p674: Embodied Cognition, Learning, and Design
 - p632: Design of Learning Activities
 - p544: Applied Cognition and Learning Strategies
-- p631: Theorizing Learning in Context: Activity Theory
-- p674: Video Analysis of Learning
+- p631: Activity Theory (Theorizing Learning in Context)
+- p633: Video Analysis of Learning
 - p574: Computational Technologies in Educational Ecosystems
 - p573: Learning Sciences Apprenticeship
 - p650: Topical Seminar in Educational Psychology: College Teaching and Instruction
