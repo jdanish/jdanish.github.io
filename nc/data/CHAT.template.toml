@@ -1,0 +1,197 @@
+name = "CHAT"
+description = "CHAT Network for p631 Fall 2020. See the _Notes_ and _Disclaimer_ nodes for more details."
+requireLogin = false
+hideDeleteNodeButton = false
+duplicateWarning = "You’re entering a duplicate node.  Do you want to View the Existing node, or Continue creating?"
+nodeIsLockedMessage = "This node is currently being edited by someone else, please try again later."
+edgeIsLockedMessage = "This edge is currently being edited by someone else, please try again later."
+nodeDefaultTransparency = 1
+edgeDefaultTransparency = 0.6
+searchColor = "#ffa500"
+sourceColor = "#008800"
+templateIsLockedMessage = "The template is currently being edited, please try again later."
+
+[citation]
+text = "Network developed for p631 in 2020 by Dr. Joshua Danish and the class"
+hidden = true
+
+[nodeDefs.id]
+type = "number"
+displayLabel = "id"
+exportLabel = "ID"
+help = "System-generated unique id number"
+
+[nodeDefs.label]
+type = "string"
+displayLabel = "Label"
+exportLabel = "Label"
+help = "A short title for the node"
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.type]
+type = "select"
+displayLabel = "Type"
+exportLabel = "Type"
+help = "Node Type. See Key in main window for details."
+includeInGraphTooltip = true
+hidden = false
+
+  [[nodeDefs.type.options]]
+  label = ""
+  color = "#eeee"
+
+  [[nodeDefs.type.options]]
+  color = "#47f00a"
+  label = "Theorist"
+  replacement = ""
+  delete = false
+
+  [[nodeDefs.type.options]]
+  color = "#aabaf2"
+  label = "Publication"
+  replacement = ""
+  delete = false
+
+  [[nodeDefs.type.options]]
+  color = "#ff0000"
+  label = "Construct or tool"
+  replacement = ""
+  delete = false
+
+  [[nodeDefs.type.options]]
+  color = "#00ffff"
+  label = "Context"
+  replacement = ""
+  delete = false
+
+[nodeDefs.notes]
+type = "string"
+displayLabel = "Notes"
+exportLabel = "Notes"
+help = "Details and significance. Citation if applicable."
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.info]
+type = "string"
+displayLabel = "Tags"
+exportLabel = "Tags"
+help = "Comma separated set of tags to describe the node."
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.degrees]
+type = "number"
+displayLabel = "Degrees"
+exportLabel = "Degrees"
+help = "Number of edges."
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.created]
+displayLabel = "Created"
+exportLabel = "Created"
+includeInGraphTooltip = true
+help = "Date and time node was created"
+
+[nodeDefs.updated]
+displayLabel = "Last Updated"
+exportLabel = "Last Updated"
+includeInGraphTooltip = true
+help = "Date and time of last update"
+
+[edgeDefs.id]
+type = "number"
+displayLabel = "id"
+exportLabel = "ID"
+help = "System-generated unique id number"
+
+[edgeDefs.source]
+type = "node"
+displayLabel = "Source"
+exportLabel = "Source"
+help = ""
+hidden = false
+
+[edgeDefs.target]
+type = "node"
+displayLabel = "Target"
+exportLabel = "Target"
+help = ""
+hidden = false
+
+[edgeDefs.type]
+type = "select"
+displayLabel = "Type"
+exportLabel = "Type"
+help = ""
+hidden = false
+
+  [[edgeDefs.type.options]]
+  label = ""
+  color = "#eeee"
+
+  [[edgeDefs.type.options]]
+  color = "#0a0a0a"
+  label = "authored"
+  replacement = ""
+  delete = false
+
+  [[edgeDefs.type.options]]
+  color = "#080808"
+  label = "builds on"
+  replacement = ""
+  delete = false
+
+  [[edgeDefs.type.options]]
+  color = "#0d0c0c"
+  label = "is"
+  replacement = ""
+  delete = false
+
+  [[edgeDefs.type.options]]
+  color = "#050505"
+  label = "developed"
+  replacement = ""
+  delete = false
+
+  [[edgeDefs.type.options]]
+  color = "#080808"
+  label = "associated with"
+  replacement = ""
+  delete = false
+
+  [[edgeDefs.type.options]]
+  color = "#0d0c0c"
+  label = "contextualized by"
+  replacement = ""
+  delete = false
+
+[edgeDefs.notes]
+type = "string"
+displayLabel = "Notes"
+exportLabel = "Notes"
+help = ""
+hidden = false
+
+[edgeDefs.info]
+type = "string"
+displayLabel = "Tags"
+exportLabel = "Tags"
+help = "Comma separated set of tags to describe the node."
+hidden = false
+
+[edgeDefs.citation]
+type = "string"
+displayLabel = "Citation"
+exportLabel = "Citation"
+help = "Enter Chapter number."
+hidden = true
+
+[edgeDefs.category]
+type = "string"
+displayLabel = "Category"
+exportLabel = "Category"
+help = "Category."
+hidden = true

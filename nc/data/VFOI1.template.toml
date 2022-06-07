@@ -1,0 +1,175 @@
+name = "VFOI Demo Network 1"
+description = "VFOI Demo Network 1"
+requireLogin = false
+hideDeleteNodeButton = false
+duplicateWarning = "You’re entering a duplicate node.  Do you want to View the Existing node, or Continue creating?"
+nodeIsLockedMessage = "This node is currently being edited by someone else, please try again later."
+edgeIsLockedMessage = "This edge is currently being edited by someone else, please try again later."
+nodeDefaultTransparency = 1
+edgeDefaultTransparency = 0.5
+searchColor = "#ffa500"
+sourceColor = "#008800"
+templateIsLockedMessage = "The template is currently being edited, please try again later."
+
+[citation]
+text = "Network developed for exploring network ideas"
+hidden = true
+
+[nodeDefs.id]
+type = "number"
+displayLabel = "id"
+exportLabel = "ID"
+help = "System-generated unique id number"
+
+[nodeDefs.label]
+type = "string"
+displayLabel = "Label"
+exportLabel = "Label"
+help = "A short title for the node"
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.type]
+type = "select"
+displayLabel = "Type"
+exportLabel = "Type"
+help = "Node Type. See Key in main window for details."
+includeInGraphTooltip = true
+hidden = false
+
+  [[nodeDefs.type.options]]
+  label = ""
+  color = "#eeee"
+
+  [[nodeDefs.type.options]]
+  color = "#00ff00"
+  label = "Person"
+  replacement = ""
+  delete = false
+
+  [[nodeDefs.type.options]]
+  color = "#ffc20a"
+  label = "Location"
+  replacement = ""
+  delete = false
+
+  [[nodeDefs.type.options]]
+  color = "#0c7bdc"
+  label = "Content"
+  replacement = ""
+  delete = false
+
+[nodeDefs.notes]
+type = "string"
+displayLabel = "Notes"
+exportLabel = "Notes"
+help = "Details and significance. Citation if applicable."
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.info]
+type = "string"
+displayLabel = "Tags"
+exportLabel = "Tags"
+help = "Comma separated set of tags to describe the node."
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.degrees]
+type = "number"
+displayLabel = "Degrees"
+exportLabel = "Degrees"
+help = "Number of edges."
+includeInGraphTooltip = true
+hidden = false
+
+[nodeDefs.created]
+displayLabel = "Created"
+exportLabel = "Created"
+includeInGraphTooltip = true
+help = "Date and time node was created"
+
+[nodeDefs.updated]
+displayLabel = "Last Updated"
+exportLabel = "Last Updated"
+includeInGraphTooltip = true
+help = "Date and time of last update"
+
+[edgeDefs.id]
+type = "number"
+displayLabel = "id"
+exportLabel = "ID"
+help = "System-generated unique id number"
+
+[edgeDefs.source]
+type = "node"
+displayLabel = "Source"
+exportLabel = "Source"
+help = ""
+hidden = false
+
+[edgeDefs.target]
+type = "node"
+displayLabel = "Target"
+exportLabel = "Target"
+help = ""
+hidden = false
+
+[edgeDefs.type]
+type = "select"
+displayLabel = "Type"
+exportLabel = "Type"
+help = ""
+hidden = false
+
+  [[edgeDefs.type.options]]
+  color = "#000000"
+  label = ""
+
+  [[edgeDefs.type.options]]
+  color = "#000000"
+  label = "follows"
+
+  [[edgeDefs.type.options]]
+  color = "#000000"
+  label = "posted"
+
+  [[edgeDefs.type.options]]
+  color = "#000000"
+  label = "shared"
+
+  [[edgeDefs.type.options]]
+  color = "#000000"
+  label = "reacted to"
+
+  [[edgeDefs.type.options]]
+  color = "#000000"
+  label = "nearby"
+
+[edgeDefs.notes]
+type = "string"
+displayLabel = "Notes"
+exportLabel = "Notes"
+help = ""
+hidden = false
+
+[edgeDefs.info]
+type = "string"
+displayLabel = "Tags"
+exportLabel = "Tags"
+help = "Comma separated set of tags to describe the node."
+hidden = false
+
+[edgeDefs.citation]
+type = "string"
+displayLabel = "Source"
+exportLabel = "Source"
+help = "Where this information came from."
+hidden = false
+
+[edgeDefs.category]
+type = "string"
+displayLabel = "Category"
+exportLabel = "Category"
+help = "Category."
+hidden = true
