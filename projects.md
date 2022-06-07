@@ -15,7 +15,7 @@ permalink: /projects/
   </div>
 {% endif %}
 <div class="right">
-  <p>{{project.blurb}}</p> {% if project.more %}<p>[<a href="{{ project.more }}">more about {{project.name}}</a>]</p>{% endif %}
+  <p>{{project.blurb}}</p> {% if project.more %}<p><i class="fa-solid fa-dna"></i><a href="{{ project.more }}">more about {{project.name}}</a></p>{% endif %}
   </div>
 </div>
 {% endfor %}

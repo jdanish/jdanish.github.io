@@ -6,10 +6,11 @@
   {% if project.logo %}
     <div class="left">
       <img src="/assets/img/project_logos/{{project.logo}}" alt="Project logo for {{project.name}}" width="150" >
+      {% if project.url %}<p><i class="fa-solid fa-arrow-up-right-from-square"></i><a href="{{ project.url }}" target="_blank">{{project.name}} Website</a></p>{% endif %}
     </div>
   {% endif %}
   <div class="right">
-    <p>{{project.blurb}}</p> {% if project.url %}<p>[<a href="{{ project.url }}" target="_blank">{{project.name}} Website</a>]</p>{% endif %}
+    <p>{{project.blurb}}</p>
   </div>
 </div>
 
