@@ -22,6 +22,7 @@ Some courses I teach or have taught include:
 I am honored that my teaching has resulted in the following awards:
 
 - IU School of Education Award for Excellence in Mentoring (2021)
-- IU School of Education Burton W. Gorman Gorman Teaching Award (2017)
+- IU School of Education Burton W. Gorman Gorman Teaching Award (2017) <a href="https://education.indiana.edu/news/2017/2017-05-01-celebration-of-teaching.html" target="_blank">[details]</a>
 - Indiana University Trustees Teaching Award (2010,2012,2014)
-- Teaching With Sakai Innovation Award (TWSIA), Honorable Mention (2010)
+- Teaching With Sakai Innovation Award (TWSIA), Honorable Mention (2010) <a href="https://vimeo.com/13252831" target="_blank">[details]</a>
+
