@@ -19,6 +19,8 @@ Some courses I teach or have taught include:
 - p650: Topical Seminar in Educational Psychology: College Teaching and Instruction
 - p251: Educational Psychology for Elementary Teachers
 
+I also helped co-teach a game-based history course about ancient Greece in the period leading up to and including the Peloponnesian War (431-404 BCE) as part of the <a href="/projects/cities">Cities on the Edge of War</a> project.
+
 I am honored that my teaching has resulted in the following awards:
 
 - IU School of Education Award for Excellence in Mentoring (2021)
