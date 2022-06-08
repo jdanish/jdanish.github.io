@@ -6,12 +6,13 @@
   {% if project.logo %}
     <div class="left">
       <img src="/assets/img/project_logos/{{project.logo}}" alt="Project logo for {{project.name}}" width="150" >
-      {% if project.url %}<p><i class="fa-solid fa-arrow-up-right-from-square"></i><a href="{{ project.url }}" target="_blank">{{project.name}} Website</a></p>{% endif %}
-    </div>
+      {% if project.url %}<i class="fa-solid fa-arrow-up-right-from-square"></i><a href="{{ project.url }}" target="_blank">{{project.name}} Website</a>{% endif %}
+      {% if project.twitter %}<i class="fa-brands fa-twitter"></i><a href="https://twitter.com/{{ project.twitter }}" target="_blank">@{{project.twitter}}</a>{% endif %}  
+     </div>
   {% endif %}
   <div class="right">
     <p>{{project.blurb}}</p>
   </div>
 </div>
-
+<br>
 {% endfor %}

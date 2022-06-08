@@ -6,6 +6,7 @@
   url: https://embodiedplay.org
   logo: step_logo.png
   more: /projects/step
+  twitter: step_prjct
   grants:
     - grant:
       name: 'Generalized Embodied Modeling to support Science through Technology Enhanced Play'
@@ -33,6 +34,7 @@
   url: http://www.netcreate.org
   logo: net_create.svg
   more: /projects/netcreate
+  twitter: netcreateorg
   grants:
   - grant:
     name: 'EAGER: Net.Create: Using Network Analysis to Support Digital Humanities in Large History Classrooms'
@@ -59,6 +61,7 @@
   url: http://reptalproject.org 
   logo: reptal_logo.png
   more: /projects/RepTal
+  twitter: RepTalProject
   grants:
   - grant:
     name: 'Teacher Cognition and Learning about Incorporating Science Representations in Elementary Classrooms'
