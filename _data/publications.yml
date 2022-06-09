@@ -844,3 +844,21 @@
   links:
   - url: 'https://repository.isls.org/handle/1/7460'
     linklabel: 'paper'
+
+- citation: 'Lee, S., Bell, A., Keifert, D.T., Johnson, H., Pierson, A., Henrie, A., & Askew, R. (2022) The tensions of making space: How teachers work toward heterogenous science sense-making [Paper]. Proceedings of the 2nd Annual Meeting of the International Society of the Learning Sciences 2022, Volume ICLS Proceedings, 1189-1192. Hiroshima, Japan (Online): International Society of the Learning Sciences.'
+  project: 'RepTal'
+  visibility: 'Project'
+  type: 'Conference Proceedings'
+  date: '2022'
+
+- citation: 'Daniel, B., Pierson, A., Keifert, D.T., Lee, S., Askew, R. (2022) Science teachers’ ideological shifts about multilingual learners [Poster]. Proceedings of the 2nd Annual Meeting of the International Society of the Learning Sciences 2022, Volume ICLS Proceedings, 1902-1903. Hiroshima, Japan (Online): International Society of the Learning Sciences.'
+  project: 'RepTal'
+  visibility: 'Project'
+  type: 'Conference Proceedings'
+  date: '2022'
+
+- citation: 'Pierson, A., Keifert, D.T.., Lee, S., Johnson, H., Bell, A. (2022) Making space for heterogeneity in phenomenon-centered science learning. In A. Bell, C. & S. Lee (co-chairs) Navigating making space: Attending to multiple learning pathways in science learning [Symposium]. Proceedings of the 2nd Annual Meeting of the International Society of the Learning Sciences 2022, Volume ICLS Proceedings, 1691-1698. Hiroshima, Japan (Online): International Society of the Learning Sciences.'
+  project: 'RepTal'
+  visibility: 'Project'
+  type: 'Conference Proceedings'
+  date: '2022'
