@@ -6,7 +6,7 @@
   status: Current Lab Member
   url: https://www.joshuadanish.com
   affiliation: Indiana University Bloomington
-  interests: Embodied Learning, Science Education, Elementary Education, Representations, Activity, Play, Technology in Learning
+  interests: embodied learning, science education, representations, eelementary education, activity, play, technology in learning / CSCL
   pic: /assets/img/people/jdanish.jpg
   
 - last: Humburg
@@ -50,6 +50,9 @@
   role: Graduate Researcher
   status: Current Lab Member
   affiliation: Indiana University Bloomington
+  interests: STEAM, embodied learning, play, identity
+  pic: /assets/img/people/Selena.jpg
+  url: https://scholar.google.com/citations?user=B0O79xgAAAAJ&hl=en&oi=ao
 
 - last: Stiso
   first: Christina
