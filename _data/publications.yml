@@ -880,3 +880,12 @@
   links:
   - url: 'https://www.sciencedirect.com/science/article/pii/B9780128186305140011'
     linklabel: 'chapter'
+
+- citation: 'Pierson, A. E., Keifert, D. T., Lee, S. J., Henrie, A., Johnson, H. J., & Enyedy, N. (2022). Multiple Representations in Elementary Science: Building Shared Understanding while Leveraging Students’ Diverse Ideas and Practices. Journal of Science Teacher Education, 0(0), 1-25. https://doi.org/10.1080/1046560X.2022.2143612'
+  project: 'RepTal'
+  visibility: 'Project'
+  type: 'Journal Article'
+  date: '2022'
+  links:
+  - url: 'https://doi.org/10.1080/1046560X.2022.2143612'
+    linklabel: 'paper'
