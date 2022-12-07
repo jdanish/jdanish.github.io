@@ -1,11 +1,3 @@
-- citation: 'Danish, J. A., Johnson, H., Nicholas, C., Cross Francis, D., Hmelo-Silver, C. E., Park Rogers, M., . . . Enyedy, N. (2021). Situating video as context for teacher. Learning, Culture and Social Interaction, 30.'
-  project: 'RepTal'
-  type: 'Journal Article'
-  visibility: 'All'
-  date: '2021'
-  links:
-  - url: 'https://doi.org/10.1016/j.lcsi.2021.100542'
-    linklabel: 'paper'
 
 - citation: 'Vickery, M., Danish, J., Tu, X., & Zhou, M. B. G. (2021). Scientific Modeling Practices Through Perspective Taking in a Mixed Reality Embodied Learning Environment. Paper presented at the 2021 Annual Meeting of the International Society of the Learning Sciences (ISLS).'
   project: 'STEP'
