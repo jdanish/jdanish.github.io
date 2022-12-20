@@ -881,3 +881,12 @@
   links:
   - url: 'https://doi.org/10.1080/1046560X.2022.2143612'
     linklabel: 'paper'
+
+- citation: 'Danish, J., Anton, G., Mathayas, N., Jen, T., Vickery, M., Lee, S., Tu, X., Cosic, L., Zhou, M., Ayalon, E., Steinberg, S., Enyedy, N., & Ryan, Z. (2022). Designing for Shifting Learning Activities. The Journal of Applied Instructional Design, 11(4). https://dx.doi.org/10.51869/114/jdabc'
+  project: 'STEP'
+  visibility: 'All'
+  type: 'Journal Article'
+  date: '2022'
+  links:
+  - url: 'https://dx.doi.org/10.51869/114/jdabc'
+    linklabel: 'paper'
