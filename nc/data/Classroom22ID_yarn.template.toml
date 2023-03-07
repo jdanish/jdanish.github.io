@@ -1,5 +1,5 @@
-name = "Untitled"
-description = "Default empty template"
+name = "Classroom Network"
+description = "The initial implementation of the yarn version of the class interests"
 requireLogin = false
 hideDeleteNodeButton = false
 allowLoggedInUserToImport = false
@@ -39,50 +39,32 @@ includeInGraphTooltip = true
 hidden = false
 
   [[nodeDefs.type.options]]
+  color = "#000000"
   label = ""
-  color = "#eeee"
 
   [[nodeDefs.type.options]]
   color = "#00fbff"
-  label = "Classmate"
-  replacement = ""
-  delete = false
+  label = "Person"
 
   [[nodeDefs.type.options]]
   color = "#40b800"
   label = "Place"
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#c4c700"
   label = "Activity"
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#b400f5"
   label = "Favorites"
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#f00000"
   label = "Object"
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#0016bd"
   label = "Group"
-  replacement = ""
-  delete = false
-
-  [[nodeDefs.type.options]]
-  color = "#df5da9"
-  label = "Significant Person"
-  replacement = ""
-  delete = false
 
 [nodeDefs.notes]
 type = "string"
