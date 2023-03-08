@@ -30,4 +30,4 @@ In this project, we worked with 5th and 6th grade students to explore a number o
 Here is a sample network depicting the readings in our graduate level Cultural Historical Activity Theory (CHAT) course <i class="fa-solid fa-arrow-up-right-from-square"></i><a href="https://joshuadanish.com/nc/index.html?dataset=CHAT#/" target="net.create">here</a>. 
 
 
-For more about the tool, and our earlier work in history classrooms, check out <a href="https://netcreate.org/" target="_blank">https://netcreate.org/</a>
+For more about the tool, and our earlier work in history classrooms, check out <a href="https://netcreate.org/" target="_blank">https://netcreate.org/</a>.
