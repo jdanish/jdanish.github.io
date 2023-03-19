@@ -37,10 +37,15 @@
   twitter: netcreateorg
   grants:
   - grant:
+    name: 'Collaborative Research: Integrating Students’ Interests, Identities and Ways of Knowing with Network Visualization Tools to Explore Data Literacy Concepts'
+    agency: NSF
+    ids: '2241705 & 2241706'
+    pis: 'Joshua Danish, Kalani Craig, Cindy Hmelo-Silver, Ben Loh, Merijka Conrad'
+  - grant:
     name: 'EAGER: Net.Create: Using Network Analysis to Support Digital Humanities in Large History Classrooms'
     agency: NSF
     ids: '1848655'
-    pis: 'Joshua Danish, Kalani Craig'
+    pis: 'Kalani Craig, Joshua Danish, Cindy Hmelo-Silver, Ben Loh'
 
 - name: SEEDS
   full_name: Scaffolding Explanations and Epistemic Development for Systems (SEEDS)
