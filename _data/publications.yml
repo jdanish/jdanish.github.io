@@ -890,15 +890,21 @@
   links:
   - url: 'https://dx.doi.org/10.51869/114/jdabc'
     linklabel: 'paper'
-    
-- citation: 'Stiso, C., Zhou, M., Steinberg, S., Danish, J. A. & Craig, K. (2023). Visualizing Funds of Identity: Using Network Software to Model Collective Identity in a Classroom. In Proceedings of the International Conference of the Learning Sciences (ICLS) 2023.'
-  project: 'Net.Create'
-  visibility: 'All'
-  type: 'Conference Proceedings'
-  date: '2023'
 
 - citation: 'Zhou, M., Steinberg, S., Stiso, C., Danish, J. A. & Craig, K. (2023). Exploring Network Visualization of Data in Elementary Classroom. In Proceedings of the International Conference of the Learning Sciences (ICLS) 2023.'
   project: 'Net.Create'
   visibility: 'All'
   type: 'Conference Proceedings'
   date: '2023'
+  links:
+  - url: '../assets/pdfs/Zhou_ISLS2023_WebReady.pdf'
+    linklabel: 'paper'
+        
+- citation: 'Stiso, C., Zhou, M., Steinberg, S., Danish, J. A. & Craig, K. (2023). Visualizing Funds of Identity: Using Network Software to Model Collective Identity in a Classroom. In Proceedings of the International Conference of the Learning Sciences (ICLS) 2023.'
+  project: 'Net.Create'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2023'
+  links:
+  - url: '../assets/pdfs/Stiso_ISLS2023_WebReady.pdf'
+    linklabel: 'poster'
