@@ -908,3 +908,12 @@
   links:
   - url: '../assets/pdfs/Stiso_ISLS2023_WebReady.pdf'
     linklabel: 'poster'
+
+- citation: 'Tu, Xintian, and Joshua Danish. “Designing a Technology-Enhanced Play Environment for Young Children’s Science Modeling Practice.” In Proceedings of the 2023 Symposium on Learning, Design and Technology, 60–69. LDT ’23. New York, NY, USA: Association for Computing Machinery, 2023. https://doi.org/10.1145/3594781.3594798.'
+  project: 'STEP'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2023'
+  links:
+  - url: 'https://doi.org/10.1145/3594781.3594798'
+    linklabel: 'paper'
