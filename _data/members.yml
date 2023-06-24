@@ -11,7 +11,7 @@
   
 - last: Humburg
   first: Megan
-  role: Graduate Researcher
+  role: Postdoctoral Researcher
   status: Current Lab Member
   affiliation: Indiana University Bloomington
   pic: /assets/img/people/Megan.jpg
@@ -25,7 +25,16 @@
   affiliation: Indiana University Bloomington
   pic: /assets/img/people/Xintian.jpg
   interests: play, embodied learning, extended reality environments
-  url: https://scholar.google.com/citations?hl=en&user=ek4TMJgAAAAJ
+  url: https://tuxintian.com/
+
+- last: Gok
+  first: Sebahat
+  role: Graduate Researcher
+  status: Current Lab Member
+  affiliation: Indiana University Bloomington
+  pic: /assets/img/people/vesika.jpg
+  interests: representations, instructional design, grounded cognition
+  url: https://scholar.google.com/citations?user=p0I0oH0AAAAJ&hl=en&oi=ao
 
 - last: Vickery
   first: Morgan
