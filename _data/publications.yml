@@ -909,6 +909,63 @@
   - url: '../assets/pdfs/Stiso_ISLS2023_WebReady.pdf'
     linklabel: 'poster'
 
+- citation: 'Tu, X., Humburg, M., Mathayas, N., Zhou, M., & Danish, J. (2022). How embodiment helps students explain their ideas within an MR environment and content interviews [paper]. International Conference of the Learning Sciences 2022. Volume ICLS Proceedings, 1225-1228, Hiroshima, Japan (Online): International Society of the Learning Sciences.'
+  project: 'STEP'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2022'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/8451/1/ICLS2022_1225-1228.pdf'
+    linklabel: 'paper'
+
+- citation: 'Lee, S., Tu, X., Adebola, S., Danish, J., & Enyedy, N. (2022). “We Made Liquid!”: How Children Blend Feedback in a Mixed-Reality Environment for Collective Embodied Learning [paper]. International Conference of the Learning Sciences 2022. Volume CSCL Proceedings, 219-215, Hiroshima, Japan (Online): International Society of the Learning Sciences.'
+  project: 'STEP'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2022'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/8279/1/CSCL2022_219-225.pdf'
+    linklabel: 'paper'
+
+- citation: 'Mathayas, N., Tu, X., Danish, J., Vogelstein, L., & Cosic, L. (2022). Building meaningful participation using embodied Mixed Reality technologies. International Conference of the Learning Sciences 2022. Volume ICLS Proceedings, 1225-1228, Hiroshima, Japan (Online): International Society of the Learning Sciences.'
+  project: 'STEP'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2022'
+  links:
+  - url: 'https://repository.isls.org/bitstream/1/8579/1/ICLS2022_1739-1746.pdf'
+    linklabel: 'paper'
+    
+- citation: 'Humburg, M., Bell, A., Keifert, D, T., Tu, X., Hmelo-Silver, C., Danish, A., Lee, S., Henrie, A., Park Rogers, M., Francis, D., & Enyedy, N. (2023) Learning to be a science teacher: The worries, joys, and vulnerabilities of exploring new pedagogies. International Conference of the Learning Sciences 2023.  (Naomi Miyake Outstanding Student Paper Award)'
+  project: 'RepTal'
+  visibility: 'All'
+  type: 'Conference Proceedings'
+  date: '2023'
+
+- citation: 'Tu, X., Danish, J., Humburg, M., Hmelo-Silver, C., Park Rogers, M., Bell, A., & Lee, S. (2023). Understanding Teachers Perceptions of Representations in Elementary Science Classrooms, The Biennial Conference of European Association for Research on Learning and Instruction (EARLI), Thessaloniki, Greece.'
+  project: 'RepTal'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2023'
+
+- citation: 'Tu, X., & Danish, J. (2023). From play to science modeling: Young Children Learning Pollination in an MR Environment. Annual conference of the American Educational Research Association, Chicago, IL.'
+  project: 'STEP'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2023'
+
+- citation: 'Tu, X., Danish, J., Humburg, M., Hmelo-Silver, C., Park Rogers, M., Bell, A., & Lee, S. (2023). Understanding teachers’ perceptions of representations in elementary science education. Annual conference of the American, Chicago, IL.'
+  project: 'RepTal'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2023'
+
+- citation: 'Humburg, M., Bell, A., Tu, X., Danish, J., Keifert, D., Hmelo-Silver, C., Henrie, A., Park Rogers, M., Enyedy. (2023) “Sounds Very Joyful to Me”: Emotional Engagement and Social Support in Teacher Professional Development. Paper accepted at the Annual conference of the American Educational Research Association, Chicago, IL.'
+  project: 'RepTal'
+  visibility: 'All'
+  type: 'Conference Presentations'
+  date: '2023'
+
 - citation: 'Tu, Xintian, and Joshua Danish. “Designing a Technology-Enhanced Play Environment for Young Children’s Science Modeling Practice.” In Proceedings of the 2023 Symposium on Learning, Design and Technology, 60–69. LDT ’23. New York, NY, USA: Association for Computing Machinery, 2023. https://doi.org/10.1145/3594781.3594798.'
   project: 'STEP'
   visibility: 'All'
