@@ -29,8 +29,8 @@
       ids: '1323767'
       pis: 'Joshua Danish, Noel Enyedy'
 
-- name: Net.Create
-  blurb: Net.Create is a collaborative network visualization tool developed to help users explore a large corpus of data together, concurrently. This was originally implemented in undergraduate history classrooms.
+- name: Net.Create and VFOI
+  blurb: Net.Create is a collaborative network visualization tool developed to help users explore a large corpus of data together, concurrently. This was originally implemented in undergraduate history classrooms, and more recently we have worked with middle school students to explore data literacy.
   url: http://www.netcreate.org
   logo: net_create.svg
   more: /projects/netcreate
