@@ -13,7 +13,7 @@ None of my work would be possible without amazing collaborators including the pa
 {% assign itemsSorted = group.items | sort: "last" %}
 {% for item in itemsSorted %}
     {% if item.last != 'Danish'%}
-        <li>{% if item.url %}<a href="{{ item.url }}" target="_blank">{% endif %}{{ item.first }} {{ item.last }}{% if item.url %}</a>{% endif %}<em> {% if item.pronouns %}({{ item.pronouns }}){% endif %}, {{ item.role }}</em>{% if item.interests %}, interested in {{ item.interests }}{% endif %}
+        <li>{% if item.url %}<a href="{{ item.url }}" target="_blank">{% endif %}{{ item.first }} {{ item.last }}{% if item.url %}</a>{% endif %}<em>{% if item.pronouns %} ({{ item.pronouns }}){% endif %}, {{ item.role }}</em>{% if item.interests %}, interested in {{ item.interests }}{% endif %}
         </li>
     {% endif %}
 {% endfor %}
