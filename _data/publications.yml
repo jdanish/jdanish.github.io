@@ -974,3 +974,12 @@
   links:
   - url: 'https://doi.org/10.1145/3594781.3594798'
     linklabel: 'paper'
+
+- citation: 'Ryan, Z., Danish, J., Zhou, J., Stiso, C., Murphy, D., Duncan, R., Chinn, C., & Hmelo-Silver, C. E. (2023). Investigating students’ development of mechanistic reasoning in modeling complex aquatic ecosystems. Frontiers in Education, 8.'
+  project: 'SEEDS'
+  visibility: 'All'
+  type: 'Journal Article'
+  date: '2023'
+  links:
+  - url: 'https://www.frontiersin.org/articles/10.3389/feduc.2023.1159558'
+    linklabel: 'paper'
