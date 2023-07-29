@@ -55,6 +55,11 @@
   more: /projects/seeds
   grants:
   - grant:
+    name: 'DRL: Collaborative Research: Engaging students in discourse about criteria for judging scientific models'
+    agency: NSF
+    ids: '2300832 & 2300831'
+    pis: 'Ravit Duncan, Joshua Danish, Cindy Hmelo-Silver, Clark Chinn'
+  - grant:
     name: 'DRL: Collaborative Research: Scaffolding Explanations and Epistemic Development for Systems'
     agency: NSF
     ids: '1761019 & 1760909'
