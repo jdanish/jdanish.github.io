@@ -1,4 +1,4 @@
-{% assign projects = site.data.projects | where: "name", page.projectName %}
+{% assign projects = site.data.rapt_web_data.projects | where: "name", page.projectName %}
 {% for project in projects %}
 {%  assign grants = project.grants %}
 

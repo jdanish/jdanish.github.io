@@ -5,7 +5,7 @@ permalink: /projects/
 
 ## My Projects
 
-{% for project in site.data.projects %}
+{% for project in site.data.rapt_web_data.projects %}
 {% if project.hide %}{% continue %}{% endif %}
 <div class="row">
 <h3>The {% if project.full_name %}  {{project.full_name}} {% else %} {{project.name}} {% endif %} Project</h3>

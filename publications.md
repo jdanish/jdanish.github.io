@@ -37,7 +37,7 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
           {% if link.url %}<a href="{{link.url}}" target="_blank"><i class="fa-regular fa-file-lines"></i>{{link.linklabel}}</a> {% endif %}
         {% endfor %}
 
-        {% assign project_infos = site.data.projects | where: "name", item.project %}
+        {% assign project_infos = site.data.rapt_web_data.projects | where: "name", item.project %}
 
         {% for project_info in project_infos %}
           {% if project_info.more %}<a href="{{project_info.more}}"><i class="fa-solid fa-dna"></i>{{project_info.name}} project info</a> {% endif %}
@@ -47,7 +47,7 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
         {% comment %} This would be cleaner with a where_exp or two arrays concat but neither seems to work on GitHub yet {% endcomment %}
 
         {% if item.secondaryProject %}
-          {% assign project_infos = site.data.projects | where: "name", item.secondaryProject %}
+          {% assign project_infos = site.data.rapt_web_data.projects | where: "name", item.secondaryProject %}
 
           {% for project_info in project_infos %}
             {% if project_info.more %}<a href="{{project_info.more}}"><i class="fa-solid fa-dna"></i>{{project_info.name}} project info</a>{% endif %}
