@@ -6,6 +6,8 @@ visibility: 'All'
 
 ## Publications
 
+{% include filter_setup.html %}
+
 You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">CV as a PDF</a>.
 
 {% comment %} Get the set to group by year, then for each year grab the list of pubs to generate a bullet for each. {% endcomment %}
@@ -30,7 +32,7 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
         {% continue %}
     {% endif %}
 
-    <li>
+    <li class="pub-item" data-type="{{ item.type }}">
       {{item.citation}}      
       
         {% for link in item.links %}

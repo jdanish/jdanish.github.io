@@ -1,0 +1,43 @@
+<div class="filter">
+  <input type="checkbox" id="journalCheckbox" value="Journal Article" checked>
+  <label for="journalCheckbox">Journal Articles</label>
+
+  <input type="checkbox" id="conferenceProceedingsCheckbox" value="Conference Proceedings" checked>
+  <label for="conferenceProceedingsCheckbox">Proceedings</label>
+
+  <input type="checkbox" id="conferencePresentationCheckbox" value="Conference Presentation" checked>
+  <label for="conferencePresentationCheckbox">Presentations</label>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const journalCheckbox = document.getElementById('journalCheckbox');
+    const conferenceProceedingsCheckbox = document.getElementById('conferenceProceedingsCheckbox');
+    const conferencePresentationCheckbox = document.getElementById('conferencePresentationCheckbox');
+
+    const publicationItems = document.querySelectorAll('.pub-item');
+
+    function filterPublications() {
+      const showJournal = journalCheckbox.checked;
+      const showProceeding = conferenceProceedingsCheckbox.checked;
+      const showPresentation = conferencePresentationCheckbox.checked;
+
+      publicationItems.forEach(item => {
+        const type = item.dataset.type;
+        item.style.display = (type === 'Journal Article' && showJournal) ||
+                             (type === 'Conference Proceedings' && showProceeding) ||
+                             (type === 'Conference Presentation' && showPresentation)
+                             ? 'list-item' : 'none';
+      });
+    }
+
+    journalCheckbox.addEventListener('change', filterPublications);
+    conferenceProceedingsCheckbox.addEventListener('change', filterPublications);
+    conferencePresentationCheckbox.addEventListener('change', filterPublications);
+
+    // Initial filter on page load
+    filterPublications();
+  });
+</script>
+
+

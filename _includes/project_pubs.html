@@ -1,6 +1,8 @@
 
 ### Publications on the {{page.projectName}} Project
 
+{% include filter_setup.html %}
+
 
 {% assign citations = site.data.rapt_web_data.publications |  sort: "date" | reverse | group_by: "date" %}
 {% for citation in citations %}
@@ -24,7 +26,7 @@
       {% continue %}
   {% endif %}
 
-  <li>{{item.citation}}        
+  <li class="pub-item" data-type="{{ item.type }}">{{item.citation}}        
     {% for link in item.links %}
       {% if link.url %}<a href="{{link.url}}" target="_blank"><i class="fa-regular fa-file-lines"></i>{{link.linklabel}}</a>
       {% endif %}
