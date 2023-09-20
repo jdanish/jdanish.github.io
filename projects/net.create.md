@@ -1,7 +1,7 @@
 ---
 layout: default
 permalink: /projects/netcreate
-projectName: 'Net.Create'
+projectName: 'Net.Create and VFOI'
 visibility: 'Lab'
 ---
 
