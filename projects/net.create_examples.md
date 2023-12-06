@@ -12,7 +12,7 @@ visibility: 'Lab'
 
 In this project, we worked with 5th and 6th grade students to explore a number of networks as a way of exploring their own collective identity, and learning some basic data literacy concepts. See a few of the sample networks from this project below along with brief explanations of how we incorporated each into the classroom activities. You can find out more in the following papers:
 - Stiso, C., Zhou, M., Steinberg, S., Danish, J. A. & Craig, K. (2023). Visualizing Funds of Identity: Using Network Software to Model Collective Identity in a Classroom. In Proceedings of the International Conference of the Learning Sciences (ICLS) 2023.
-- Zhou, M., Steinberg, S., Stiso, C., Danish, J. A. & Craig, K. (2023). Exploring Network Visualization of Data in Elementary Classroom. In Proceedings of the International Conference of the Learning Sciences (ICLS) 2023.
+- Zhou, M., Steinberg, S., Stiso, C., Danish, J. A., & Craig, K. (2023). Using network visualizations to engage elementary students in locally relevant data literacy. Information and Learning Sciences, ahead-of-print(ahead-of-print).
 
 
 | Network | Summary | Image |
