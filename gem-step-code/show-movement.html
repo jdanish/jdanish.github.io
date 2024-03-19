@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Movement Visualization</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        #pointList {
+            margin-top: 20px; /* Adjusted margin to move the log field down */
+            font-family: monospace;
+            white-space: pre;
+            height: 200px; /* Set a fixed height for scrolling */
+            overflow-y: scroll; /* Enable vertical scrolling */
+            border: 1px solid black;
+            padding: 5px;
+        }
+        #timeline {
+            margin-top: 10px;
+            width: 800px;
+            height: 20px;
+            background-color: lightgray;
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #timelineMarker {
+            width: 5px;
+            height: 20px;
+            background-color: red;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #timelineLabels {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 800px;
+            position: absolute;
+            top: 10;
+        }
+        .timelineLabel {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="movementCanvas" width="800" height="600"></canvas>
+    <div id="timeline">
+        <div id="timelineLabels">
+            <div class="timelineLabel" id="leftLabel">0:00</div>
+            <div class="timelineLabel" id="rightLabel">0:00</div>
+        </div>
+        <div id="timelineMarker"></div>
+    </div>
+    <div id="pointList"></div>
+    <!-- Input element for file upload -->
+    <input type="file" id="fileInput">
+    <script>
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const logData = e.target.result;
+                    parseLogData(logData);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function parseLogData(logData) {
+            // Parse the log data into an array of movements
+            const movements = [];
+            const lines = logData.trim().split('\n');
+            lines.forEach(line => {
+                const items = line.split(/\s+/);
+                if (items.length >= 8) { // Check if the line has at least 8 items
+                    const movement = items.slice(0, 8); // Consider only the first 8 items
+                    movements.push(movement);
+                }
+            });
+
+            // Proceed with visualization only if there are valid movements
+            if (movements.length > 0) {
+                // Get canvas element and 2D drawing context
+                const canvas = document.getElementById('movementCanvas');
+                const ctx = canvas.getContext('2d');
+
+                // Get the pointList and timelineMarker elements
+                const pointList = document.getElementById('pointList');
+                const timelineMarker = document.getElementById('timelineMarker');
+
+                // Find min and max x and y coordinates
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                movements.forEach(movement => {
+                    const x = parseFloat(movement[6]);
+                    const y = parseFloat(movement[7]);
+                    minX = Math.min(minX, x);
+                    maxX = Math.max(maxX, x);
+                    minY = Math.min(minY, y);
+                    maxY = Math.max(maxY, y);
+                });
+
+                // Function to draw the movements on the canvas
+                function drawMovements(frame) {
+                    // Clear the canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw axis labels
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(Math.floor(minX), 10, canvas.height - 10);
+                    ctx.fillText(Math.floor((minX + maxX) / 2), canvas.width / 2, canvas.height - 10);
+                    ctx.fillText(Math.floor(maxX), canvas.width - 20, canvas.height - 10);
+                    ctx.fillText(Math.floor(maxY), 10, 10);
+                    ctx.fillText(Math.floor((minY + maxY) / 2), 10, canvas.height / 2 - 5);
+                    ctx.fillText(Math.floor(minY), 10, canvas.height / 2 + 5);
+
+                    // Clear and update the point list
+                    pointList.innerHTML = '';
+                    movements.slice(0, frame).forEach((movement, index) => {
+                        const x = parseFloat(movement[6]);
+                        const y = parseFloat(movement[7]);
+
+                        // Calculate scaled coordinates
+                        const scaledX = (x - minX) / (maxX - minX) * canvas.width;
+                        const scaledY = (y - minY) / (maxY - minY) * canvas.height;
+
+                        // Draw point on canvas
+                        ctx.beginPath();
+                        ctx.arc(scaledX, canvas.height - scaledY, 5, 0, Math.PI * 2);
+                        ctx.fillStyle = 'blue';
+                        ctx.fill();
+                        ctx.closePath();
+
+                        // Append point to point list
+                        pointList.innerHTML += `Point ${index + 1}: (${x}, ${y})<br>`;
+                    });
+
+                    // Update timeline marker position
+                    const timelineWidth = document.getElementById('timeline').offsetWidth;
+                    const markerPosition = (frame / movements.length) * timelineWidth;
+                    timelineMarker.style.left = markerPosition + 'px';
+                }
+
+                // Function to animate the movements
+                function animate(frame) {
+                    drawMovements(frame);
+
+                    // Add event listeners for timeline marker dragging
+                    let isDragging = false;
+                    timelineMarker.addEventListener('mousedown', (event) => {
+                        isDragging = true;
+                        event.preventDefault();
+                    });
+
+                    document.addEventListener('mouseup', () => {
+                        isDragging = false;
+                    });
+
+                    document.addEventListener('mousemove', (event) => {
+                        if (isDragging) {
+                            const timelineWidth = document.getElementById('timeline').offsetWidth;
+                            let newPosition = event.clientX - canvas.offsetLeft;
+                            if (newPosition < 0) newPosition = 0;
+                            if (newPosition > timelineWidth) newPosition = timelineWidth;
+                            const newFrame = Math.floor((newPosition / timelineWidth) * movements.length);
+                            drawMovements(newFrame);
+                        }
+                    });
+                }
+
+                // Call the animate function to start the animation
+                animate(0);
+
+                // Update timeline labels
+                const totalTime = movements.length;
+                const interval = 10; // 10 frames per second
+                const timeStep = Math.ceil(totalTime / interval);
+                const timelineLabels = document.getElementById('timelineLabels');
+                for (let i = 0; i < interval; i++) {
+                    const label = document.createElement('div');
+                    label.classList.add('timelineLabel');
+                    const time = (i * timeStep / 10).toFixed(1); // Display time in seconds
+                    label.textContent = `${time}s`;
+                    timelineLabels.appendChild(label);
+                }
+                document.getElementById('rightLabel').textContent = `${(totalTime / 10).toFixed(1)}s`;
+            } else {
+                // Display an error message or handle the absence of valid movements
+                console.log("No valid movements found in the log file.");
+            }
+        }
+    </script>
+</body>
+</html>
