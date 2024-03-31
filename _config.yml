@@ -1,6 +1,6 @@
 title: "Joshua Danish's Website"
 theme: jekyll-theme-minimal
 logo: /assets/img/people/jdanish.jpg
-url: "http://http://joshuadanish.com" # the base hostname & protocol for your site
+url: "http://joshuadanish.com" # the base hostname & protocol for your site
 plugins:
   - jekyll-sitemap
