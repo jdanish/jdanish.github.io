@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Test HTTPS POST Endpoint</title>
+    <style>
+        .prompt {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .prompt:nth-child(even) {
+            background-color: #f2f2f2; /* Pale gray background for even numbered prompts */
+        }
+    </style>
 </head>
 <body>
     <form id="myForm">
@@ -65,49 +75,64 @@
                 }
                 
                 try {
-                    let reminder = "";
                     if (file) {
-                        reminder = "Sent via CSV file upload.";
-                        const formData = new FormData();
-                        formData.append("csvFile", file);
-                        
-                        const myurl = "https://bl-educ-engage.educ.indiana.edu/GetECAResponseBatch";
-                        const response = await fetch(myurl, {
-                            method: "POST",
-                            body: formData
-                        });
-                        
-                        const responseData = await response.text();
-                        document.getElementById("responseDiv").innerHTML += `<p>${reminder} Response: ${responseData}</p>`;
-                    } else {
-                        reminder = "Manually entered data:";
-                        const payload = {
-                            "Context": context,
-                            "Utterance": utterance,
-                            "ECAType": ecatype,
-                            "ConfidenceThreshold": confidenceThreshold
+                        const reader = new FileReader();
+                        reader.onload = async (event) => {
+                            const text = event.target.result;
+                            const lines = text.split('\n');
+                            for (let line of lines) {
+                                // Split each line by comma, handling potential double quotes
+                                const fields = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                                const context = fields[0].replace(/"/g, "").trim();
+                                const question = fields[1].replace(/"/g, "").trim();
+                                const ecatype = fields[2].trim();
+                                const confidenceThreshold = parseFloat(fields[3].trim());
+                                
+                                await sendRequest(context, question, ecatype, confidenceThreshold);
+                            }
+                            loading.style.display = "none"; // Hide loading text
                         };
-                        
-                        const myurl = "https://bl-educ-engage.educ.indiana.edu/GetECAResponse";
-                        const response = await fetch(myurl, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        const responseData = await response.text();
-                        document.getElementById("responseDiv").innerHTML += `<p>${reminder} Response: ${responseData}</p>`;
+                        reader.readAsText(file);
+                    } else {
+                        await sendRequest(context, utterance, ecatype, confidenceThreshold);
+                        loading.style.display = "none"; // Hide loading text
                     }
                 } catch (error) {
                     console.error("An error occurred:", error);
-                    document.getElementById("responseDiv").innerHTML += `<p>An error occurred: ${error}</p>`;
-                } finally {
+                    document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
                     loading.style.display = "none"; // Hide loading text
+                } finally {
+                    // Clear the file input field
+                    document.getElementById("csvFile").value = "";
                 }
             });
         });
+        
+        async function sendRequest(context, question, ecatype, confidenceThreshold) {
+            const payload = {
+                "Context": context,
+                "Utterance": question,
+                "ECAType": ecatype,
+                "ConfidenceThreshold": confidenceThreshold
+            };
+            
+            try {
+                const myurl = "https://bl-educ-engage.educ.indiana.edu/GetECAResponse";
+                const response = await fetch(myurl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const responseData = await response.text();
+                document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>Utterance: ${question}</p><p>Context: ${context}</p><p>ECAType: ${ecatype}</p><p>Confidence Threshold: ${confidenceThreshold}</p><p>Response: ${responseData}</p></div>`;
+            } catch (error) {
+                console.error("An error occurred:", error);
+                document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
+            }
+        }
     </script>
 </body>
 </html>
