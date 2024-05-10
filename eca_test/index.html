@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test HTTPS POST Endpoint</title>
+</head>
+<body>
+    <form id="myForm">
+        <label for="csvFile">Upload CSV File:</label>
+        <input type="file" id="csvFile" name="csvFile" accept=".csv"><br><br>
+        
+        <hr>
+        <label for="context">Context:</label>
+        <textarea id="context" name="Context" rows="4" cols="50"></textarea><br><br>
+        
+        <label for="utterance">Question:</label>
+        <textarea id="utterance" name="Utterance" rows="4" cols="50"></textarea><br><br>
+
+        <label for="ecatype">ECAType:</label>
+        <select id="ecatype" name="ECAType">
+            <option value="GEMSTEP_Observing">GEMSTEP_Observing</option>
+            <option value="CI">CI</option>
+            <option value="GameHelp">GameHelp</option>
+            <option value="GameHelp_FoodJustice">GameHelp_FoodJustice</option>
+            <option value="GameHelp_Collaboration">GameHelp_Collaboration</option>
+            <option value="Knowledge_Pollination">Knowledge_Pollination</option>
+            <option value="Knowledge_FoodJustice">Knowledge_FoodJustice</option>
+            <option value="ConversationBumpers">ConversationBumpers</option>
+            <option value="GEMSTEP_Modeling">GEMSTEP_Modeling</option>
+        </select><br><br>
+        <label for="confidenceThreshold">Confidence Threshold:</label>
+        <input type="number" id="confidenceThreshold" name="ConfidenceThreshold" min="0" max="1" step="0.01" value="0.6"><br><br>
+    
+        <input type="submit" value="Submit">
+        <span id="loading" style="display:none;">Loading...</span>
+    </form>
+
+    <div id="responseDiv"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("myForm");
+            const loading = document.getElementById("loading");
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                loading.style.display = "inline"; // Show loading text
+                
+                const fileInput = document.getElementById("csvFile");
+                const file = fileInput.files[0];
+                const context = document.getElementById("context").value.trim();
+                const utterance = document.getElementById("utterance").value.trim();
+                const ecatype = document.getElementById("ecatype").value;
+                const confidenceThreshold = parseFloat(document.getElementById("confidenceThreshold").value);
+                
+                if (file && (context || utterance)) {
+                    alert("Please select either a CSV file or manually enter data, not both.");
+                    loading.style.display = "none"; // Hide loading text
+                    return;
+                }
+                
+                if (!file && !(context && utterance)) {
+                    alert("Please select a CSV file or manually enter data.");
+                    loading.style.display = "none"; // Hide loading text
+                    return;
+                }
+                
+                try {
+                    let reminder = "";
+                    if (file) {
+                        reminder = "Sent via CSV file upload.";
+                        const formData = new FormData();
+                        formData.append("csvFile", file);
+                        
+                        const myurl = "https://bl-educ-engage.educ.indiana.edu/GetECAResponseBatch";
+                        const response = await fetch(myurl, {
+                            method: "POST",
+                            body: formData
+                        });
+                        
+                        const responseData = await response.text();
+                        document.getElementById("responseDiv").innerHTML += `<p>${reminder} Response: ${responseData}</p>`;
+                    } else {
+                        reminder = "Manually entered data:";
+                        const payload = {
+                            "Context": context,
+                            "Utterance": utterance,
+                            "ECAType": ecatype,
+                            "ConfidenceThreshold": confidenceThreshold
+                        };
+                        
+                        const myurl = "https://bl-educ-engage.educ.indiana.edu/GetECAResponse";
+                        const response = await fetch(myurl, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        const responseData = await response.text();
+                        document.getElementById("responseDiv").innerHTML += `<p>${reminder} Response: ${responseData}</p>`;
+                    }
+                } catch (error) {
+                    console.error("An error occurred:", error);
+                    document.getElementById("responseDiv").innerHTML += `<p>An error occurred: ${error}</p>`;
+                } finally {
+                    loading.style.display = "none"; // Hide loading text
+                }
+            });
+        });
+    </script>
+</body>
+</html>
