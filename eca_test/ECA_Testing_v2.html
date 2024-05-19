@@ -4,56 +4,159 @@
     <meta charset="UTF-8">
     <title>Test HTTPS POST Endpoint</title>
     <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-container {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .table-container {
+            flex: 1;
+        }
+
         .prompt {
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 5px; /* Reduced padding for compact output */
+            margin-bottom: 5px; /* Reduced margin for compact output */
         }
 
         .prompt:nth-child(even) {
             background-color: #f2f2f2; /* Pale gray background for even numbered prompts */
         }
+        
+        #loading {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <form id="myForm">
-        <label for="csvFile">Upload CSV File:</label>
-        <input type="file" id="csvFile" name="csvFile" accept=".csv"><br><br>
-        
-        <hr>
-        <label for="context">Context:</label>
-        <textarea id="context" name="Context" rows="4" cols="50"></textarea><br><br>
-        
-        <label for="utterance">Question:</label>
-        <textarea id="utterance" name="Utterance" rows="4" cols="50"></textarea><br><br>
+    <div class="container">
+        <div class="form-container">
+            <h1>ENGAGE AI: Food Justice: ECA Testing</h1>
 
-        <label for="ecatype">ECAType:</label>
-        <select id="ecatype" name="ECAType">
-            <option value="GEMSTEP_Observing">GEMSTEP_Observing</option>
-            <option value="CI">CI</option>
-            <option value="GameHelp">GameHelp</option>
-            <option value="GameHelp_FoodJustice">GameHelp_FoodJustice</option>
-            <option value="GameHelp_Collaboration">GameHelp_Collaboration</option>
-            <option value="Knowledge_Pollination">Knowledge_Pollination</option>
-            <option value="Knowledge_FoodJustice">Knowledge_FoodJustice</option>
-            <option value="ConversationBumpers">ConversationBumpers</option>
-            <option value="GEMSTEP_Modeling">GEMSTEP_Modeling</option>
-        </select><br><br>
-        <label for="confidenceThreshold">Confidence Threshold:</label>
-        <input type="number" id="confidenceThreshold" name="ConfidenceThreshold" min="0" max="1" step="0.01" value="0.6"><br><br>
-    
-        <input type="submit" value="Submit">
-        <span id="loading" style="display:none;">Loading...</span>
-    </form>
+            <form id="myForm">
+                <h2>Batch submission</h2>
+                <label for="csvFile">Upload CSV File:</label>
+                <input type="file" id="csvFile" name="csvFile" accept=".csv"><br><br>
+                <input type="submit" value="Submit Batch">
+                
+                <h2>Individual submission</h2>
+                <label for="ecatype">ECAType:</label>
+                <select id="ecatype" name="ECAType">
+                    <option value="GEMSTEP_Observing">GEMSTEP_Observing</option>
+                    <option value="GameHelp">GameHelp</option>
+                    <option value="GameHelp_Collaboration">GameHelp_Collaboration</option>
+                    <option value="Knowledge_Pollination">Knowledge_Pollination</option>
+                    <option value="Knowledge_FoodJustice">Knowledge_FoodJustice</option>
+                </select><br><br>
+                <label for="confidenceThreshold">Confidence Threshold:</label>
+                <input type="number" id="confidenceThreshold" name="ConfidenceThreshold" min="0" max="1" step="0.01" value="0.6"><br><br>
+            
+                <label for="context">Context:</label>
+                <textarea id="context" name="Context" rows="4" cols="50"></textarea><br><br>
+                
+                <label for="utterance">Question:</label>
+                <textarea id="utterance" name="Utterance" rows="4" cols="50"></textarea><br><br>
+                <input type="submit" value="Submit Individual">
+                <span id="loading" style="display:none;">Loading...</span>
+            </form>
+        </div>
+        <div class="table-container">
+            <h2>ECA Types Explanation</h2>
+            <table border="1">
+                <tr>
+                    <th>ECA Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>GEMSTEP_Observing</td>
+                    <td>Responds to student observations, ideas, and questions after a round of "BeeVR". Offers advice & asks probing questions to support scientific inquiry.</td>
+                </tr>
+                <tr>
+                    <td>FoodJustice_Persuasion</td>
+                    <td>Evaluates student persuasive writing about the benefits of community gardens. Gives feedback on improving argumentation and use of convincing evidence.</td>
+                </tr>
+                <tr>
+                    <td>GameHelp</td>
+                    <td>Answers general questions about how to play the game and offers guidance for open-ended narrative.</td>
+                </tr>
+                <tr>
+                    <td>GameHelp_Collaboration</td>
+                    <td>Answers questions about working well with others, supports students having collaboration difficulties.</td>
+                </tr>
+                <tr>
+                    <td>Knowledge_Pollination</td>
+                    <td>Answers informational science questions about pollination, plants, and honeybees.</td>
+                </tr>
+                <tr>
+                    <td>Knowledge_FoodJustice</td>
+                    <td>Answers informational questions about food justice and food systems.</td>
+                </tr>
+            </table>
+
+            <h2>Context options for GEMSTEP_Observing</h2>
+            Note that context only works for GEMSTEP_Observing so far and will be ignored by the other ECAs. You can add one of the sentences for each of the following separated by a period.
+            <table border="1">
+                <tr>
+                    <th>Context</th>
+                    <th>Bee</th>
+                    <th>Flower</th>
+                </tr>
+                <tr>
+                    <td>
+                        <OL>
+                            <li>In the parking lot.</li>
+                            <li>In the garden.</li>
+                        </OL>
+                    </td>
+                    <td>
+                        <OL>
+                            <li>Some bees lived.</li>
+                            <li>All the bees died.</li>
+                            <li>All the bees lived.</li>
+                        </OL>
+                    </td>
+                    <td>                        
+                    <OL>
+                        <li>Many flowers were pollinated.</li>
+                        <li>Few flowers were pollinated.</li>
+                    </OL></td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+    <hr>
 
     <div id="responseDiv"></div>
 
     <script>
+
+            const ecaUrls = {
+                "GEMSTEP_Observing": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+                "FoodJustice_Persuasion": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+                "GameHelp": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+                "GameHelp_Collaboration": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+                "Knowledge_Pollination": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+                "Knowledge_FoodJustice": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"
+            };
+            
+
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("myForm");
             const loading = document.getElementById("loading");
+            const responseDiv = document.getElementById("responseDiv");
+            const submitButtons = form.querySelectorAll('input[type="submit"]');
+
+            
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
                 loading.style.display = "inline"; // Show loading text
+                submitButtons.forEach(button => button.disabled = true); // Disable submit buttons
+                responseDiv.innerHTML = ""; // Clear previous responses
                 
                 const fileInput = document.getElementById("csvFile");
                 const file = fileInput.files[0];
@@ -62,20 +165,29 @@
                 const ecatype = document.getElementById("ecatype").value;
                 const confidenceThreshold = parseFloat(document.getElementById("confidenceThreshold").value);
                 
-                if (file && (context || utterance)) {
+                if (file && utterance) {
                     alert("Please select either a CSV file or manually enter data, not both.");
                     loading.style.display = "none"; // Hide loading text
+                    submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
                     return;
                 }
                 
-                if (!file && !(context && utterance)) {
+                if (!file && !(utterance)) {
                     alert("Please select a CSV file or manually enter data.");
                     loading.style.display = "none"; // Hide loading text
+                    submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
                     return;
                 }
                 
                 try {
                     if (file) {
+                        if (file.type !== "text/csv") {
+                            alert("Please upload a valid CSV file.");
+                            loading.style.display = "none"; // Hide loading text
+                            submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                            return;
+                        }
+                        
                         const reader = new FileReader();
                         reader.onload = async (event) => {
                             const text = event.target.result;
@@ -83,6 +195,7 @@
                             for (let line of lines) {
                                 // Split each line by comma, handling potential double quotes
                                 const fields = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                                if (fields.length < 4) continue; // Skip incomplete lines
                                 const context = fields[0].replace(/"/g, "").trim();
                                 const question = fields[1].replace(/"/g, "").trim();
                                 const ecatype = fields[2].trim();
@@ -91,16 +204,19 @@
                                 await sendRequest(context, question, ecatype, confidenceThreshold);
                             }
                             loading.style.display = "none"; // Hide loading text
+                            submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
                         };
                         reader.readAsText(file);
                     } else {
                         await sendRequest(context, utterance, ecatype, confidenceThreshold);
                         loading.style.display = "none"; // Hide loading text
+                        submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
                     }
                 } catch (error) {
                     console.error("An error occurred:", error);
-                    document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
+                    responseDiv.innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
                     loading.style.display = "none"; // Hide loading text
+                    submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
                 } finally {
                     // Clear the file input field
                     document.getElementById("csvFile").value = "";
@@ -117,8 +233,8 @@
             };
             
             try {
-                const myurl = "https://bl-educ-engage.educ.indiana.edu/GetECAResponse";
-                const response = await fetch(myurl, {
+                const url = ecaUrls[ecatype] || "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"; // Default to IU URLs if ECA type is not found
+                const response = await fetch(url, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -127,7 +243,7 @@
                 });
                 
                 const responseData = await response.text();
-                document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>Utterance: ${question}</p><p>Context: ${context}</p><p>ECAType: ${ecatype}</p><p>Confidence Threshold: ${confidenceThreshold}</p><p>Response: ${responseData}</p></div>`;
+                document.getElementById("responseDiv").innerHTML += `<div class="prompt">Utterance:${question}<br>Context:${context}<br>ECAType:${ecatype}<br>Confidence Threshold:${confidenceThreshold}<br>Response:${responseData}</div>`;
             } catch (error) {
                 console.error("An error occurred:", error);
                 document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
