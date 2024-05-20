@@ -9,6 +9,11 @@
             justify-content: space-between;
         }
 
+        .outputDisplay {
+            font-size: 90%;
+
+        }
+
         .form-container {
             flex: 1;
             margin-right: 20px;
@@ -16,6 +21,7 @@
 
         .table-container {
             flex: 1;
+            font-size: 90%;
         }
 
         .prompt {
@@ -23,7 +29,7 @@
             margin-bottom: 5px; /* Reduced margin for compact output */
         }
 
-        .prompt:nth-child(even) {
+        .prompt:nth-child(odd) {
             background-color: #f2f2f2; /* Pale gray background for even numbered prompts */
         }
         
@@ -66,7 +72,7 @@
         </div>
         <div class="table-container">
             <h2>ECA Types Explanation</h2>
-            <table border="1">
+            <table>
                 <tr>
                     <th>ECA Type</th>
                     <th>Description</th>
@@ -98,8 +104,7 @@
             </table>
 
             <h2>Context options for GEMSTEP_Observing</h2>
-            Note that context only works for GEMSTEP_Observing so far and will be ignored by the other ECAs. You can add one of the sentences for each of the following separated by a period.
-            <table border="1">
+            <table>
                 <tr>
                     <th>Context</th>
                     <th>Bee</th>
@@ -126,12 +131,13 @@
                     </OL></td>
                 </tr>
             </table>
+            Note that context only works for GEMSTEP_Observing so far and will be ignored by the other ECAs. You can add one of the sentences for each of the following separated by a period.
 
         </div>
     </div>
     <hr>
 
-    <div id="responseDiv"></div>
+    <div id="responseDiv" class="outputDisplay"></div>
 
     <script>
 
