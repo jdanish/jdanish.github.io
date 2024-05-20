@@ -66,6 +66,8 @@
                 <label for="ecatype">ECAType:</label>
                 <select id="ecatype" name="ECAType">
                     <option value="GEMSTEP_Observing">GEMSTEP_Observing</option>
+                    <option value="FoodJustice_RileyEvaluation">FoodJustice_RileyEvaluation</option>
+                    <option value="FoodJustice_MayorEvaluation">FoodJustice_RileyEvaluation</option>
                     <option value="GameHelp">GameHelp</option>
                     <option value="GameHelp_Collaboration">GameHelp_Collaboration</option>
                     <option value="Knowledge_Pollination">Knowledge_Pollination</option>
@@ -93,6 +95,12 @@
                 <tr>
                     <td>GEMSTEP_Observing</td>
                     <td>Responds to student observations, ideas, and questions after a round of "BeeVR". Offers advice & asks probing questions to support scientific inquiry.</td>
+                </tr>
+                <tr>
+                    <td>FoodJustice_RileyEvaluation; FoodJustice_MayorEvaluation</td>
+                    <td>Riley (community activist) gives feedback on draft
+                        arguments; Mayor gives final feedback on polished arguments and
+                        determines game end</td>
                 </tr>
                 <tr>
                     <td>GameHelp</td>
@@ -151,11 +159,12 @@
     <script>
         const ecaUrls = {
             "GEMSTEP_Observing": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-            "FoodJustice_Persuasion": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-            "GameHelp": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-            "GameHelp_Collaboration": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-            "Knowledge_Pollination": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-            "Knowledge_FoodJustice": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"
+            "FoodJustice_RileyEvaluation": "https://tracedata-01.csc.ncsu.edu/GetECAResponse",
+            "FoodJustice_MayorEvaluation": "https://tracedata-01.csc.ncsu.edu/GetECAResponse",
+            "GameHelp": "https://tracedata-01.csc.ncsu.edu/GetECAResponse",
+            "GameHelp_Collaboration": "https://tracedata-01.csc.ncsu.edu/GetECAResponse",
+            "Knowledge_Pollination": "https://tracedata-01.csc.ncsu.edu/GetECAResponse",
+            "Knowledge_FoodJustice": "https://tracedata-01.csc.ncsu.edu/GetECAResponse"
         };
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -268,7 +277,7 @@
                     });
 
                     const responseData = await response.text();
-                    document.getElementById("responseDiv").innerHTML += `<div class="prompt"><strong>Utterance:</strong> ${question}<br><strong>Context:</strong> ${context}<br><strong>ECAType:</strong> ${ecatype}<br><strong>Confidence Threshold:</strong> ${confidenceThreshold}<br><strong>Response:</strong> ${responseData}</div>`;
+                    document.getElementById("responseDiv").insertAdjacentHTML('afterbegin', `<div class="prompt"><strong>Utterance:</strong> ${question}<br><strong>Context:</strong> ${context}<br><strong>ECAType:</strong> ${ecatype}<br><strong>Confidence Threshold:</strong> ${confidenceThreshold}<br><strong>Response:</strong> ${responseData}</div>` );
                 } catch (error) {
                     handleError(error);
                 }
