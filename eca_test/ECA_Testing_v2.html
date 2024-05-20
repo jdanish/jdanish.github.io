@@ -11,7 +11,6 @@
 
         .outputDisplay {
             font-size: 90%;
-
         }
 
         .form-container {
@@ -25,12 +24,12 @@
         }
 
         .prompt {
-            padding: 5px; /* Reduced padding for compact output */
-            margin-bottom: 5px; /* Reduced margin for compact output */
+            padding: 5px;
+            margin-bottom: 5px;
         }
 
         .prompt:nth-child(odd) {
-            background-color: #f2f2f2; /* Pale gray background for even numbered prompts */
+            background-color: #f2f2f2;
         }
         
         #loading {
@@ -46,6 +45,10 @@
             border-collapse: collapse;
         }
 
+        input[type="submit"] {
+            background-color: gray;
+            color: white; /* Optional: To make the text color white for better contrast */
+        }
     </style>
 </head>
 <body>
@@ -57,7 +60,7 @@
                 <h2>Batch submission</h2>
                 <label for="csvFile">Upload CSV File:</label>
                 <input type="file" id="csvFile" name="csvFile" accept=".csv"><br><br>
-                <input type="submit" value="Submit Batch">
+                <input type="submit" id="submitBatch" value="Submit Batch">
                 
                 <h2>Individual submission</h2>
                 <label for="ecatype">ECAType:</label>
@@ -75,8 +78,8 @@
                 <textarea id="context" name="Context" rows="2" cols="50"></textarea><br><br>
                 
                 <label for="utterance">Question:</label>
-                <textarea id="utterance" name="Utterance" rows="2" cols="50"></textarea><br><br>
-                <input type="submit" value="Submit Individual">
+                <textarea id="utterance" name="Utterance" rows="2" cols="50" placeholder="Enter the question here..."></textarea><br><br>
+                <input type="submit" id="submitIndividual" value="Submit Individual">
                 <span id="loading" style="display:none;">Loading...</span>
             </form>
         </div>
@@ -118,27 +121,27 @@
                 </tr>
                 <tr>
                     <td>
-                        <OL>
+                        <ol>
                             <li>In the parking lot.</li>
                             <li>In the garden.</li>
-                        </OL>
+                        </ol>
                     </td>
                     <td>
-                        <OL>
+                        <ol>
                             <li>Some bees lived.</li>
                             <li>All the bees died.</li>
                             <li>All the bees lived.</li>
-                        </OL>
+                        </ol>
                     </td>
-                    <td>                        
-                    <OL>
-                        <li>Many flowers were pollinated.</li>
-                        <li>Few flowers were pollinated.</li>
-                    </OL></td>
+                    <td>
+                        <ol>
+                            <li>Many flowers were pollinated.</li>
+                            <li>Few flowers were pollinated.</li>
+                        </ol>
+                    </td>
                 </tr>
             </table>
-            Note that context only works for GEMSTEP_Observing so far and will be ignored by the other ECAs. You can add one of the sentences for each of the following separated by a period.
-
+            <p>Note that context only works for GEMSTEP_Observing so far and will be ignored by the other ECAs. You can add one of the sentences for each of the following separated by a period.</p>
         </div>
     </div>
     <hr>
@@ -146,122 +149,134 @@
     <div id="responseDiv" class="outputDisplay"></div>
 
     <script>
-
-            const ecaUrls = {
-                "GEMSTEP_Observing": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-                "FoodJustice_Persuasion": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-                "GameHelp": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-                "GameHelp_Collaboration": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-                "Knowledge_Pollination": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
-                "Knowledge_FoodJustice": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"
-            };
-        
-            
+        const ecaUrls = {
+            "GEMSTEP_Observing": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+            "FoodJustice_Persuasion": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+            "GameHelp": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+            "GameHelp_Collaboration": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+            "Knowledge_Pollination": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
+            "Knowledge_FoodJustice": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"
+        };
 
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("myForm");
             const loading = document.getElementById("loading");
             const responseDiv = document.getElementById("responseDiv");
-            const submitButtons = form.querySelectorAll('input[type="submit"]');
+            const submitBatchButton = document.getElementById("submitBatch");
+            const submitIndividualButton = document.getElementById("submitIndividual");
+            const ecatypeSelect = document.getElementById("ecatype");
+            const contextTextarea = document.getElementById("context");
 
-            
+            const defaultContexts = {
+                "GEMSTEP_Observing": "In the garden. Some bees lived. Many flowers were pollinated.",
+                "default": ""
+            };
+
+            ecatypeSelect.addEventListener("change", () => {
+                const selectedEcaType = ecatypeSelect.value;
+                contextTextarea.value = defaultContexts[selectedEcaType] || defaultContexts["default"];
+            });
+
             form.addEventListener("submit", async (event) => {
                 event.preventDefault();
-                loading.style.display = "inline"; // Show loading text
-                submitButtons.forEach(button => button.disabled = true); // Disable submit buttons
-                // responseDiv.innerHTML = ""; // Clear previous responses
-                
+                loading.style.display = "inline";
+                submitBatchButton.disabled = true;
+                submitIndividualButton.disabled = true;
+
                 const fileInput = document.getElementById("csvFile");
                 const file = fileInput.files[0];
                 const context = document.getElementById("context").value.trim();
                 const utterance = document.getElementById("utterance").value.trim();
                 const ecatype = document.getElementById("ecatype").value;
                 const confidenceThreshold = parseFloat(document.getElementById("confidenceThreshold").value);
-                
+
                 if (file && utterance) {
                     alert("Please select either a CSV file or manually enter data, not both.");
-                    loading.style.display = "none"; // Hide loading text
-                    submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                    resetForm();
                     return;
                 }
-                
-                if (!file && !(utterance)) {
+
+                if (!file && !utterance) {
                     alert("Please select a CSV file or manually enter data.");
-                    loading.style.display = "none"; // Hide loading text
-                    submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                    resetForm();
                     return;
                 }
-                
+
                 try {
                     if (file) {
                         if (file.type !== "text/csv") {
                             alert("Please upload a valid CSV file.");
-                            loading.style.display = "none"; // Hide loading text
-                            submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                            resetForm();
                             return;
                         }
-                        
+
                         const reader = new FileReader();
                         reader.onload = async (event) => {
                             const text = event.target.result;
                             const lines = text.split('\n');
                             for (let line of lines) {
-                                // Split each line by comma, handling potential double quotes
                                 const fields = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                                if (fields.length < 4) continue; // Skip incomplete lines
+                                if (fields.length < 4) continue;
                                 const context = fields[0].replace(/"/g, "").trim();
                                 const question = fields[1].replace(/"/g, "").trim();
                                 const ecatype = fields[2].trim();
                                 const confidenceThreshold = parseFloat(fields[3].trim());
-                                
                                 await sendRequest(context, question, ecatype, confidenceThreshold);
                             }
-                            loading.style.display = "none"; // Hide loading text
-                            submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                            resetForm();
                         };
                         reader.readAsText(file);
                     } else {
                         await sendRequest(context, utterance, ecatype, confidenceThreshold);
-                        loading.style.display = "none"; // Hide loading text
-                        submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                        resetForm();
                     }
                 } catch (error) {
-                    console.error("An error occurred:", error);
-                    responseDiv.innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
-                    loading.style.display = "none"; // Hide loading text
-                    submitButtons.forEach(button => button.disabled = false); // Enable submit buttons
+                    handleError(error);
+                    resetForm();
                 } finally {
-                    // Clear the file input field
                     document.getElementById("csvFile").value = "";
                 }
             });
-        });
-        
-        async function sendRequest(context, question, ecatype, confidenceThreshold) {
-            const payload = {
-                "Context": context,
-                "Utterance": question,
-                "ECAType": ecatype,
-                "ConfidenceThreshold": confidenceThreshold
-            };
-            
-            try {
-                const url = ecaUrls[ecatype] || "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"; // Default to IU URLs if ECA type is not found
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                const responseData = await response.text();
-                document.getElementById("responseDiv").innerHTML += `<div class="prompt"><strong>Utterance:</strong> ${question}<br><strong>Context:</strong> ${context}<br><strong>ECAType:</strong> ${ecatype}<br><strong>Confidence Threshold:</strong> ${confidenceThreshold}<br><strong>Response:</strong> ${responseData}</div>`;
-            } catch (error) {
-                console.error("An error occurred:", error);
-                document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
+
+            function resetForm() {
+                loading.style.display = "none";
+                submitBatchButton.disabled = false;
+                submitIndividualButton.disabled = false;
             }
-        }
+
+            function handleError(error) {
+                console.error("An error occurred:", error);
+                responseDiv.innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
+            }
+
+            async function sendRequest(context, question, ecatype, confidenceThreshold) {
+                const payload = {
+                    "Context": context,
+                    "Utterance": question,
+                    "ECAType": ecatype,
+                    "ConfidenceThreshold": confidenceThreshold
+                };
+
+                try {
+                    const url = ecaUrls[ecatype] || "https://bl-educ-engage.educ.indiana.edu/GetECAResponse";
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const responseData = await response.text();
+                    document.getElementById("responseDiv").innerHTML += `<div class="prompt"><strong>Utterance:</strong> ${question}<br><strong>Context:</strong> ${context}<br><strong>ECAType:</strong> ${ecatype}<br><strong>Confidence Threshold:</strong> ${confidenceThreshold}<br><strong>Response:</strong> ${responseData}</div>`;
+                } catch (error) {
+                    handleError(error);
+                }
+            }
+
+            // Set initial context value based on the default ECA type
+            contextTextarea.value = defaultContexts[ecatypeSelect.value];
+        });
     </script>
 </body>
 </html>
