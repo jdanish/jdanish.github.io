@@ -71,10 +71,10 @@
                 <input type="number" id="confidenceThreshold" name="ConfidenceThreshold" min="0" max="1" step="0.01" value="0.6"><br><br>
             
                 <label for="context">Context:</label>
-                <textarea id="context" name="Context" rows="4" cols="50"></textarea><br><br>
+                <textarea id="context" name="Context" rows="2" cols="50"></textarea><br><br>
                 
                 <label for="utterance">Question:</label>
-                <textarea id="utterance" name="Utterance" rows="4" cols="50"></textarea><br><br>
+                <textarea id="utterance" name="Utterance" rows="2" cols="50"></textarea><br><br>
                 <input type="submit" value="Submit Individual">
                 <span id="loading" style="display:none;">Loading...</span>
             </form>
@@ -89,10 +89,6 @@
                 <tr>
                     <td>GEMSTEP_Observing</td>
                     <td>Responds to student observations, ideas, and questions after a round of "BeeVR". Offers advice & asks probing questions to support scientific inquiry.</td>
-                </tr>
-                <tr>
-                    <td>FoodJustice_Persuasion</td>
-                    <td>Evaluates student persuasive writing about the benefits of community gardens. Gives feedback on improving argumentation and use of convincing evidence.</td>
                 </tr>
                 <tr>
                     <td>GameHelp</td>
@@ -158,6 +154,7 @@
                 "Knowledge_Pollination": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse",
                 "Knowledge_FoodJustice": "https://bl-educ-engage.educ.indiana.edu/GetECAResponse"
             };
+        
             
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -171,7 +168,7 @@
                 event.preventDefault();
                 loading.style.display = "inline"; // Show loading text
                 submitButtons.forEach(button => button.disabled = true); // Disable submit buttons
-                responseDiv.innerHTML = ""; // Clear previous responses
+                // responseDiv.innerHTML = ""; // Clear previous responses
                 
                 const fileInput = document.getElementById("csvFile");
                 const file = fileInput.files[0];
@@ -258,7 +255,7 @@
                 });
                 
                 const responseData = await response.text();
-                document.getElementById("responseDiv").innerHTML += `<div class="prompt">Utterance:${question}<br>Context:${context}<br>ECAType:${ecatype}<br>Confidence Threshold:${confidenceThreshold}<br>Response:${responseData}</div>`;
+                document.getElementById("responseDiv").innerHTML += `<div class="prompt"><strong>Utterance:</strong> ${question}<br><strong>Context:</strong> ${context}<br><strong>ECAType:</strong> ${ecatype}<br><strong>Confidence Threshold:</strong> ${confidenceThreshold}<br><strong>Response:</strong> ${responseData}</div>`;
             } catch (error) {
                 console.error("An error occurred:", error);
                 document.getElementById("responseDiv").innerHTML += `<div class="prompt"><p>An error occurred: ${error}</p></div>`;
