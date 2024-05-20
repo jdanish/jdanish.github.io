@@ -1,6 +1,6 @@
-"In the garden. All the bees died. Many flowers were pollinated.","Why did the bees die?",GEMSTEP_Observing,0.6
-"In the garden. All the bees lived. Many flowers were pollinated.","What happened?",GEMSTEP_Observing,0.6
-"In the garden. All the bees lived. Few flowers were pollinated.","What happened?",GEMSTEP_Observing,0.6
-"In the parking lot. All the bees died. Many flowers were pollinated.","Why did the bees die?",GEMSTEP_Observing,0.6
-"In the parking lot. All the bees lived. Many flowers were pollinated.","What happened?",GEMSTEP_Observing,0.6
-"In the parking lot. All the bees lived. Few flowers were pollinated.","What happened?",GEMSTEP_Observing,0.6
+"In the garden. All the bees died. Many flowers were pollinated.","We noticed that many bees died.",GEMSTEP_Observing,0.6
+"In the garden. All the bees lived. Many flowers were pollinated.","We noticed that many bees died.",GEMSTEP_Observing,0.6
+"In the garden. All the bees lived. Few flowers were pollinated.","We noticed that many bees died.",GEMSTEP_Observing,0.6
+"In the parking lot. All the bees died. Many flowers were pollinated.","We noticed that the flowers didn't grow good fruit.",GEMSTEP_Observing,0.6
+"In the parking lot. All the bees lived. Many flowers were pollinated.","We noticed that the flowers didn't grow good fruit.",GEMSTEP_Observing,0.6
+"In the parking lot. All the bees lived. Few flowers were pollinated.","We noticed that the flowers didn't grow good fruit",GEMSTEP_Observing,0.6
