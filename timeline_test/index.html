@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" href="images/favicon.ico">
         <link href="css/default.css" rel="stylesheet">
+		<script src="https://www.youtube.com/iframe_api"></script>
         <script src="bower_components/jquery/dist/jquery.js"></script>
         <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>        
         <script src="bower_components/raphael/raphael.js"></script>
@@ -15,10 +16,13 @@
 		<script src="build/js/amalia.js-plugin-captions.min.js"></script> <!--Captions plugin: subtitles on the video--> 
 		<script src="build/js/amalia.js-plugin-text-sync.min.js"></script> <!--Text sync plugin: side panel synced text plugin-->   
 		<script src="build/js/i18n/amalia.js-message-en.js"></script><!--Internationalization to english-->
+		<script type="text/javascript" src="build/js/amalia.js-yt-player.min.js"></script>
+
     </head>
     <body>
         <div class="container">
 		
+			
 			<div style=" clear: both;">
 				<div style="width: 70%;float: left;">
 					<h1>Sample Tinkering with the Team</h1>
@@ -31,47 +35,19 @@
 					<div style=" clear: both;">
 						<div style="width: 82%;float: left;">
 							<div style="height: 700px;">
-								<div id="defaultPlayer"></div>
+								<div id="myplayer-yt"></div>
 							</div>
 							<div id="timeline"></div>
 							<script>
 								$( function () {
-									$( "#defaultPlayer" ).mediaPlayer( { //definitions for the video player
-										autoplay : false,
-										crossorigin: 'Anonymous',
-										src : "samples-data/vfoi1/NetCreateTesting.mp4", //source of the mp4 file
-										debug:true,
-										framerate: 30,
-										shortcuts: {
-											enabled: true,
-											debug: false,
-											listOfShortcuts: [
-												{'s': 's', 'c': 'togglePlayPause'},
-												{'s': 'm', 'c': 'muteUnmute'},
-												{'s': 'right', 'c': 'moveNextFrame'},
-												{'s': 'left', 'c': 'movePrevFrame'},
-												
-											]
-										},
-										controlBar:
-										{
-											sticky: true,
-											widgets: {
-												left: {
-													'timelabelWidget': 'fr.ina.amalia.player.plugins.controlBar.widgets.TimeLabel'
-												},
-												mid: {
-													'playWidget': 'fr.ina.amalia.player.plugins.controlBar.widgets.PlayButton',
-													'pauseWidget': 'fr.ina.amalia.player.plugins.controlBar.widgets.PauseButton'
-												},
-												right: {
-													'full': 'fr.ina.amalia.player.plugins.controlBar.widgets.FullscreenButton',
-													'volume': 'fr.ina.amalia.player.plugins.controlBar.widgets.VolumeControlBar'
-												},
-												settings: {}
-											}
-										},
-										thumbRootDirectory:'',
+									$("#myplayer-yt").mediaPlayer({
+										src: 'rnafesiFHJQ',
+										debug: true,
+										autoplay: false,
+										player: "fr.ina.amalia.player.YtPlayer",
+                            controlBar: {
+                                hide: true
+                            },
 										plugins : {
 											dataServices : [ //json files that have the data to be loaded by all the plugins
 												'samples-data/vfoi1/network-inserts.json',
