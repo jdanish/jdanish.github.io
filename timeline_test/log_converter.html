@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log to Amalia.js Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea, pre, input, select {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Log to Amalia.js Converter</h1>
+    <textarea id="logInput" placeholder="Paste log file content here"></textarea>
+    <input type="text" id="startTimeInput" placeholder="Enter start time (HH:MM:SS.mmm)">
+    <select id="nodeType">
+        <option value="edit node">Edit Node</option>
+        <option value="insert node">Insert Node</option>
+    </select>
+    <button onclick="convertLog()">Convert to Amalia.js</button>
+    <pre id="jsonOutput"></pre>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+
+    <script>
+        function parseLog(logContent, nodeType, startTimeInput) {
+            const logLines = logContent.split('\n');
+            let actions = [];
+            let startTime = startTimeInput ? parseTime(startTimeInput) : null;
+            let endTime = null;
+
+            logLines.forEach(line => {
+                if (line.includes(nodeType) && !line.includes("cancel edit node")) {
+                    const parts = line.split('\t');
+                    if (parts.length >= 7) {
+                        const time = parts[1].trim();
+
+                        // Extract JSON part of the line
+                        const jsonStringStart = line.indexOf('{');
+                        const jsonString = line.substring(jsonStringStart).trim();
+
+                        let label = "Unknown";
+
+                        try {
+                            const jsonObj = JSON.parse(jsonString);
+                            label = jsonObj.label || "Unknown";
+                        } catch (e) {
+                            console.error("Error parsing JSON:", e);
+                        }
+
+                        // Ensure time format ends with .0000
+                        const formattedTime = time.endsWith(".0000") ? time : `${time}.0000`;
+
+                        // Convert the time to a Date object for calculation
+                        const timeParts = formattedTime.split(/[:.]/).map(Number);
+                        const timeInMs = timeParts[0] * 3600000 + timeParts[1] * 60000 + timeParts[2] * 1000 + (timeParts[3] || 0); // handle optional milliseconds
+
+                        // Adjust time relative to start time
+                        const adjustedTimeInMs = timeInMs - startTime;
+                        const adjustedTime = new Date(adjustedTimeInMs).toISOString().substr(11, 12);
+
+                        actions.push({
+                            "label": label,
+                            "tc": adjustedTime,
+                            "tclevel": 1
+                        });
+
+                        // Update end time
+                        if (!endTime || adjustedTimeInMs > endTime) {
+                            endTime = adjustedTimeInMs;
+                        }
+                    } else {
+                        console.error(`Log line does not have the expected number of parts: ${line}`);
+                    }
+                }
+            });
+
+            // Sort actions chronologically
+            actions.sort((a, b) => a.tc.localeCompare(b.tc));
+
+            return { actions, startTime: startTimeInput, endTime: formatTime(endTime) };
+        }
+
+        function parseTime(timeString) {
+            const timeParts = timeString.split(/[:.]/).map(Number);
+            return timeParts[0] * 3600000 + timeParts[1] * 60000 + timeParts[2] * 1000 + (timeParts[3] || 0); // handle optional milliseconds
+        }
+
+        function formatTime(timeInMs) {
+            const date = new Date(timeInMs);
+            return `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}:${String(date.getUTCSeconds()).padStart(2, '0')}.${String(date.getUTCMilliseconds()).padStart(3, '0')}`;
+        }
+
+        function convertLog() {
+            const logContent = document.getElementById('logInput').value;
+            const startTimeInput = document.getElementById('startTimeInput').value;
+            const nodeType = document.getElementById('nodeType').value;
+
+            const { actions, startTime, endTime } = parseLog(logContent, nodeType, startTimeInput);
+
+            const ameliaJson = {
+                "localisation": [
+                    {
+                        "sublocalisations": {
+                            "localisation": actions
+                        },
+                        "type": "keyframes",
+                        "tcin": `00:${startTime}`,
+                        "tcout": `00:${endTime}`,
+                        "tclevel": 0
+                    }
+                ],
+                "id": nodeType.replace(' ', '-'), // Change id to reflect node type
+                "type": "events",
+                "algorithm": "from log",
+                "processor": "by hand",
+                "processed": new Date().toISOString(), // Use ISO string for the current date and time
+                "version": 1
+            };
+
+            document.getElementById('jsonOutput').textContent = JSON.stringify(ameliaJson, null, 4);
+        }
+
+        function copyToClipboard() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            navigator.clipboard.writeText(jsonOutput.textContent).then(() => {
+                alert("Copied to clipboard!");
+            }, () => {
+                alert("Failed to copy to clipboard.");
+            });
+        }
+    </script>
+</body>
+</html>
