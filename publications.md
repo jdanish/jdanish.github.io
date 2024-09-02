@@ -50,7 +50,7 @@ You can also download my <a href="../assets/jdanish_webcv.pdf" target="_blank">C
 
         {% comment %} This would be cleaner with a where_exp or two arrays concat but neither seems to work on GitHub yet {% endcomment %}
 
-        {% if item.secondaryProject %}
+        {% if item.secondaryProject  %}
           {% assign project_infos = site.data.rapt_web_data.projects | where: "name", item.secondaryProject %}
 
           {% for project_info in project_infos %}

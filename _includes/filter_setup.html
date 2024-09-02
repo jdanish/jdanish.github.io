@@ -5,6 +5,9 @@
   <input type="checkbox" id="conferenceProceedingsCheckbox" value="Conference Proceedings" checked>
   <label for="conferenceProceedingsCheckbox">Proceedings</label>
 
+  <input type="checkbox" id="bookChapterCheckbox" value="Book Chapter" checked>
+  <label for="bookChapterCheckbox">Book Chapter</label>
+
   <input type="checkbox" id="conferencePresentationCheckbox" value="Conference Presentation" checked>
   <label for="conferencePresentationCheckbox">Presentations</label>
 </div>
@@ -13,6 +16,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     const journalCheckbox = document.getElementById('journalCheckbox');
     const conferenceProceedingsCheckbox = document.getElementById('conferenceProceedingsCheckbox');
+    const bookChapterCheckbox = document.getElementById('bookChapterCheckbox');
     const conferencePresentationCheckbox = document.getElementById('conferencePresentationCheckbox');
 
     const publicationItems = document.querySelectorAll('.pub-item');
@@ -20,12 +24,15 @@
     function filterPublications() {
       const showJournal = journalCheckbox.checked;
       const showProceeding = conferenceProceedingsCheckbox.checked;
+      const showChapter = bookChapterCheckbox.checked;
       const showPresentation = conferencePresentationCheckbox.checked;
+
 
       publicationItems.forEach(item => {
         const type = item.dataset.type;
         item.style.display = (type === 'Journal Article' && showJournal) ||
                              (type === 'Conference Proceedings' && showProceeding) ||
+                             (type === 'Book Chapter' && showChapter) ||
                              (type === 'Conference Presentation' && showPresentation)
                              ? 'list-item' : 'none';
       });
@@ -33,6 +40,7 @@
 
     journalCheckbox.addEventListener('change', filterPublications);
     conferenceProceedingsCheckbox.addEventListener('change', filterPublications);
+    bookChapterCheckbox.addEventListener('change', filterPublications);
     conferencePresentationCheckbox.addEventListener('change', filterPublications);
 
     // Initial filter on page load

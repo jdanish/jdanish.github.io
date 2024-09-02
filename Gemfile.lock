@@ -70,6 +70,7 @@ GEM
 PLATFORMS
   universal-darwin-20
   universal-darwin-22
+  universal-darwin-23
 
 DEPENDENCIES
   jekyll-sitemap
