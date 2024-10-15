@@ -23,7 +23,7 @@
 - last: Tu
   first: Xintian
   role: Graduate Researcher
-  status: Current Lab Member
+  status: Lab Alumni
   affiliation: Indiana University Bloomington
   pic: /assets/img/people/Xintian.jpg
   interests: play, embodied learning, extended reality environments
@@ -33,7 +33,7 @@
 - last: Gok
   first: Sebahat
   role: Graduate Researcher
-  status: Current Lab Member
+  status: Lab Alumni
   affiliation: Indiana University Bloomington
   pic: /assets/img/people/vesika.jpg
   interests: representations, instructional design, grounded cognition
@@ -72,7 +72,15 @@
   affiliation: Indiana University Bloomington
   pronouns: He/Him
 
-  
+- last: Desai
+  first: Aman
+  role: Graduate Researcher
+  status: Current Lab Member
+  affiliation: Indiana University Bloomington
+  interests: science education, collaboration, inquiry-based learning
+  pic: /assets/img/people/adesai.jpg
+  pronouns: He/Him
+
 - last: Steinberg
   first: Selena
   role: Graduate Researcher
@@ -97,7 +105,7 @@
 - last: Mathayas
   first: Nitasha
   role: Postdoctoral Researcher
-  status: Current Lab Member
+  status: Lab Alumni
   affiliation: Indiana University Bloomington
   pronouns: She/Her
   
