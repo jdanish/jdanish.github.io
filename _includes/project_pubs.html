@@ -7,7 +7,10 @@
 {% assign citations = site.data.rapt_web_data.publications |  sort: "date" | reverse | group_by: "date" %}
 {% for citation in citations %}
 
-{% assign itemsSorted = citation.items | where: "project",page.projectName | sort: "citation" %}
+{% assign itemsForProject = citation.items | where: "project", thisProject %}
+{% assign itemsForSecondaryProject = citation.items | where: "secondaryProject", thisProject %}
+{% assign itemsCombined = itemsForProject | concat: itemsForSecondaryProject %}
+{% assign itemsSorted = itemsCombined | sort: "citation" %}
 
 {% if itemsSorted.size > 0 %}
 
