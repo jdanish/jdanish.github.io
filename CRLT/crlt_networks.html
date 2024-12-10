@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive View</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        .tab:hover {
+            background-color: #ddd;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        .intro-text {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Intro text -->
+        <div class="intro-text">
+            <h1>CRLT Networks</h1>
+            <p>Click on the tabs below to view different datasets.</p>
+        </div>
+
+        <!-- Tabs for People and Projects -->
+        <div class="tabs">
+            <div id="people-tab" class="tab active" onclick="loadContent('people')">People</div>
+            <div id="projects-tab" class="tab" onclick="loadContent('projects')">Projects</div>
+        </div>
+
+        <!-- Iframe for content display -->
+        <iframe id="content-frame" src="https://joshuadanish.com/CRLT/networks/index.html?dataset=CRLT_People#/" title="People Dataset"></iframe>
+    </div>
+
+    <script>
+        function loadContent(tab) {
+            var iframe = document.getElementById('content-frame');
+            var peopleTab = document.getElementById('people-tab');
+            var projectsTab = document.getElementById('projects-tab');
+
+            if (tab === 'people') {
+                iframe.src = "https://joshuadanish.com/CRLT/networks/index.html?dataset=CRLT_People#/";
+                peopleTab.classList.add('active');
+                projectsTab.classList.remove('active');
+            } else if (tab === 'projects') {
+                iframe.src = "https://joshuadanish.com/CRLT/networks/index.html?dataset=CRLT_Projects#/";
+                projectsTab.classList.add('active');
+                peopleTab.classList.remove('active');
+            }
+        }
+    </script>
+
+</body>
+</html>
