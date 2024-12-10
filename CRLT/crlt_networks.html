@@ -38,9 +38,21 @@
         .tab:hover {
             background-color: #ddd;
         }
-        iframe {
+        /* Maintain aspect ratio for iframe */
+        .iframe-container {
+            position: relative;
             width: 100%;
-            height: 600px;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
         }
         .intro-text {
@@ -63,8 +75,10 @@
             <div id="projects-tab" class="tab" onclick="loadContent('projects')">Projects</div>
         </div>
 
-        <!-- Iframe for content display -->
-        <iframe id="content-frame" src="https://joshuadanish.com/CRLT/networks/index.html?dataset=CRLT_People#/" title="Network"></iframe>
+        <!-- Iframe Container to maintain aspect ratio -->
+        <div class="iframe-container">
+            <iframe id="content-frame" src="https://joshuadanish.com/CRLT/networks/index.html?dataset=CRLT_People#/" title="Network"></iframe>
+        </div>
     </div>
 
     <script>
