@@ -9,16 +9,44 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #ffffff; /* White background for the entire page */
+        }
+        .header {
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center the entire header horizontally */
+            padding-top: 20px;
+            background-color: #ffffff; /* Gray background for the header */
+        }
+        .logo {
+            width: 200px; /* Double the width of the logo */
+            height: auto;
+            margin-right: 20px; /* Add space between logo and title */
+        }
+        .title {
+            font-size: 24px; /* Make the title smaller */
+            margin: 0;
+            text-align: left; /* Left-align the title */
+        }
+        .subtitle {
+            font-size: 16px;
+            margin-top: 5px;
+            text-align: center; /* Center the subtitle */
+        }
+        .intro-text {
+            font-size: 16px;
+            text-align: left; /* Left-align the intro text */
+            margin-left: auto;
+            margin-right: auto; /* Center the text block */
         }
         .container {
             width: 80%;
             margin: 0 auto;
-            padding: 20px;
-            text-align: center;
+            text-align: left; /* Left-align the tabs and other content */
         }
         .tabs {
             display: flex;
-            justify-content: center;
+            justify-content: left; /* Align the tabs to the left */
             margin-bottom: 20px;
         }
         .tab {
@@ -55,19 +83,20 @@
             height: 100%;
             border: none;
         }
-        .intro-text {
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
 
+    <div class="header">
+        <!-- Logo image -->
+        <img src="CRLTLogoCentered.jpg" alt="CRLT Logo" class="logo">
+        <h1 class="title">CRLT Networks</h1>
+    </div>
+
     <div class="container">
-        <!-- Intro text -->
+
         <div class="intro-text">
-            <h1>CRLT Networks</h1>
-            <p>Use the tabs below to get to know the People and Projects of the CRLT.</p>
-            <p>These networks show CRLT faculty, their research interests, research groups, and funded projects. The primary purpose of the two networks here is twofold— 1) the network graphs make visible the <strong>connections</strong> across the Center's interests, people, and projects, and 2) the nodes and edges tables show us <strong>patterns</strong> across people and projects. The People network looks at individual faculty members, their research interests, and research groups. The Project network looks at general research topics and funded projects. Click on the blue nodes to learn more about an individual researcher or project. </p>
+            <p>These networks show CRLT faculty, their research interests, research groups, and funded projects. The primary purpose of the two networks here is twofold— 1) the network graphs make visible the <strong>connections</strong> across the Center's interests, people, and projects, and 2) the nodes and edges tables show us <strong>patterns</strong> across people and projects. The People network looks at individual faculty members, their research interests, and research groups. The Project network looks at general research topics and funded projects. Click on the blue nodes to learn more about an individual researcher or project.</p>
         </div>
 
         <!-- Tabs for People and Projects -->
