@@ -1,3 +1,4 @@
+version = 2
 name = "Untitled Project"
 description = "No Description"
 requireLogin = false
@@ -22,11 +23,30 @@ nodeDefaultTransparency = 1
 edgeDefaultTransparency = 0.7
 searchColor = "#008800"
 sourceColor = "#FFa500"
-version = 2
 
 [citation]
 text = "No citation set"
 hidden = false
+
+[[commentTypes]]
+slug = "cmt"
+label = "Comment"
+
+  [[commentTypes.prompts]]
+  format = "text"
+  prompt = "Comment"
+  help = "Use this for any general comment."
+  feedback = ""
+
+[[commentTypes]]
+slug = "tellmemore"
+label = "Evidence Critique or Suggestion"
+
+  [[commentTypes.prompts]]
+  format = "text"
+  prompt = "Tell me more"
+  help = "Can you tell me more about ... "
+  feedback = ""
 
 [nodeDefs.id]
 type = "number"
@@ -39,7 +59,7 @@ hidden = false
 
 [nodeDefs.label]
 type = "string"
-displayLabel = "label"
+displayLabel = "Label"
 exportLabel = "Label"
 help = "Display name of the node"
 includeInGraphTooltip = true
@@ -78,7 +98,7 @@ isProvenance = false
 hidden = false
 
 [nodeDefs.infoSource]
-type = "string"
+type = "infoOrigin"
 displayLabel = "Info Source"
 exportLabel = "InfoSource"
 help = "Who created this?  (aka Source)"
@@ -96,35 +116,35 @@ isProvenance = false
 hidden = false
 
 [nodeDefs.created]
+type = "timestamp"
 displayLabel = "Created"
 exportLabel = "Created"
 help = "Date and time node was created"
 includeInGraphTooltip = true
-isProvenance = false
 hidden = false
 
 [nodeDefs.createdBy]
+type = "string"
 displayLabel = "Created By"
 help = "Author who created the node"
 exportLabel = "Created By"
 includeInGraphTooltip = true
-isProvenance = false
 hidden = false
 
 [nodeDefs.updated]
+type = "timestamp"
 displayLabel = "Updated"
 exportLabel = "Updated"
 help = "Date and time node was last modified"
 includeInGraphTooltip = true
-isProvenance = false
 hidden = false
 
 [nodeDefs.updatedBy]
+type = "string"
 displayLabel = "Updated By"
 exportLabel = "Updated By"
 help = "Author who updated the node"
 includeInGraphTooltip = true
-isProvenance = false
 hidden = false
 
 [nodeDefs.revision]
@@ -132,7 +152,6 @@ displayLabel = "Revision"
 exportLabel = "Revision"
 help = "Number of times this node has been revised"
 includeInGraphTooltip = true
-isProvenance = false
 hidden = true
 
 [edgeDefs.id]
@@ -178,16 +197,8 @@ help = "Significance of the connection"
 isProvenance = false
 hidden = false
 
-[edgeDefs.info]
-type = "number"
-displayLabel = "Date"
-exportLabel = "Date"
-help = '"YYYY-MM-DD" format"'
-isProvenance = false
-hidden = false
-
 [edgeDefs.weight]
-type = "number"
+type = "weight"
 defaultValue = 1
 displayLabel = "Weight"
 exportLabel = "Weight"
@@ -197,10 +208,10 @@ isRequired = true
 isProvenance = false
 hidden = false
 
-[edgeDefs.infoSource]
+[edgeDefs.infoOrigin]
 type = "string"
-displayLabel = "Info Source"
-exportLabel = "InfoSource"
+displayLabel = "Info Origin"
+exportLabel = "InfoOrigin"
 help = "Who created this?  (aka Source)"
 includeInGraphTooltip = true
 isProvenance = true
@@ -223,35 +234,35 @@ isProvenance = false
 hidden = true
 
 [edgeDefs.created]
+type = "timestamp"
 displayLabel = "Created"
 exportLabel = "Created"
 includeInGraphTooltip = true
 help = "Date and time edge was created"
-isProvenance = false
 hidden = false
 
 [edgeDefs.createdBy]
+type = "string"
 displayLabel = "Created By"
 exportLabel = "Created By"
 includeInGraphTooltip = true
 help = "Author who created the edge"
-isProvenance = true
 hidden = false
 
 [edgeDefs.updated]
+type = "timestamp"
 displayLabel = "Updated"
 exportLabel = "Updated"
 includeInGraphTooltip = true
 help = "Date and time edge was last modified"
-isProvenance = false
 hidden = false
 
 [edgeDefs.updatedBy]
+type = "string"
 displayLabel = "Updated By"
 exportLabel = "Updated By"
 includeInGraphTooltip = true
 help = "Author who updated the nodedgee"
-isProvenance = true
 hidden = false
 
 [edgeDefs.revision]
@@ -259,5 +270,4 @@ displayLabel = "Revision"
 exportLabel = "Revision"
 includeInGraphTooltip = true
 help = "Number of times this edge has been revised"
-isProvenance = false
 hidden = true

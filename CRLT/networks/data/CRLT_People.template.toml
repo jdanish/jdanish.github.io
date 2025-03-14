@@ -21,8 +21,7 @@ importIsLockedMessage = "Data is currently being imported, please try again late
 nodeDefaultTransparency = 1
 edgeDefaultTransparency = 0.7
 searchColor = "#008800"
-sourceColor = "#FFa500"
-version = 2
+sourceColor = "#ffa500"
 
 [citation]
 text = "No citation set"
@@ -58,26 +57,18 @@ hidden = false
   [[nodeDefs.type.options]]
   color = "#eeeeee"
   label = ""
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#0c7bdc"
   label = "Person"
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#e69f00"
   label = "Topic / Interest"
-  replacement = ""
-  delete = false
 
   [[nodeDefs.type.options]]
   color = "#1aff1a"
   label = "Lab / Research Group"
-  replacement = ""
-  delete = false
 
 [nodeDefs.notes]
 type = "markdown"
@@ -97,15 +88,6 @@ includeInGraphTooltip = true
 isProvenance = false
 hidden = false
 
-[nodeDefs.department]
-type = "string"
-displayLabel = "Department"
-exportLabel = "Department"
-help = "What department is the person affiliated with?"
-includeInGraphTooltip = true
-isProvenance = false
-hidden = false
-
 [nodeDefs.degrees]
 type = "number"
 displayLabel = "Degrees"
@@ -121,7 +103,7 @@ exportLabel = "Created"
 help = "Date and time node was created"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.createdBy]
 displayLabel = "Created By"
@@ -129,7 +111,7 @@ help = "Author who created the node"
 exportLabel = "Created By"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.updated]
 displayLabel = "Updated"
@@ -137,7 +119,7 @@ exportLabel = "Updated"
 help = "Date and time node was last modified"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.updatedBy]
 displayLabel = "Updated By"
@@ -145,7 +127,7 @@ exportLabel = "Updated By"
 help = "Author who updated the node"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.revision]
 displayLabel = "Revision"
@@ -189,20 +171,14 @@ hidden = false
   [[edgeDefs.type.options]]
   color = "#eeeeee"
   label = ""
-  replacement = ""
-  delete = false
 
   [[edgeDefs.type.options]]
   color = "#8f8f8f"
   label = "Researches"
-  replacement = ""
-  delete = false
 
   [[edgeDefs.type.options]]
   color = "#823a9b"
   label = "Member of"
-  replacement = ""
-  delete = false
 
 [edgeDefs.weight]
 type = "number"
@@ -221,7 +197,7 @@ exportLabel = "Created"
 includeInGraphTooltip = true
 help = "Date and time edge was created"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.createdBy]
 displayLabel = "Created By"
@@ -229,7 +205,7 @@ exportLabel = "Created By"
 includeInGraphTooltip = true
 help = "Author who created the edge"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.updated]
 displayLabel = "Updated"
@@ -237,7 +213,7 @@ exportLabel = "Updated"
 includeInGraphTooltip = true
 help = "Date and time edge was last modified"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.updatedBy]
 displayLabel = "Updated By"
@@ -245,7 +221,7 @@ exportLabel = "Updated By"
 includeInGraphTooltip = true
 help = "Author who updated the nodedgee"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.revision]
 displayLabel = "Revision"

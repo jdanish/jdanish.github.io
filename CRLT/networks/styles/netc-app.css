@@ -9,11 +9,13 @@
       2000  comment-bar
       1500  FiltersPanel
       1030  bootstrap .fixed-top
+       101  URTable tabletip
        100  Node/EdgeTable thead
         15  NCAutoSuggest .matchlist
         15  NCNode .ncedge
         10  NCNode .nccomponent
-         1  NCNode .screen ============
+         9  NCNode .screen ============
+         1  URTable th
          1  ToolTip .modal, .tooltiptextabove, .tooltiptext
          0  NetCreate
 */
@@ -117,100 +119,7 @@ button svg {
   left: 1px;
   right: 10px;
   background-color: #eafcff;
-}
-
-/* react-autosuggest styles */
-.react-autosuggest__container {
-  position: relative;
-}
-
-.react-autosuggest__input {
-  width: 100%;
-  height: 30px;
-  padding: 10px 20px;
-  font-family: Helvetica, sans-serif;
-  font-weight: 300;
-  font-size: 16px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-}
-
-.react-autosuggest__input--focused {
-  outline: none;
-}
-
-.react-autosuggest__input--open {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.react-autosuggest__suggestions-container {
-  display: none;
-}
-
-.react-autosuggest__suggestions-container--open {
-  display: block;
-  position: absolute;
-  top: 51px; /* below input field */
-  /* show suggestions to the right of the input field 
-   so form elements can be read 
-  top: 0px;
-  left: 239px;
- end show suggestions */
-  width: 280px;
-  border: 1px solid #aaa;
-  background-color: #fff;
-  font-family: Helvetica, sans-serif;
-  font-weight: 300;
-  font-size: 16px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  z-index: 2;
-}
-
-.react-autosuggest__suggestions-list {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-}
-
-.react-autosuggest__suggestion {
-  cursor: pointer;
-  padding: 10px 20px;
-}
-
-.react-autosuggest__suggestion--highlighted {
-  background-color: #ddd;
-}
-
-/* HELP */
-.help h1 {
-  font-size: 1em;
-}
-
-/* Data View Styles */
-.nodeEntry .form-control:disabled,
-.nodeEntry .form-control[readonly] {
-  background-color: #ffffff33;
-}
-
-/* Allow wrapping to deal with long URLS in tables */
-td {
-  /* These are technically the same, but use both */
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-
-  -ms-word-break: break-all;
-  /* This is the dangerous one in WebKit, as it breaks things wherever */
-  word-break: break-all;
-  /* Instead use this non-standard one: */
-  word-break: break-word;
-
-  /* Adds a hyphen where the word breaks, if supported (No Blink) */
-  -ms-hyphens: auto;
-  -moz-hyphens: auto;
-  -webkit-hyphens: auto;
-  hyphens: auto;
+  font-size: 0.75em;
 }
 
 .matchlist {
@@ -343,7 +252,7 @@ td {
   right: 0;
   bottom: 0;
   background-color: #0003;
-  z-index: 1;
+  z-index: 9;
 }
 
 .nccomponent {
@@ -572,11 +481,6 @@ td {
 .nccomponent .formview .viewvalue img {
   max-width: 225px;
 }
-
-.URTable img {
-  max-width: 225px;
-}
-
 .nccomponent .formview div.targetarrow {
   margin-top: -5px;
   text-align: center;
@@ -729,39 +633,6 @@ td {
   background-color: transparent;
 }
 
-/* Auto-compiled and included by brunch */
-
-.warning {
-  padding: 5px 0;
-}
-
-/* Applies to both NodeSelector, EdgeEditor, NodeTable, and EdgeTable */
-.nodeEntry img,
-.table img {
-  max-width: 250px;
-  max-height: 200px;
-}
-
-.nodeEntry textarea[readonly] {
-  background-color: #ffffff33;
-}
-.nodeEntry textarea[readonly].comments {
-  background-color: #ffff0033;
-}
-.nodeEntry textarea.comments {
-  width: 100%;
-  background-color: #ffff66;
-}
-
-/* Applies to NodeSelector and EdgeEditor, overrides bootstrap */
-.form-control:focus:invalid,
-.formcontrol:focus:out-of-range,
-input:invalid,
-input:out-of-range {
-  border-color: red;
-  box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
-}
-
 .tooltipAnchor {
   position: relative;
   display: inline-block;
@@ -887,16 +758,24 @@ input:out-of-range {
   --comment-font-size-medium: 12px;
   --comment-font-weight-light: 300;
   --comment-font-weight-medium: 400;
-  --comment-status-font-color: #d44127; /* <= evan's, orig => #d84a0088; */
+  --comment-status-font-color: #d84a0088;
   --comment-system-font-color: #0003;
   --disabled-opacity: 0.5;
+  --cmtbtn-read: #696969; /* svg symbols */
+  --cmtbtn-unread-light: #ffe143; /* svg symbols */
+  --cmtbtn-unread-dark: #d44127; /* svg symbols */
+  --clr-comment: #ffe143;
+  --clr-comment-dark: #d44127;
+  --clr-comment-light: #ffe143;
+  --clr-comment-read-dark: #696969;
+  --clr-comment-read-light: #fff;
 }
 
 /* Comment Bar ------------------------------------------------------------- */
 #comment-bar {
   display: flex;
   align-self: flex-start;
-  margin-top: 6px;
+  margin-top: 10px;
   font-size: 0.8rem;
   z-index: 2000;
 }
@@ -943,6 +822,7 @@ input:out-of-range {
   max-width: 400px;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--comment-commenter-font-color);
 }
 #comment-bar button.small {
   background-color: #fff6;
@@ -956,7 +836,10 @@ input:out-of-range {
   margin-left: 0.25rem;
   float: right;
 }
-/* Comment Summary */
+/* Comment Status ---------------------------------------------------------- */
+#comment-status {
+}
+/* Comment Summary --------------------------------------------------------- */
 #comment-summary {
   display: flex;
   color: var(--comment-status-font-color);
@@ -966,7 +849,8 @@ input:out-of-range {
   line-height: 1.3rem;
   cursor: pointer;
   width: fit-content;
-  padding: 3px 7px;
+  padding: 1px 5px;
+  float: right;
 }
 #comment-summary.expanded {
   display: none;
@@ -980,14 +864,13 @@ input:out-of-range {
   width: 20px;
   height: 20px;
 }
-#comment-summary .comment-count,
 .comments-unread .comment-count {
   font-size: 10px;
   width: 20px;
   height: 20px;
   line-height: 20px;
 }
-/* Comment Panel */
+/* Comment Panel ----------------------------------------------------------- */
 #comment-panel {
   background-color: var(--comment-bg-light);
   border-radius: 15px;
@@ -999,13 +882,16 @@ input:out-of-range {
 #comment-panel.expanded {
   display: block;
   height: fit-content;
+  /* pop out so so sidebars don't move */
+  position: absolute;
+  margin-left: -300px;
 }
-/* Comment Alert */
+/* Comment Alert ----------------------------------------------------------- */
 #comment-alert {
   height: 2em;
   padding-right: 10px;
   line-height: 1.5rem;
-  overflow: hidden;
+  /* overflow: hidden; skip this?  not necessary? */
   opacity: 0.01;
   transform: translateY(-150%);
 }
@@ -1024,6 +910,11 @@ input:out-of-range {
   opacity: 0.01;
   transform: translateY(0);
   transition: all 5s ease-in;
+}
+#comment-alert .comment-status-body {
+  position: absolute;
+  top: 2px;
+  right: 10px; /* float to the left of the main status */
 }
 .comment-status-body {
   margin-left: 1.3rem;
@@ -1077,6 +968,7 @@ svg#comment-icon {
   height: 30px;
   font-size: 12px;
   font-weight: bold;
+  letter-spacing: -0.08em;
   line-height: 30px;
   position: relative;
   text-align: center;
@@ -1093,10 +985,6 @@ svg#comment-icon {
 .hasReadComments .comment-count {
   color: white;
 }
-.commentbtn {
-  display: inline-block;
-  cursor: pointer;
-}
 .comment-intable svg#comment-icon {
   width: 20px;
   height: 20px;
@@ -1104,7 +992,7 @@ svg#comment-icon {
   cursor: pointer;
 }
 
-/* Comment Thread */
+/* Comment Thread ---------------------------------------------------------- */
 .commentThread {
   display: flex;
   flex-direction: column;
@@ -1144,7 +1032,7 @@ svg#comment-icon {
 
 .commentThread button {
   /* emulates nccomponent */
-  color: #333;
+  color: var(--comment-commenter-font-color);
   background-color: #fff6;
   border-radius: 5px;
   border-color: #0006;
@@ -1158,10 +1046,11 @@ svg#comment-icon {
   opacity: var(--disabled-opacity);
 }
 
-/* Comment */
+/* Comment------------------------------------------------------------------ */
 .comment {
   display: grid;
   grid-template-columns: 5em auto;
+  color: var(--comment-commenter-font-color);
   background-color: #fff5;
   margin-bottom: 5px;
   padding: 5px;
@@ -1171,6 +1060,9 @@ svg#comment-icon {
   background-color: #fff8;
 }
 
+.comment.unread {
+  border: 3px solid var(--comment-bg-new);
+}
 .comment.deleted {
   background-color: #0000000a;
 }
@@ -1213,20 +1105,21 @@ svg#comment-icon {
 .comment .label,
 .comment .help /* .help uses nccomponent */,
 .comment .commentId,
-.comment-status-body .commenter {
+.comment-status-body .commenter,
+.comment .commentTypeBar .commentTypeLabel {
   color: #0008;
   font-size: var(--comment-font-size-medium);
   font-weight: var(--comment-font-weight-medium);
+  line-height: 14px;
 }
 .comment .label {
-  margin-top: 10px;
+  margin-top: 2px;
 }
 .commentThread .comment .help {
   /* override nccomponent */
   font-style: italic; /* emulate nccomponent */
-  font-size: 12px;
+  font-size: var(--comment-font-size-small);
   line-height: 14px;
-  padding-bottom: 3px;
   opacity: 0.7;
 }
 
@@ -1234,14 +1127,22 @@ svg#comment-icon {
   overflow-y: auto;
 }
 
+.comment .commentTypeBar {
+  display: flex;
+  column-gap: 5px;
+}
+.comment .commentTypeBar .commentTypeLabel {
+  flex-grow: 1;
+}
 .comment .comment-item {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 .comment .feedback,
 .comment .error {
   opacity: 0.7;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: var(--comment-font-size-small);
+  line-height: var(--comment-font-size-medium);
+  margin: -2px 0 8px 0;
 }
 .comment .feedback {
   color: #0008; /* emulate nccomponent help */
@@ -1259,7 +1160,6 @@ svg#comment-icon {
 
 .comment .commentId {
   color: #0004;
-  float: right;
 }
 
 .comment .editmenu {
@@ -1290,11 +1190,6 @@ svg#comment-icon {
   cursor: pointer;
 }
 
-.commentbar,
-.editbar {
-  padding-top: 5px;
-}
-
 .commentbar {
   display: flex;
   flex-direction: row-reverse;
@@ -1304,6 +1199,7 @@ svg#comment-icon {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  padding-top: 5px;
 }
 
 .comment .commentbar button,
@@ -1318,10 +1214,11 @@ svg#comment-icon {
 .comment .editbar button {
   margin-left: 15px; /* emulate nccomponent */
 }
+
 .comment .commentbar button:hover,
 .comment .editbar button:hover {
   color: white;
-  background-color: rgb(255, 141, 65);
+  background-color: #b2000b;
 }
 .comment .commentbar button.secondary,
 .comment .editbar button.secondary {
@@ -1345,6 +1242,9 @@ svg#comment-icon {
 .comment .commentbar button {
   /* visibility: hidden; */
   display: none;
+}
+.comment:hover .commentbar {
+  padding-top: 5px;
 }
 .comment:hover .commentbar button {
   /* visibility: visible; */
@@ -1416,32 +1316,83 @@ svg#comment-icon {
   border: 1px solid;
   border-color: var(--comment-status-font-color);
 }
+.comment .prompt button.selected:disabled {
+  opacity: 0.9;
+}
 .comment .prompt button.notselected {
-  opacity: 0.5;
+  opacity: 0.1;
+}
+.comment .prompt button.notselected:hover {
+  opacity: 0.3;
 }
 
-/* URCommentVBtn */
-.URCommentVBtn {
+/* URCommentCollectionMgr ----------------------------------------------------------- */
+.URCommentCollectionMgr {
+  position: absolute;
+}
+
+/* SVG Comment Icons ------------------------------------------------------- */
+.commentbtn {
+  /* URCommentBtn & URCommentVBtn */
   display: inline-block;
   cursor: pointer;
-  border: none;
-  background-color: transparent;
 }
-.URCommentVBtn svg {
-  width: 24px;
-  height: 24px;
+.commentbtn.disabled {
+  /* URCommentBtn & URCommentVBtn */
+  cursor: default;
 }
-.URCommentVBtn > .count {
-  height: 24px;
-  width: 24px;
-  margin-top: -21px;
-  color: #fff;
-  font-size: 10px;
-  font-weight: bold;
+.commentbtn > .comment-count {
+  position: absolute;
+  line-height: 28px;
+  width: 32px; /* match size of URComentBtnAlias */
+  height: 32px;
   text-align: center;
+  color: var(--cmtbtn-unread-dark);
 }
-.URCommentVBtn > .count.unread {
-  color: var(--comment-status-font-color);
+.commentbtn.hasUnreadComments .comment-count {
+  color: var(--cmtbtn-unread-dark);
+}
+.commentbtn.hasUnreadComments.isOpen .comment-count,
+.commentbtn.hasReadComments.isOpen .comment-count {
+  color: white;
+}
+.commentbtn.hasReadComments .comment-count {
+  color: var(--cmtbtn-read);
+}
+
+.svgcmt-read .svg-fill {
+  fill: var(--clr-comment-read-light);
+}
+.svgcmt-read .svg-outline {
+  fill: var(--clr-comment-read-light);
+}
+
+.svgcmt-read-outlined .svg-fill {
+  fill: var(--clr-comment-read-light);
+}
+.svgcmt-read-outlined .svg-outline {
+  fill: var(--clr-comment-read-dark);
+}
+
+.svgcmt-readSelected .svg-fill {
+  fill: var(--clr-comment-read-dark);
+}
+.svgcmt-readSelected .svg-outline {
+  fill: var(--clr-comment-read-dark);
+}
+
+.svgcmt-unread .svg-fill {
+  fill: var(--clr-comment-light);
+}
+.svgcmt-unread .svg-outline {
+  fill: var(--clr-comment-dark);
+}
+
+.svgcmt-unreadSelected .svg-fill {
+  fill: var(--clr-comment-dark);
+}
+.svgcmt-unreadSelected .svg-outline {
+  fill: var(--clr-comment-dark);
 }
 
 .urdate {
@@ -1488,31 +1439,147 @@ svg#comment-icon {
   background-color: #e9ecef;
 }
 
+#urdialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--comment-commenter-font-color);
+  z-index: 11000; /* 10k is the default z-index for comment */
+}
+
+#urdialog .screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #0006;
+  z-index: 2001;
+}
+
+#urdialog .dialogwindow {
+  position: relative;
+  max-width: 90%;
+  max-height: 80%;
+  overflow: hidden;
+  background-color: white;
+  padding: 25px;
+  z-index: 11000;
+}
+
+#urdialog .dialogcontent {
+  display: grid;
+  grid-template-rows: 25px auto 25px;
+  text-align: left;
+}
+
+#urdialog .dialogmessage {
+  margin-bottom: 25px;
+}
+
+#urdialog h1,
+#urdialog .label {
+  font-size: 10px;
+}
+
+#urdialog .label {
+  color: #0008;
+}
+
+#urdialog .dialogpreview {
+  margin: 5px 0 20px 0;
+}
+
+#urdialog img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  max-height: 250px;
+  background-color: blue;
+}
+
+#urdialog .dialogcontrolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
 .URTable {
+  /* override styles here */
+  --bg-thead-clr: #fdfdff;
+  --bg-selected-clr: #eef;
+  --bg-hover-clr: #ddf;
+  --tabletip-hover-clr: #ccf;
+  /* layout */
+  --padding-horizontal: 5px;
+  --row-height: 1em;
 }
 .URTable table {
   border-collapse: collapse;
   width: 100%;
+  table-layout: fixed; /* enforce column widths */
+}
+.URTable thead {
+  /* position: sticky; */
+  /* top: 0; */
+  /* z-index: 1; for some reason EdgeTable can't set z to 1 or thead will cover tabletip */
 }
 .URTable th {
-  padding: 0 5px;
+  padding: 0 var(--padding-horizontal);
   border-right: 1px solid #999;
+  background-color: var(--bg-thead-clr);
   top: 0;
-  background-color: #daebef;
   position: -webkit-sticky;
-  position: sticky;
+  position: sticky; /* needed for resizing columns */
   z-index: 1; /* for some reason EdgeTable requires this or body cells will cover td */
 }
 .URTable th.selected {
-  background-color: #c6d5d6;
+  background-color: var(--bg-selected-clr);
 }
 .URTable thead,
 .URTable thead > tr,
 .URTable thead > tr > th {
   user-select: none;
 }
+.URTable th span.sortDisabled {
+  display: none;
+}
+.URTable th span.sortEnabled {
+  display: none;
+}
+.URTable th:hover {
+  background-color: var(--bg-hover-clr);
+  cursor: default;
+}
+.URTable th:hover span {
+  opacity: 0.5;
+}
+.URTable th:hover span.sortEnabled {
+  display: inline;
+  cursor: pointer;
+}
+.URTable th.selected span {
+  display: inline;
+}
+.URTable th.selected:hover span {
+  opacity: 1;
+}
+
 .URTable tr:hover {
-  background-color: #0002;
+  background-color: var(--bg-hover-clr);
+}
+.URTable td {
+  padding: 0 var(--padding-horizontal);
+  height: var(--row-height);
+  max-height: var(--row-height);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .URTable .resize-handle {
   position: absolute;
@@ -1530,6 +1597,65 @@ svg#comment-icon {
 .URTable button {
   padding: 0 2px;
   text-align: left;
+}
+
+.URTable img {
+  max-width: 225px;
+  max-height: var(--row-height);
+}
+
+/* tooltip */
+.URTable .tabletip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.URTable .tabletip-text {
+  visibility: visible;
+  width: max-content;
+  max-width: 400px;
+  white-space: normal;
+  text-overflow: unset;
+  background-color: black;
+  color: #fff;
+  border-radius: 4px;
+  padding: 5px;
+  position: absolute;
+  top: 0; /* position directly on top of the element */
+  /* bottom: 125%; /* Position above the element */
+  left: 0%;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 101;
+}
+.URTable .tabletip p {
+  margin: 0; /* override markdown text spacing */
+}
+.URTable td:hover {
+  overflow: visible;
+  background-color: var(--tabletip-hover-clr);
+  position: relative;
+  z-index: 200;
+}
+.URTable td:hover .tabletip .tabletip-text {
+  visibility: visible;
+  opacity: 1;
+  z-index: 200;
+}
+.URTable td:hover .tabletip .tabletip-text img {
+  max-width: 300px;
+  max-height: 300px;
+}
+.URTable td:hover .tabletip-source {
+  position: relative;
+  padding-top: var(--padding-horizontal);
+  padding-right: var(--padding-horizontal); /* gap next column */
+  padding-bottom: var(--padding-horizontal);
+  background-color: var(--tabletip-hover-clr);
+}
+.URTable td:hover .tabletip-source p {
+  background-color: var(--tabletip-hover-clr); /* override markdown p */
 }
 
 .filter-group hr {

@@ -3647,7 +3647,9 @@ var NetSocket2 = class {
 var ac_comment_exports = {};
 __export(ac_comment_exports, {
   AddComment: () => AddComment2,
+  CloseAllCommentCollections: () => CloseAllCommentCollections,
   CloseCommentCollection: () => CloseCommentCollection,
+  DeRegisterCommentBeingEdited: () => DeRegisterCommentBeingEdited,
   DeriveAllThreadedViewObjects: () => DeriveAllThreadedViewObjects,
   DeriveThreadedViewObjects: () => DeriveThreadedViewObjects,
   GetCOMMENTS: () => GetCOMMENTS2,
@@ -3661,6 +3663,8 @@ __export(ac_comment_exports, {
   GetCommentTypes: () => GetCommentTypes2,
   GetCommentUIState: () => GetCommentUIState,
   GetCommentVObj: () => GetCommentVObj,
+  GetCommentsAreBeingEdited: () => GetCommentsAreBeingEdited,
+  GetCommentsBeingEdited: () => GetCommentsBeingEdited,
   GetCrefs: () => GetCrefs2,
   GetDateString: () => GetDateString,
   GetDefaultCommentType: () => GetDefaultCommentType2,
@@ -3676,6 +3680,7 @@ __export(ac_comment_exports, {
   LoadDB: () => LoadDB2,
   LoadTemplate: () => LoadTemplate2,
   MarkRead: () => MarkRead,
+  RegisterCommentBeingEdited: () => RegisterCommentBeingEdited,
   RemoveAllCommentsForCref: () => RemoveAllCommentsForCref2,
   RemoveComment: () => RemoveComment2,
   UpdateComment: () => UpdateComment2,
@@ -3692,128 +3697,114 @@ var READBY = /* @__PURE__ */ new Map();
 var ROOTS = /* @__PURE__ */ new Map();
 var REPLY_ROOTS = /* @__PURE__ */ new Map();
 var NEXT = /* @__PURE__ */ new Map();
+var DEFAULT_COMMENTTYPE = {
+  slug: "cmt",
+  label: "Comment",
+  // comment type label
+  prompts: [
+    {
+      format: "text",
+      prompt: "Comment",
+      // prompt label
+      help: "Use this for any general comment.",
+      // displayed below prompt
+      feedback: ""
+      // displayed below input field
+    }
+  ]
+};
 var DEFAULT_CommentTypes = [
-  // Add default comment type if none are defined
+  DEFAULT_COMMENTTYPE,
   {
-    slug: "cmt",
-    label: "Comment",
+    slug: "tellmemore",
+    label: "Tell me more",
     // comment type label
     prompts: [
       {
         format: "text",
-        prompt: "Comment",
+        prompt: "Please tell me more",
         // prompt label
-        help: "Use this for any general comment.",
+        help: "Can you tell me more about ... ",
+        // displayed below prompt
         feedback: ""
+        // displayed below input field
       }
     ]
   }
-  // Temporarily moved into template 2024-07-30
-  // Move eventually to new templating system
+  // OTHER EXAMPLES of different types
   //
   // {
-  //   slug: 'demo',
-  //   label: 'Demo',
+  //   slug: 'evidence',
+  //   label: 'Evidence Critique or Suggestion',
   //   prompts: [
   //     {
-  //       format: 'text',
-  //       prompt: 'Comment', // prompt label
-  //       help: 'Use this for any general comment.',
-  //       feedback: 'Just enter text'
+  //       format: 'dropdown',
+  //       prompt: 'Is this supported by evidence?', // prompt label
+  //       options: ['😀 Yes', '🤔 Some', '🥲 No'],
+  //       help: 'Select one.'
   //     },
+  //     {
+  //       format: 'text',
+  //       prompt: 'What would you change?', // prompt label
+  //       help: 'Please be specific to help your friend.'
+  //     }
+  //   ]
+  // }
+  // {
+  //   slug: 'clarity',
+  //   label: 'Clarity Critique or Suggestion',
+  //   prompts: [
+  //     {
+  //       format: 'discrete-slider',
+  //       prompt: 'How clear is this model to you?', // prompt label
+  //       options: ['★', '★', '★', '★', '★'],
+  //       help: 'More stars means more clear!',
+  //       feedback: 'We can also have help here'
+  //     },
+  //     {
+  //       format: 'text',
+  //       prompt: 'What made you pick that number?', // prompt label
+  //       help: 'Please be specific to help your friend.'
+  //     }
+  //   ]
+  // },
+  // {
+  //   slug: 'steps',
+  //   label: 'All the Steps Critique or Suggestion',
+  //   prompts: [
   //     {
   //       format: 'dropdown',
-  //       prompt: 'How often did you use "Dropdown"', // prompt label
-  //       options: ['🥲 No', '🤔 A little', '😀 A lot'],
-  //       help: 'Select one.',
-  //       feedback: 'Single selection via dropdown menu'
+  //       prompt: 'Does this include all of the useful steps?', // prompt label
+  //       options: ['😀 Yes', '🤔 Mostly', '🥲 No', '🥲 Too many'],
+  //       help: 'Select one.'
   //     },
   //     {
-  //       format: 'checkbox',
-  //       prompt: 'What types of fruit did you "Checkbox"?', // prompt label
-  //       options: ['Apple Pie', 'Orange, Lime', 'Banana'],
-  //       help: 'Select as many as you want.',
-  //       feedback: 'Supports multiple selections'
+  //       format: 'text',
+  //       prompt: 'What made you pick that number?', // prompt label
+  //       help: 'Please be specific to help your friend.'
+  //     }
+  //   ]
+  // },
+  // {
+  //   slug: 'response',
+  //   label: 'Response',
+  //   prompts: [
+  //     {
+  //       format: 'radio',
+  //       prompt: 'Do you agree with this comment, critique, or suggestion?', // prompt label
+  //       options: ['Yes', 'Somewhat', 'No'],
+  //       help: 'Select only one.'
   //     },
   //     {
   //       format: 'radio',
-  //       prompt: 'What do you think "Radio"?', // prompt label
-  //       options: [
-  //         'It makes sense',
-  //         'I disagree',
-  //         "I don't know",
-  //         'Handle, comma, please'
-  //       ],
-  //       help: 'Select only one.',
-  //       feedback: 'Mutually exclusive single selections'
-  //     },
-  //     {
-  //       format: 'likert',
-  //       prompt: 'How did you like it "likert"?', // prompt label
-  //       options: ['💙', '💚', '💛', '🧡', '🩷'],
-  //       help: 'Select one of a series listed horizontally',
-  //       feedback: 'Select with a single click.  Supports emojis.'
-  //     },
-  //     {
-  //       format: 'discrete-slider',
-  //       prompt: 'Star Rating "discrete-slider"?', // prompt label
-  //       options: ['★', '★', '★', '★', '★'],
-  //       help: 'Select one of a series stacked horizontally',
-  //       feedback: 'Select with a single click.  Supports emojis.'
+  //       prompt: 'Will you make any changes?', // prompt label
+  //       options: ['Yes', 'Some', 'No'],
+  //       help: 'Select only one.'
   //     },
   //     {
   //       format: 'text',
-  //       prompt: 'Comment 2', // prompt label
-  //       help: 'Use this for any general comment.',
-  //       feedback: 'Just enter text'
-  //     },
-  //     {
-  //       format: 'text',
-  //       prompt: 'Comment 3', // prompt label
-  //       help: 'Use this for any general comment.',
-  //       feedback: 'Just enter text'
-  //     }
-  //   ]
-  // },
-  // {
-  //   slug: 'cmt',
-  //   label: 'Comment', // comment type label
-  //   prompts: [
-  //     {
-  //       format: 'text',
-  //       prompt: 'Comment', // prompt label
-  //       help: 'Use this for any general comment.',
-  //       feedback: ''
-  //     }
-  //   ]
-  // },
-  // {
-  //   slug: 'tellmemore',
-  //   label: 'Tell me more', // comment type label
-  //   prompts: [
-  //     {
-  //       format: 'text',
-  //       prompt: 'Please tell me more', // prompt label
-  //       help: 'Can you tell me more about ... ',
-  //       feedback: ''
-  //     }
-  //   ]
-  // },
-  // {
-  //   slug: 'source',
-  //   label: 'Source', // comment type label
-  //   prompts: [
-  //     {
-  //       format: 'text',
-  //       prompt: 'Is this well sourced?', // prompt label
-  //       help: 'Yes/No',
-  //       feedback: ''
-  //     },
-  //     {
-  //       format: 'text',
-  //       prompt: 'Changes', // prompt label
-  //       help: 'What about the sourcing could be improved?',
-  //       feedback: ''
+  //       prompt: 'Why or why not?', // prompt label
+  //       help: 'Please be specific so your friend understands.'
   //     }
   //   ]
   // }
@@ -3822,6 +3813,7 @@ function m_LoadUsers(dbUsers) {
   dbUsers.forEach((u) => USERS.set(u.id, u.name));
 }
 function m_LoadCommentTypes(commentTypes) {
+  COMMENTTYPES.clear();
   commentTypes.forEach((t) => COMMENTTYPES.set(t.slug, t));
 }
 function m_LoadComments(comments) {
@@ -3834,13 +3826,17 @@ function Init() {
   if (DBG3) console.log(PR9, "Init");
 }
 function LoadTemplate(commentTypes) {
-  const types = commentTypes || DEFAULT_CommentTypes;
+  const types = commentTypes || (DEFAULT_CommentTypes && DEFAULT_CommentTypes.length > 0 ? DEFAULT_CommentTypes : [DEFAULT_COMMENTTYPE]);
   m_LoadCommentTypes(types);
 }
 function LoadDB(data) {
   if (DBG3) console.log(PR9, "LoadDB");
-  if (data.commenttypes) m_LoadCommentTypes(data.commenttypes);
-  else m_LoadCommentTypes(DEFAULT_CommentTypes);
+  USERS.clear();
+  COMMENTS.clear();
+  READBY.clear();
+  ROOTS.clear();
+  REPLY_ROOTS.clear();
+  NEXT.clear();
   if (data.users) m_LoadUsers(data.users);
   if (data.comments) m_LoadComments(data.comments);
   if (data.readby) m_LoadReadBy(data.readby);
@@ -3866,13 +3862,18 @@ function GetCurrentUser() {
 function GetCommentTypes() {
   return COMMENTTYPES;
 }
-function GetCommentType(typeid) {
-  return COMMENTTYPES.get(typeid);
+function GetCommentType(slug) {
+  return COMMENTTYPES.get(slug);
 }
 function GetDefaultCommentType() {
-  if (DEFAULT_CommentTypes.length < 1)
+  if (COMMENTTYPES.size < 1)
     throw new Error("dc-comments: No comment types defined!");
-  return GetCommentType(DEFAULT_CommentTypes[0].slug);
+  return GetCommentType(GetDefaultCommentTypeSlug());
+}
+function GetDefaultCommentTypeSlug() {
+  if (COMMENTTYPES.size < 1)
+    throw new Error("dc-comments: No comment types defined!");
+  return COMMENTTYPES.keys().next().value;
 }
 function GetCOMMENTS() {
   return COMMENTS;
@@ -3909,7 +3910,7 @@ function AddComment(data) {
     // thread
     comment_id_parent,
     comment_id_previous,
-    comment_type: "cmt",
+    comment_type: GetDefaultCommentTypeSlug(),
     // default type, no prompts
     comment_createtime: (/* @__PURE__ */ new Date()).getTime(),
     comment_modifytime: null,
@@ -3927,15 +3928,20 @@ function UpdateComment(cobj) {
 }
 function m_UpdateComment(cobj) {
   cobj.comment_modifytime = (/* @__PURE__ */ new Date()).getTime();
-  console.log(
-    "REVIEW: UpdateComment...modify time should use loki time???",
-    cobj.comment_modifytime
-  );
   COMMENTS.set(cobj.comment_id, cobj);
 }
 function HandleUpdatedComments(cobjs) {
   cobjs.forEach((cobj) => m_UpdateComment(cobj));
   m_DeriveValues();
+}
+function m_safeDeleteAndQueue(cid) {
+  if (COMMENTS.has(cid)) {
+    const cmt = COMMENTS.get(cid);
+    const id = cmt ? cmt.id : void 0;
+    COMMENTS.delete(cid);
+    return { id, commentID: cid };
+  }
+  throw new Error(`Comment ${cid} not found.  This should not happen!`);
 }
 function RemoveComment(parms) {
   const { collection_ref, comment_id, uid, isAdmin } = parms;
@@ -3977,16 +3983,14 @@ function RemoveComment(parms) {
         childThreadIds.push(cobj.comment_id);
     });
     childThreadIds.forEach((cid) => {
-      COMMENTS.delete(cid);
-      queuedActions.push({ commentID: cid });
+      queuedActions.push(m_safeDeleteAndQueue(cid));
     });
   }
   if (deleteTargetAndNext) {
     if (DBG3) console.log(`deleteTargetAndNext`);
     const nextIds = m_GetNexts(cidToDelete);
     nextIds.forEach((cid) => {
-      COMMENTS.delete(cid);
-      queuedActions.push({ commentID: cid });
+      queuedActions.push(m_safeDeleteAndQueue(cid));
     });
   }
   if (relinkNext) {
@@ -4006,8 +4010,7 @@ function RemoveComment(parms) {
   }
   if (deleteTarget || deleteTargetAndNext || deleteRootAndChildren) {
     if (DBG3) console.log("deleteTarget or Root", cidToDelete);
-    COMMENTS.delete(cidToDelete);
-    queuedActions.push({ commentID: cidToDelete });
+    queuedActions.push(m_safeDeleteAndQueue(cidToDelete));
   } else if (markDeleted) {
     if (DBG3) console.log("markDeleted", cidToDelete);
     cobjToDelete.comment_type = DEFAULT_CommentTypes[0].slug;
@@ -4034,13 +4037,11 @@ function RemoveComment(parms) {
     const replyIds = m_GetReplies(rootId);
     replyIds.forEach((cid) => {
       if (COMMENTS.has(cid)) {
-        COMMENTS.delete(cid);
-        queuedActions.push({ commentID: cid });
+        queuedActions.push(m_safeDeleteAndQueue(cid));
       }
     });
     if (COMMENTS.has(rootId)) {
-      COMMENTS.delete(rootId);
-      queuedActions.push({ commentID: rootId });
+      queuedActions.push(m_safeDeleteAndQueue(rootId));
     }
   }
   if (!cobjIsRoot) {
@@ -4050,8 +4051,7 @@ function RemoveComment(parms) {
       const cid = replyIds[i];
       const cobj = COMMENTS.get(cid);
       if (cobj && cobj.comment_isMarkedDeleted) {
-        COMMENTS.delete(cid);
-        queuedActions.push({ commentID: cid });
+        queuedActions.push(m_safeDeleteAndQueue(cid));
       } else if (cobj && !cobj.comment_isMarkedDeleted) {
         break;
       }
@@ -4178,7 +4178,7 @@ var dc_comment_default = {
   IsMarkedDeleted,
   GetThreadedCommentIds,
   GetThreadedCommentData,
-  // GetThreadedCommentDataForRoot,
+  // GetThreadedCommentDataForRoot, // NOT USED?
   // READBY
   GetReadby,
   // ROOTS
@@ -4201,6 +4201,11 @@ function LoadTemplate2(commentTypes) {
   dc_comment_default.LoadTemplate(commentTypes);
 }
 function LoadDB2(data) {
+  COMMENTCOLLECTION.clear();
+  COMMENTUISTATE.clear();
+  OPENCOMMENTS.clear();
+  COMMENTS_BEING_EDITED.clear();
+  COMMENTVOBJS.clear();
   if (DBG4) console.log(PR10, "LoadDB", data);
   dc_comment_default.LoadDB(data);
   if (DBG4) console.log("COMMENTCOLLECTION", COMMENTCOLLECTION);
@@ -4228,6 +4233,15 @@ function CloseCommentCollection(uiref, cref, uid) {
   OPENCOMMENTS.set(cref, void 0);
   MarkRead(cref, uid);
   DeriveThreadedViewObjects(cref, uid);
+}
+function CloseAllCommentCollections(uid) {
+  COMMENTUISTATE.forEach((state, uiref) => {
+    if (state.isOpen) {
+      COMMENTUISTATE.set(uiref, { cref: state.cref, isOpen: false });
+      OPENCOMMENTS.set(state.cref, void 0);
+      DeriveThreadedViewObjects(state.cref, uid);
+    }
+  });
 }
 function MarkRead(cref, uid) {
   const commentVObjs = COMMENTVOBJS.get(cref);
@@ -4269,14 +4283,20 @@ function GetCommentUIState(uiref) {
 function GetOpenComments(cref) {
   return OPENCOMMENTS.get(cref);
 }
-function m_RegisterCommentBeingEdited(cid) {
+function RegisterCommentBeingEdited(cid) {
   COMMENTS_BEING_EDITED.set(cid, cid);
 }
-function m_DeRegisterCommentBeingEdited(cid) {
+function DeRegisterCommentBeingEdited(cid) {
   COMMENTS_BEING_EDITED.delete(cid);
 }
 function GetCommentBeingEdited(cid) {
   return COMMENTS_BEING_EDITED.get(cid);
+}
+function GetCommentsAreBeingEdited() {
+  return COMMENTS_BEING_EDITED.size > 0;
+}
+function GetCommentsBeingEdited() {
+  return COMMENTS_BEING_EDITED;
 }
 function GetUnreadRepliesToMe() {
   const comments = [];
@@ -4297,6 +4317,8 @@ function GetUnreadComments() {
   return comments;
 }
 function DeriveAllThreadedViewObjects(uid) {
+  COMMENTCOLLECTION.clear();
+  COMMENTVOBJS.clear();
   const crefs = dc_comment_default.GetCrefs();
   crefs.forEach((cref) => DeriveThreadedViewObjects(cref, uid));
 }
@@ -4359,6 +4381,8 @@ function GetCOMMENTVOBJS() {
 }
 function GetCommentVObj(cref, cid) {
   const thread = COMMENTVOBJS.get(cref);
+  if (thread === void 0)
+    return;
   const cvobj = thread.find((c) => c.comment_id === cid);
   return cvobj;
 }
@@ -4377,7 +4401,7 @@ function AddComment2(data) {
       COMMENTVOBJS
     );
   cvobj.isBeingEdited = true;
-  m_RegisterCommentBeingEdited(comment.comment_id);
+  RegisterCommentBeingEdited(comment.comment_id);
   commentVObjs = commentVObjs.map(
     (c) => c.comment_id === cvobj.comment_id ? cvobj : c
   );
@@ -4393,12 +4417,12 @@ function UpdateComment2(cobj, uid) {
   const cvobj = GetCommentVObj(cobj.collection_ref, cobj.comment_id);
   if (cvobj === void 0)
     throw new Error(
-      `ac-comment.UpdateComment could not find cobj ${cobj.comment_id}.  Maybe it hasn't been created yet? ${COMMENTVOBJS}`
+      `ac-comment.UpdateComment could not find cvobj ${cobj.comment_id}.  Maybe it hasn't been created yet? ${COMMENTVOBJS}`
     );
   cvobj.isMarkedRead = false;
   dc_comment_default.MarkCommentUnread(cvobj.comment_id, uid);
   cvobj.isBeingEdited = false;
-  m_DeRegisterCommentBeingEdited(cobj.comment_id);
+  DeRegisterCommentBeingEdited(cobj.comment_id);
   cvobj.modifytime_string = GetDateString(cobj.comment_modifytime);
   commentVObjs = commentVObjs.map(
     (c) => c.comment_id === cvobj.comment_id ? cvobj : c
@@ -4424,8 +4448,9 @@ function RemoveAllCommentsForCref2(parms) {
   queuedActions.push({ collection_ref: parms.collection_ref });
   return queuedActions;
 }
-function HandleRemovedComments2(comment_ids) {
+function HandleRemovedComments2(comment_ids, uid) {
   dc_comment_default.HandleRemovedComments(comment_ids);
+  DeriveAllThreadedViewObjects(uid);
 }
 function GetUserName2(uid) {
   return dc_comment_default.GetUserName(uid);

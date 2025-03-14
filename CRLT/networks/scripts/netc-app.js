@@ -1142,7 +1142,8 @@ ENUM.EDITORTYPE = {
 };
 // BUILT-IN FIELDS
 ENUM.BUILTIN_FIELDS_NODE = ['id', 'label', 'type', 'degrees', 'created', 'createdBy', 'updated', 'updatedBy', 'revision'];
-ENUM.BUILTIN_FIELDS_EDGE = ['id', 'source', 'type', 'target', 'weight', 'degrees', 'created', 'createdBy', 'updated', 'updatedBy', 'revision', 'sourceLabel', // used internally for filters
+ENUM.BUILTIN_FIELDS_EDGE = ['id', 'source', 'type', 'target', 'weight', // displayed in attributew tab
+'degrees', 'created', 'createdBy', 'updated', 'updatedBy', 'revision', 'sourceLabel', // used internally for filters
 'targetLabel' // used internally for filters
 ];
 
@@ -1165,7 +1166,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                                                                                                                                                                                                       Historical Date Utilities
                                                                                                                                                                                                     
                                                                                                                                                                                                       Used by the URDateField component to parse and format historical dates.
-                                                                                                                                                                                                      Also used in NodeTablea nd EdgeTable for sorting and filtering.
+                                                                                                                                                                                                      Also used in NodeTablea and EdgeTable for sorting and filtering.
                                                                                                                                                                                                     
                                                                                                                                                                                                     \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
 
@@ -1175,7 +1176,7 @@ var HDATE = {};
 /// HISTORICAL CHRONO /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /// Create a custom parser for BCE/CE dates
-///   ex: erasChrono.parseDate("I'll arrive at 2.30AM tomorrow");
+///   ex: erasChrono.parseDate("I'll arUrive at 2.30AM tomorrow");
 HDATE.erasChrono = chrono.casual.clone();
 HDATE.erasChrono.parsers.push({
   pattern: function pattern() {
@@ -1319,9 +1320,9 @@ HDATE.Parse = function (dateInputStr) {
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Show how the raw input string is parsed into date information by breaking
-  *  down the known values (e.g. `day`, and `month`) into a human-readable string.
-  *  @param {Array} ParsedResult - a chrono array of parsed date objects
-  */
+ *  down the known values (e.g. `day`, and `month`) into a human-readable string.
+ *  @param {Array} ParsedResult - a chrono array of parsed date objects
+ */
 HDATE.ShowValidationResults = function (ParsedResult) {
   // Show interpreted values
   if (ParsedResult.length > 0) {
@@ -1355,7 +1356,10 @@ HDATE.ShowMatchingFormats = function (ParsedResult, dateFormat, allowFormatSelec
 
   if (!allowFormatSelection) {
     // force the format to use the defined format
-    var _options = [{ value: dateFormat, preview: HDATE.GetPreviewStr(dateInputStr, knownValues, dateFormat) }];
+    var _options = [{
+      value: dateFormat,
+      preview: HDATE.GetPreviewStr(dateInputStr, knownValues, dateFormat)
+    }];
     return _options;
   }
 
@@ -1382,7 +1386,10 @@ HDATE.ShowMatchingFormats = function (ParsedResult, dateFormat, allowFormatSelec
   }
 
   additionalOptions = matchingTypes.map(function (type) {
-    return { value: type, preview: HDATE.GetPreviewStr(dateInputStr, knownValues, type) };
+    return {
+      value: type,
+      preview: HDATE.GetPreviewStr(dateInputStr, knownValues, type)
+    };
   });
   options = [].concat(_toConsumableArray(additionalOptions), _toConsumableArray(options));
   return options;
@@ -6384,7 +6391,6 @@ function m_ValidateTemplate() {
     // 2. Validate deprecated fields
     //    `TEMPLATE.version` was added after 2.0.
     if (!TEMPLATE.version) {
-
       // nodeDefs
       if (nodeDefs.type === undefined) throw 'Missing `nodeDefs.type` type= ' + nodeDefs.type;
       if (nodeDefs.type.options === undefined || !Array.isArray(nodeDefs.type.options)) {
@@ -7463,15 +7469,19 @@ DB.GetEditStatus = function (pkt) {
   var importActive = m_open_editors.includes(EDITORTYPE.IMPORTER);
   // If there are any 'node' or 'edge' open editors, then nodeOrEdgeBeingEdited is true
   var nodeOrEdgeBeingEdited = m_open_editors.length > 0 && (m_open_editors.includes(EDITORTYPE.NODE) || m_open_editors.includes(EDITORTYPE.EDGE));
-  // Used to disable local editing if a comment is being edited, but ignores network comment edits
-  var commentBeingEditedByMe = [].concat(_toConsumableArray(m_locked_comments.values())).find(function (comment_uaddr) {
-    return comment_uaddr === my_uaddr;
-  });
+  // NOT IMPLEMENTED
+  // -- This is now problematic with the new optimized state management because
+  //    editStatus is being broadcast to ALL clients, not just the one editing
+  // Was Used to disable local editing if a comment is being edited, but ignores network comment edits
+  // const commentBeingEditedByMe =
+  //   [...m_locked_comments.values()].find(
+  //     comment_uaddr => comment_uaddr === my_uaddr
+  //   ) || false; // returns `false` if not found -- necessary otherwise `commentBeingEditedByMe` is removed and not updated
   return {
     templateBeingEdited: templateBeingEdited,
     importActive: importActive,
     nodeOrEdgeBeingEdited: nodeOrEdgeBeingEdited,
-    commentBeingEditedByMe: commentBeingEditedByMe,
+    // commentBeingEditedByMe, // NOT IMPLEMENTED
     lockedNodes: [].concat(_toConsumableArray(m_locked_nodes.keys())),
     lockedEdges: [].concat(_toConsumableArray(m_locked_edges.keys())),
     lockedComments: [].concat(_toConsumableArray(m_locked_comments.keys()))
@@ -8434,6 +8444,10 @@ function m_SocketDelete(socket) {
       if (handlers) handlers.delete(uaddr);
     });
   }
+
+  // Unlock everything if the socket is being removed
+  DB.RequestUnlock(uaddr);
+
   if (DBG) m_ListSockets('del ' + socket.UADDR);
 }
 ///	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8489,8 +8503,13 @@ var UDB = require('./server-database');
 var LOGGER = require('./server-logger');
 var PROMPTS = require('../system/util/prompts');
 
+var _require = require('../system/util/enum'),
+    EDITORTYPE = _require.EDITORTYPE;
+
 /// CONSTANTS & DECLARATIONS ///////////////////////////////////////////////////
 ///	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
 var DBG = false;
 var PR = PROMPTS.Pad('SRV');
 
@@ -8565,10 +8584,10 @@ UNISYS.RegisterHandlers = function () {
   UNET.HandleMessage('SRV_REQ_EDIT_LOCK', function (pkt) {
     // server-database
     if (DBG) console.log(PR, sprint_message(pkt));
-    var data = UDB.RequestEditLock(pkt);
+    var editStatus = UDB.RequestEditLock(pkt);
     // Broadcast Lock State
-    UNET.NetCall('EDIT_PERMISSIONS_UPDATE', data);
-    return data;
+    UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    return editStatus;
   });
   /**
    * @return { templateBeingEdited: boolean, importActive: boolean, nodeOrEdgeBeingEdited: boolean }
@@ -8576,10 +8595,10 @@ UNISYS.RegisterHandlers = function () {
   UNET.HandleMessage('SRV_RELEASE_EDIT_LOCK', function (pkt) {
     // server-database
     if (DBG) console.log(PR, sprint_message(pkt));
-    var data = UDB.ReleaseEditLock(pkt);
+    var editStatus = UDB.ReleaseEditLock(pkt);
     // Broadcast Lock State
-    UNET.NetCall('EDIT_PERMISSIONS_UPDATE', data);
-    return data;
+    UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    return editStatus;
   });
 
   /** TEMPLATE EDITING **/
@@ -8592,7 +8611,7 @@ UNISYS.RegisterHandlers = function () {
   UNET.HandleMessage('SRV_TEMPLATESAVE', function (pkt) {
     // server-database
     if (DBG) console.log(PR, sprint_message(pkt));
-    UNET.NetCall('NET_TEMPLATE_UPDATE', pkt.data.template); // Broadcast template to other computers on the net
+    UNET.NetSend('NET_TEMPLATE_UPDATE', pkt.data.template); // Broadcast template to other computers on the net
     return UDB.WriteTemplateTOML(pkt);
   });
   UNET.HandleMessage('SRV_GET_TEMPLATETOML_FILENAME', function () {
@@ -8653,29 +8672,71 @@ UNISYS.RegisterHandlers = function () {
     return UDB.PKT_GetNewNodeIDs(pkt);
   });
 
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /// DB LOCKING
+  /**
+   * @param {object} pkt
+   * @param {string} pkt.data.nodeID
+   */
   UNET.HandleMessage('SRV_DBLOCKNODE', function (pkt) {
     if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_RequestLockNode(pkt);
+    var lockResult = UDB.PKT_RequestLockNode(pkt);
+    if (lockResult.locked) {
+      // successfully locked, broadcast edit state
+      //  - inject editor type into the pkt
+      var pktData = pkt.Data();
+      pktData.editor = EDITORTYPE.NODE;
+      pkt.SetData(pktData);
+      var editStatus = UDB.RequestEditLock(pkt);
+      // - broadcast lock state
+      UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    }
+    return lockResult; // handle callback
   });
-
   UNET.HandleMessage('SRV_DBUNLOCKNODE', function (pkt) {
     if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_RequestUnlockNode(pkt);
+    var unlockResult = UDB.PKT_RequestUnlockNode(pkt);
+    if (unlockResult.unlocked) {
+      // successfully unlocked, broadcast edit state
+      // - inject editor type into the pkt
+      var pktData = pkt.Data();
+      pktData.editor = EDITORTYPE.NODE;
+      pkt.SetData(pktData);
+      var editStatus = UDB.ReleaseEditLock(pkt);
+      // - broadcast lock state
+      UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    }
+    return unlockResult; // handle callback
   });
-
-  UNET.HandleMessage('SRV_DBISNODELOCKED', function (pkt) {
-    if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_IsNodeLocked(pkt);
-  });
-
   UNET.HandleMessage('SRV_DBLOCKEDGE', function (pkt) {
     if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_RequestLockEdge(pkt);
+    var lockResult = UDB.PKT_RequestLockEdge(pkt);
+    if (lockResult.locked) {
+      // successfully locked, broadcast edit state
+      // - inject editor type into the pkt
+      var pktData = pkt.Data();
+      pktData.editor = EDITORTYPE.EDGE;
+      pkt.SetData(pktData);
+      var editStatus = UDB.RequestEditLock(pkt);
+      // = broadcast lock state
+      UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    }
+    return lockResult; // handle callback
   });
-
   UNET.HandleMessage('SRV_DBUNLOCKEDGE', function (pkt) {
     if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_RequestUnlockEdge(pkt);
+    var unlockResult = UDB.PKT_RequestUnlockEdge(pkt);
+    if (unlockResult.unlocked) {
+      // successfully unlocked, broadcast edit state
+      // - inject editor type into the pkt
+      var pktData = pkt.Data();
+      pktData.editor = EDITORTYPE.EDGE;
+      pkt.SetData(pktData);
+      var editStatus = UDB.ReleaseEditLock(pkt);
+      // - broadcast lock state
+      UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    }
+    return unlockResult; // handle callback
   });
 
   UNET.HandleMessage('SRV_DBISEDGELOCKED', function (pkt) {
@@ -8685,12 +8746,34 @@ UNISYS.RegisterHandlers = function () {
 
   UNET.HandleMessage('SRV_DBLOCKCOMMENT', function (pkt) {
     if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_RequestLockComment(pkt);
+    var lockResult = UDB.PKT_RequestLockComment(pkt);
+    if (lockResult.locked) {
+      // successfully unlocked, broadcast edit state
+      // - inject editor type into the pkt
+      var pktData = pkt.Data();
+      pktData.editor = EDITORTYPE.COMMENT;
+      pkt.SetData(pktData);
+      var editStatus = UDB.ReleaseEditLock(pkt);
+      // - broadcast lock state
+      UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    }
+    return lockResult; // handle callback
   });
 
   UNET.HandleMessage('SRV_DBUNLOCKCOMMENT', function (pkt) {
     if (DBG) console.log(PR, sprint_message(pkt));
-    return UDB.PKT_RequestUnlockComment(pkt);
+    var unlockResult = UDB.PKT_RequestUnlockComment(pkt);
+    if (unlockResult.unlocked) {
+      // successfully unlocked, broadcast edit state
+      // - inject editor type into the pkt
+      var pktData = pkt.Data();
+      pktData.editor = EDITORTYPE.COMMENT;
+      pkt.SetData(pktData);
+      var editStatus = UDB.ReleaseEditLock(pkt);
+      // - broadcast lock state
+      UNET.NetSend('EDIT_PERMISSIONS_UPDATE', editStatus);
+    }
+    return unlockResult; // handle callback
   });
 
   UNET.HandleMessage('SRV_DBISCOMMENTLOCKED', function (pkt) {
@@ -8715,7 +8798,7 @@ UNISYS.RegisterHandlers = function () {
     var res = UDB.PKT_RequestUnlockAll(pkt);
     // Broadcast Lock State
     var data = UDB.GetEditStatus(pkt);
-    UNET.NetCall('EDIT_PERMISSIONS_UPDATE', data);
+    UNET.NetSend('EDIT_PERMISSIONS_UPDATE', data);
     return res;
   });
 
@@ -9296,6 +9379,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var React = require('react');
 var ReactDOM = require('react-dom');
 var UNISYS = require('unisys/client');
+var LOCKMGR = require('./lock-mgr');
 
 var _require = require('@ursys/addons'),
     COMMENT = _require.COMMENT;
@@ -9316,6 +9400,8 @@ var SETTINGS = require('settings');
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 var DBG = true;
 var PR = 'comment-mgr: ';
+
+var CMTBTNOFFSET = 10;
 
 /// INITIALIZE MODULE /////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -9341,14 +9427,12 @@ MOD.Hook('INITIALIZE', function () {
    *  @param {Object} data.comments
    */
   // Comment AddOn Handlers
-  UDATA.HandleMessage('LOAD_COMMENT_DATACORE', MOD.LoadDB);
+  UDATA.HandleMessage('LOAD_COMMENT_DATACORE', MOD.LoadDB); // MEME equivalent: DATA_UPDATED
   /// STATE UPDATES and Message Handlers
+  UDATA.OnAppStateChange('LOCKSTATE', m_urstate_LOCKSTATE);
   UDATA.HandleMessage('COMMENTS_UPDATE', MOD.HandleCOMMENTS_UPDATE);
   UDATA.HandleMessage('COMMENT_UPDATE', MOD.HandleCOMMENT_UPDATE);
   UDATA.HandleMessage('READBY_UPDATE', MOD.HandleREADBY_UPDATE);
-  // Net.Create Handlers
-  UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', m_UpdatePermissions);
-
   // Currently not used
   // UDATA.OnAppStateChange('COMMENTCOLLECTION', COMMENTCOLLECTION => console.log('comment-mgr.COMMENTCOLLECTION state updated:', COMMENTCOLLECTION));
   // UDATA.OnAppStateChange('COMMENTVOBJS', COMMENTVOBJS => console.error('comment-mgr.COMMENTVOBJS state updated', COMMENTVOBJS));
@@ -9372,55 +9456,45 @@ MOD.Hook('APP_READY', function (info) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.LoadDB = function (data) {
   var TEMPLATE = UDATA.AppState('TEMPLATE');
-  COMMENT.LoadTemplate(TEMPLATE.COMMENTTYPES);
+  COMMENT.LoadTemplate(TEMPLATE.commentTypes);
   COMMENT.LoadDB(data);
+
+  // After loading db, derive the view objects
+  // This is needed to force update of the project comment count
+  var uid = MOD.GetCurrentUserId();
+  COMMENT.DeriveAllThreadedViewObjects(uid);
+  var COMMENTCOLLECTION = COMMENT.GetCommentCollections();
+  UDATA.SetAppState('COMMENTCOLLECTION', COMMENTCOLLECTION);
 };
 
 /// HELPER FUNCTIONS //////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-MOD.COMMENTICON = React.createElement(
-  'svg',
-  { id: 'comment-icon', xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 42 42' },
-  React.createElement('path', { d: 'M21,0C9.4,0,0,9.4,0,21c0,4.12,1.21,7.96,3.26,11.2l-2.26,9.8,11.56-1.78c2.58,1.14,5.44,1.78,8.44,1.78,11.6,0,21-9.4,21-21S32.6,0,21,0Z' })
-);
 // From Evan O'Neil https://drive.google.com/drive/folders/1fJ5WiLMVQxxaqghrCOFwegmnYoOvst7E
-// NOTE viewbox is set to y=1 to better center the text
-MOD.ICN_COMMENT_UNREAD = React.createElement(
-  'svg',
-  { id: 'icn-comment-unread', xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 1 16 16' },
-  React.createElement('path', { fill: '#FFE143', d: 'M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 9.15705 1.28072 10.2485 1.77778 11.21V15H8Z' }),
-  React.createElement('path', { fill: '#FFE143', d: 'M3.17778 10.8696V13.6H8C11.0928 13.6 13.6 11.0928 13.6 8C13.6 4.90721 11.0928 2.4 8 2.4C4.90721 2.4 2.4 4.90721 2.4 8C2.4 8.92813 2.62469 9.79968 3.02143 10.5671L3.17778 10.8696Z' })
+MOD.COMMENTICON = React.createElement(
+  'g',
+  { transform: 'matrix(1.6,0,0,1.6,4,0)' },
+  React.createElement('path', {
+    className: 'svg-fill',
+    d: 'M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 9.15705 1.28072 10.2485 1.77778 11.21V15H8Z'
+  }),
+  React.createElement('path', {
+    className: 'svg-outline',
+    d: 'M3.17778 10.8696V13.6H8C11.0928 13.6 13.6 11.0928 13.6 8C13.6 4.90721 11.0928 2.4 8 2.4C4.90721 2.4 2.4 4.90721 2.4 8C2.4 8.92813 2.62469 9.79968 3.02143 10.5671L3.17778 10.8696ZM15 8C15 11.866 11.866 15 8 15H1.77778V11.21C1.28072 10.2485 1 9.15705 1 8C1 4.13401 4.13401 1 8 1C11.866 1 15 4.13401 15 8Z'
+  }),
+  React.createElement('path', { fill: 'none', d: 'M0 0h24v24H0z' })
 );
-MOD.ICN_COMMENT_UNREAD_SELECTED = React.createElement(
-  'svg',
-  { id: 'icn-comment-unread', xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 1 16 16' },
-  React.createElement('path', { fill: '#D44127', d: 'M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 9.15705 1.28072 10.2485 1.77778 11.21V15H8Z' }),
-  React.createElement('path', { fill: '#FFE143', d: 'M3.17778 10.8696V13.6H8C11.0928 13.6 13.6 11.0928 13.6 8C13.6 4.90721 11.0928 2.4 8 2.4C4.90721 2.4 2.4 4.90721 2.4 8C2.4 8.92813 2.62469 9.79968 3.02143 10.5671L3.17778 10.8696Z' })
-);
-MOD.ICN_COMMENT_READ = React.createElement(
-  'svg',
-  { id: 'icn-comment-unread', xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 1 16 16' },
-  React.createElement('path', { fill: '#696969', d: 'M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 9.15705 1.28072 10.2485 1.77778 11.21V15H8Z' }),
-  React.createElement('path', { fill: '#696969', d: 'M3.17778 10.8696V13.6H8C11.0928 13.6 13.6 11.0928 13.6 8C13.6 4.90721 11.0928 2.4 8 2.4C4.90721 2.4 2.4 4.90721 2.4 8C2.4 8.92813 2.62469 9.79968 3.02143 10.5671L3.17778 10.8696Z' })
-);
-MOD.ICN_COMMENT_READ_SELECTED = React.createElement(
-  'svg',
-  { id: 'icn-comment-unread', xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 1 16 16' },
-  React.createElement('path', { fill: '#D44127', d: 'M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 9.15705 1.28072 10.2485 1.77778 11.21V15H8Z' }),
-  React.createElement('path', { fill: '#696969', d: 'M3.17778 10.8696V13.6H8C11.0928 13.6 13.6 11.0928 13.6 8C13.6 4.90721 11.0928 2.4 8 2.4C4.90721 2.4 2.4 4.90721 2.4 8C2.4 8.92813 2.62469 9.79968 3.02143 10.5671L3.17778 10.8696Z' })
-);
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_SetAppStateCommentCollections() {
   var COMMENTCOLLECTION = COMMENT.GetCommentCollections();
   UDATA.SetAppState('COMMENTCOLLECTION', COMMENTCOLLECTION);
 }
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_SetAppStateCommentVObjs() {
   var COMMENTVOBJS = COMMENT.GetCOMMENTVOBJS();
   UDATA.SetAppState('COMMENTVOBJS', COMMENTVOBJS);
 }
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_UpdateComment(comment) {
   var cobj = {
     collection_ref: comment.collection_ref,
@@ -9437,17 +9511,14 @@ function m_UpdateComment(comment) {
   var uid = MOD.GetCurrentUserId();
   COMMENT.UpdateComment(cobj, uid);
 }
-
-function m_UpdatePermissions(data) {
-  UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-    // disable comment button if someone is editing a comment
-    UDATA.LocalCall('COMMENT_UPDATE_PERMISSIONS', data);
-  });
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function m_urstate_LOCKSTATE(LOCKSTATE) {
+  UDATA.SetAppState('CMTLOCKSTATE', LOCKSTATE);
 }
+
 /// API METHODS ///////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /// CONSTANTS
 MOD.VIEWMODE = NCUI.VIEWMODE;
 
@@ -9465,22 +9536,23 @@ MOD.GetProjectCREF = function (projectId) {
 };
 
 /// deconstructs "n32" into {type: "n", id: 32}
-MOD.DeconstructCref = function (cref) {
+MOD.DeconstructCREF = function (cref) {
   var type = cref.substring(0, 1);
   var id = cref.substring(1);
   return { type: type, id: id };
 };
 
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Generate a human friendly label based on the cref (e.g. `n21`, `e4`)
-* e.g. "n32" becomes {typeLabel "Node", sourceLabel: "32"}
-* @param {string} cref
+ * e.g. "n32" becomes {typeLabel "Node", sourceLabel: "32"}
+ * @param {string} cref
  * @returns { typeLabel, sourceLabel } sourceLabel is undefined if the source has been deleted
  */
 MOD.GetCREFSourceLabel = function (cref) {
-  var _MOD$DeconstructCref = MOD.DeconstructCref(cref),
-      type = _MOD$DeconstructCref.type,
-      id = _MOD$DeconstructCref.id;
+  var _MOD$DeconstructCREF = MOD.DeconstructCREF(cref),
+      type = _MOD$DeconstructCREF.type,
+      id = _MOD$DeconstructCREF.id;
 
   var typeLabel = void 0;
   var node = void 0,
@@ -9514,19 +9586,57 @@ MOD.GetCREFSourceLabel = function (cref) {
       if (edge && sourceNode && targetNode) sourceLabel = '' + sourceNode.label + ARROW_RIGHT + targetNode.label;
       break;
     case 'p':
-      typeLabel = 'Project';
+      typeLabel = 'Project'; // reserve for future use
       sourceLabel = id;
       break;
   }
   return { typeLabel: typeLabel, sourceLabel: sourceLabel };
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * Returns the position for the comment button
+ * Adjusting for window position is done via GetCommentCollectionPosition
+ */
+MOD.GetCommentBtnPosition = function (cref) {
+  var btn = document.getElementById(cref);
+  if (!btn) throw new Error(PR + 'GetCommentCollectionPosition: Button not found ' + cref);
+  var bbox = btn.getBoundingClientRect();
+  return { x: bbox.left, y: bbox.top };
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * Returns the comment window position for the comment button
+ * shifting the window to the left if it's too close to the edge of the screen.
+ * or shifting it up if it's too close to the bottom of the screen.
+ * x,y is the position of the comment button, offsets are then caclulated
+ */
+MOD.GetCommentCollectionPosition = function (_ref, isExpanded) {
+  var x = _ref.x,
+      y = _ref.y;
 
+  var windowWidth = Math.min(screen.width, window.innerWidth);
+  var windowHeight = Math.min(screen.height, window.innerHeight);
+  var newX = void 0;
+  if (windowWidth - x < 500) {
+    newX = x - 410;
+  } else {
+    newX = x + CMTBTNOFFSET * 2;
+  }
+  var newY = y + window.scrollY;
+  if (windowHeight - y < 250) {
+    if (isExpanded) newY = y - 250;else newY = y - 150;
+  } else {
+    newY = y - CMTBTNOFFSET;
+  }
+  return { x: newX, y: newY };
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /// Open the object that the comment refers to
 /// e.g. in Net.Create it's a node or edge object
 MOD.OpenReferent = function (cref) {
-  var _MOD$DeconstructCref2 = MOD.DeconstructCref(cref),
-      type = _MOD$DeconstructCref2.type,
-      id = _MOD$DeconstructCref2.id;
+  var _MOD$DeconstructCREF2 = MOD.DeconstructCREF(cref),
+      type = _MOD$DeconstructCREF2.type,
+      id = _MOD$DeconstructCREF2.id;
 
   var edge = void 0;
   switch (type) {
@@ -9542,16 +9652,17 @@ MOD.OpenReferent = function (cref) {
       });
       break;
     case 'p':
+      // reserve for future use
       // do something?
       break;
   }
 };
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /// Open comment using a comment id
 MOD.OpenComment = function (cref, cid) {
-  var _MOD$DeconstructCref3 = MOD.DeconstructCref(cref),
-      type = _MOD$DeconstructCref3.type,
-      id = _MOD$DeconstructCref3.id;
+  var _MOD$DeconstructCREF3 = MOD.DeconstructCREF(cref),
+      type = _MOD$DeconstructCREF3.type,
+      id = _MOD$DeconstructCREF3.id;
 
   var edge = void 0;
   switch (type) {
@@ -9577,6 +9688,7 @@ MOD.OpenComment = function (cref, cid) {
       });
       break;
     case 'p':
+      // reserve for future use
       // do something?
       break;
   }
@@ -9622,43 +9734,180 @@ MOD.MarkAllRead = function () {
   m_SetAppStateCommentCollections();
 };
 
+/// COMMENT COLLECTIONS ///////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /// Comment Collections
 MOD.GetCommentCollection = function (uiref) {
   return COMMENT.GetCommentCollection(uiref);
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-MOD.OpenCommentCollection = function (uiref, cref, position) {
-  MOD.UpdateCommentUIState(uiref, { cref: cref, isOpen: true });
-  UDATA.LocalCall('CTHREADMGR_THREAD_OPENED', { uiref: uiref, cref: cref, position: position });
+/*
+  OpenCommentCollection
+
+  The requests come from four sources:
+    * Node Editor
+    * Edge Editor
+    * Node Table
+    * Edge Table
+
+  URCommentVBtn is a UI component that passes clicks
+  to URCommentCollectionMgr via UR.Publish(`CMT_COLLECTION_SHOW`) calls
+
+  URCommentSVGBtn is a purely visual component that renders SVG buttons
+  as symbols and displays the comment count and selection status.
+  It pases the click events to URCommentVBtn.
+
+  MAP
+    * URCommentStatus
+      > URCommentCollectionMgr
+        > URCommentThread
+          > URCommentVBtn
+            > URCommentSVGBtn
+
+
+  HOW IT WORKS
+  When a Node Editor, Edge Editor, Node Table, or Edge Table clicks on the
+  URCommentVBtn, URCommentCollectionMgr will:
+  * Add the requested Thread to the URCommentCollectionMgr
+  * Open the URCommentThread
+  * When the URCommentThread is closed, it will be removed from the URCommentCollectionMgr
+
+*/
+MOD.OpenCommentCollection = function (cref, position) {
+  // Validate
+  if (cref === undefined) throw new Error('comment-mgr.OpenCommentCollection: missing cref data ' + JSON.stringify(cref));
+  if (position === undefined || position.x === undefined || position.y === undefined) throw new Error('comment-mgr.OpenCommentCollection: missing position data ' + JSON.stringify(position));
+  position.x = parseInt(position.x); // handle net call data
+  position.y = parseInt(position.y);
+  // 0. If the comment is already open, do nothing
+  var openComments = MOD.GetOpenComments(cref);
+  if (openComments) {
+    MOD.CloseCommentCollection(cref, cref, MOD.GetCurrentUserId());
+    return; // already open, close it
+  }
+  // 1. Position the window to the right of the click
+  var commentThreadWindowIsExpanded = MOD.GetCommentCollectionCount(cref);
+  var collectionPosition = MOD.GetCommentCollectionPosition(position, commentThreadWindowIsExpanded);
+
+  // 2. Update the state
+  MOD.UpdateCommentUIState(cref, { cref: cref, isOpen: true });
+  // 3. Open the collection in the collection manager
+  UDATA.LocalCall('CMT_COLLECTION_SHOW', { cref: cref, position: collectionPosition });
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
- * Used by NCNodeTable and NCEdgeTable to open/close the comment thread
- * If a comment is already opened by one button (e.g. node), and the user
- * clicks on another comment button (e.g. NodeTable), the new one will open,
- * and the old one closed.
- * Called by URCommentBtn, NCNodeTable, and NCEdgeTable
- * @param {TCommentUIRef} uiref comment button id
- * @param {TCollectionRef} cref collection_ref
- * @param {Object} position x, y position of the comment button
+ * Called by URCommentVBtn
+ * @param {string} cref
  */
-MOD.ToggleCommentCollection = function (uiref, cref, position) {
-  var uid = MOD.GetCurrentUserId();
-  // is the comment already open?
-  var open_uiref = MOD.GetOpenComments(cref);
-  if (open_uiref === uiref) {
-    // already opened by THIS uiref, so toggle it closed.
-    MOD.CloseCommentCollection(uiref, cref, uid);
-  } else if (open_uiref !== undefined) {
-    // already opened by SOMEONE ELSE, so close it, then open the new one
-    MOD.CloseCommentCollection(open_uiref, cref, uid);
-    MOD.OpenCommentCollection(uiref, cref, position);
-  } else {
-    // no comment is open, so open the new one
-    MOD.OpenCommentCollection(uiref, cref, position);
+MOD.OpenCommentCollectionByCref = function (cref) {
+  var cmtPosition = MOD.GetCommentBtnPosition(cref);
+  MOD.OpenCommentCollection(cref, {
+    x: cmtPosition.x + CMTBTNOFFSET,
+    y: cmtPosition.y + CMTBTNOFFSET
+  });
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/// Open comment inside a collection using a comment id
+/// NOTE this is NOT used by SVGButtons
+MOD.OpenCommentStatusComment = function (cref, cid) {
+  var _MOD$DeconstructCREF4 = MOD.DeconstructCREF(cref),
+      type = _MOD$DeconstructCREF4.type,
+      id = _MOD$DeconstructCREF4.id;
+
+  var parms = void 0;
+
+  // if a comment is being edited...
+  // - don't close all comments
+  // - don't open a new one
+  if (MOD.GetCommentsAreBeingEdited()) {
+    var CMTSTATUS = UDATA.AppState('CMTSTATUS');
+    CMTSTATUS.dialog = {
+      isOpen: true,
+      message: 'Please finish editing your comment before opening a different comment!',
+      okmessage: 'OK',
+      onOK: m_CloseRemoveCommentDialog,
+      cancelmessage: '',
+      onCancel: undefined
+    };
+
+    UDATA.SetAppState('CMTSTATUS', CMTSTATUS);
+    return;
+  }
+
+  MOD.CloseAllCommentCollectionsWithoutMarkingRead();
+
+  var edge = void 0;
+  switch (type) {
+    case 'p':
+      // project (from MEME, currently not used) reserved for future use
+      MOD.OpenCommentCollectionByCref('projectcmt');
+      break;
+    case 'n':
+      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(id)] }).then(function () {
+        MOD.OpenCommentCollectionByCref(cref);
+        // wait for the comment to open before scrolling to the current comment
+        // REVIEW: Do this as a callback?
+        //         Problem is that this is a long chain for the callback
+        //         - OpenCommentCollectionByCref
+        //         - OpenCommentCollection
+        //         - UpdateCommentUIState
+        //         - m_SetAppStateCommentCollections
+        //         - UDATA.SetAppState('COMMENTCOLLECTION)
+        setTimeout(function () {
+          var commentEl = document.getElementById(cid);
+          commentEl.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      });
+      break;
+    case 'e':
+      edge = UDATA.AppState('NCDATA').edges.find(function (e) {
+        return e.id === Number(id);
+      });
+      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [edge.source] }).then(function () {
+        UDATA.LocalCall('EDGE_SELECT', { edgeId: edge.id }).then(function () {
+          MOD.OpenCommentCollectionByCref(cref);
+          // wait for the comment to open before scrolling to the current comment
+          // REVIEW: Do this as a callback?
+          setTimeout(function () {
+            var commentEl = document.getElementById(cid);
+            commentEl.scrollIntoView({ behavior: 'smooth' });
+          });
+        });
+      });
+      break;
   }
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/// DEPRECATED -- URCommentVBtn handles this currently
+///               But we might want to restore the ability to toggle in place.
+// /**
+//  * Used by NCNodeTable and NCEdgeTable to open/close the comment thread
+//  * If a comment is already opened by one button (e.g. node), and the user
+//  * clicks on another comment button (e.g. NodeTable), the new one will open,
+//  * and the old one closed.
+//  * Called by URCommentBtn, NCNodeTable, and NCEdgeTable
+//  * @param {TCommentUIRef} uiref comment button id
+//  * @param {TCollectionRef} cref collection_ref
+//  * @param {Object} position x, y position of the comment button
+//  */
+// MOD.ToggleCommentCollection = (uiref, cref, position) => {
+//   const uid = MOD.GetCurrentUserId();
+//   // is the comment already open?
+//   const open_uiref = MOD.GetOpenComments(cref);
+//   if (open_uiref === uiref) {
+//     // already opened by THIS uiref, so toggle it closed.
+//     MOD.CloseCommentCollection(uiref, cref, uid);
+//   } else if (open_uiref !== undefined) {
+//     // already opened by SOMEONE ELSE, so close it, then open the new one
+//     MOD.CloseCommentCollection(open_uiref, cref, uid);
+//     // REVIEW remove uiref?
+//     MOD.OpenCommentCollection(uiref, cref, position);
+//   } else {
+//     // no comment is open, so open the new one
+//     // REVIEW remove uiref?
+//     MOD.OpenCommentCollection(uiref, cref, position);
+//   }
+// };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Marks a comment as read, and closes the component.
@@ -9674,16 +9923,47 @@ MOD.CloseCommentCollection = function (uiref, cref, uid) {
     return;
   }
   // OK to close
+  UDATA.LocalCall('CMT_COLLECTION_HIDE', { cref: cref });
+  COMMENT.CloseCommentCollection(uiref, cref, uid);
+  m_SetAppStateCommentCollections();
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * Marks a comment as read, and closes the component.
+ * Called by NCCommentBtn when clicking "Close"
+ * @param {Object} uiref comment button id (note kept for Net.Create compatibility)
+ * @param {Object} cref collection_ref
+ * @param {Object} uid user id
+ */
+MOD.CloseCommentCollectionAndMarkRead = function (uiref, cref, uid) {
+  if (!MOD.OKtoClose(cref)) {
+    // Comment is still being edited, prevent close
+    alert('This comment is still being edited!  Please Save or Cancel before closing the comment.');
+    return;
+  }
+  // OK to close
+  UDATA.LocalCall('CMT_COLLECTION_HIDE', { cref: cref });
+  // Update the readby
   m_DBUpdateReadBy(cref, uid);
   COMMENT.CloseCommentCollection(uiref, cref, uid);
   m_SetAppStateCommentCollections();
-  // call to broadcast state AFTER derived state changes
-  UDATA.LocalCall('CTHREADMGR_THREAD_CLOSED', { cref: cref });
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * Closes all comment collections without marking them as read.
+ * Used by comment status when user clicks on status updates to display
+ * updated comments.
+ * @param {*} uid
+ */
+MOD.CloseAllCommentCollectionsWithoutMarkingRead = function () {
+  var uid = MOD.GetCurrentUserId();
+  UDATA.LocalCall('CMT_COLLECTION_HIDE_ALL');
+  COMMENT.CloseAllCommentCollections(uid);
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.GetCommentCollectionCount = function (cref) {
   var ccol = COMMENT.GetCommentCollection(cref);
-  return ccol ? ccol.commentCount : '';
+  return ccol ? ccol.commentCount : 0;
 };
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.GetCommentStats = function () {
@@ -9714,6 +9994,7 @@ MOD.GetCommentThreadPosition = function (commentButtonId) {
 MOD.GetCommentUIState = function (uiref) {
   return COMMENT.GetCommentUIState(uiref);
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Used to open/close the comment thread
  * @param {string} uiref
@@ -9731,8 +10012,26 @@ MOD.GetOpenComments = function (cref) {
 };
 
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// Editable Comments (comments being ddited)
+/// Editable Comments (comments being edited)
+MOD.RegisterCommentBeingEdited = function (cid) {
+  COMMENT.RegisterCommentBeingEdited(cid);
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+MOD.DeRegisterCommentBeingEdited = function (cid) {
+  return COMMENT.DeRegisterCommentBeingEdited(cid);
+};
 
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/// Are ANY comments being edited?
+/// Returns True if ANY comment is being edited
+/// * Used by comment status when user clicks on a comment id to view a saved comment
+///   to prevent closing the comment collection if a comment is being edited.
+/// * Also used by URCommentThread to determine whether "Click to add" is displayed
+MOD.GetCommentsAreBeingEdited = function () {
+  return COMMENT.GetCommentsAreBeingEdited();
+};
+
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.OKtoClose = function (cref) {
   var cvobjs = MOD.GetThreadedViewObjects(cref);
   var isBeingEdited = false;
@@ -9759,14 +10058,16 @@ MOD.GetCommentVObj = function (cref, cid) {
 MOD.GetComment = function (cid) {
   return COMMENT.GetComment(cid);
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.GetUnreadRepliesToMe = function (uid) {
   return COMMENT.GetUnreadRepliesToMe(uid);
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.GetUnreadComments = function () {
   return COMMENT.GetUnreadComments();
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
- *
  * @param {Object} cobj Comment Object
  */
 MOD.AddComment = function (cobj) {
@@ -9777,6 +10078,35 @@ MOD.AddComment = function (cobj) {
     m_SetAppStateCommentVObjs();
   });
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** User clicks Edit on a comment
+ *  @param {TCommentID} comment_id
+ */
+MOD.UIEditComment = function (comment_id) {
+  MOD.RegisterCommentBeingEdited(comment_id);
+  MOD.LockComment(comment_id);
+  UDATA.NetSend('COMMENT_UPDATE_PERMISSIONS');
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** User clicks Cancel on a comment
+ *  @param {TCommentID} comment_id
+ */
+MOD.UICancelComment = function (comment_id) {
+  MOD.DeRegisterCommentBeingEdited(comment_id);
+  MOD.UnlockComment(comment_id);
+  UDATA.NetSend('COMMENT_UPDATE_PERMISSIONS');
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** User clicks Save coment
+ *  @param {TComment} cobj
+ */
+MOD.UISaveComment = function (cobj) {
+  MOD.UnlockComment(cobj.comment_id);
+  MOD.DeRegisterCommentBeingEdited(cobj.comment_id);
+  MOD.UpdateComment(cobj);
+  UDATA.NetSend('COMMENT_UPDATE_PERMISSIONS');
+};
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Update the ac/dc comments, then save it to the db
  * This will also broadcast COMMENT_UPDATE so other clients on the network
@@ -9788,6 +10118,7 @@ MOD.UpdateComment = function (cobj) {
   m_DBUpdateComment(cobj);
   m_SetAppStateCommentVObjs();
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Removing a comment can affect multiple comments, so this is done
  * via a batch operation.  We queue up all of the comment changes
@@ -9797,42 +10128,59 @@ MOD.UpdateComment = function (cobj) {
  *
  * Removing is a two step process:
  * 1. Show confirmation dialog
- * 2. Execute the remova
+ * 2. Execute the removal
+ *
+ * Also used by "Cancel" button to remove a comment being edited
  * @param {Object} parms
  * @param {string} parms.collection_ref
  * @param {string} parms.comment_id
+ * @param {string} parms.id
  * @param {string} parms.uid
+ * @param {boolean} parms.isAdmin
  * @param {boolean} parms.showCancelDialog
- * @param {function} cb CallBack
+ * @param {boolean} parms.skipDialog
  */
-MOD.RemoveComment = function (parms, cb) {
+MOD.RemoveComment = function (parms) {
   var confirmMessage = void 0,
       okmessage = void 0,
       cancelmessage = void 0;
   if (parms.showCancelDialog) {
     // Are you sure you want to cancel?
-    confirmMessage = 'Are you sure you want to cancel editing this comment #' + parms.comment_id + '?';
+    confirmMessage = 'Are you sure you want to cancel editing this comment #' + parms.id + '?';
     okmessage = 'Cancel Editing and Delete';
     cancelmessage = 'Go Back to Editing';
   } else {
+    // show delete confirmaiton dialog
     // Are you sure you want to delete?
     parms.isAdmin = SETTINGS.IsAdmin();
-    confirmMessage = parms.isAdmin ? 'Are you sure you want to delete this comment #' + parms.comment_id + ' and ALL related replies (admin only)?' : 'Are you sure you want to delete this comment #' + parms.comment_id + '?';
+    confirmMessage = parms.isAdmin ? 'Are you sure you want to delete this comment #' + parms.id + ' and ALL related replies (admin only)?' : 'Are you sure you want to delete this comment #' + parms.id + '?';
     okmessage = 'Delete';
     cancelmessage = "Don't Delete";
   }
-  var dialog = React.createElement(NCDialog, {
-    message: confirmMessage,
-    okmessage: okmessage,
-    onOK: function onOK(event) {
-      return m_ExecuteRemoveComment(event, parms, cb);
-    },
-    cancelmessage: cancelmessage,
-    onCancel: m_CloseRemoveCommentDialog
-  });
-  var container = document.getElementById(dialogContainerId);
-  ReactDOM.render(dialog, container);
+
+  var CMTSTATUS = UDATA.AppState('CMTSTATUS');
+  if (parms.skipDialog) {
+    m_ExecuteRemoveComment(event, parms);
+  } else {
+    CMTSTATUS.dialog = {
+      isOpen: true,
+      message: confirmMessage,
+      okmessage: okmessage,
+      onOK: function onOK(event) {
+        return m_ExecuteRemoveComment(event, parms);
+      },
+      cancelmessage: cancelmessage,
+      onCancel: m_CloseRemoveCommentDialog
+    };
+  }
+  UDATA.SetAppState('CMTSTATUS', CMTSTATUS);
+
+  MOD.DeRegisterCommentBeingEdited(parms.comment_id);
+  MOD.UnlockComment(parms.comment_id);
+
+  UDATA.LocalCall('COMMENT_UPDATE_PERMISSIONS');
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * The db call is made AFTER ac/dc handles the removal and the logic of
  * relinking comments.  The db call is dumb, all the logic is in dc-comments.
@@ -9849,11 +10197,13 @@ function m_ExecuteRemoveComment(event, parms, cb) {
   m_CloseRemoveCommentDialog();
   if (typeof cb === 'function') cb();
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_CloseRemoveCommentDialog() {
-  var container = document.getElementById(dialogContainerId);
-  ReactDOM.unmountComponentAtNode(container);
+  var CMTSTATUS = UDATA.AppState('CMTSTATUS');
+  CMTSTATUS.dialog = { isOpen: false };
+  UDATA.SetAppState('CMTSTATUS', CMTSTATUS);
 }
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Requested when a node/edge is deleted
  * @param {string} cref
@@ -9868,7 +10218,6 @@ MOD.RemoveAllCommentsForCref = function (cref) {
 
 /// EVENT HANDLERS ////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 /**
  * Respond to network COMMENTS_UPDATE Messages
  * Usually used after a comment deletion to handle a batch of comment updates
@@ -9905,6 +10254,7 @@ MOD.HandleCOMMENTS_UPDATE = function (dataArray) {
   m_SetAppStateCommentCollections();
   m_SetAppStateCommentVObjs();
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Respond to COMMENT_UPDATE Messages from the network
  * After the server/db saves the new/updated comment, COMMENT_UPDATE is
@@ -9916,13 +10266,41 @@ MOD.HandleCOMMENTS_UPDATE = function (dataArray) {
  */
 MOD.HandleCOMMENT_UPDATE = function (data) {
   if (DBG) console.log('COMMENT_UPDATE======================', data);
-  var comment = data.comment;
 
-  m_UpdateComment(comment);
-  // and broadcast a state change
-  m_SetAppStateCommentCollections();
-  m_SetAppStateCommentVObjs();
+  // If a new comment is sent over the network
+  // and the incoming comment conflicts with a comment being edited
+  // then re-link the editing comment to point to the incoming comment
+
+  var incomingComment = data.comment;
+
+  var editingCommentId = COMMENT.GetCommentsBeingEdited().values().next().value;
+  var editingComment = COMMENT.GetComment(editingCommentId);
+
+  if (editingComment) {
+    // conflict if both think they're the root
+    if (incomingComment.comment_id_parent === '' && incomingComment.comment_id_previous === '' && editingComment.comment_id_parent === '' && editingComment.comment_id_previous === '') {
+      if (DBG) console.error('CONFLICT! both think they are root');
+      // Re-link the comment to the incoming
+      editingComment.comment_id_previous = incomingComment.comment_id;
+    }
+    // conflict if previous of both are the same
+    if (incomingComment.comment_id_previous === editingComment.comment_id_previous) {
+      if (DBG) console.error('CONFLICT! both think they are reply to same previous');
+      // Re-link the comment to the incoming
+      editingComment.comment_id_previous = incomingComment.comment_id;
+    }
+    // conflict if parent of both are the same and previous are blank (new reply root)
+    if (incomingComment.comment_id_parent === editingComment.comment_id_parent && incomingComment.comment_id_previous === '' && editingComment.comment_id_previous === '') {
+      if (DBG) console.error('CONFLICT! both think they are reply to same parent');
+      // Re-link the comment to the incoming
+      editingComment.comment_id_previous = incomingComment.comment_id;
+    }
+  }
+
+  var updatedComments = [{ comment: incomingComment }, { comment: editingComment }];
+  MOD.HandleCOMMENTS_UPDATE(updatedComments);
 };
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.HandleREADBY_UPDATE = function (data) {
   if (DBG) console.log('READBY_UPDATE======================');
   // Not used currently
@@ -9939,17 +10317,15 @@ MOD.HandleREADBY_UPDATE = function (data) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 MOD.LockComment = function (comment_id) {
   UDATA.NetCall('SRV_DBLOCKCOMMENT', { commentID: comment_id }).then(function () {
-    UDATA.NetCall('SRV_REQ_EDIT_LOCK', { editor: EDITORTYPE.COMMENT });
     UDATA.LocalCall('SELECTMGR_SET_MODE', { mode: 'comment_edit' });
   });
 };
 MOD.UnlockComment = function (comment_id) {
   UDATA.NetCall('SRV_DBUNLOCKCOMMENT', { commentID: comment_id }).then(function () {
-    UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.COMMENT });
     UDATA.LocalCall('SELECTMGR_SET_MODE', { mode: 'normal' });
   });
 };
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_DBUpdateComment(cobj, cb) {
   var comment = {
     collection_ref: cobj.collection_ref,
@@ -9967,6 +10343,7 @@ function m_DBUpdateComment(cobj, cb) {
     if (typeof cb === 'function') cb(data);
   });
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_DBUpdateReadBy(cref, uid) {
   // Get existing readby
   var cvobjs = COMMENT.GetThreadedViewObjects(cref, uid);
@@ -9985,6 +10362,7 @@ function m_DBUpdateReadBy(cref, uid) {
     if (typeof cb === 'function') cb(data);
   });
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  * Executes multiple database operations via a batch of commands:
  * - `cobjs` will be updated
@@ -10001,3507 +10379,6 @@ function m_DBRemoveComment(items, cb) {
 /// EXPORT CLASS DEFINITION ///////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module.exports = MOD;
-});
-
-require.register("view/netcreate/components/AutoComplete.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-  AutoComplete is the text input field for entering node labels to:
-  * search for nodes,
-  * edit existing nodes,
-  * and add new nodes.
-  * view the current selection/setting when searching for a node
-  * view the current selection/setting for an edge source or target
-
-
-
-  ## MAIN FEATURES
-
-  * It interactively provides a list of suggestions that match the current
-    input, e.g. typing "ah" will display a list of suggestions including "Ah
-    Long", "Ah Seung", and "Oahu Railroad Station".
-
-  * Users can highlight suggestions (via mouseover or with keyboard arrows)
-
-  * Users can select a suggestion (via clicking or hitting return)
-
-  * Only one AutoComplete component can be active at a time in an app.
-    Since there can be multiple AutoComplete components on a single page
-    (e.g. multiple edges along with the source), we disable the component
-    when it isn't active.
-
-  * When the AutoComplete component is disabled, it will display a
-    generic INPUT component instead of the Autosuggest component.
-
-  * When the AutoComplete component is disabled, since it will not
-    receive SELECTION updates, we need to pass it the current field
-    value via the this.props.disabledValue.
-
-  AutoComplete is a wrapper class for the open source AutoSuggest component,
-  which handles the actual rendering of the suggestions list.  AutoComplete
-  provides an interface to NodeSelector and EdgeEntry.  AutoComplete also
-  provides the handler routines for generating the suggestions list and
-  handling highlights and selections.  Data is passed to AutoComplete via
-  UDATA SELECTION state changes.
-
-  This relies on the react-autosuggest component.
-  See documentation: https://github.com/moroshko/react-autosuggest
-
-
-
-  ## TO USE
-
-      <AutoComplete
-        isDisabled={this.state.canEdit}
-        disabledValue={this.state.formData.label}
-        inactiveMode={'disabled'}
-      />
-
-
-
-  ## TECHNICAL DESCRIPTION
-
-  AutoComplete handles five basic functions:
-
-  1. Show suggestions when the user types in the input search field.
-  2. Mark nodes on graph when the user changes the search field.
-  3. Set selection when user clicks on a suggestion.
-  4. Show the label if the node is selected externally
-      (via a click on the graph)
-  5. Provide an edit field for the label when the user is editing a node
-      (during edit, show suggestions, but don't select anything?)
-
-  The Autosuggest input field is a controlled field.
-  It is controlled via this.state.value.
-  See https://reactjs.org/docs/forms.html#controlled-components
-
-  Sequence of Events
-
-  1. When the user types in the Autosuggest input field,
-  2. AutoComplete makes a UDATA SOURCE_SEARCH call
-  3. nc-logic handles the call and returns a SELECTION state update
-  4. AutoComplete then sets the Autosuggest input field value via
-      this.state.value.
-  5. The updated SELECTION state also contains a list of
-      suggestedNodeLabels that is used by Autosuggest whenever it
-      requests a list of suggestions.
-
-
-
-  ## HIGHLIGHTING vs MARKING
-
-  "Highlighting" refers to the temporary rollover highlight of a suggested node
-  in the suggestion list.  "Marking" refers to the stroked color of a node
-  circle on the D3 graph.
-
-
-
-  ## PROPS
-
-  identifier
-
-        A unique ID for identifying which AutoComplete component is active
-        within the whole app system.
-
-  disabledValue
-
-        When the AutoComplete component is not active, it should display
-        the currently selected node (rather than be an active input field
-        for selecting a new node).  This is the label for that node.
-
-  inactiveMode
-
-        When the AutoComplete component is not active, it can be either
-        'static' or 'disabled' depending on the parent field.  This prop
-        sets which of these modes the field should default to:
-
-        'static'   -- an unchangeable field, e.g. the Source node for an
-                      edge is always going to be the Source label.  It
-                      cannot be changed.
-        'disabled' -- a changeable field that is not currently activated,
-                      e.g. the Target node for an edge.
-
-  shouldIgnoreSelection
-
-        Used by NodeSelector and EdgeEditor's target node field
-        to prevent user from selecting another node
-        while editing a node.
-
-  Based on example code from https://codepen.io/moroshko/pen/vpBzMr
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var Input = ReactStrap.Input;
-
-var Autosuggest = require('react-autosuggest');
-var UNISYS = require('unisys/client');
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var DBG = false;
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var MODE_STATIC = 'static'; // Can't be edited ever
-var MODE_DISABLED = 'disabled'; // Can be edited, but not at the moment
-var MODE_LINK = 'link'; // Can be edited, but not at the moment, and it links to a view until then
-var MODE_ACTIVE = 'active'; // Currently able to edit
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var _IsMounted = false;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var AutoComplete = function (_UNISYS$Component) {
-  _inherits(AutoComplete, _UNISYS$Component);
-
-  function AutoComplete() {
-    _classCallCheck(this, AutoComplete);
-
-    var _this = _possibleConstructorReturn(this, (AutoComplete.__proto__ || Object.getPrototypeOf(AutoComplete)).call(this));
-
-    _this.state = {
-      value: '',
-      suggestions: [],
-      id: '',
-      mode: MODE_DISABLED
-    };
-
-    _this.onStateChange_SEARCH = _this.onStateChange_SEARCH.bind(_this);
-    _this.onStateChange_SELECTION = _this.onStateChange_SELECTION.bind(_this);
-    _this.onStateChange_AUTOCOMPLETE = _this.onStateChange_AUTOCOMPLETE.bind(_this);
-    _this.onInputChange = _this.onInputChange.bind(_this);
-    _this.getSuggestionValue = _this.getSuggestionValue.bind(_this);
-    _this.renderSuggestion = _this.renderSuggestion.bind(_this);
-    _this.onSuggestionsFetchRequested = _this.onSuggestionsFetchRequested.bind(_this);
-    _this.onSuggestionsClearRequested = _this.onSuggestionsClearRequested.bind(_this);
-    _this.onSuggestionSelected = _this.onSuggestionSelected.bind(_this);
-    _this.onSuggestionHighlighted = _this.onSuggestionHighlighted.bind(_this);
-    _this.shouldRenderSuggestions = _this.shouldRenderSuggestions.bind(_this);
-    _this.onBlur = _this.onBlur.bind(_this);
-
-    // NOTE: do this AFTER you have used bind() on the class method
-    // otherwise the call will fail due to missing 'this' context
-    _this.OnAppStateChange('SEARCH', _this.onStateChange_SEARCH);
-    _this.OnAppStateChange('SELECTION', _this.onStateChange_SELECTION);
-    _this.OnAppStateChange('ACTIVEAUTOCOMPLETE', _this.onStateChange_AUTOCOMPLETE);
-    return _this;
-  } // constructor
-
-  /// UNISYS STATE CHANGE HANDLERS //////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /** 'SEARCH' handler
-   */
-
-
-  _createClass(AutoComplete, [{
-    key: 'onStateChange_SEARCH',
-    value: function onStateChange_SEARCH(data) {
-      // grab entire global state for 'SELECTION
-      // REVIEW // autocompleteid probab;y should be stored elsewhere or use a
-      // different mechanism
-      if (DBG) console.log('AutoComplete', this.props.identifier, ': Got SEARCH', data);
-
-      var _AppState = this.AppState('ACTIVEAUTOCOMPLETE'),
-          activeAutoCompleteId = _AppState.activeAutoCompleteId;
-
-      if (activeAutoCompleteId === this.props.identifier) {
-        // This is the currently active AutoComplete field
-        // Update the autosuggest input field's value with the current search data
-        if (DBG) console.log('...AutoComplete', this.props.identifier, ': ACTIVE setting search value to', data.searchLabel);
-        if (data.searchLabel !== undefined) {
-          this.setState({
-            mode: MODE_ACTIVE,
-            value: data.searchLabel
-          });
-        }
-      } else {
-        // This is not the active AutoComplete field
-        // Use the disabledValue prop to display
-        // REVIEW: this probably is handled better in render()
-        if (_IsMounted) {
-          if (DBG) console.log('...AutoComplete', this.props.identifier, ': NOT ACTIVE setting search value to', this.props.disabledValue);
-          this.setState({
-            mode: this.props.inactiveMode,
-            value: this.props.disabledValue
-          });
-        } else {
-          if (DBG) console.log('...AutoComplete', this.props.identifier, ': NOT ACTIVE, but skipping update because component is unmounted');
-        }
-      }
-    } // onStateChange_SEARCH
-
-    /** 'SELECTION' handler
-        Update this AutoComplete input value when the currently selected SELECTION has changed
-        AND we are active and have the current activeAutoCompleteId.
-        This is especially important for when adding a target field to a new EdgeEditor.
-     */
-
-  }, {
-    key: 'onStateChange_SELECTION',
-    value: function onStateChange_SELECTION(data) {
-      if (DBG) console.log('...AutoComplete', this.props.identifier, ': Got SELECTION', data);
-      if (this.props.shouldIgnoreSelection) {
-        if (DBG) console.log('...AutComplete', this.props.identifier, ': Ignoring SELECTION (probably because NodeSelector is in edit mode).');
-        return;
-      }
-      var activeAutoCompleteId = this.AppState('ACTIVEAUTOCOMPLETE').activeAutoCompleteId;
-      if (this.props.identifier === activeAutoCompleteId || activeAutoCompleteId === 'search') {
-        // Update the searchLabel if either this nodeSelector or the 'search' field is
-        // is the current active AutoComplete field.
-        // We only ignore SELECTION updates if an edge target field has the current focus.
-        // This is necessary for the case when the user clicks on a node in the D3 graph
-        // and the search field has the current AutoComplete focus.  Otherwise the state.value
-        // is never updated.
-        if (DBG) console.log('...AutoComplete', this.props.identifier, ': ACTIVE got SELECTION');
-        var nodes = data.nodes;
-        if (nodes !== undefined && nodes.length > 0 && nodes[0] !== undefined && nodes[0].label !== undefined) {
-          var searchLabel = nodes[0].label;
-          if (DBG) console.log('...AutoComplete', this.props.identifier, ': ACTIVE got SELECTION, searchLabel', searchLabel);
-          // FIX: This line causes the "Can't call setState (or forceUpdate) on an unmounted component" error
-          // is it because it's not actually visible (unmounted)?
-          this.setState({ value: searchLabel });
-        }
-      }
-    }
-
-    /** 'AUTOCOMPLETE' handler
-      Update this AutoComplete state when the currently selected AUTOCOMPLETE field has changed
-     */
-
-  }, {
-    key: 'onStateChange_AUTOCOMPLETE',
-    value: function onStateChange_AUTOCOMPLETE(data) {
-      if (DBG) console.log('...AutoComplete', this.props.identifier, ': Got AUTOCOMPLETE', data);
-      var mode = this.state.mode;
-      if (data.activeAutoCompleteId === this.props.identifier) {
-        mode = MODE_ACTIVE;
-      } else {
-        mode = this.props.inactiveMode;
-      }
-      this.setState({ mode: mode });
-    }
-
-    /// AUTOSUGGEST HANDLERS ////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle Autosuggest's input event trigger
-      User has typed something new into the field
-     */
-
-  }, {
-    key: 'onInputChange',
-    value: function onInputChange(event, _ref) {
-      var newValue = _ref.newValue,
-          method = _ref.method;
-
-      // Pass the input value (node label search string) to UDATA
-      // which will in turn pass the searchLabel back to the SEARCH
-      // state handler in the constructor, which will in turn set the state
-      // of the input value to be passed on to AutoSuggest
-      this.AppCall('SOURCE_SEARCH', { searchString: newValue });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle Autosuggest's request to set the value of the input field when
-        a selection is clicked.
-     */
-
-  }, {
-    key: 'getSuggestionValue',
-    value: function getSuggestionValue(suggestion) {
-      return suggestion.label;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle Autosuggest's request for HTML rendering of suggestions
-     */
-
-  }, {
-    key: 'renderSuggestion',
-    value: function renderSuggestion(suggestion) {
-      return suggestion.label;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle Autosuggest's request for list of suggestions
-      lexicon =  string array of node labels
-       lexicon is a one-dimensional string array that represents the complete list
-      of all possible suggestions that are then filtered based on the user typing
-      for suggestions.
-       We construct the list on the fly based on the NCDATA data.  If the data model
-      changes, we'll need to update this lexicon constructor.
-     */
-
-  }, {
-    key: 'onSuggestionsFetchRequested',
-    value: function onSuggestionsFetchRequested() {
-      var data = this.AppState('SEARCH');
-      if (data.suggestedNodes) {
-        this.setState({
-          suggestions: data.suggestedNodes
-        });
-      } else {
-        if (DBG) console.log('AutoComplete.onSuggestionsFetchRequested: No suggestions.');
-      }
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle Autosuggest's request to clear list of suggestions
-     */
-
-  }, {
-    key: 'onSuggestionsClearRequested',
-    value: function onSuggestionsClearRequested() {
-      this.setState({
-        suggestions: []
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Autosuggest's callback when a selection is made
-        If a new value is suggested, we call SOURCE_SELECT.
-        Autocomplete-logic should handle the creation of a new data object.
-     */
-
-  }, {
-    key: 'onSuggestionSelected',
-    value: function onSuggestionSelected(event, _ref2) {
-      var suggestion = _ref2.suggestion;
-
-      // User selected an existing node in the suggestion list
-      this.AppCall('SOURCE_SELECT', { nodeIDs: [suggestion.id] });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Autosuggest calls this whenever the user has highlighted a different suggestion
-        from the suggestion list.
-     */
-
-  }, {
-    key: 'onSuggestionHighlighted',
-    value: function onSuggestionHighlighted(_ref3) {
-      var suggestion = _ref3.suggestion;
-
-      if (suggestion && suggestion.id) this.AppCall('AUTOSUGGEST_HILITE_NODE', { nodeId: suggestion.id });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Autosuggest checks this before rendering suggestions
-        Set the prop to turn off suggestions
-     */
-
-  }, {
-    key: 'shouldRenderSuggestions',
-    value: function shouldRenderSuggestions(value) {
-      return this.state.mode === MODE_ACTIVE;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** The AutoComplete field has lost focus.
-        Check to see if it references a valid node, if so, select it
-     */
-
-  }, {
-    key: 'onBlur',
-    value: function onBlur(value) {
-      // User selected an existing node in the suggestion list
-      // or User clicked on d3 graph
-      // or User clicked outside of field
-      if (DBG) console.log('AutoComplete.onBlur', value);
-      this.AppCall('SOURCE_SEARCH_AND_SELECT', { searchString: this.state.value });
-    }
-
-    /// REACT LIFECYCLE /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** AutoComplete fields are routinely constructed and deconstructed as different
-        edges and nodes are selected.  We need to keep track of whether it's
-        mounted or not so that we know when it's valid to call setState.  Otherwise
-        we might call setState on an unmounted component and generate a React warning.
-        https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html
-     */
-
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      _IsMounted = true;
-      this.setState({ mode: this.props.inactiveMode });
-    }
-    /**
-     */
-
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      _IsMounted = false;
-      // deregister ACTIVEAUTOMPLETE when component unmounts
-      // otherwise state updates trigger a setState on unmounted component error
-      this.AppStateChangeOff('SEARCH', this.onStateChange_SEARCH);
-      this.AppStateChangeOff('SELECTION', this.onStateChange_SELECTION);
-      this.AppStateChangeOff('ACTIVEAUTOCOMPLETE', this.onStateChange_AUTOCOMPLETE);
-    }
-
-    /** Conditionally render components based on current 'mode'. The mode
-      is passed
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      var _state = this.state,
-          value = _state.value,
-          suggestions = _state.suggestions;
-
-      var inputProps = {
-        placeholder: this.props.placeholder || 'Type node name...',
-        value: value,
-        onChange: this.onInputChange,
-        onBlur: this.onBlur
-      };
-      var jsx = void 0;
-
-      // Show different widgets depending on mode.
-      // If MODE_ACTIVE is just show the active state,
-      // otherwise, use the current inactive mode in this.props.inactiveMode
-      // to define the inactive state
-      // because this.state.mode may not be up to date if the mode is inactive
-      // due to prop changes not triggering mode updates.
-      // e.g. if the parent container changed props from a disabled to
-      // static state, it does not trigger a mode update in AUTOCOMPLETE.
-      // This is mostly an edge case with EDGE_EDITs which will update props
-      // without a corresponding UNISYS message call to trigger the mode
-      // change.
-      if (this.state.mode === MODE_ACTIVE) {
-        jsx = React.createElement(Autosuggest, {
-          suggestions: suggestions,
-          shouldRenderSuggestions: this.shouldRenderSuggestions
-          // Map to Local Handlers for Autosuggest event triggers (requests)
-          , onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
-          onSuggestionsClearRequested: this.onSuggestionsClearRequested,
-          getSuggestionValue: this.getSuggestionValue,
-          renderSuggestion: this.renderSuggestion
-          // Receive Data from Autosuggest
-          , onSuggestionHighlighted: this.onSuggestionHighlighted,
-          onSuggestionSelected: this.onSuggestionSelected
-          // Pass Data to Autosuggest
-          , inputProps: inputProps
-        });
-      } else if (this.props.inactiveMode === MODE_STATIC) {
-        jsx = React.createElement(
-          'p',
-          null,
-          this.props.disabledValue
-        );
-      } else if (this.props.inactiveMode === MODE_DISABLED) {
-        jsx = React.createElement(Input, { type: 'text', value: this.props.disabledValue, readOnly: true });
-      } else if (this.props.inactiveMode === MODE_LINK) {
-        jsx = React.createElement(
-          'a',
-          { href: '#', onClick: function onClick(e) {
-              return _this2.selectNode(_this2.props.linkID, e);
-            } },
-          this.props.disabledValue
-        );
-      } else {
-        throw Error('AutoComplete: Unhandled mode \'' + this.state.mode + '\'');
-      }
-
-      // OLD METHOD
-      // This relied on mode being updated, but a change in props does not
-      // trigger a corresponding change in mode.
-      // switch (this.state.mode) {
-      //   case MODE_STATIC:
-      //     jsx = ( <p>{this.props.disabledValue}</p> );
-      //     break;
-      //   case MODE_DISABLED:
-      //     jsx = ( <Input type="text" value={this.props.disabledValue} readOnly={true}/> );
-      //     break;
-      //   case MODE_ACTIVE:
-      //     jsx = (
-      //       <Autosuggest
-      //         suggestions={suggestions}
-      //         shouldRenderSuggestions={this.shouldRenderSuggestions}
-      //         // Map to Local Handlers for Autosuggest event triggers (requests)
-      //         onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-      //         onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-      //         getSuggestionValue={this.getSuggestionValue}
-      //         renderSuggestion={this.renderSuggestion}
-      //         // Receive Data from Autosuggest
-      //         onSuggestionHighlighted={this.onSuggestionHighlighted}
-      //         onSuggestionSelected={this.onSuggestionSelected}
-      //         // Pass Data to Autosuggest
-      //         inputProps={inputProps}
-      //       />
-      //     );
-      //     break;
-      //   default:
-      //     throw Error(`AutoComplete: Unhandled mode '${this.state.mode}'`);
-      // }
-
-      return jsx;
-    } // render()
-
-  }, {
-    key: 'selectNode',
-    value: function selectNode(id, event) {
-      event.preventDefault();
-      // REVIEW: For some reason React converts the integer IDs into string
-      // values when returned in event.target.value.  So we have to convert
-      // it here.
-      // Load Source
-      var UDATA = UNISYS.NewDataLink(this);
-      UDATA.LocalCall('EDGE_CLOSE');
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(id)] });
-    }
-
-    /// END OF CLASS //////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }]);
-
-  return AutoComplete;
-}(UNISYS.Component);
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = AutoComplete;
-});
-
-require.register("view/netcreate/components/EdgeEditor.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/* eslint-disable complexity */
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-    EdgeEditor is used to to view, edit, and create new edges.
-
-    The EdgeEditor has two basic views:
-
-    1. Minimized Summary view displays just the source and target node info.
-    2. Expanded View shows the full edge information.
-
-    You can get an expanded view by clicking on the minized view.
-    The expanded view has two modes:
-
-    1. View Mode displays the edge data but does not allow editing.
-    2. Edit Mode displays an editable form.
-
-    We assume that when you create an edge, you will have already identified
-    the source node, so the source node is never editable.
-
-    We assume that once you create an edge, the only editing you might do
-    is to change the relationship, notes, and citations.  You wouldn't
-    change the source or target nodes.  If you need to change them, you'd
-    use DELETE.
-
-
-  ## TO USE
-
-    EdgeEditors are usually included as a repeating element, e.g.
-
-      <FormText>EDGES</FormText>
-      {this.state.edges.map( (edge,i) =>
-        <EdgeEditor key={i}
-          edgeID={edge.id}
-          parentNodeLabel={this.state.formData.label}
-        />
-      )}
-
-
-  ## PROPS
-
-    edgeID            edgeID provides a unique identifier for the EdgeEditor
-                      displaying the particular edge.  The edgeID is
-                      used to also uniquely identify the AutoComplete
-                      fields within the EdgeEditor.
-
-    parentNodeLabel   parentNodeLabel is the label of the source node that
-                      the EdgeEditor is displayed within.  This is used
-                      by the EdgeEditor to determine whether it should
-                      display the edge nodes as targets or sources.
-
-    parentNodeIsLocked The parent node is locked when the server disconnects
-                       this will disable the Delete and Edit buttons.
-
-  ## STATES
-
-      dbIsLocked
-                      If someone else has selected the edge for editing,
-                      this flag will cause the dbIsLockedMessage
-                      to be displayed.  This is only checked when
-                      the user clicks "Edit".
-
-      disableEdit     Template is being edited, disable "Edit Edge" button
-
-      isBeingEdited   The form fields are active and text can be changed.
-
-
-  ## TECHNICAL DESCRIPTION
-
-    EdgeEditor works directly with raw NCDATA, unprocessed by d3.
-    This means that `edge.source` and `edge.target` are IDs, NOT the node objects
-    that d3 will convert them into.
-
-
-  ## TESTING
-
-
-    Displaying Current Edge(s)
-        0. When the app starts, no edges should be displayed in the Node Selector.
-        1. Click on "Board of Health"
-              * A summary view of the four nodes connected to Board of Health
-                should be displayed.
-        2. Click on "me -> Residents of Chinatown"
-              * The form information should be displayed, including ID,
-                relationship, info, and notes.
-              * The form fields should be disabled (not able to be edited)
-              * A "Done" button should appear.
-              * A "Edit Edge" button should appear.
-        3. Click "Done"
-              * The "Residents of Chinatown" edge editor should collapse.
-              * The other 3 Board of Health edges should still be dispalyed.
-        4. Click outside of "Board of Health"
-              * All edges should be removed.
-        5. Click on a node without an edge, e.g. "Ah Sop"
-              * No edges should be displayed
-              * The "Add New Edge" button should be displayed in the EDGES area.
-
-    Edit Existing Edge
-        1. Click on "Board of Health"
-        2. Click on "me -> Residents of Chinatown"
-        3. Click on "Edit Edge"
-              * The "NOTES" and "DATE" fields will become editable.
-        4. Click "Save"
-        5. Select the updated edge.
-              * The changed notes and dates should appear.
-
-    Create New Edge
-        1. Click on "Board of Health"
-        2. Click on "Add New Edge"
-              * "Board of Health" should be automatically set as the Source field
-              * A new ID "59" should be automatically inserted.
-              * All fields except "Source" and "ID" should be editable.
-              * A "Save" button should appear.
-              * A "Done" button should NOT appear.
-        3. Select a Type
-              * There should be multiple type options available.
-        4. Select a Target
-              * The AutoComplete field should allow typing.
-              * As you type you should see suggestions.
-              * Each suggestion should be marked in the graph
-              * You should be able to click on a suggestion from
-                the suggestions list, or use the keyboard to
-                select a suggestion.
-        5. Type in some info.
-              * The field text should update with whatever you type.
-        6. Type in some notes.
-              * The field text should update with whatever you type.
-        7. Click "Save"
-              * The selected target node should be connected to Board of Health
-                in the graph.
-              * The EdgeEditor form should be cleared.
-              * The NodeSelector form should be cleared.
-        8. Click on "Board of Health"
-              * The new edge should be displayed as one of the edges.
-        9. Click on the new target node summary view
-              * You should see the relationship, type, and info changes.
-        10. Click on the new target node in the graph
-              * You should see the component along with an edge
-                linked to "Board of Health"
-
-    Delete Edge
-        1. Click on "Board of Health"
-        2. Click on "me -> Residents of Chinatown"
-        3. Click on "DELETE"
-              * The edge should be removed.
-              * The graph should update with the edge remvoed.
-              * The EdgeEditor for the deleted edge shoudl close.
-              * The source node should remain selected.
-              * The non-deleted edges should still be listed.
-
-    Swap
-        1. Select an edge where the node is the source (the edge should read "this -> OtherNode".
-        2. Click "Edit Edge"
-              * You should see a swap button with up/down arrows and a "Change Target" button.
-        3. Click on the swap button
-              * The selected node should now be the target.
-        4. Click "Save" to save the change.
-        5. Review the node to make sure the change took place.
-        6. Reload the graph to make sure the change was saved.
-
-    Change Target
-        1. Select an edge where the node is the source (the edge should read "this -> OtherNode".
-        2. Click "Edit Edge"
-              * You should see a swap button with up/down arrows and a "Change Target" button.
-        3. Click on the "Change Target" button
-              * You should be able to search for another target node, or click on the graph to select a target node.
-        4. When you've selected a target node, the Target Node field should become disabled (light blue, can't type in it).
-        5. Click on "Change Target" again to pick a different target.
-        6. Click "Save" to save the change.
-        7. Review the node to make sure the change took place.
-        8. Reload the graph to make sure the change was saved.
-
-    Change Source
-        1. Select an edge where the node is the source (the edge should read "this -> OtherNode".
-        2. Click "Edit Edge"
-              * You should see a "Change Source" button next to the source, and just the swap button next to the target.
-        3. Click on the "Change Source" button
-        4. You should be able to search for another source node, or click on the graph to select a source node.
-        5. When you've selected a source node, the Source Node field should become disabled (light blue, can't type in it).
-        6. Click on "Change Source" again to pick a different source.
-        7. Click "Save" to save the change.
-        8. Review the node to make sure the change took place.
-        9. Reload the graph to make sure the change was saved.
-
-    Save
-        * The "Save" button should only be visible when the edge is being edited
-        * The "Save" button should only be enabled if both the Source and Target
-          fields point to valid nodes.
-        * Otherwise, the "Save" button should be disabled.
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var mdReact = require('markdown-react-js');
-var mdEmoji = require('markdown-it-emoji');
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var Button = ReactStrap.Button,
-    Col = ReactStrap.Col,
-    Form = ReactStrap.Form,
-    FormGroup = ReactStrap.FormGroup,
-    FormText = ReactStrap.FormText,
-    Input = ReactStrap.Input,
-    Label = ReactStrap.Label;
-
-var AutoComplete = require('./AutoComplete');
-var NodeDetail = require('./NodeDetail');
-var UNISYS = require('unisys/client');
-
-var _require = require('system/util/enum'),
-    EDITORTYPE = _require.EDITORTYPE;
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-var DBG = false;
-var PR = 'EdgeEditor';
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var EdgeEditor = function (_UNISYS$Component) {
-  _inherits(EdgeEditor, _UNISYS$Component);
-
-  function EdgeEditor(props) {
-    _classCallCheck(this, EdgeEditor);
-
-    var _this = _possibleConstructorReturn(this, (EdgeEditor.__proto__ || Object.getPrototypeOf(EdgeEditor)).call(this, props));
-
-    var TEMPLATE = _this.AppState('TEMPLATE');
-    _this.state = {
-      edgeDefs: TEMPLATE.edgeDefs,
-      citation: TEMPLATE.citation,
-      edgeIsLockedMessage: TEMPLATE.edgeIsLockedMessage,
-      editLockMessage: '',
-      formData: {
-        // Holds the state of the form fields
-        sourceId: '',
-        targetId: '',
-        type: '',
-        info: '',
-        weight: 1,
-        provenance: '',
-        comments: '',
-        notes: '',
-        citation: '',
-        category: '',
-        id: '',
-        isNewEdge: true
-      },
-      sourceNode: {
-        // Holds the current selected source node
-        label: '',
-        type: '',
-        info: '',
-        provenance: '',
-        comments: '',
-        notes: '',
-        id: ''
-      },
-      targetNode: {
-        // Holds the current selected target node
-        label: '',
-        type: '',
-        info: '',
-        provenance: '',
-        comments: '',
-        notes: '',
-        id: ''
-      },
-      isLocked: true, // User has not logged in, don't allow edge edit
-      isStandalone: false, // Standalone mode, view only
-      dbIsLocked: false, // Server Database is locked because someone else is editing
-      disableEdit: false, // Template is being edited, disable "Edit Edge" button
-      isBeingEdited: false, // Form is in an editable state
-      isExpanded: false, // Show EdgeEditor Component in Summary view vs Expanded view
-      sourceIsEditable: false, // Source ndoe field is only editable when source is not parent
-      hasValidSource: false, // Used by SwapSourceAndTarget and the Change Source button
-      targetIsEditable: false, // Target ndoe field is only editable when target is not parent
-      hasValidTarget: false, // Used by SwapSourceAndTarget and the Change Target button
-      placeholder: undefined,
-      hideModal: true // used by the citation window
-    };
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-
-    _this.setTemplate = _this.setTemplate.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.setEditState = _this.setEditState.bind(_this);
-    _this.handleSelection = _this.handleSelection.bind(_this);
-    _this.handleEdgeSelection = _this.handleEdgeSelection.bind(_this);
-    _this.handleEdgeEdit = _this.handleEdgeEdit.bind(_this);
-    _this.handleEdgeClose = _this.handleEdgeClose.bind(_this);
-    _this.onStateChange_SESSION = _this.onStateChange_SESSION.bind(_this);
-    _this.onEdgeClick = _this.onEdgeClick.bind(_this);
-    _this.onDeleteButtonClick = _this.onDeleteButtonClick.bind(_this);
-    _this.onEditButtonClick = _this.onEditButtonClick.bind(_this);
-    _this.onCiteButtonClick = _this.onCiteButtonClick.bind(_this);
-    _this.onCloseCiteClick = _this.onCloseCiteClick.bind(_this);
-    _this.dateFormatted = _this.dateFormatted.bind(_this);
-    _this.requestEdit = _this.requestEdit.bind(_this);
-    _this.onSwapSourceAndTarget = _this.onSwapSourceAndTarget.bind(_this);
-    _this.onChangeSource = _this.onChangeSource.bind(_this);
-    _this.onChangeTarget = _this.onChangeTarget.bind(_this);
-    _this.onRelationshipChange = _this.onRelationshipChange.bind(_this);
-    _this.onNotesChange = _this.onNotesChange.bind(_this);
-    _this.onInfoChange = _this.onInfoChange.bind(_this);
-    _this.onWeightChange = _this.onWeightChange.bind(_this);
-    _this.onProvenanceChange = _this.onProvenanceChange.bind(_this);
-    _this.onCommentsChange = _this.onCommentsChange.bind(_this);
-    _this.onCitationChange = _this.onCitationChange.bind(_this);
-    _this.onCategoryChange = _this.onCategoryChange.bind(_this);
-    _this.onSubmit = _this.onSubmit.bind(_this);
-    _this.checkUnload = _this.checkUnload.bind(_this);
-    _this.doUnload = _this.doUnload.bind(_this);
-
-    // Always make sure class methods are bind()'d before using them
-    // as a handler, otherwise object context is lost
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** SESSION is called by SessionShell when the ID changes
-        set system-wide. data: { classId, projId, hashedId, groupId, isValid }
-     */
-    _this.OnAppStateChange('SESSION', _this.onStateChange_SESSION);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    _this.OnAppStateChange('SELECTION', _this.handleSelection);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    UDATA.HandleMessage('EDGE_SELECT', _this.handleEdgeSelection);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    UDATA.HandleMessage('EDGE_EDIT', _this.handleEdgeEdit);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    UDATA.HandleMessage('EDGE_CLOSE', _this.handleEdgeClose);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // Template handlers
-    _this.OnAppStateChange('TEMPLATE', _this.setTemplate);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.setEditState);
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Prevent editing if server is disconnected.
-        This is necessary to hide the "Add New Node" button.
-     */
-    _this.OnDisconnect(function () {
-      console.log('EdgeSelector got disconnect');
-      _this.setState({ isLocked: true });
-    });
-    return _this;
-  } // constructor
-
-  /// UTILITIES /////////////////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /**
-   */
-
-
-  _createClass(EdgeEditor, [{
-    key: 'clearForm',
-    value: function clearForm() {
-      this.setState({
-        formData: {
-          sourceId: '',
-          targetId: '',
-          type: '',
-          info: '',
-          weight: 1,
-          provenance: '',
-          comments: '',
-          notes: '',
-          citation: '',
-          category: '',
-          id: '',
-          isNewEdge: true
-        },
-        sourceNode: {
-          label: '',
-          type: '',
-          info: '',
-          provenance: '',
-          comments: '',
-          notes: '',
-          id: ''
-        },
-        targetNode: {
-          label: '',
-          type: '',
-          info: '',
-          provenance: '',
-          comments: '',
-          notes: '',
-          id: ''
-        },
-        isBeingEdited: false,
-        isExpanded: false, // Summary view vs Expanded view
-        dbIsLocked: false,
-        sourceIsEditable: false, // Source ndoe field is only editable when source is not parent
-        hasValidSource: false, // Used by SwapSourceAndTarget and the Change Source button
-        targetIsEditable: false, // Target ndoe field is only editable when target is not parent
-        hasValidTarget: false, // Used by SwapSourceAndTarget and the Change Target button
-        hideModal: true // for the citation window
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'setTemplate',
-    value: function setTemplate(data) {
-      this.setState({ edgeDefs: data.edgeDefs });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Disable Edge Edit if a Template is being edited
-     */
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this2 = this;
-
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        _this2.setEditState(data);
-      });
-    }
-  }, {
-    key: 'setEditState',
-    value: function setEditState(data) {
-      if (DBG) console.log(PR, 'SRV_GET_EDIT_STATUS received', data);
-      var disableEdit = data.templateBeingEdited || data.importActive;
-      var TEMPLATE = this.AppState('TEMPLATE');
-      var editLockMessage = '';
-      if (data.templateBeingEdited) editLockMessage = TEMPLATE.templateIsLockedMessage;
-      if (data.importActive) editLockMessage = TEMPLATE.importIsLockedMessage;
-      this.setState({ disableEdit: disableEdit, editLockMessage: editLockMessage });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** populate formdata from NCDATA
-     */
-
-  }, {
-    key: 'loadSourceAndTarget',
-    value: function loadSourceAndTarget() {
-      var _this3 = this;
-
-      if (DBG) console.log('EdgeEditor.loadSourceAndTarget!');
-
-      var edgeID = this.props.edgeID || '';
-      // Clean Data
-      if (isNaN(edgeID)) {
-        edgeID = parseInt(edgeID);
-      }
-
-      var NCDATA = this.AppState('NCDATA');
-
-      // parseInt in case of old bad string id
-      var edges = NCDATA.edges ? NCDATA.edges.filter(function (edge) {
-        return parseInt(edge.id) === edgeID;
-      }) : [];
-      if (!edges) {
-        throw 'EdgeEditor: Passed edgeID ' + edgeID + ' not found!';
-      }
-      var edge = edges[0];
-      if (DBG) console.log('EdgeEditor.loadSourceAndTarget: Loading edge', edge);
-
-      var sourceNode = void 0,
-          sourceNodes = void 0,
-          targetNode = void 0,
-          targetNodes = void 0;
-
-      if (edge === undefined) {
-        // DEFINE NEW EDGE
-
-        // Create a dummy empty edge object
-        // This will be edited and saved
-        if (DBG) console.log('...EdgeEditor.loadSourceAndTarget: New edge!  No target yet!');
-        // Get a real source node, since we know the parent of this link is the currently
-        // selected source node.
-        sourceNodes = NCDATA.nodes.filter(function (node) {
-          return node.label === _this3.props.parentNodeLabel;
-        });
-        // We don't know what target the user is going to pick yet, so just display a
-        // placeholder for now, otherwise, the render will choke on an invalid targetNode.
-        targetNodes = [{ label: 'pick one...' }];
-
-        // provenance
-        var session = this.AppState('SESSION');
-        var timestamp = new Date().toLocaleDateString('en-US');
-        var provenance_str = 'Added by ' + session.token + ' on ' + timestamp;
-
-        // Define `edge` so it can be loaded later during setState.
-        edge = {
-          id: edgeID,
-          source: parseInt(sourceNodes[0].id), // REVIEW: d3data 'source' is id, rename this to 'sourceId'?
-          // though after d3 processes, source does become an object.
-          target: undefined,
-          type: '',
-          notes: '',
-          info: '',
-          weight: 1,
-          provenance: provenance_str,
-          comments: '',
-          citation: '',
-          category: ''
-        };
-        // Expand this EdgeEditor and set it to Edit mode.
-        this.setState({
-          isExpanded: true,
-          targetIsEditable: true,
-          isBeingEdited: true
-        }, function () {
-          // AUTOCOMPLETE mode needs to be set AFTER the edit state has already been set
-          // otherwise, the <AutoComplete> component may not have even been defined in the collapsed view.
-          _this3.AppCall('AUTOCOMPLETE_SELECT', {
-            id: 'edge' + _this3.props.edgeID + 'target'
-          });
-        });
-
-        this.AppCall('EDGEEDIT_LOCK', { edgeID: this.props.edgeID });
-      } else {
-        // LOAD EXISTING EDGE
-
-        // NOTE: NCDATA has not expanded source/target into objects, but remain ids
-        sourceNodes = NCDATA.nodes.filter(function (node) {
-          return parseInt(node.id) === parseInt(edge.source);
-        });
-        targetNodes = NCDATA.nodes.filter(function (node) {
-          return parseInt(node.id) === parseInt(edge.target);
-        });
-
-        // Assume we have a valid target node
-        this.setState({
-          hasValidSource: true,
-          hasValidTarget: true
-        });
-      }
-
-      if (!sourceNodes) {
-        throw 'EdgeEditor: Source ID' + edge.source + 'not found!';
-      }
-      sourceNode = sourceNodes[0];
-      if (!targetNodes) {
-        throw 'EdgeEditor: Target ID' + edge.target + 'not found!';
-      }
-      targetNode = targetNodes[0];
-
-      if (DBG) console.log('...EdgeEditor.loadSourceAndTarget: Setting formData sourceID to', edge.source, 'and sourceNode to', sourceNode, 'and targetNode to', targetNode);
-      this.setState({
-        formData: {
-          id: parseInt(edge.id) || '',
-          sourceId: edge.source,
-          targetId: edge.target,
-          type: edge.type || '', // Make sure there's valid data
-          info: edge.info || '',
-          weight: edge.weight || 1,
-          provenance: edge.provenance || '',
-          comments: edge.comments || '',
-          citation: edge.citation || '',
-          category: edge.category || '',
-          notes: edge.notes || '',
-          isNewEdge: false
-        },
-        sourceNode: sourceNode,
-        targetNode: targetNode,
-        dbIsLocked: false
-      });
-    }
-
-    /// UDATA STATE HANDLERS //////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** When the user is creating a new node, they need to set a target node.
-        The target node is set via an AutoComplete field.
-        When a node is selected via the AutoComplete field, the SELECTION state is updated.
-        So EdgeEditor needs to listen to the SELECTION state in order to
-        know the target node has been selected.
-        SELECTION is also triggered when the network updates an edge.
-     */
-
-  }, {
-    key: 'handleSelection',
-    value: function handleSelection(data) {
-      var _this4 = this;
-
-      if (DBG) console.log('EdgeEditor', this.props.edgeID, 'got SELECTION data', data);
-      // If we're one of the edges that have been updated, and we're not currently being edited,
-      // then update the data.
-      // If we're not currently being edited, then if edges have been updated, update self
-      if (data.edges !== undefined) {
-        var updatedEdge = data.edges.find(function (edge) {
-          return edge.id === _this4.state.formData.id;
-        });
-        if (!this.state.isBeingEdited && updatedEdge !== undefined) {
-          if (DBG) console.log('EdgeEditor: Updating edges with', updatedEdge);
-          this.loadSourceAndTarget();
-          return;
-        }
-      }
-
-      // We're being edited, and the updated node is either our source or target
-      // Technically we probably ought to also check to make sure we're the current
-      // activeAutoCompleteId, but we wouldn't be editable if we weren't.
-      if (this.state.isBeingEdited && data.nodes && data.nodes.length > 0) {
-        // A node was selected, so load it
-
-        var node = data.nodes[0];
-
-        // Are we editing the source or the target?
-        if (this.state.sourceIsEditable) {
-          // SOURCE
-          if (DBG) console.log('EdgeEditor.handleSelection:', this.props.edgeID, 'setting source node to', node);
-
-          // Set sourceNode state
-          this.setState({
-            sourceNode: node
-          });
-          // Also update the formdata
-          var formData = this.state.formData;
-          formData.sourceId = node.id;
-          this.setState({
-            formData: formData
-          });
-          // And let the switch button know we have a valid target
-          // And exit edit mode
-          this.setState({
-            hasValidSource: true,
-            sourceIsEditable: false
-          });
-        } else if (this.state.targetIsEditable) {
-          // TARGET
-          if (DBG) console.log('EdgeEditor.handleSelection:', this.props.edgeID, 'setting target node to', node);
-
-          // Set targetNode state
-          this.setState({
-            targetNode: node
-          });
-          // Also update the formdata
-          var _formData = this.state.formData;
-          _formData.targetId = node.id;
-          this.setState({
-            formData: _formData
-          });
-          // And let the switch button know we have a valid target
-          // And exit edit mode
-          this.setState({
-            hasValidTarget: true,
-            targetIsEditable: false
-          });
-        }
-        // pass currentAutoComplete back to search
-        this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-        this.setState({ isExpanded: true });
-      } else {
-        // No node selected, so we don't need to do anything
-        // AutoComplete will take care of its own search label updates
-      }
-    } // handleSelection
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Someone externally has selected an edge.
-      Usually someone has clicked a button in the EdgeList to view/edit an edge
-     */
-
-  }, {
-    key: 'handleEdgeSelection',
-    value: function handleEdgeSelection(data) {
-      if (DBG) console.log('EdgeEditor', this.props.edgeID, ': got state EDGE_SELECT', data);
-      if (this.state.formData.id === data.edgeID) {
-        // pass currentAutoComplete back to search
-        this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-        this.setState({ isExpanded: true });
-      }
-    } // handleEdgeSelection
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Someone externally has selected an edge for editing.
-      Usually someone has clicked a button in the EdgeTable to edit an edge
-     */
-
-  }, {
-    key: 'handleEdgeEdit',
-    value: function handleEdgeEdit(data) {
-      var _state = this.state,
-          formData = _state.formData,
-          isBeingEdited = _state.isBeingEdited,
-          isLocked = _state.isLocked;
-
-      if (DBG) console.log('EdgeEditor', this.state.formData.id, ': got state EDGE_EDIT', data, 'formData is', this.state.formData);
-      if (data.edgeID !== undefined && typeof data.edgeID === 'number' && !isBeingEdited && data.edgeID === formData.id) {
-        if (!isLocked) {
-          this.requestEdit();
-        } else {
-          console.warn('EdgeEditor.EDGE_EDIT denied because isLocked', isLocked, 'but we will gladly show it!');
-          this.handleEdgeSelection(data);
-        }
-      } else {
-        if (typeof data.edgeID !== 'number') console.warn('EdgeEditor.EDGE_EDIT called with bad data.nodeID:', data.edgeID);
-        if (isBeingEdited) console.warn('EdgeEditor.EDGE_EDIT denied because isBeingEdited', isBeingEdited);
-      }
-    } // handleEdgeEdit
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'handleEdgeClose',
-    value: function handleEdgeClose() {
-      if (this.state.isExpanded) this.setState({ isExpanded: false });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle change in SESSION data
-      Called both by componentDidMount() and AppStateChange handler.
-      The 'SESSION' state change is triggered in two places in SessionShell during
-      its handleChange() when active typing is occuring, and also during
-      SessionShell.componentWillMount()
-     */
-
-  }, {
-    key: 'onStateChange_SESSION',
-    value: function onStateChange_SESSION(decoded) {
-      var update = { isLocked: !decoded.isValid };
-      this.setState(update);
-    }
-
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Expand if the edge is collapsed.
-      Cancel editing if the edge is expanded.
-     */
-
-  }, {
-    key: 'onEdgeClick',
-    value: function onEdgeClick() {
-      var _this5 = this;
-
-      // Cancel/Close
-      if (this.state.isExpanded) {
-        // collapse
-        this.setState({ isExpanded: false });
-
-        // If we were editing, then revert and exit
-        if (this.state.isBeingEdited) {
-          var NCDATA = this.AppState('NCDATA');
-
-          this.setState({ isBeingEdited: false, targetIsEditable: false });
-          // Return focus of autocomplete to Search field.
-          this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-          // Tell parent node to exit out of edge edit mode
-          this.AppCall('EDGEEDIT_UNLOCK', { edgeID: this.props.edgeID });
-          // Deregister as an open editor
-          if (this.state.isBeingEdited) UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
-
-          // Cancel edit existing or cancel edit new?
-          var originalEdge = NCDATA.edges.filter(function (edge) {
-            return parseInt(edge.id) === _this5.props.edgeID;
-          })[0];
-          if (originalEdge === undefined) {
-            // user abandoned editing a new node that was never saved
-            var parentNode = NCDATA.nodes.find(function (node) {
-              return node.label === _this5.props.parentNodeLabel;
-            });
-            // parentNode might be missing if the admin user deleted it.
-            if (parentNode) {
-              // Unlock edges and reselect the source node
-              UDATA.LocalCall('EDGE_NEW_CANCEL', { nodeID: parentNode.id });
-            } else {
-              // Unlock edges and deselect the missing source node
-              UDATA.LocalCall('EDGE_NEW_CANCEL');
-            }
-            this.clearForm();
-          } else {
-            // User is abandoning edits to an existing edge.
-            // restore original edge
-            this.loadSourceAndTarget();
-            // unlock
-            this.NetCall('SRV_DBUNLOCKEDGE', { edgeID: this.state.formData.id }).then(function (data) {
-              if (data.NOP) {
-                if (DBG) console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-              } else if (data.unlocked) {
-                if (DBG) console.log('SERVER SAYS: unlock success! you have released Edge ' + data.edgeID);
-                _this5.setState({ dbIsLocked: false });
-              }
-            });
-          }
-        }
-      } else {
-        // expand, but don't set the autocomplete field, since we're not editing
-        this.setState({ isExpanded: true });
-      }
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onDeleteButtonClick',
-    value: function onDeleteButtonClick() {
-      this.clearForm();
-      this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-      if (this.state.isBeingEdited) UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
-      this.AppCall('EDGEEDIT_UNLOCK', { edgeID: this.props.edgeID }); // inform NodeSelector
-      this.AppCall('DB_UPDATE', { edgeID: this.props.edgeID });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onEditButtonClick',
-    value: function onEditButtonClick() {
-      this.setState({ hideModal: true });
-
-      this.requestEdit(this.state.formData.id);
-
-      // Don't allow editing of the source or target fields.
-      // If you want to change the edge, delete this one and create a new one.
-      // if (this.props.parentNodeLabel===this.state.sourceNode.label) {
-      //   // The source node is the currently selected node in NodeSelector.  Edit the target.
-      //   UDATA.LocalCall('AUTOCOMPLETE_SELECT',{id:'edge'+this.props.edgeID+'target', searchString: this.state.targetNode.label});
-      // } else {
-      //   // The NodeSelector node is the target.  Allow editing the source.
-      //   UDATA.LocalCall('AUTOCOMPLETE_SELECT',{id:'edge'+this.props.edgeID+'source', searchString: this.state.sourceNode.label});
-      // }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCiteButtonClick',
-    value: function onCiteButtonClick(event) {
-      event.preventDefault();
-
-      this.setState({ hideModal: false });
-    } // onCiteButtonClick
-
-  }, {
-    key: 'onCloseCiteClick',
-    value: function onCloseCiteClick(event) {
-      event.preventDefault();
-
-      this.setState({ hideModal: true });
-    } //   this.onCloseCiteClick
-
-  }, {
-    key: 'dateFormatted',
-    value: function dateFormatted() {
-      var today = new Date();
-      var year = String(today.getFullYear());
-      var date = today.getMonth() + 1 + '/' + today.getDate() + '/' + year.substr(2, 4);
-      var time = today.toTimeString().substr(0, 5);
-      var dateTime = time + ' on ' + date;
-      return dateTime;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'requestEdit',
-    value: function requestEdit() {
-      var _this6 = this;
-
-      var edgeID = this.state.formData.id;
-      if (edgeID && edgeID !== '' && !isNaN(edgeID) && typeof edgeID === 'number' && !this.state.isBeingEdited) {
-        this.NetCall('SRV_DBLOCKEDGE', { edgeID: edgeID }).then(function (data) {
-          if (data.NOP) {
-            // Edge is locked, can't edit
-            if (DBG) console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-            _this6.setState({
-              dbIsLocked: true,
-              isExpanded: true
-            });
-          } else if (data.locked) {
-            if (DBG) console.log('SERVER SAYS: lock success! you can edit Edge ' + data.edgeID);
-            if (DBG) console.log('SERVER SAYS: unlock the edge after successful DBUPDATE');
-            _this6.setState({
-              isBeingEdited: true,
-              isExpanded: true,
-              dbIsLocked: false
-            });
-            _this6.Signal('EDGEEDIT_LOCK', { edgeID: _this6.props.edgeID });
-            // When a edge is being edited, lock the Template from being edited
-            UDATA.NetCall('SRV_REQ_EDIT_LOCK', { editor: EDITORTYPE.EDGE }).then(function (res) {
-              var disableEdit = res.isBeingEdited;
-              _this6.setState({ disableEdit: disableEdit });
-            });
-          }
-        });
-      }
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onSwapSourceAndTarget',
-    value: function onSwapSourceAndTarget() {
-      var formData = this.state.formData;
-
-      // swap formadata
-      var targetId = formData.targetId;
-      formData.targetId = formData.sourceId;
-      formData.sourceId = targetId;
-
-      // swap this.state.source and target
-      var swap = this.state.sourceNode;
-      var source = this.state.targetNode;
-      var target = swap;
-
-      // REVIEW
-      // Get rid of separate this.state.source and this.state.target
-      // and just use formData?!?
-
-      this.setState({
-        formData: formData,
-        sourceNode: source,
-        targetNode: target
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onChangeSource',
-    value: function onChangeSource() {
-      this.setState({
-        sourceIsEditable: true,
-        hasValidSource: false,
-        placeholder: this.state.sourceNode.label
-      });
-      this.AppCall('AUTOCOMPLETE_SELECT', {
-        id: 'edge' + this.props.edgeID + 'source'
-      });
-      // Whenever we set the autocomplete to source, we have to update the label
-      // Clear the AutoComplete field so that onBlur does not select the same node
-      this.AppCall('SOURCE_SEARCH', { searchString: '' });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onChangeTarget',
-    value: function onChangeTarget() {
-      this.setState({
-        targetIsEditable: true,
-        hasValidTarget: false,
-        placeholder: this.state.targetNode.label
-      });
-      this.AppCall('AUTOCOMPLETE_SELECT', {
-        id: 'edge' + this.props.edgeID + 'target'
-      });
-      // Whenever we set the autocomplete to target, we have to update the label
-      // Clear the AutoComplete field so that onBlur does not select the same node
-      this.AppCall('SOURCE_SEARCH', { searchString: '' });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onRelationshipChange',
-    value: function onRelationshipChange(event) {
-      var formData = this.state.formData;
-      formData.type = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onInfoChange',
-    value: function onInfoChange(event) {
-      var formData = this.state.formData;
-      formData.info = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onWeightChange',
-    value: function onWeightChange(event) {
-      // The built in <input min="0"> will keep the step buttons from going below 0,
-      // but the user can still input "0". When editing, you need to be able to
-      // delete the whole field, so we allow blanks, otherwise the UI will always
-      // force a "0" in the field.
-      var formData = this.state.formData;
-      formData.weight = event.target.value < 1 ? '' : Number(event.target.value); // force Number type
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onProvenanceChange',
-    value: function onProvenanceChange(event) {
-      var formData = this.state.formData;
-      formData.provenance = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCommentsChange',
-    value: function onCommentsChange(event) {
-      var formData = this.state.formData;
-      formData.comments = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCitationChange',
-    value: function onCitationChange(event) {
-      var formData = this.state.formData;
-      formData.citation = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCategoryChange',
-    value: function onCategoryChange(event) {
-      var formData = this.state.formData;
-      formData.category = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onNotesChange',
-    value: function onNotesChange(event) {
-      var formData = this.state.formData;
-      formData.notes = event.target.value;
-      this.setState({ formData: formData });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onSubmit',
-    value: function onSubmit(event) {
-      var _this7 = this;
-
-      event.preventDefault();
-      var formData = this.state.formData;
-      // Read current edge values
-      // This is necessary because the SOURCE and TARGET labels
-      // are bound to selectedSourceNode and selectedTargetNode, not selectedEdge
-      var edge = {
-        id: formData.id,
-        source: this.state.sourceNode.id, // REVIEW: d3data 'source' is id, rename this to 'sourceId'?
-        // though after d3 processes, source does become an object.
-        target: this.state.targetNode.id, // REVIEW: d3data 'target' is id, rename this to 'targetId'?
-        type: formData.type,
-        info: formData.info,
-        weight: formData.weight,
-        provenance: formData.provenance,
-        comments: formData.comments,
-        citation: formData.citation,
-        category: formData.category,
-        notes: formData.notes
-      };
-      if (DBG) console.group('EdgeEntry.onSubmit submitting', edge);
-
-      // Make sure source and target still exist before saving an edge in case
-      // admin user deletes a node. This is to prevent data corruption by
-      // linking to non-existent nodes. This should probably be moved to nc-logic.
-      if (edge) {
-        // check source
-        var NCDATA = this.AppState('NCDATA');
-        var source = NCDATA.nodes.find(function (node) {
-          return node.id === edge.source;
-        });
-        if (!source) {
-          // eslint-disable-next-line no-alert
-          alert('Sorry, the source node has been removed.  Please recreate your edge.');
-          // Trigger Cancel
-          this.onEdgeClick();
-          return;
-        }
-        // check target
-        var target = NCDATA.nodes.find(function (node) {
-          return node.id === edge.target;
-        });
-        if (!target) {
-          // eslint-disable-next-line no-alert
-          alert('Sorry, the target node has been removed.  Please recreate your edge.');
-          // Trigger Cancel
-          this.onEdgeClick();
-          return;
-        }
-      }
-
-      // Deregister as an open editor
-      UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: 'edge' });
-      this.AppCall('EDGEEDIT_UNLOCK', { edgeID: this.props.edgeID }); // inform NodeSelector
-      // pass currentAutoComplete back to nodeselector
-      this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-      this.setState({
-        isBeingEdited: false,
-        sourceIsEditable: false,
-        targetIsEditable: false
-      });
-      this.AppCall('DB_UPDATE', { edge: edge }).then(function () {
-        _this7.NetCall('SRV_DBUNLOCKEDGE', { edgeID: edge.id }).then(function (data) {
-          if (data.NOP) {
-            if (DBG) console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-          } else if (data.unlocked) {
-            if (DBG) console.log('SERVER SAYS: unlock success! you have released Edge ' + data.edgeID);
-            _this7.setState({ dbIsLocked: false });
-          }
-        });
-      });
-    } // onSubmit
-
-    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /*/ This is not yet implemented as of React 16.2.  It's implemented in 16.3.
-      getDerivedStateFromProps (props, state) {
-        console.error('getDerivedStateFromProps!!!');
-      }
-    /*/
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _props = this.props,
-          edgeID = _props.edgeID,
-          parentNodeLabel = _props.parentNodeLabel,
-          parentNodeIsLocked = _props.parentNodeIsLocked;
-      var _state2 = this.state,
-          formData = _state2.formData,
-          sourceNode = _state2.sourceNode,
-          targetNode = _state2.targetNode,
-          edgeDefs = _state2.edgeDefs,
-          isStandalone = _state2.isStandalone,
-          edgeIsLockedMessage = _state2.edgeIsLockedMessage,
-          editLockMessage = _state2.editLockMessage,
-          disableEdit = _state2.disableEdit;
-      var citation = this.state.citation;
-
-      if (edgeDefs.category === undefined) {
-        // for backwards compatability
-        edgeDefs.category = {};
-        edgeDefs.category.label = '';
-        edgeDefs.category.hidden = true;
-      }
-      if (citation === undefined) {
-        // if citation were left out, simply make them hidden
-        citation = {};
-        citation.hidden = true;
-      }
-      var me = React.createElement(
-        'span',
-        { style: { color: 'rgba(0,0,0,0.2)', fontStyle: 'italic' } },
-        'this node'
-      );
-      // special override to allow editing an edge that has the same parent node for both source and target
-      var sameSourceAndTarget = sourceNode.label === this.props.parentNodeLabel && targetNode.label === this.props.parentNodeLabel;
-
-      // Optimize Edge Loading
-      // If not expanded, just show the button
-      // Only bother to render the whole EdgeEditor if the Edge is being edited
-      // This speeds up render times by almost 2 seconds
-      if (!this.state.isExpanded) {
-        return React.createElement(
-          'div',
-          null,
-          React.createElement(
-            Button,
-            {
-              outline: true,
-              size: 'sm',
-              style: {
-                backgroundColor: '#a9d3ff',
-                borderColor: 'transparent',
-                width: '100%',
-                marginBottom: '3px',
-                textAlign: 'left',
-                overflow: 'hidden'
-              },
-              onClick: this.onEdgeClick
-            },
-            parentNodeLabel === sourceNode.label ? me : sourceNode.label,
-            '\xA0',
-            React.createElement(
-              'span',
-              { title: formData.type },
-              '\u2794'
-            ),
-            '\xA0',
-            parentNodeLabel === targetNode.label ? me : targetNode.label
-          )
-        );
-      }
-
-      return React.createElement(
-        'div',
-        null,
-        React.createElement(
-          'div',
-          { className: this.state.isExpanded ? '' : 'd-none' },
-          React.createElement(
-            Form,
-            {
-              className: 'nodeEntry',
-              style: {
-                backgroundColor: '#C9E1FF',
-                minHeight: '300px',
-                padding: '5px',
-                marginBottom: '10px'
-              },
-              onSubmit: this.onSubmit
-            },
-            React.createElement(
-              FormText,
-              { onClick: this.onEdgeClick },
-              React.createElement(
-                'b',
-                null,
-                'EDGE ',
-                formData.id
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'source', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.source.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.source)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(AutoComplete, {
-                  identifier: 'edge' + edgeID + 'source',
-                  disabledValue: sourceNode.label,
-                  inactiveMode: parentNodeLabel === sourceNode.label ? 'static' : this.state.isBeingEdited ? 'disabled' : 'link',
-                  linkID: sourceNode.id,
-                  shouldIgnoreSelection: !this.state.sourceIsEditable,
-                  placeholder: this.state.placeholder
-                }),
-                React.createElement(
-                  Button,
-                  {
-                    outline: true,
-                    size: 'sm',
-                    className: 'float-right',
-                    hidden: !(this.state.isBeingEdited && this.state.hasValidSource && sourceNode.label !== this.props.parentNodeLabel),
-                    onClick: this.onChangeSource,
-                    title: 'Select a different source node'
-                  },
-                  'Change Source'
-                )
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.type.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'relationship', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.type.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.type)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(
-                  Input,
-                  {
-                    type: 'select',
-                    name: 'relationship',
-                    value: formData.type,
-                    onChange: this.onRelationshipChange,
-                    disabled: !this.state.isBeingEdited
-                  },
-                  edgeDefs.type.options.map(function (option) {
-                    return React.createElement(
-                      'option',
-                      { key: option.label },
-                      option.label
-                    );
-                  })
-                )
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'nodeLabel', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.target.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.target)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(AutoComplete, {
-                  identifier: 'edge' + edgeID + 'target',
-                  disabledValue: targetNode.label
-                  // eslint-disable-next-line no-nested-ternary
-                  , inactiveMode: parentNodeLabel === targetNode.label && !sameSourceAndTarget ? 'static' : this.state.isBeingEdited ? 'disabled' : 'link',
-                  linkID: targetNode.id,
-                  shouldIgnoreSelection: !this.state.targetIsEditable,
-                  placeholder: this.state.placeholder
-                }),
-                React.createElement(
-                  Button,
-                  {
-                    outline: true,
-                    size: 'sm',
-                    className: 'float-right',
-                    hidden: !(this.state.isBeingEdited && this.state.hasValidTarget && (targetNode.label !== this.props.parentNodeLabel || sameSourceAndTarget)),
-                    onClick: this.onChangeTarget,
-                    title: 'Select a different target node'
-                  },
-                  'Change Target'
-                ),
-                React.createElement(
-                  Button,
-                  {
-                    outline: true,
-                    size: 'sm',
-                    className: 'float-right',
-                    style: { marginRight: '5px' },
-                    hidden: !(this.state.isBeingEdited && this.state.hasValidTarget),
-                    onClick: this.onSwapSourceAndTarget,
-                    title: 'Swap \'Source\' and \'Target\' nodes'
-                  },
-                  '\u2191\u2193'
-                )
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.category.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'category', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.category.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.category)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(Input, {
-                  type: 'text',
-                  name: 'category',
-                  value: formData.category,
-                  onChange: this.onCategoryChange,
-                  readOnly: !this.state.isBeingEdited
-                })
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.citation.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'citation', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.citation.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.citation)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(Input, {
-                  type: 'text',
-                  name: 'citation',
-                  value: formData.citation,
-                  onChange: this.onCitationChange,
-                  readOnly: !this.state.isBeingEdited
-                })
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.notes.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'notes', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.notes.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.notes)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(Input, {
-                  type: 'textarea',
-                  name: 'notes',
-                  style: { display: this.state.isBeingEdited ? 'block' : 'none' },
-                  value: formData.notes,
-                  onChange: this.onNotesChange,
-                  readOnly: !this.state.isBeingEdited
-                }),
-                this.markdownDisplay(this.state.formData.notes || '')
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.info.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'info', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.info.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.info)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(Input, {
-                  type: 'text',
-                  name: 'info',
-                  value: formData.info,
-                  onChange: this.onInfoChange,
-                  readOnly: !this.state.isBeingEdited
-                })
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.weight.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'weight', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.weight.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.weight)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(Input, {
-                  type: 'number',
-                  name: 'weight',
-                  min: '1',
-                  value: formData.weight,
-                  onChange: this.onWeightChange,
-                  readOnly: !this.state.isBeingEdited
-                })
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.provenance.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'provenance', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.provenance.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.provenance)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement(Input, {
-                  type: 'text',
-                  name: 'provenance',
-                  value: formData.provenance,
-                  onChange: this.onProvenanceChange,
-                  readOnly: !this.state.isBeingEdited
-                })
-              )
-            ),
-            React.createElement(
-              FormGroup,
-              { row: true, hidden: edgeDefs.comments.hidden },
-              React.createElement(
-                Col,
-                { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-                React.createElement(
-                  Label,
-                  { 'for': 'comments', className: 'tooltipAnchor small text-muted' },
-                  edgeDefs.comments.displayLabel,
-                  React.createElement(
-                    'span',
-                    { className: 'tooltiptext' },
-                    this.helpText(edgeDefs.comments)
-                  )
-                )
-              ),
-              React.createElement(
-                Col,
-                { sm: 9 },
-                React.createElement('textarea', {
-                  type: 'text',
-                  name: 'comments',
-                  className: 'comments',
-                  rows: '4',
-                  value: formData.comments,
-                  onChange: this.onCommentsChange,
-                  readOnly: !this.state.isBeingEdited,
-                  disabled: !this.state.isBeingEdited
-                })
-              )
-            ),
-            React.createElement(
-              'div',
-              {
-                id: 'citationWindow',
-                hidden: this.state.hideModal,
-                className: 'modal-content'
-              },
-              React.createElement(
-                'span',
-                { className: 'close', onClick: this.onCloseCiteClick },
-                '\xD7'
-              ),
-              React.createElement(
-                'p',
-                null,
-                React.createElement(
-                  'em',
-                  null,
-                  'Copy the text below:'
-                ),
-                React.createElement('br', null),
-                React.createElement('br', null),
-                'NetCreate ',
-                this.AppState('TEMPLATE').name,
-                ' network, Edge:',
-                ' ',
-                this.state.formData.label,
-                ' (ID ',
-                this.state.formData.id,
-                '), from "',
-                sourceNode.label,
-                '" to "',
-                targetNode.label,
-                '".',
-                ' ',
-                citation.text,
-                '. Last accessed at ',
-                this.dateFormatted(),
-                '.'
-              )
-            ),
-            React.createElement('br', null),
-            React.createElement(
-              FormGroup,
-              { className: 'text-right', style: { paddingRight: '5px' } },
-              React.createElement(
-                Button,
-                {
-                  className: 'small float-left btn btn-outline-light',
-                  size: 'sm',
-                  hidden: this.state.isLocked || isStandalone || parentNodeIsLocked,
-                  onClick: this.onDeleteButtonClick
-                },
-                'Delete'
-              ),
-              '\xA0',
-              React.createElement(
-                Button,
-                {
-                  outline: true,
-                  size: 'sm',
-                  hidden: citation.hidden,
-                  onClick: this.onCiteButtonClick
-                },
-                'Cite Edge'
-              ),
-              '\xA0\xA0',
-              React.createElement(
-                Button,
-                {
-                  outline: true,
-                  size: 'sm',
-                  hidden: this.state.isLocked || isStandalone || this.state.isBeingEdited || parentNodeIsLocked,
-                  disabled: disableEdit,
-                  onClick: this.onEditButtonClick
-                },
-                this.state.isBeingEdited ? 'Add New Edge' : 'Edit Edge'
-              ),
-              '\xA0',
-              React.createElement(
-                Button,
-                {
-                  size: 'sm',
-                  outline: this.state.isBeingEdited,
-                  onClick: this.onEdgeClick
-                },
-                this.state.isBeingEdited ? 'Cancel' : 'Close'
-              ),
-              '\xA0',
-              React.createElement(
-                Button,
-                {
-                  color: 'primary',
-                  size: 'sm',
-                  hidden: !this.state.isBeingEdited,
-                  disabled: !(this.state.isBeingEdited && this.state.hasValidTarget)
-                },
-                'Save'
-              ),
-              React.createElement(
-                'div',
-                {
-                  hidden: this.state.isLocked || this.state.isBeingEdited || parentNodeIsLocked,
-                  style: { display: 'inline' }
-                },
-                React.createElement(
-                  'p',
-                  {
-                    hidden: !this.state.dbIsLocked,
-                    className: 'small text-danger warning'
-                  },
-                  edgeIsLockedMessage
-                ),
-                React.createElement(
-                  'p',
-                  { hidden: !disableEdit, className: 'small text-danger warning' },
-                  editLockMessage
-                )
-              )
-            )
-          )
-        )
-      );
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      if (DBG) console.log('EdgeEditor.componentDidMount!');
-      this.loadSourceAndTarget();
-      this.onStateChange_SESSION(this.AppState('SESSION'));
-      this.updateEditState();
-      this.setState({
-        // hide Edit button if in standalone mode
-        isStandalone: UNISYS.IsStandaloneMode()
-      });
-      window.addEventListener('beforeunload', this.checkUnload);
-      window.addEventListener('unload', this.doUnload);
-    }
-  }, {
-    key: 'checkUnload',
-    value: function checkUnload(e) {
-      e.preventDefault();
-      if (this.state.isBeingEdited) {
-        (e || window.event).returnValue = null;
-      } else {
-        Reflect.deleteProperty(e, 'returnValue');
-      }
-      return e;
-    }
-  }, {
-    key: 'doUnload',
-    value: function doUnload(e) {
-      if (this.state.isBeingEdited) {
-        this.NetCall('SRV_DBUNLOCKEDGE', { edgeID: this.state.formData.id });
-        this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Release the lock if we're unmounting
-     */
-
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      var _this8 = this;
-
-      if (DBG) console.log('EdgeEditor.componentWillUnMount!');
-      if (this.state.isBeingEdited) {
-        this.NetCall('SRV_DBUNLOCKEDGE', { edgeID: this.state.formData.id }).then(function (data) {
-          if (data.NOP) {
-            if (DBG) console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-          } else if (data.unlocked) {
-            if (DBG) console.log('SERVER SAYS: unlock success! you have released Edge ' + data.edgeID);
-            _this8.setState({ dbIsLocked: false });
-          }
-        });
-        // Deregister as an open editor
-        this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
-      }
-      // deregister ACTIVEAUTOMPLETE when component unmounts
-      // otherwise state updates trigger a setState on unmounted component error
-      this.AppStateChangeOff('SESSION', this.onStateChange_SESSION);
-      this.AppStateChangeOff('SELECTION', this.handleSelection);
-      this.AppStateChangeOff('TEMPLATE', this.setTemplate);
-      UDATA.UnhandleMessage('EDGE_SELECT', this.handleEdgeSelection);
-      UDATA.UnhandleMessage('EDGE_EDIT', this.handleEdgeEdit);
-      UDATA.UnhandleMessage('EDGE_CLOSE', this.handleEdgeClose);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.setEditState);
-      window.removeEventListener('beforeunload', this.checkUnload);
-      window.removeEventListener('unload', this.doUnload);
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'helpText',
-    value: function helpText(obj) {
-      if (!obj) return;
-      var text = '';
-      if (obj.help === undefined || obj.help === '') text = obj.label;else text = obj.help;
-      return text;
-    }
-  }, {
-    key: 'markdownDisplay',
-    value: function markdownDisplay(text) {
-      if (!this.state.isBeingEdited) {
-        return mdReact({
-          onIterate: this.markdownIterate,
-          markdownOptions: { typographer: true, linkify: true },
-          plugins: [mdEmoji]
-        })(text);
-      }
-    }
-  }, {
-    key: 'markdownIterate',
-    value: function markdownIterate(Tag, props, children, level) {
-      if (Tag === 'a') {
-        props.target = '_blank';
-      }
-      return React.createElement(
-        Tag,
-        props,
-        children
-      );
-    }
-  }]);
-
-  return EdgeEditor;
-}(UNISYS.Component); // class EdgeEditor
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = EdgeEditor;
-});
-
-require.register("view/netcreate/components/EdgeTable.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _hdate = require('system/util/hdate');
-
-var _hdate2 = _interopRequireDefault(_hdate);
-
-var _URCommentBtn = require('./URCommentBtn');
-
-var _URCommentBtn2 = _interopRequireDefault(_URCommentBtn);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-    EdgeTable is used to to display a table of edges for review.
-
-    It displays NCDATA.
-    But also read FILTEREDNCDATA to show highlight/filtered state
-
-
-  ## TO USE
-
-    EdgeTable is self contained and relies on global NCDATA to load.
-
-      <EdgeTable/>
-
-
-    Set `DBG` to true to show the `ID` column.
-
-  ## 2018-12-07 Update
-
-    Since we're not using tab navigation:
-    1. The table isExpanded is now true by default.
-    2. The "Show/Hide Table" button is hidden.
-
-    Reset these to restore previous behavior.
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var NCUI = require('../nc-ui');
-var CMTMGR = require('../comment-mgr');
-var SETTINGS = require('settings');
-var FILTER = require('./filter/FilterEnums');
-
-var _require = require('system/util/enum'),
-    BUILTIN_FIELDS_EDGE = _require.BUILTIN_FIELDS_EDGE;
-
-var _require2 = require('system/util/constant'),
-    ICON_PENCIL = _require2.ICON_PENCIL,
-    ICON_VIEW = _require2.ICON_VIEW;
-
-var Button = ReactStrap.Button;
-
-var UNISYS = require('unisys/client');
-
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var DBG = false;
-var isAdmin = SETTINGS.IsAdmin();
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var EdgeTable = function (_UNISYS$Component) {
-  _inherits(EdgeTable, _UNISYS$Component);
-
-  function EdgeTable(props) {
-    _classCallCheck(this, EdgeTable);
-
-    var _this = _possibleConstructorReturn(this, (EdgeTable.__proto__ || Object.getPrototypeOf(EdgeTable)).call(this, props));
-
-    var TEMPLATE = _this.AppState('TEMPLATE');
-    _this.state = {
-      edgeDefs: TEMPLATE.edgeDefs,
-      edges: [],
-      selectedEdgeId: undefined,
-      selectedEdgeColor: TEMPLATE.sourceColor,
-      filteredEdges: [],
-      nodes: [], // needed for dereferencing source/target
-      disableEdit: false,
-      isLocked: false,
-      isExpanded: true,
-      sortkey: 'Relationship'
-    };
-
-    _this.onStateChange_SESSION = _this.onStateChange_SESSION.bind(_this);
-    _this.onStateChange_SELECTION = _this.onStateChange_SELECTION.bind(_this);
-    _this.onEDGE_OPEN = _this.onEDGE_OPEN.bind(_this);
-    _this.updateEdgeFilterState = _this.updateEdgeFilterState.bind(_this);
-    _this.handleDataUpdate = _this.handleDataUpdate.bind(_this);
-    _this.handleFilterDataUpdate = _this.handleFilterDataUpdate.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.OnTemplateUpdate = _this.OnTemplateUpdate.bind(_this);
-    _this.onViewButtonClick = _this.onViewButtonClick.bind(_this);
-    _this.onEditButtonClick = _this.onEditButtonClick.bind(_this);
-    _this.onToggleExpanded = _this.onToggleExpanded.bind(_this);
-    _this.onHighlightNode = _this.onHighlightNode.bind(_this);
-    _this.m_FindMatchingObjsByProp = _this.m_FindMatchingObjsByProp.bind(_this);
-    _this.m_FindMatchingEdgeByProp = _this.m_FindMatchingEdgeByProp.bind(_this);
-    _this.m_FindEdgeById = _this.m_FindEdgeById.bind(_this);
-    _this.setSortKey = _this.setSortKey.bind(_this);
-    _this.sortSymbol = _this.sortSymbol.bind(_this);
-    _this.lookupNodeLabel = _this.lookupNodeLabel.bind(_this);
-
-    _this.sortDirection = 1;
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-
-    UDATA.HandleMessage('EDGE_OPEN', _this.onEDGE_OPEN);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.updateEditState);
-
-    // SESSION is called by SessionSHell when the ID changes
-    //  set system-wide. data: { classId, projId, hashedId, groupId, isValid }
-    _this.OnAppStateChange('SESSION', _this.onStateChange_SESSION);
-
-    // Always make sure class methods are bind()'d before using them
-    // as a handler, otherwise object context is lost
-    _this.OnAppStateChange('NCDATA', _this.handleDataUpdate);
-
-    // Handle Template updates
-    _this.OnAppStateChange('TEMPLATE', _this.OnTemplateUpdate);
-
-    // Track Filtered Data Updates too
-    _this.OnAppStateChange('FILTEREDNCDATA', _this.handleFilterDataUpdate);
-
-    _this.OnAppStateChange('SELECTION', _this.onStateChange_SELECTION);
-    return _this;
-  } // constructor
-
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-  _createClass(EdgeTable, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      if (DBG) console.log('EdgeTable.componentDidMount!');
-
-      this.onStateChange_SESSION(this.AppState('SESSION'));
-
-      // Explicitly retrieve data because we may not have gotten a NCDATA
-      // update while we were hidden.
-      // filtered data needs to be set before D3Data
-      var FILTEREDNCDATA = UDATA.AppState('FILTEREDNCDATA');
-      this.setState({ filteredEdges: FILTEREDNCDATA.edges }, function () {
-        var NCDATA = _this2.AppState('NCDATA');
-        _this2.handleDataUpdate(NCDATA);
-      });
-
-      // Request edit state too because the update may have come
-      // while we were hidden
-      this.updateEditState();
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      UDATA.UnhandleMessage('EDGE_OPEN', this.onEDGE_OPEN);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.updateEditState);
-      this.AppStateChangeOff('SESSION', this.onStateChange_SESSION);
-      this.AppStateChangeOff('NCDATA', this.handleDataUpdate);
-      this.AppStateChangeOff('FILTEREDNCDATA', this.handleFilterDataUpdate);
-      this.AppStateChangeOff('TEMPLATE', this.OnTemplateUpdate);
-      this.AppStateChangeOff('SELECTION', this.onStateChange_SELECTION);
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'onStateChange_SELECTION',
-    value: function onStateChange_SELECTION(data) {
-      this.setState({
-        selectedEdgeId: data.edges.length > 0 ? data.edges[0].id : undefined
-      });
-    }
-    /** Handle change in SESSION data
-      Called both by componentWillMount() and AppStateChange handler.
-      The 'SESSION' state change is triggered in two places in SessionShell during
-      its handleChange() when active typing is occuring, and also during
-      SessionShell.componentWillMount()
-     */
-
-  }, {
-    key: 'onStateChange_SESSION',
-    value: function onStateChange_SESSION(decoded) {
-      this.setState({ isLocked: !decoded.isValid });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'displayUpdated',
-    value: function displayUpdated(nodeEdge) {
-      // Prevent error if `meta` info is not defined yet, or not properly imported
-      if (!nodeEdge.meta) return '';
-
-      var d = new Date(nodeEdge.meta.revision > 0 ? nodeEdge.meta.updated : nodeEdge.meta.created);
-
-      var year = String(d.getFullYear());
-      var date = d.getMonth() + 1 + '/' + d.getDate() + '/' + year.substr(2, 4);
-      var time = d.toTimeString().substr(0, 5);
-      var dateTime = date + ' at ' + time;
-      var titleString = 'v' + nodeEdge.meta.revision;
-      if (nodeEdge._nlog) titleString += ' by ' + nodeEdge._nlog[nodeEdge._nlog.length - 1];
-      var tag = React.createElement(
-        'span',
-        { title: titleString },
-        ' ',
-        dateTime,
-        ' '
-      );
-
-      return tag;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// User selected edge usu by clicking NCNode's edge item in Edges tab
-
-  }, {
-    key: 'onEDGE_OPEN',
-    value: function onEDGE_OPEN(data) {
-      this.setState({ selectedEdgeId: data.edge.id });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// Set edge filtered status based on current filteredNodes
-
-  }, {
-    key: 'updateEdgeFilterState',
-    value: function updateEdgeFilterState(edges, filteredEdges) {
-      // add highlight/filter status
-      if (filteredEdges.length > 0) {
-        // If we're transitioning from "HILIGHT/FADE" to "COLLAPSE" or "FOCUS", then we
-        // also need to remove edges that are not in filteredEdges
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.REDUCE || FILTERDEFS.filterAction === FILTER.ACTION.FOCUS) {
-          edges = edges.filter(function (edge) {
-            var filteredEdge = filteredEdges.find(function (n) {
-              return n.id === edge.id;
-            });
-            return filteredEdge; // keep if it's in the list of filtered edges
-          });
-        } else {
-          edges = edges.map(function (edge) {
-            var filteredEdge = filteredEdges.find(function (n) {
-              return n.id === edge.id;
-            });
-            edge.isFiltered = !filteredEdge;
-            return edge;
-          });
-        }
-      }
-      this.setState({ edges: edges });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle updated SELECTION: NCDATA updates
-     */
-
-  }, {
-    key: 'handleDataUpdate',
-    value: function handleDataUpdate(data) {
-      var _this3 = this;
-
-      if (data && data.edges && data.nodes) {
-        // NCDATA.edges no longer uses source/target objects
-        // ...1. So we need to save nodes for dereferencing.
-        this.setState({ nodes: data.nodes }, function () {
-          // ...2. So we stuff 'sourceLabel' and 'targetLabel' into the local edges array
-          var edges = data.edges.map(function (e) {
-            e.sourceLabel = _this3.lookupNodeLabel(e.source); // requires `state.nodes` be set
-            e.targetLabel = _this3.lookupNodeLabel(e.target);
-            return e;
-          });
-          // ...   sort it also
-          edges = _this3.sortTable(_this3.state.sortkey, edges);
-          // ...1. So we need to save nodes for dereferencing.
-          _this3.setState({ edges: edges });
-          var filteredEdges = _this3.state.filteredEdges;
-
-          _this3.updateEdgeFilterState(edges, filteredEdges);
-        });
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle FILTEREDNCDATA updates sent by filters-logic.m_FiltersApply
-        Note that edge.soourceLabel and edge.targetLabel should already be set
-        by filter-mgr.
-     */
-
-  }, {
-    key: 'handleFilterDataUpdate',
-    value: function handleFilterDataUpdate(data) {
-      var _this4 = this;
-
-      if (data.edges) {
-        var filteredEdges = data.edges;
-        // If we're transitioning from "COLLAPSE" or "FOCUS" to "HILIGHT/FADE", then we
-        // also need to add back in edges that are not in filteredEdges
-        // (because "COLLAPSE" and "FOCUS" removes edges that are not matched)
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.FADE) {
-          var NCDATA = UDATA.AppState('NCDATA');
-          this.setState({
-            edges: NCDATA.edges,
-            filteredEdges: filteredEdges
-          }, function () {
-            var edges = _this4.sortTable(_this4.state.sortkey, NCDATA.edges);
-            _this4.updateEdgeFilterState(edges, filteredEdges);
-          });
-        } else {
-          this.setState({
-            edges: filteredEdges,
-            filteredEdges: filteredEdges
-          }, function () {
-            var edges = _this4.sortTable(_this4.state.sortkey, filteredEdges);
-            _this4.updateEdgeFilterState(edges, filteredEdges);
-          });
-        }
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this5 = this;
-
-      // disable edit if someone else is editing a template, node, or edge
-      var disableEdit = false;
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        // someone else might be editing a template or importing or editing node or edge
-        disableEdit = data.templateBeingEdited || data.importActive || data.nodeOrEdgeBeingEdited || data.commentBeingEditedByMe; // only lock out if this user is the one editing comments, allow network commen edits
-        _this5.setState({ disableEdit: disableEdit });
-      });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'OnTemplateUpdate',
-    value: function OnTemplateUpdate(data) {
-      this.setState({
-        edgeDefs: data.edgeDefs,
-        selectedEdgeColor: data.sourceColor
-      });
-    }
-
-    /// UTILITIES /////////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByID',
-    value: function sortByID(edges) {
-      var _this6 = this;
-
-      if (edges) {
-        return edges.sort(function (a, b) {
-          var akey = a.id,
-              bkey = b.id;
-          if (akey < bkey) return -1 * Number(_this6.sortDirection);
-          if (akey > bkey) return 1 * Number(_this6.sortDirection);
-          return 0;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortBySourceLabel',
-    value: function sortBySourceLabel(edges) {
-      var _this7 = this;
-
-      if (edges) {
-        return edges.sort(function (a, b) {
-          var akey = a.sourceLabel,
-              bkey = b.sourceLabel;
-          return akey.localeCompare(bkey) * _this7.sortDirection;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByTargetLabel',
-    value: function sortByTargetLabel(edges) {
-      var _this8 = this;
-
-      if (edges) {
-        return edges.sort(function (a, b) {
-          var akey = a.targetLabel,
-              bkey = b.targetLabel;
-
-          return akey.localeCompare(bkey) * _this8.sortDirection;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** DEPRECATED -- 'attributes' is no longer being used
-     */
-
-  }, {
-    key: 'sortByAttribute',
-    value: function sortByAttribute(edges, key) {
-      var _this9 = this;
-
-      if (edges) {
-        return edges.sort(function (a, b) {
-          var akey = a.attributes[key],
-              bkey = b.attributes[key];
-          if (akey < bkey) return -1 * Number(_this9.sortDirection);
-          if (akey > bkey) return 1 * Number(_this9.sortDirection);
-          if (akey === bkey) {
-            // Secondary sort on Source label
-            var source_a = a.sourceLabel;
-            var source_b = b.sourceLabel;
-            if (source_a < source_b) return -1 * Number(_this9.sortDirection);
-            if (source_a > source_b) return 1 * Number(_this9.sortDirection);
-          }
-          return 0;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByKey',
-    value: function sortByKey(edges, key, type) {
-      var _this10 = this;
-
-      if (edges) {
-        return edges.sort(function (a, b) {
-          var akey = void 0,
-              bkey = void 0;
-          if (type === FILTER.TYPES.STRING) {
-            akey = a[key] || ''; // fall back to blank if a[key] is not defined
-            // a[key] might be undefined if the template/db
-            // was changed but the full db wasn't updated
-            bkey = b[key] || '';
-          } else if (type === FILTER.TYPES.NUMBER) {
-            akey = Number(a[key] || ''); // force number for sorting
-            bkey = Number(b[key] || '');
-          } else if (type === FILTER.TYPES.HDATE) {
-            if (!a[key] || !b[key]) return 0;
-            akey = _hdate2.default.Parse(a[key].value); // parseResult
-            bkey = _hdate2.default.Parse(b[key].value);
-            if (akey.length < 1 || bkey.length < 1) return '';
-            var da = akey[0].start.knownValues;
-            var db = bkey[0].start.knownValues;
-            var order = void 0;
-            if (da.year !== db.year) {
-              order = da.year - db.year;
-            } else if (da.month !== db.month) {
-              order = da.month - db.month;
-            } else if (da.day !== db.day) {
-              order = da.day - db.day;
-            } else if (da.hour !== db.hour) {
-              order = da.hour - db.hour;
-            } else if (da.minute !== db.minute) {
-              order = da.minute - db.minute;
-            } else if (da.second !== db.second) {
-              order = da.second - db.second;
-            }
-            return order * Number(_this10.sortDirection);
-          } else {
-            /* some other type */
-            akey = a[key];
-            bkey = b[key];
-          }
-          if (akey < bkey) return -1 * Number(_this10.sortDirection);
-          if (akey > bkey) return 1 * Number(_this10.sortDirection);
-          if (akey === bkey) {
-            // Secondary sort on Source label
-            var source_a = a.sourceLabel;
-            var source_b = b.sourceLabel;
-            if (source_a < source_b) return -1 * Number(_this10.sortDirection);
-            if (source_a > source_b) return 1 * Number(_this10.sortDirection);
-          }
-          return 0;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByUpdated',
-    value: function sortByUpdated(edges) {
-      var _this11 = this;
-
-      if (edges) {
-        return edges.sort(function (a, b) {
-          var akey = a.meta.revision > 0 ? a.meta.updated : a.meta.created,
-              bkey = b.meta.revision > 0 ? b.meta.updated : b.meta.created;
-          if (akey < bkey) return -1 * Number(_this11.sortDirection);
-          if (akey > bkey) return 1 * Number(_this11.sortDirection);
-          return 0;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByComment',
-    value: function sortByComment(edges) {
-      var _this12 = this;
-
-      // stuff the count into edges for calculation
-      var uid = CMTMGR.GetCurrentUserId();
-      var countededges = edges.map(function (e) {
-        var cref = CMTMGR.GetEdgeCREF(e.id);
-        e.commentcount = CMTMGR.GetThreadedViewObjectsCount(cref, uid);
-        return e;
-      });
-      if (countededges) {
-        return countededges.sort(function (a, b) {
-          var akey = a.commentcount || 0,
-              bkey = b.commentcount || 0;
-          // sort descending
-          if (akey > bkey) return 1 * Number(_this12.sortDirection);
-          if (akey < bkey) return -1 * Number(_this12.sortDirection);
-          return 0;
-        });
-      }
-      return 0;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** If no `sortkey` is passed, the sort will use the existing state.sortkey
-     */
-
-  }, {
-    key: 'sortTable',
-    value: function sortTable() {
-      var sortkey = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.sortkey;
-      var edges = arguments[1];
-      var type = arguments[2];
-
-      switch (sortkey) {
-        case 'id':
-          return this.sortByID(edges);
-        case 'source':
-          return this.sortBySourceLabel(edges);
-        case 'target':
-          return this.sortByTargetLabel(edges);
-        case 'commentbtn':
-          return this.sortByComment(edges);
-        // case 'Updated':
-        //   return this.sortByUpdated(edges);
-        default:
-          return this.sortByKey(edges, sortkey, type);
-      }
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortSymbol',
-    value: function sortSymbol(key) {
-      if (key !== this.state.sortkey) return '';
-      // this is not the current sort, so don't show anything
-      else return this.sortDirection === 1 ? '▼' : '▲'; // default to "decreasing" and flip if clicked again
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Look up the Node label for source / target ids
-     */
-
-  }, {
-    key: 'lookupNodeLabel',
-    value: function lookupNodeLabel(nodeId) {
-      var node = this.state.nodes.find(function (n) {
-        return n.id === nodeId;
-      });
-      if (node === undefined) return '...';
-      // if (node === undefined) throw new Error('EdgeTable: Could not find node', nodeId);
-      return node.label;
-    }
-
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onViewButtonClick',
-    value: function onViewButtonClick(event, edgeId) {
-      event.preventDefault();
-      event.stopPropagation();
-      var edgeID = parseInt(edgeId);
-      var edge = this.m_FindEdgeById(edgeID);
-      if (DBG) console.log('EdgeTable: Edge id', edge.id, 'selected for viewing');
-      // Load Source Node then Edge
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [edge.source] }).then(function () {
-        UDATA.LocalCall('EDGE_SELECT', { edgeId: edge.id });
-      });
-    }
-  }, {
-    key: 'onEditButtonClick',
-    value: function onEditButtonClick(event, edgeId) {
-      event.preventDefault();
-      event.stopPropagation();
-      var edgeID = parseInt(edgeId);
-      var edge = this.m_FindEdgeById(edgeID);
-      if (DBG) console.log('EdgeTable: Edge id', edge.id, 'selected for editing');
-      // Load Source Node then Edge
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [edge.source] }).then(function () {
-        UDATA.LocalCall('EDGE_SELECT_AND_EDIT', { edgeId: edge.id });
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onToggleExpanded',
-    value: function onToggleExpanded(event) {
-      this.setState({
-        isExpanded: !this.state.isExpanded
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-    /*/
-
-  }, {
-    key: 'onHighlightNode',
-    value: function onHighlightNode(nodeId) {
-      UDATA.LocalCall('TABLE_HILITE_NODE', { nodeId: nodeId });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /*/
-     */
-
-  }, {
-    key: 'setSortKey',
-    value: function setSortKey(key, type) {
-      if (key === this.state.sortkey) this.sortDirection = -1 * this.sortDirection;
-      // if this was already the key, flip the direction
-      else this.sortDirection = 1;
-
-      var edges = this.sortTable(key, this.state.edges, type);
-      this.setState({
-        edges: edges,
-        sortkey: key
-      });
-      UNISYS.Log('sort edge table', key, this.sortDirection);
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'selectNode',
-    value: function selectNode(id, event) {
-      event.preventDefault();
-
-      // Load Source
-      if (DBG) console.log('EdgeTable: Edge id', id, 'selected for editing');
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [id] });
-    }
-
-    /// OBJECT HELPERS ////////////////////////////////////////////////////////////
-    /// these probably should go into a utility class
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Return array of objects that match the match_me object keys/values
-      NOTE: make sure that strings are compared with strings, etc
-     */
-
-  }, {
-    key: 'm_FindMatchingObjsByProp',
-    value: function m_FindMatchingObjsByProp(obj_list) {
-      var match_me = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      // operate on arrays only
-      if (!Array.isArray(obj_list)) throw Error('FindMatchingObjectsByProp arg1 must be array');
-      var matches = obj_list.filter(function (obj) {
-        var pass = true;
-        for (var key in match_me) {
-          if (match_me[key] !== obj[key]) pass = false;
-          break;
-        }
-        return pass;
-      });
-      // return array of matches (can be empty array)
-      return matches;
-    }
-
-    /// EDGE HELPERS //////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Return array of nodes that match the match_me object keys/values
-      NOTE: make sure that strings are compared with strings, etc
-     */
-
-  }, {
-    key: 'm_FindMatchingEdgeByProp',
-    value: function m_FindMatchingEdgeByProp() {
-      var match_me = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-      return this.m_FindMatchingObjsByProp(this.state.edges, match_me);
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Convenience function to retrieve edge by ID
-     */
-
-  }, {
-    key: 'm_FindEdgeById',
-    value: function m_FindEdgeById(id) {
-      return this.m_FindMatchingEdgeByProp({ id: id })[0];
-    }
-
-    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** This is not yet implemented as of React 16.2.  It's implemented in 16.3.
-        getDerivedStateFromProps (props, state) {
-          console.error('getDerivedStateFromProps!!!');
-        }
-     */
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this13 = this;
-
-      var _state = this.state,
-          edgeDefs = _state.edgeDefs,
-          selectedEdgeId = _state.selectedEdgeId,
-          selectedEdgeColor = _state.selectedEdgeColor,
-          disableEdit = _state.disableEdit,
-          isLocked = _state.isLocked;
-
-      if (edgeDefs.category === undefined) {
-        // for backwards compatability
-        edgeDefs.category = {};
-        edgeDefs.category.label = '';
-        edgeDefs.category.hidden = true;
-      }
-      var tableHeight = this.props.tableHeight;
-
-      var styles = 'thead, tbody { font-size: 0.8em }\n                    .table {\n                      display: table; /* override bootstrap for fixed header */\n                      border-spacing: 0;\n                    }\n                    .table th {\n                      position: -webkit-sticky;\n                      position: sticky;\n                      top: 0;\n                      background-color: #eafcff;\n                      border-top: none;\n                    }\n                    xtbody { overflow: auto; }\n                    .btn-sm { font-size: 0.6rem; padding: 0.1rem 0.2rem }\n                    ';
-      var attributes = Object.keys(edgeDefs).filter(function (k) {
-        return !BUILTIN_FIELDS_EDGE.includes(k);
-      });
-
-      // show 'type' between 'source' and 'target' if `type` has been defined
-      // if it isn't defined, just show attribute fields after `source` and 'target`
-      var hasTypeField = edgeDefs['type'];
-      if (hasTypeField) attributes = attributes.filter(function (a) {
-        return a !== 'type';
-      });
-
-      return React.createElement(
-        'div',
-        {
-          onMouseLeave: function onMouseLeave() {
-            return _this13.onHighlightNode(undefined);
-          },
-          style: {
-            overflow: 'auto',
-            position: 'relative',
-            display: 'block',
-            left: '1px',
-            right: '10px',
-            height: tableHeight,
-            backgroundColor: '#eafcff'
-          }
-        },
-        React.createElement(
-          'style',
-          null,
-          styles
-        ),
-        React.createElement(
-          Button,
-          { size: 'sm', outline: true, hidden: true, onClick: this.onToggleExpanded },
-          this.state.isExpanded ? 'Hide Edge Table' : 'Show Edge Table'
-        ),
-        React.createElement(
-          'table',
-          {
-            hidden: !this.state.isExpanded
-            // size="sm" hover responsive striped // ReactStrap properties
-            // Need to use a standard 'table' not ReactStrap so that we can set
-            // the container div height and support non-scrolling headers
-            , className: 'table table-striped table-responsive table-hover table-sm edgetable w-auto'
-          },
-          React.createElement(
-            'thead',
-            null,
-            React.createElement(
-              'tr',
-              null,
-              React.createElement(
-                'th',
-                { width: '4%', hidden: !DBG },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this13.setSortKey('id', edgeDefs.id.type);
-                    }
-                  },
-                  'ID ',
-                  this.sortSymbol('id')
-                )
-              ),
-              React.createElement(
-                'th',
-                { hidden: !DBG },
-                'Size'
-              ),
-              React.createElement(
-                'th',
-                { width: '4%' },
-                React.createElement(
-                  'div',
-                  { style: { color: '#f3f3ff' } },
-                  '_Edit_'
-                )
-              ),
-              React.createElement(
-                'th',
-                { hidden: !DBG },
-                'Src ID'
-              ),
-              React.createElement(
-                'th',
-                { width: '10%' },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this13.setSortKey('source', edgeDefs.source.type);
-                    }
-                  },
-                  edgeDefs.source.displayLabel,
-                  ' ',
-                  this.sortSymbol('source')
-                )
-              ),
-              hasTypeField && React.createElement(
-                'th',
-                { hidden: edgeDefs.type.hidden, width: '10%' },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this13.setSortKey('Relationship', edgeDefs.type.type);
-                    }
-                  },
-                  edgeDefs.type.displayLabel,
-                  ' ',
-                  this.sortSymbol('Relationship')
-                )
-              ),
-              React.createElement(
-                'th',
-                { hidden: !DBG },
-                'Target ID'
-              ),
-              React.createElement(
-                'th',
-                { width: '10%' },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this13.setSortKey('target', edgeDefs.target.type);
-                    }
-                  },
-                  edgeDefs.target.displayLabel,
-                  ' ',
-                  this.sortSymbol('target')
-                )
-              ),
-              attributes.map(function (a) {
-                return React.createElement(
-                  'th',
-                  { hidden: edgeDefs[a].hidden, key: a },
-                  React.createElement(
-                    Button,
-                    {
-                      size: 'sm',
-                      onClick: function onClick() {
-                        return _this13.setSortKey(a, edgeDefs[a].type);
-                      }
-                    },
-                    edgeDefs[a].displayLabel,
-                    ' ',
-                    _this13.sortSymbol(a)
-                  )
-                );
-              }),
-              React.createElement(
-                'th',
-                { style: { zIndex: 1 } },
-                React.createElement(
-                  'div',
-                  {
-                    className: 'comment-icon-inline comment-intable',
-                    onClick: function onClick() {
-                      return _this13.setSortKey('commentbtn');
-                    }
-                  },
-                  CMTMGR.COMMENTICON,
-                  this.sortSymbol('commentbtn')
-                )
-              )
-            )
-          ),
-          React.createElement(
-            'tbody',
-            { style: { maxHeight: tableHeight, fontSize: '12px' } },
-            this.state.edges.map(function (edge, i) {
-              return React.createElement(
-                'tr',
-                {
-                  key: i,
-                  style: {
-                    color: edge.isFiltered ? 'red' : 'black',
-                    // edge default transparency is 0.7
-                    // but for tables, we want to show opaque unless the edge has been Faded via filter
-                    opacity: edge.filteredTransparency > 0.5 ? 1 : edge.filteredTransparency,
-                    border: selectedEdgeId === edge.id ? '3px solid ' + selectedEdgeColor : 'none'
-                  }
-                },
-                React.createElement(
-                  'td',
-                  { hidden: !DBG },
-                  edge.id
-                ),
-                React.createElement(
-                  'td',
-                  { hidden: !DBG },
-                  edge.size
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  !disableEdit && React.createElement(
-                    'button',
-                    {
-                      className: 'small outline',
-                      onClick: function onClick(event) {
-                        return _this13.onViewButtonClick(event, edge.id);
-                      }
-                    },
-                    ICON_VIEW
-                  ),
-                  !disableEdit && !isLocked && React.createElement(
-                    'button',
-                    {
-                      className: 'small outline',
-                      onClick: function onClick(event) {
-                        return _this13.onEditButtonClick(event, edge.id);
-                      }
-                    },
-                    ICON_PENCIL
-                  )
-                ),
-                React.createElement(
-                  'td',
-                  { hidden: !DBG },
-                  String(edge.source)
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  !disableEdit ? React.createElement(
-                    'a',
-                    {
-                      href: '#',
-                      onClick: function onClick(e) {
-                        return _this13.selectNode(edge.source, e);
-                      },
-                      onMouseOver: function onMouseOver() {
-                        return _this13.onHighlightNode(edge.source);
-                      }
-                    },
-                    edge.sourceLabel
-                  ) : edge.sourceLabel
-                ),
-                hasTypeField && React.createElement(
-                  'td',
-                  { hidden: edgeDefs.type.hidden },
-                  edge.type
-                ),
-                React.createElement(
-                  'td',
-                  { hidden: !DBG },
-                  String(edge.target)
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  !disableEdit ? React.createElement(
-                    'a',
-                    {
-                      href: '#',
-                      onClick: function onClick(e) {
-                        return _this13.selectNode(edge.target, e);
-                      },
-                      onMouseOver: function onMouseOver() {
-                        return _this13.onHighlightNode(edge.target);
-                      }
-                    },
-                    edge.targetLabel
-                  ) : edge.targetLabel
-                ),
-                attributes.map(function (a) {
-                  return React.createElement(
-                    'td',
-                    { hidden: edgeDefs[a].hidden, key: '' + edge.id + a },
-                    edgeDefs[a].type === 'markdown' ? NCUI.Markdownify(edge[a]) : edgeDefs[a].type === 'hdate' ? edge[a] && edge[a].formattedDateString || '' : edge[a]
-                  );
-                }),
-                React.createElement(
-                  'td',
-                  null,
-                  React.createElement(_URCommentBtn2.default, {
-                    cref: CMTMGR.GetEdgeCREF(edge.id),
-                    uuiid: 'edgetable'
-                  })
-                )
-              );
-            })
-          )
-        )
-      );
-    }
-  }]);
-
-  return EdgeTable;
-}(UNISYS.Component); // class EdgeTable
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = EdgeTable;
 });
 
 require.register("view/netcreate/components/Help.jsx", function(exports, require, module) {
@@ -13835,7 +10712,7 @@ var ImportExport = function (_UNISYS$Component) {
     };
     _this.checkUnload = _this.checkUnload.bind(_this);
     _this.doUnload = _this.doUnload.bind(_this);
-    _this.handleEditStateUpdate = _this.handleEditStateUpdate.bind(_this);
+    _this.urstate_LOCKSTATE = _this.urstate_LOCKSTATE.bind(_this);
     _this.updateEditState = _this.updateEditState.bind(_this);
     _this.onNodesExportSelect = _this.onNodesExportSelect.bind(_this);
     _this.onEdgesExportSelect = _this.onEdgesExportSelect.bind(_this);
@@ -13848,7 +10725,7 @@ var ImportExport = function (_UNISYS$Component) {
     _this.unlockAll = _this.unlockAll.bind(_this);
 
     UDATA = UNISYS.NewDataLink(_this);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.handleEditStateUpdate);
+    UDATA.OnAppStateChange('LOCKSTATE', _this.urstate_LOCKSTATE);
     return _this;
   } // constructor
 
@@ -13862,8 +10739,8 @@ var ImportExport = function (_UNISYS$Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.handleEditStateUpdate);
+      UDATA.NetSend('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
+      UDATA.AppStateChangeOff('LOCKSTATE', this.urstate_LOCKSTATE);
       window.removeEventListener('beforeunload', this.checkUnload);
       window.removeEventListener('unload', this.doUnload);
     }
@@ -13882,7 +10759,7 @@ var ImportExport = function (_UNISYS$Component) {
     key: 'doUnload',
     value: function doUnload(e) {
       if (this.state.importIsActive) {
-        this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
+        this.NetSignal('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
       }
     }
 
@@ -13890,12 +10767,12 @@ var ImportExport = function (_UNISYS$Component) {
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   }, {
-    key: 'handleEditStateUpdate',
-    value: function handleEditStateUpdate(data) {
+    key: 'urstate_LOCKSTATE',
+    value: function urstate_LOCKSTATE(LOCKSTATE) {
       var importIsActive = this.state.importIsActive;
 
       if (!importIsActive) {
-        var preventImport = data.templateBeingEdited || data.importActive || data.nodeOrEdgeBeingEdited || UNISYS.IsStandaloneMode();
+        var preventImport = LOCKSTATE.templateBeingEdited || LOCKSTATE.importActive || LOCKSTATE.nodeOrEdgeBeingEdited || UNISYS.IsStandaloneMode();
         this.setState({ preventImport: preventImport });
       }
     }
@@ -13905,7 +10782,8 @@ var ImportExport = function (_UNISYS$Component) {
       var _this2 = this;
 
       // disable edit if someone else is editing a template, node, or edge
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(this.handleEditStateUpdate);
+      this.urstate_LOCKSTATE(UDATA.AppState('LOCKSTATE'));
+      // REVIEW: Reduce setState calls?
       DATASTORE.PromiseCalculateMaxNodeId().then(function (data) {
         _this2.setState({ nextNodeId: data + 1 });
       });
@@ -13996,7 +10874,7 @@ var ImportExport = function (_UNISYS$Component) {
         nodeValidationMsgs: undefined
       });
       // Clear validated data so it doesn't get imported
-      if (!importIsActive) UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
+      if (!importIsActive) UDATA.NetSend('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
       IMPORTEXPORT.ResetNodeImportData();
     }
   }, {
@@ -14012,14 +10890,14 @@ var ImportExport = function (_UNISYS$Component) {
         edgeValidationMsgs: undefined
       });
       // Clear validated data so it doesn't get imported
-      if (!importIsActive) UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
+      if (!importIsActive) UDATA.NetSend('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
       IMPORTEXPORT.ResetEdgeImportData();
     }
   }, {
     key: 'clearFileSelect',
     value: function clearFileSelect() {
       // User Cancelled, reset to default
-      UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
+      UDATA.NetSend('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.IMPORTER });
       document.getElementById('nodefileInput').value = '';
       document.getElementById('edgefileInput').value = '';
       this.clearNodefileSelect();
@@ -14161,6 +11039,27 @@ var ImportExport = function (_UNISYS$Component) {
                 null,
                 'Next unused EDGE ID: ',
                 nextEdgeId
+              )
+            ),
+            'Importing data will ',
+            React.createElement(
+              'b',
+              null,
+              'merge'
+            ),
+            ' the new nodes and edges into the existing nodes and edges.',
+            React.createElement(
+              'ul',
+              null,
+              React.createElement(
+                'li',
+                null,
+                'Imported nodes/edges with matching ids will replace existing objects'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Existing objects that do not match imported nodes/edges will not be modified or removed'
               )
             )
           ),
@@ -14358,6 +11257,16 @@ require.register("view/netcreate/components/InfoPanel.jsx", function(exports, re
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _NCNodeTable = require('./NCNodeTable');
+
+var _NCNodeTable2 = _interopRequireDefault(_NCNodeTable);
+
+var _NCEdgeTable = require('./NCEdgeTable');
+
+var _NCEdgeTable2 = _interopRequireDefault(_NCEdgeTable);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -14393,8 +11302,7 @@ var TabContent = ReactStrap.TabContent,
     Button = ReactStrap.Button;
 
 var classnames = require('classnames');
-var NCNodeTable = require('./NCNodeTable');
-var NCEdgeTable = require('./NCEdgeTable');
+
 var More = require('./More');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
@@ -14549,6 +11457,9 @@ var InfoPanel = function (_UNISYS$Component) {
   }, {
     key: 'UpdateFilterSummary',
     value: function UpdateFilterSummary(data) {
+      if (this.state.filtersSummary === data.filtersSummary) {
+        return;
+      }
       this.setState({ filtersSummary: data.filtersSummary });
     }
   }, {
@@ -14702,7 +11613,7 @@ var InfoPanel = function (_UNISYS$Component) {
                 React.createElement(
                   Col,
                   { sm: '12' },
-                  React.createElement(NCNodeTable, {
+                  React.createElement(_NCNodeTable2.default, {
                     tableHeight: tableHeight,
                     isOpen: activeTab === TABS.NODESTABLE
                   })
@@ -14718,7 +11629,7 @@ var InfoPanel = function (_UNISYS$Component) {
                 React.createElement(
                   Col,
                   { sm: '12' },
-                  React.createElement(NCEdgeTable, {
+                  React.createElement(_NCEdgeTable2.default, {
                     tableHeight: tableHeight,
                     isOpen: activeTab === TABS.EDGESTABLE
                   })
@@ -14913,7 +11824,7 @@ var SETTINGS = require('settings');
 var Help = require('./Help');
 var Vocabulary = require('./Vocabulary');
 var ImportExport = require('./ImportExport');
-var Template = require('./Template');
+var NCTemplate = require('./NCTemplate');
 var UNISYS = require('unisys/client');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
@@ -15091,7 +12002,7 @@ var More = function (_UNISYS$Component) {
             React.createElement(
               TabPane,
               { tabId: '4' },
-              activeTab === '4' && React.createElement(Template, null)
+              activeTab === '4' && React.createElement(NCTemplate, null)
             )
           )
         )
@@ -15934,11 +12845,13 @@ module.exports = NCDialogInsertImageURL;
 require.register("view/netcreate/components/NCEdge.jsx", function(exports, require, module) {
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _URCommentBtn = require('./URCommentBtn');
+var _URCommentVBtn = require('./URCommentVBtn');
 
-var _URCommentBtn2 = _interopRequireDefault(_URCommentBtn);
+var _URCommentVBtn2 = _interopRequireDefault(_URCommentVBtn);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -15976,7 +12889,6 @@ var React = require('react');
 var UNISYS = require('unisys/client');
 
 var _require = require('system/util/enum'),
-    EDITORTYPE = _require.EDITORTYPE,
     BUILTIN_FIELDS_EDGE = _require.BUILTIN_FIELDS_EDGE;
 
 var _require2 = require('system/util/constant'),
@@ -15985,9 +12897,10 @@ var _require2 = require('system/util/constant'),
     ARROW_UPDOWN = _require2.ARROW_UPDOWN,
     ARROW_RIGHT = _require2.ARROW_RIGHT;
 
-var NCUI = require('../nc-ui');
+var LOCKMGR = require('../lock-mgr');
 var CMTMGR = require('../comment-mgr');
 var NCLOGIC = require('../nc-logic');
+var NCUI = require('../nc-ui');
 var NCAutoSuggest = require('./NCAutoSuggest');
 var NCDialog = require('./NCDialog');
 var NCDialogCitation = require('./NCDialogCitation');
@@ -16028,28 +12941,25 @@ var NCEdge = function (_UNISYS$Component) {
 
     // STATE MANAGEMENT
     _this.ResetState = _this.ResetState.bind(_this);
-    _this.UpdateSession = _this.UpdateSession.bind(_this);
-    _this.UpdateNCData = _this.UpdateNCData.bind(_this);
+    _this.urstate_SESSION = _this.urstate_SESSION.bind(_this);
+    _this.urstate_LOCKSTATE = _this.urstate_LOCKSTATE.bind(_this);
+    _this.urstate_NCDATA = _this.urstate_NCDATA.bind(_this);
     _this.IsLoggedIn = _this.IsLoggedIn.bind(_this);
-    _this.SetPermissions = _this.SetPermissions.bind(_this);
-    _this.UpdatePermissions = _this.UpdatePermissions.bind(_this);
+    _this.DerivePermissions = _this.DerivePermissions.bind(_this);
 
     // EVENT HANDLERS
     _this.CheckUnload = _this.CheckUnload.bind(_this);
     _this.DoUnload = _this.DoUnload.bind(_this);
     _this.ClearSelection = _this.ClearSelection.bind(_this);
-    _this.UpdateSelection = _this.UpdateSelection.bind(_this);
+    _this.urstate_SELECTION = _this.urstate_SELECTION.bind(_this);
     _this.ReqLoadEdge = _this.ReqLoadEdge.bind(_this);
     // DATA LOADING
     _this.LoadEdge = _this.LoadEdge.bind(_this);
     _this.DeleteEdge = _this.DeleteEdge.bind(_this);
     _this.LoadAttributes = _this.LoadAttributes.bind(_this);
     _this.LoadProvenance = _this.LoadProvenance.bind(_this);
-    _this.LockEdge = _this.LockEdge.bind(_this);
     _this.UnlockEdge = _this.UnlockEdge.bind(_this);
-    _this.IsEdgeLocked = _this.IsEdgeLocked.bind(_this);
     _this.EditEdge = _this.EditEdge.bind(_this);
-    _this.UpdateDerivedValues = _this.UpdateDerivedValues.bind(_this);
     _this.ValidateSourceTarget = _this.ValidateSourceTarget.bind(_this);
     _this.OfferToCreateNewNode = _this.OfferToCreateNewNode.bind(_this);
     _this.CreateNode = _this.CreateNode.bind(_this);
@@ -16059,8 +12969,8 @@ var NCEdge = function (_UNISYS$Component) {
     // DATA SAVING
     _this.SaveEdge = _this.SaveEdge.bind(_this);
     // HELPER METHODS
-    _this.SetBackgroundColor = _this.SetBackgroundColor.bind(_this);
-    _this.SetSourceTargetNodeColor = _this.SetSourceTargetNodeColor.bind(_this);
+    _this.LookupBackgroundColor = _this.LookupBackgroundColor.bind(_this);
+    _this.LookupSourceTargetNodeColor = _this.LookupSourceTargetNodeColor.bind(_this);
     _this.SwapSourceAndTarget = _this.SwapSourceAndTarget.bind(_this);
     _this.EdgeDisplayName = _this.EdgeDisplayName.bind(_this);
     // UI MANIPULATION METHODS
@@ -16090,12 +13000,12 @@ var NCEdge = function (_UNISYS$Component) {
 
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /// REGISTER LISTENERS
-    UDATA.OnAppStateChange('SESSION', _this.UpdateSession);
-    UDATA.OnAppStateChange('NCDATA', _this.UpdateNCData);
-    UDATA.OnAppStateChange('SELECTION', _this.UpdateSelection);
+    UDATA.OnAppStateChange('SESSION', _this.urstate_SESSION);
+    UDATA.OnAppStateChange('NCDATA', _this.urstate_NCDATA);
+    UDATA.OnAppStateChange('SELECTION', _this.urstate_SELECTION);
+    UDATA.OnAppStateChange('LOCKSTATE', _this.urstate_LOCKSTATE);
     UDATA.HandleMessage('EDGE_OPEN', _this.ReqLoadEdge);
     UDATA.HandleMessage('EDGE_DESELECT', _this.ClearSelection);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.SetPermissions);
     UDATA.HandleMessage('EDGE_EDIT', _this.EditEdge); // EdgeTable request
     UDATA.HandleMessage('SELECT_SOURCETARGET', _this.SetSourceTarget);
     return _this;
@@ -16119,12 +13029,12 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      UDATA.AppStateChangeOff('SESSION', this.UpdateSession);
-      UDATA.AppStateChangeOff('NCDATA', this.UpdateNCData);
-      UDATA.AppStateChangeOff('SELECTION', this.UpdateSelection);
+      UDATA.AppStateChangeOff('SESSION', this.urstate_SESSION);
+      UDATA.AppStateChangeOff('NCDATA', this.urstate_NCDATA);
+      UDATA.AppStateChangeOff('SELECTION', this.urstate_SELECTION);
+      UDATA.AppStateChangeOff('LOCKSTATE', this.urstate_LOCKSTATE);
       UDATA.UnhandleMessage('EDGE_OPEN', this.ReqLoadEdge);
       UDATA.UnhandleMessage('EDGE_DESELECT', this.ClearSelection);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.SetPermissions);
       UDATA.UnhandleMessage('EDGE_EDIT', this.EditEdge);
       UDATA.UnhandleMessage('SELECT_SOURCETARGET', this.SetSourceTarget);
       window.removeEventListener('beforeunload', this.CheckUnload);
@@ -16146,8 +13056,10 @@ var NCEdge = function (_UNISYS$Component) {
         sourceId: null,
         targetId: null,
         type: '',
-        attributes: [],
-        provenance: [],
+        attributes: {},
+        provenance: {},
+        weight: 0,
+        size: 0,
         created: undefined,
         updated: undefined,
         revision: 0,
@@ -16197,8 +13109,7 @@ var NCEdge = function (_UNISYS$Component) {
     key: 'DoUnload',
     value: function DoUnload(event) {
       if (this.state.uViewMode === NCUI.VIEWMODE.EDIT) {
-        UDATA.NetCall('SRV_DBUNLOCKEDGE', { edgeID: this.state.id });
-        UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
+        LOCKMGR.RequestUnlockEdge(this.state.id);
       }
     }
     /**
@@ -16212,26 +13123,29 @@ var NCEdge = function (_UNISYS$Component) {
      */
 
   }, {
-    key: 'UpdateSession',
-    value: function UpdateSession(decoded) {
-      var _this2 = this;
-
-      this.setState({ isLoggedIn: decoded.isValid }, function () {
-        return _this2.UpdatePermissions();
-      });
+    key: 'urstate_SESSION',
+    value: function urstate_SESSION(decoded) {
+      this.urstate_LOCKSTATE();
     }
+  }, {
+    key: 'urstate_LOCKSTATE',
+    value: function urstate_LOCKSTATE() {
+      var permissionsState = this.DerivePermissions(this.state.id);
+      this.setState(_extends({}, permissionsState));
+    }
+
     /*
         Called by NCDATA AppState updates
     */
 
   }, {
-    key: 'UpdateNCData',
-    value: function UpdateNCData(data) {
-      var _this3 = this;
+    key: 'urstate_NCDATA',
+    value: function urstate_NCDATA(data) {
+      var _this2 = this;
 
       // If NCDATA is updated, reload the edge b/c db has changed
       var updatedEdge = data.edges.find(function (e) {
-        return e.id === _this3.props.edgeId;
+        return e.id === _this2.props.edgeId;
       });
       this.LoadEdge(updatedEdge);
     }
@@ -16248,38 +13162,37 @@ var NCEdge = function (_UNISYS$Component) {
     value: function IsLoggedIn() {
       var SESSION = UDATA.AppState('SESSION');
       var isLoggedIn = SESSION.isValid;
-      this.setState({ isLoggedIn: isLoggedIn });
       return isLoggedIn;
     }
+
+    // 1. Read the LOCKSTATE
+    // 2. Derive the permissions state (hide/disable the edit button)
+    // 3. Look up any lock messages
+
   }, {
-    key: 'SetPermissions',
-    value: function SetPermissions(data) {
-      var _this4 = this;
-
-      var id = this.state.id;
-
-      var edgeIsLocked = data.lockedEdges.includes(id);
-      this.setState({
-        uIsLockedByDB: edgeIsLocked,
-        uIsLockedByTemplate: data.templateBeingEdited,
-        uIsLockedByImport: data.importActive
-      }, function () {
-        return _this4.UpdatePermissions();
-      });
-    }
-  }, {
-    key: 'UpdatePermissions',
-    value: function UpdatePermissions() {
-      var _state = this.state,
-          uIsLockedByDB = _state.uIsLockedByDB,
-          uIsLockedByTemplate = _state.uIsLockedByTemplate,
-          uIsLockedByImport = _state.uIsLockedByImport;
-
+    key: 'DerivePermissions',
+    value: function DerivePermissions(edgeId) {
       var isLoggedIn = this.IsLoggedIn();
-      var TEMPLATE = UDATA.AppState('TEMPLATE');
+
+      var LOCKSTATE = UDATA.AppState('LOCKSTATE');
+      var uIsLockedByDB = LOCKSTATE.lockedEdges.includes(edgeId);
+      var uIsLockedByTemplate = LOCKSTATE.templateBeingEdited;
+      var uIsLockedByImport = LOCKSTATE.importActive;
+      // NOT IMPLEMENTED
+      // FUTURE: We may want to lock the edge if a comment is being edited
+      //         but currently there isn't an easy way to do this
+      //         because while we know that a comment is being edited (via LOCKSTATE.lockedComments)
+      //         we don't know if the comment is being edited by the current user or someone else.
+      //         So for now, we allow the edge to be edited while a comment is being edited.
+      //         If we wanted to implement this, we probably need to introduce a new parameter
+      //         or properly implement commentBeingEditedByMe.
+      // const uIsLockedByComment = LOCKSTATE.commentBeingEditedByMe;
+
+      // Derive new message and EditBtn status
       var uEditLockMessage = '';
       var uEditBtnDisable = false;
       var uEditBtnHide = true;
+      var TEMPLATE = UDATA.AppState('TEMPLATE');
       if (isLoggedIn) uEditBtnHide = false;
       if (uIsLockedByDB) {
         uEditBtnDisable = true;
@@ -16293,7 +13206,25 @@ var NCEdge = function (_UNISYS$Component) {
         uEditBtnDisable = true;
         uEditLockMessage += TEMPLATE.importIsLockedMessage;
       }
-      this.setState({ uEditBtnDisable: uEditBtnDisable, uEditBtnHide: uEditBtnHide, uEditLockMessage: uEditLockMessage });
+      // NOT IMPLEMENTED
+      // if (uIsLockedByComment) {
+      //   uEditBtnDisable = true;
+      //   // no change to lock message for comments
+      // }
+
+      // return all state values
+      return {
+        // User Permissions
+        isLoggedIn: isLoggedIn,
+        uIsLockedByDB: uIsLockedByDB,
+        uIsLockedByTemplate: uIsLockedByTemplate,
+        uIsLockedByImport: uIsLockedByImport,
+        // uIsLockedByComment, // NOT IMPLEMENTED
+        // UI State
+        uEditBtnDisable: uEditBtnDisable,
+        uEditBtnHide: uEditBtnHide,
+        uEditLockMessage: uEditLockMessage
+      };
     }
   }, {
     key: 'ClearSelection',
@@ -16301,8 +13232,8 @@ var NCEdge = function (_UNISYS$Component) {
       this.ResetState();
     }
   }, {
-    key: 'UpdateSelection',
-    value: function UpdateSelection(data) {
+    key: 'urstate_SELECTION',
+    value: function urstate_SELECTION(data) {
       var sourceTargetSelect = this.state.sourceTargetSelect;
 
       var selectedNode = data.nodes[0]; // select the first node
@@ -16334,8 +13265,6 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'LoadEdge',
     value: function LoadEdge(edge) {
-      var _this5 = this;
-
       var uViewMode = this.state.uViewMode;
 
       // If we're editing, ignore the select!
@@ -16349,23 +13278,57 @@ var NCEdge = function (_UNISYS$Component) {
       }
 
       // Load the edge
+      //  - Look up source/target nodes
+      //  - convert edge.source/target to sourceId/targetId to disambiguate id vs object
+      var sourceId = edge.source;
+      var targetId = edge.target;
+      var NCDATA = UDATA.AppState('NCDATA');
+      var dSourceNode = NCDATA.nodes.find(function (n) {
+        return n.id === sourceId;
+      }) || {
+        label: ''
+      };
+      var dTargetNode = NCDATA.nodes.find(function (n) {
+        return n.id === targetId;
+      }) || {
+        label: ''
+      };
+
+      var _LookupSourceTargetNo = this.LookupSourceTargetNodeColor(),
+          dSourceNodeColor = _LookupSourceTargetNo.dSourceNodeColor,
+          dTargetNodeColor = _LookupSourceTargetNo.dTargetNodeColor;
+      //  - Load attributes and provenance
+
+
       var attributes = this.LoadAttributes(edge);
       var provenance = this.LoadProvenance(edge);
-      this.setState({
+      //  - Load derived values
+      var uBackgroundColor = this.LookupBackgroundColor(edge.type);
+      var permissionsState = this.DerivePermissions(edge.id);
+
+      this.setState(_extends({
         id: edge.id,
-        sourceId: edge.source,
-        targetId: edge.target,
+        sourceId: sourceId,
+        targetId: targetId,
         type: edge.type,
         attributes: attributes,
         provenance: provenance,
+        weight: edge.weight,
+        size: edge.size, // `size` is the sum of all weights
         created: edge.meta ? new Date(edge.meta.created).toLocaleString() : '',
         createdBy: edge.createdBy,
         updated: edge.meta ? new Date(edge.meta.updated).toLocaleString() : '',
         updatedBy: edge.updatedBy,
-        revision: edge.meta ? edge.meta.revision : ''
-      }, function () {
-        return _this5.UpdateDerivedValues();
-      });
+        revision: edge.meta ? edge.meta.revision : '',
+        // Derived Values
+        dSourceNode: dSourceNode,
+        dTargetNode: dTargetNode,
+        dSourceNodeColor: dSourceNodeColor,
+        dTargetNodeColor: dTargetNodeColor,
+        // UI parameters
+        uBackgroundColor: uBackgroundColor,
+        animateHeight: 'fullheight'
+      }, permissionsState));
     }
     /**
      * Loads up the `attributes` object defined by the TEMPLATE
@@ -16417,33 +13380,6 @@ var NCEdge = function (_UNISYS$Component) {
     }
 
     /**
-     * Tries to lock the edge for editing.
-     * If the lock fails, then it means the edge was already locked
-     * previously and we're not allowed to edit
-     * @param {function} cb callback function
-     * @returns {boolean} true if lock was successful
-     */
-
-  }, {
-    key: 'LockEdge',
-    value: function LockEdge(cb) {
-      var id = this.state.id;
-
-      var lockSuccess = false;
-      UDATA.NetCall('SRV_DBLOCKEDGE', { edgeID: id }).then(function (data) {
-        if (data.NOP) {
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.locked) {
-          console.log('SERVER SAYS: lock success! you can edit Edge ' + data.edgeID);
-          console.log('SERVER SAYS: unlock the edge after successful DBUPDATE');
-          lockSuccess = true;
-          // When a edge is being edited, lock the Template from being edited
-          UDATA.NetCall('SRV_REQ_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
-        }
-        if (typeof cb === 'function') cb(lockSuccess);
-      });
-    }
-    /**
      * Returns whether the unlock is successful
      * @param {function} cb Callback function to handle cleanup after unlock
      */
@@ -16451,40 +13387,9 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'UnlockEdge',
     value: function UnlockEdge(cb) {
-      var id = this.state.id;
-
-      var unlockSuccess = false;
-      UDATA.NetCall('SRV_DBUNLOCKEDGE', { edgeID: id }).then(function (data) {
-        if (data.NOP) {
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.unlocked) {
-          console.log('SERVER SAYS: unlock success! you have released Edge ' + data.edgeID);
-          unlockSuccess = true;
-          // Release Template lock
-          UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
-        }
-        if (typeof cb === 'function') cb(unlockSuccess);
-      });
+      LOCKMGR.RequestUnlockEdge(this.state.id, cb);
     }
-  }, {
-    key: 'IsEdgeLocked',
-    value: function IsEdgeLocked(cb) {
-      var id = this.state.id;
 
-      var edgeIsLocked = false;
-      UDATA.NetCall('SRV_DBISEDGELOCKED', { edgeID: id }).then(function (data) {
-        if (data.NOP) {
-          // ISSUE Server will return error can't lock if the edge
-          // hadn't been created yet.
-          // do we skip the lock here?
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.locked) {
-          console.log('SERVER SAYS: Edge is locked! You cannot edit Edge ' + data.edgeID);
-          edgeIsLocked = true;
-        }
-        if (typeof cb === 'function') cb(edgeIsLocked);
-      });
-    }
     /**
      * If `lockEdge` is not successful, then that means the edge was
      * already locked, so we can't edit.
@@ -16493,55 +13398,14 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'EditEdge',
     value: function EditEdge() {
-      var _this6 = this;
+      var _this3 = this;
 
-      if (!this.IsLoggedIn()) return;
-      this.LockEdge(function (lockSuccess) {
-        _this6.setState({ uIsLockedByDB: !lockSuccess }, function () {
-          if (lockSuccess) _this6.UIEnableEditMode();
-        });
-      });
-    }
+      var isLoggedIn = this.state.isLoggedIn;
 
-    /**
-     * After loading or updating edge core parameters, run this to
-     * load and update any derived values.
-     */
-
-  }, {
-    key: 'UpdateDerivedValues',
-    value: function UpdateDerivedValues() {
-      var _this7 = this;
-
-      var _state2 = this.state,
-          sourceId = _state2.sourceId,
-          targetId = _state2.targetId;
-      // Look up source/target nodes
-
-      var NCDATA = UDATA.AppState('NCDATA');
-      var dSourceNode = NCDATA.nodes.find(function (n) {
-        return n.id === sourceId;
-      }) || {
-        label: ''
-      };
-      var dTargetNode = NCDATA.nodes.find(function (n) {
-        return n.id === targetId;
-      }) || {
-        label: ''
-      };
-      this.setState({
-        dSourceNode: dSourceNode,
-        dTargetNode: dTargetNode
-      }, function () {
-        _this7.SetBackgroundColor();
-        _this7.SetSourceTargetNodeColor();
-        // setTimeout(() => {
-        _this7.setState({ animateHeight: 'fullheight' }); // animate transition
-        // }, 500);
-        _this7.IsEdgeLocked(function (edgeIsLocked) {
-          _this7.setState({ uIsLockedByDB: edgeIsLocked }, function () {
-            return _this7.UpdatePermissions();
-          });
+      if (!isLoggedIn) return;
+      LOCKMGR.RequestLockEdge(this.state.id, function (lockSuccess) {
+        _this3.setState({ uIsLockedByDB: !lockSuccess }, function () {
+          if (lockSuccess) _this3.UIEnableEditMode();
         });
       });
     }
@@ -16580,7 +13444,7 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'ValidateSourceTarget',
     value: function ValidateSourceTarget(key, label, id) {
-      var _this8 = this;
+      var _this4 = this;
 
       // if we have an id, then the selected source/target is an existing node
       // but we should probably validate it anyway?
@@ -16601,9 +13465,9 @@ var NCEdge = function (_UNISYS$Component) {
       }).then(function (data) {
         if (data.nodes.length > 0) {
           var node = data.nodes[0];
-          _this8.ThenSaveSourceTarget(key, node);
+          _this4.ThenSaveSourceTarget(key, node);
         } else {
-          _this8.OfferToCreateNewNode(key, label);
+          _this4.OfferToCreateNewNode(key, label);
         }
       });
     }
@@ -16630,15 +13494,15 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'CreateNode',
     value: function CreateNode() {
-      var _this9 = this;
+      var _this5 = this;
 
-      var _state3 = this.state,
-          uNewNodeKey = _state3.uNewNodeKey,
-          uNewNodeLabel = _state3.uNewNodeLabel;
+      var _state = this.state,
+          uNewNodeKey = _state.uNewNodeKey,
+          uNewNodeLabel = _state.uNewNodeLabel;
 
       UDATA.LocalCall('NODE_CREATE', { label: uNewNodeLabel }).then(function (node) {
-        _this9.setState({ uNewNodeKey: undefined, uNewNodeLabel: undefined }, function () {
-          return _this9.ThenSaveSourceTarget(uNewNodeKey, node);
+        _this5.setState({ uNewNodeKey: undefined, uNewNodeLabel: undefined }, function () {
+          return _this5.ThenSaveSourceTarget(uNewNodeKey, node);
         });
       });
     }
@@ -16684,8 +13548,6 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'ThenSaveSourceTarget',
     value: function ThenSaveSourceTarget(key, node) {
-      var _this10 = this;
-
       // MUST save sourceId or targetId to determine source/target
       // but ideally set all three?  because that's what loadEdge does?
       var state = {
@@ -16693,19 +13555,27 @@ var NCEdge = function (_UNISYS$Component) {
         uNewNodeKey: undefined, // clear NCDialog
         uNewNodeLabel: undefined // clear NCDialog
       };
+      var NCDATA = UDATA.AppState('NCDATA');
       if (key === 'source') {
         state.sourceId = node.id;
+        state.dSourceNode = NCDATA.nodes.find(function (n) {
+          return n.id === node.id;
+        }) || {
+          label: ''
+        };
       } else {
         // 'target'
         state.targetId = node.id;
+        state.dTargetNode = NCDATA.nodes.find(function (n) {
+          return n.id === node.id;
+        }) || {
+          label: ''
+        };
       }
 
       // show secondary selection
       UDATA.LocalCall('SELECTMGR_SELECT_SECONDARY', { node: node });
-
-      this.setState(state, function () {
-        return _this10.UpdateDerivedValues();
-      });
+      this.setState(state);
     }
 
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -16715,15 +13585,17 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'SaveEdge',
     value: function SaveEdge() {
-      var _this11 = this;
+      var _this6 = this;
 
-      var _state4 = this.state,
-          id = _state4.id,
-          sourceId = _state4.sourceId,
-          targetId = _state4.targetId,
-          type = _state4.type,
-          attributes = _state4.attributes,
-          provenance = _state4.provenance;
+      var _state2 = this.state,
+          id = _state2.id,
+          sourceId = _state2.sourceId,
+          targetId = _state2.targetId,
+          type = _state2.type,
+          weight = _state2.weight,
+          size = _state2.size,
+          attributes = _state2.attributes,
+          provenance = _state2.provenance;
 
       var uid = NCLOGIC.GetCurrentUserId();
       var edge = {
@@ -16731,6 +13603,8 @@ var NCEdge = function (_UNISYS$Component) {
         source: sourceId,
         target: targetId,
         type: type,
+        weight: weight,
+        size: size,
         updatedBy: uid
       };
       Object.keys(attributes).forEach(function (k) {
@@ -16743,13 +13617,13 @@ var NCEdge = function (_UNISYS$Component) {
       this.setState({
         uViewMode: NCUI.VIEWMODE.VIEW
       }, function () {
-        _this11.AppCall('DB_UPDATE', { edge: edge }).then(function () {
-          _this11.UnlockEdge(function () {
+        _this6.AppCall('DB_UPDATE', { edge: edge }).then(function () {
+          _this6.UnlockEdge(function () {
             // Clear the secondary selection
             UDATA.LocalCall('SELECTMGR_DESELECT_SECONDARY');
 
             UDATA.LocalCall('SELECTMGR_SET_MODE', { mode: 'normal' });
-            _this11.setState({
+            _this6.setState({
               uIsLockedByDB: false,
               uSelectSourceTarget: undefined
             });
@@ -16776,36 +13650,34 @@ var NCEdge = function (_UNISYS$Component) {
      */
 
   }, {
-    key: 'SetBackgroundColor',
-    value: function SetBackgroundColor() {
-      var type = this.state.type;
-
+    key: 'LookupBackgroundColor',
+    value: function LookupBackgroundColor(type) {
       var COLORMAP = UDATA.AppState('COLORMAP');
       var uBackgroundColor = COLORMAP.edgeColorMap[type] || '#555555';
-      this.setState({ uBackgroundColor: uBackgroundColor });
+      return uBackgroundColor;
     }
   }, {
-    key: 'SetSourceTargetNodeColor',
-    value: function SetSourceTargetNodeColor() {
-      var _state5 = this.state,
-          dSourceNode = _state5.dSourceNode,
-          dTargetNode = _state5.dTargetNode;
+    key: 'LookupSourceTargetNodeColor',
+    value: function LookupSourceTargetNodeColor() {
+      var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state,
+          dSourceNode = _ref.dSourceNode,
+          dTargetNode = _ref.dTargetNode;
 
       var COLORMAP = UDATA.AppState('COLORMAP');
       var dSourceNodeColor = COLORMAP.nodeColorMap[dSourceNode ? dSourceNode.type : ''];
       var dTargetNodeColor = COLORMAP.nodeColorMap[dTargetNode ? dTargetNode.type : ''];
-      this.setState({ dSourceNodeColor: dSourceNodeColor, dTargetNodeColor: dTargetNodeColor });
+      return { dSourceNodeColor: dSourceNodeColor, dTargetNodeColor: dTargetNodeColor };
     }
   }, {
     key: 'SwapSourceAndTarget',
     value: function SwapSourceAndTarget() {
-      var _state6 = this.state,
-          sourceId = _state6.sourceId,
-          dSourceNode = _state6.dSourceNode,
-          dSourceNodeColor = _state6.dSourceNodeColor,
-          targetId = _state6.targetId,
-          dTargetNode = _state6.dTargetNode,
-          dTargetNodeColor = _state6.dTargetNodeColor;
+      var _state3 = this.state,
+          sourceId = _state3.sourceId,
+          dSourceNode = _state3.dSourceNode,
+          dSourceNodeColor = _state3.dSourceNodeColor,
+          targetId = _state3.targetId,
+          dTargetNode = _state3.dTargetNode,
+          dTargetNodeColor = _state3.dTargetNodeColor;
 
       // swap
 
@@ -16828,9 +13700,9 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'EdgeDisplayName',
     value: function EdgeDisplayName() {
-      var _state7 = this.state,
-          dSourceNode = _state7.dSourceNode,
-          dTargetNode = _state7.dTargetNode;
+      var _state4 = this.state,
+          dSourceNode = _state4.dSourceNode,
+          dTargetNode = _state4.dTargetNode;
 
       return '' + dSourceNode.label + ARROW_RIGHT + dTargetNode.label;
     }
@@ -16845,21 +13717,25 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'UIEnableEditMode',
     value: function UIEnableEditMode() {
-      var _state8 = this.state,
-          uSelectedTab = _state8.uSelectedTab,
-          id = _state8.id,
-          sourceId = _state8.sourceId,
-          targetId = _state8.targetId,
-          type = _state8.type,
-          attributes = _state8.attributes,
-          provenance = _state8.provenance;
+      var _state5 = this.state,
+          uSelectedTab = _state5.uSelectedTab,
+          id = _state5.id,
+          sourceId = _state5.sourceId,
+          targetId = _state5.targetId,
+          type = _state5.type,
+          weight = _state5.weight,
+          size = _state5.size,
+          attributes = _state5.attributes,
+          provenance = _state5.provenance;
 
       var previousState = {
         sourceId: sourceId,
         targetId: targetId,
         type: type,
-        attributes: Object.assign({}, attributes)
-        // provenance: Object.assign({}, provenance) // uncomment after provenence is implemented
+        weight: weight,
+        size: size,
+        attributes: Object.assign({}, attributes),
+        provenance: Object.assign({}, provenance)
       };
       this.setState({
         uViewMode: NCUI.VIEWMODE.EDIT,
@@ -16873,6 +13749,8 @@ var NCEdge = function (_UNISYS$Component) {
         source: sourceId,
         target: targetId,
         type: type,
+        weight: weight,
+        size: size,
         provenance: provenance
       };
       Object.keys(attributes).forEach(function (k) {
@@ -16911,13 +13789,12 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'UICancelEditMode',
     value: function UICancelEditMode() {
-      var _this12 = this;
+      var _this7 = this;
 
-      var _state9 = this.state,
-          id = _state9.id,
-          revision = _state9.revision,
-          previousState = _state9.previousState;
-
+      var _state6 = this.state,
+          id = _state6.id,
+          revision = _state6.revision,
+          previousState = _state6.previousState;
       // if user is cancelling a newly created unsaved edge, delete the edge instead
 
       if (revision < 1) {
@@ -16931,31 +13808,29 @@ var NCEdge = function (_UNISYS$Component) {
         sourceId: previousState.sourceId,
         targetId: previousState.targetId,
         type: previousState.type,
+        weight: previousState.weight,
+        size: previousState.size,
         attributes: previousState.attributes,
+        provenance: previousState.provenance,
         uSelectSourceTarget: undefined
-        // provenance: Object.assign({}, provenance) // uncomment after provenence is implemented
       }, function () {
-        _this12.UpdateDerivedValues();
-        _this12.UIDisableEditMode();
+        return _this7.UIDisableEditMode();
       });
       UNISYS.Log('cancel edit edge', id, this.EdgeDisplayName());
     }
   }, {
     key: 'UIDisableEditMode',
     value: function UIDisableEditMode() {
-      var _this13 = this;
+      var _this8 = this;
 
       this.UnlockEdge(function () {
-        _this13.setState({
-          uViewMode: NCUI.VIEWMODE.VIEW,
-          uIsLockedByDB: false
+        _this8.setState({
+          uViewMode: NCUI.VIEWMODE.VIEW
         });
 
         // Clear the secondary selection
         UDATA.LocalCall('SELECTMGR_DESELECT_SECONDARY');
-
         UDATA.LocalCall('SELECTMGR_SET_MODE', { mode: 'normal' });
-        UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.EDGE });
       });
     }
   }, {
@@ -16967,28 +13842,28 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'UIInputUpdate',
     value: function UIInputUpdate(key, value) {
-      var _this14 = this;
+      var _this9 = this;
 
       if (BUILTIN_FIELDS_EDGE.includes(key)) {
         var data = {};
         data[key] = value;
         this.setState(data, function () {
-          return _this14.SetBackgroundColor();
+          return _this9.LookupBackgroundColor();
         });
       } else {
         var attributes = this.state.attributes;
 
         attributes[key] = value;
-        this.setState({ attributes: attributes }, function () {
-          return _this14.SetBackgroundColor();
-        });
+
+        // special handling to update the background color immediately if `type` is changed
+        var type = key === 'type' ? value : this.state.type;
+        var uBackgroundColor = this.LookupBackgroundColor(type);
+        this.setState({ attributes: attributes, uBackgroundColor: uBackgroundColor });
       }
     }
   }, {
     key: 'UIProvenanceInputUpdate',
     value: function UIProvenanceInputUpdate(key, value) {
-      var _this15 = this;
-
       if (BUILTIN_FIELDS_EDGE.includes(key)) {
         var data = {};
         data[key] = value;
@@ -16997,9 +13872,7 @@ var NCEdge = function (_UNISYS$Component) {
         var provenance = this.state.provenance;
 
         provenance[key] = value;
-        this.setState({ provenance: provenance }, function () {
-          return _this15.SetBackgroundColor();
-        });
+        this.setState({ provenance: provenance });
       }
     }
   }, {
@@ -17060,20 +13933,20 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'RenderView',
     value: function RenderView() {
-      var _state10 = this.state,
-          uSelectedTab = _state10.uSelectedTab,
-          uBackgroundColor = _state10.uBackgroundColor,
-          animateHeight = _state10.animateHeight,
-          uEditBtnDisable = _state10.uEditBtnDisable,
-          uEditBtnHide = _state10.uEditBtnHide,
-          uEditLockMessage = _state10.uEditLockMessage,
-          uShowCitationDialog = _state10.uShowCitationDialog,
-          id = _state10.id,
-          _state10$dSourceNode = _state10.dSourceNode,
-          dSourceNode = _state10$dSourceNode === undefined ? { label: undefined } : _state10$dSourceNode,
-          _state10$dTargetNode = _state10.dTargetNode,
-          dTargetNode = _state10$dTargetNode === undefined ? { label: undefined } : _state10$dTargetNode,
-          type = _state10.type;
+      var _state7 = this.state,
+          uSelectedTab = _state7.uSelectedTab,
+          uBackgroundColor = _state7.uBackgroundColor,
+          animateHeight = _state7.animateHeight,
+          uEditBtnDisable = _state7.uEditBtnDisable,
+          uEditBtnHide = _state7.uEditBtnHide,
+          uEditLockMessage = _state7.uEditLockMessage,
+          uShowCitationDialog = _state7.uShowCitationDialog,
+          id = _state7.id,
+          _state7$dSourceNode = _state7.dSourceNode,
+          dSourceNode = _state7$dSourceNode === undefined ? { label: undefined } : _state7$dSourceNode,
+          _state7$dTargetNode = _state7.dTargetNode,
+          dTargetNode = _state7$dTargetNode === undefined ? { label: undefined } : _state7$dTargetNode,
+          type = _state7.type;
 
       var bgcolor = uBackgroundColor + '66'; // hack opacity
       var TEMPLATE = UDATA.AppState('TEMPLATE');
@@ -17104,7 +13977,7 @@ var NCEdge = function (_UNISYS$Component) {
               ' '
             ),
             React.createElement('div', null),
-            React.createElement(_URCommentBtn2.default, { cref: collection_ref })
+            React.createElement(_URCommentVBtn2.default, { cref: collection_ref, key: collection_ref })
           ),
           React.createElement(
             'div',
@@ -17196,18 +14069,18 @@ var NCEdge = function (_UNISYS$Component) {
     key: 'RenderEdit',
     value: function RenderEdit() {
       var parentNodeId = this.props.parentNodeId;
-      var _state11 = this.state,
-          sourceId = _state11.sourceId,
-          targetId = _state11.targetId,
-          type = _state11.type,
-          revision = _state11.revision,
-          uSelectedTab = _state11.uSelectedTab,
-          uSelectSourceTarget = _state11.uSelectSourceTarget,
-          uBackgroundColor = _state11.uBackgroundColor,
-          uNewNodeLabel = _state11.uNewNodeLabel,
-          animateHeight = _state11.animateHeight,
-          dSourceNode = _state11.dSourceNode,
-          dTargetNode = _state11.dTargetNode;
+      var _state8 = this.state,
+          sourceId = _state8.sourceId,
+          targetId = _state8.targetId,
+          type = _state8.type,
+          revision = _state8.revision,
+          uSelectedTab = _state8.uSelectedTab,
+          uSelectSourceTarget = _state8.uSelectSourceTarget,
+          uBackgroundColor = _state8.uBackgroundColor,
+          uNewNodeLabel = _state8.uNewNodeLabel,
+          animateHeight = _state8.animateHeight,
+          dSourceNode = _state8.dSourceNode,
+          dTargetNode = _state8.dTargetNode;
 
       var bgcolor = uBackgroundColor + '99'; // hack opacity
       var defs = UDATA.AppState('TEMPLATE').edgeDefs;
@@ -17322,12 +14195,12 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'RenderSourceTargetButton',
     value: function RenderSourceTargetButton(key, value, disabled) {
-      var _state12 = this.state,
-          sourceId = _state12.sourceId,
-          targetId = _state12.targetId,
-          uSelectSourceTarget = _state12.uSelectSourceTarget,
-          dSourceNodeColor = _state12.dSourceNodeColor,
-          dTargetNodeColor = _state12.dTargetNodeColor;
+      var _state9 = this.state,
+          sourceId = _state9.sourceId,
+          targetId = _state9.targetId,
+          uSelectSourceTarget = _state9.uSelectSourceTarget,
+          dSourceNodeColor = _state9.dSourceNodeColor,
+          dTargetNodeColor = _state9.dTargetNodeColor;
 
       var color = void 0;
       if (!disabled && (uSelectSourceTarget === key || value === undefined)) {
@@ -17375,9 +14248,9 @@ var NCEdge = function (_UNISYS$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _state13 = this.state,
-          id = _state13.id,
-          uViewMode = _state13.uViewMode;
+      var _state10 = this.state,
+          id = _state10.id,
+          uViewMode = _state10.uViewMode;
 
       if (!id) return ''; // nothing selected
       if (uViewMode === NCUI.VIEWMODE.VIEW) {
@@ -17401,856 +14274,528 @@ module.exports = NCEdge;
 require.register("view/netcreate/components/NCEdgeTable.jsx", function(exports, require, module) {
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ## OVERVIEW
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             EdgeTable is used to to display a table of edges for review.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             It checks FILTEREDNCDATA to show highlight/filtered state
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             It uses URTable for rendering and sorting.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ## PROPS
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * tableHeight -- sets height based on InfoPanel dragger
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * isOpen -- whether the table is visible
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ## TO USE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             EdgeTable is self contained and relies on global NCDATA to load.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <EdgeTable tableHeight isOpen />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
 
-var _hdate = require('system/util/hdate');
+var _react = require('react');
 
-var _hdate2 = _interopRequireDefault(_hdate);
+var _react2 = _interopRequireDefault(_react);
 
-var _URCommentVBtn = require('./URCommentVBtn');
+var _client = require('unisys/client');
 
-var _URCommentVBtn2 = _interopRequireDefault(_URCommentVBtn);
+var _client2 = _interopRequireDefault(_client);
+
+var _ncUi = require('../nc-ui');
+
+var _ncUi2 = _interopRequireDefault(_ncUi);
+
+var _ncUtils = require('../nc-utils');
+
+var _ncUtils2 = _interopRequireDefault(_ncUtils);
+
+var _FilterEnums = require('./filter/FilterEnums');
+
+var _FilterEnums2 = _interopRequireDefault(_FilterEnums);
+
+var _commentMgr = require('../comment-mgr');
+
+var _commentMgr2 = _interopRequireDefault(_commentMgr);
 
 var _URTable = require('./URTable');
 
 var _URTable2 = _interopRequireDefault(_URTable);
 
+var _URCommentVBtn = require('./URCommentVBtn');
+
+var _URCommentVBtn2 = _interopRequireDefault(_URCommentVBtn);
+
+var _enum = require('system/util/enum');
+
+var _constant = require('system/util/constant');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-    EdgeTable is used to to display a table of edges for review.
-
-    It displays NCDATA.
-    But also read FILTEREDNCDATA to show highlight/filtered state
-
-
-  ## PROPS
-
-    * tableHeight -- sets height based on InfoPanel dragger
-    * isOpen -- whether the table is visible
-
-
-  ## TO USE
-
-    EdgeTable is self contained and relies on global NCDATA to load.
-
-      <EdgeTable tableHeight isOpen />
-
-
-    Set `DBG` to true to show the `ID` column.
-
-  ## 2018-12-07 Update
-
-    Since we're not using tab navigation:
-    1. The table isExpanded is now true by default.
-    2. The "Show/Hide Table" button is hidden.
-
-    Reset these to restore previous behavior.
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var NCUI = require('../nc-ui');
-var CMTMGR = require('../comment-mgr');
-var SETTINGS = require('settings');
-var FILTER = require('./filter/FilterEnums');
-var UNISYS = require('unisys/client');
-
-var _require = require('system/util/enum'),
-    BUILTIN_FIELDS_EDGE = _require.BUILTIN_FIELDS_EDGE;
-
-var _require2 = require('system/util/constant'),
-    ICON_PENCIL = _require2.ICON_PENCIL,
-    ICON_VIEW = _require2.ICON_VIEW;
-
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+/// Initialize UNISYS DATA LINK for functional react component
+var UDATAOwner = { name: 'NCEdgeTable' };
+var UDATA = _client2.default.NewDataLink(UDATAOwner);
 
 var DBG = false;
-var isAdmin = SETTINGS.IsAdmin();
+
+/// REACT FUNCTIONAL COMPONENT ////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
+function NCEdgeTable(_ref) {
+  var tableHeight = _ref.tableHeight,
+      isOpen = _ref.isOpen;
 
-/// UTILITY METHODS ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function u_GetButtonId(cref) {
-  return 'table-comment-button-' + cref;
-}
+  var _useState = (0, _react.useState)({}),
+      _useState2 = _slicedToArray(_useState, 2),
+      state = _useState2[0],
+      setState = _useState2[1];
 
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
+  /// USEEFFECT ///////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-var NCEdgeTable = function (_UNISYS$Component) {
-  _inherits(NCEdgeTable, _UNISYS$Component);
 
-  function NCEdgeTable(props) {
-    _classCallCheck(this, NCEdgeTable);
-
-    var _this = _possibleConstructorReturn(this, (NCEdgeTable.__proto__ || Object.getPrototypeOf(NCEdgeTable)).call(this, props));
-
-    var TEMPLATE = _this.AppState('TEMPLATE');
-    _this.state = {
+  (0, _react.useEffect)(function () {
+    var TEMPLATE = UDATA.AppState('TEMPLATE');
+    var SESSION = UDATA.AppState('SESSION');
+    setState({
       edgeDefs: TEMPLATE.edgeDefs,
       edges: [],
-      selectedEdgeId: undefined,
-      selectedEdgeColor: TEMPLATE.sourceColor,
-      filteredEdges: [],
       nodes: [], // needed for dereferencing source/target
       disableEdit: false,
-      isLocked: false,
-      isExpanded: true,
-      sortkey: 'Relationship',
-      dummy: 0, // used to force render update
+      isLocked: !SESSION.isValid
+    });
 
-      COLUMNDEFS: []
+    UDATA.OnAppStateChange('FILTEREDNCDATA', urstate_FILTEREDNCDATA);
+    UDATA.OnAppStateChange('SESSION', urstate_SESSION);
+    UDATA.OnAppStateChange('TEMPLATE', urstate_TEMPLATE);
+    return function () {
+      UDATA.AppStateChangeOff('FILTEREDNCDATA', urstate_FILTEREDNCDATA);
+      UDATA.AppStateChangeOff('SESSION', urstate_SESSION);
+      UDATA.AppStateChangeOff('TEMPLATE', urstate_TEMPLATE);
     };
+  }, []);
 
-    _this.onUpdateCommentUI = _this.onUpdateCommentUI.bind(_this);
-    _this.onStateChange_SESSION = _this.onStateChange_SESSION.bind(_this);
-    _this.onStateChange_SELECTION = _this.onStateChange_SELECTION.bind(_this);
-    _this.onEDGE_OPEN = _this.onEDGE_OPEN.bind(_this);
-    _this.updateEdgeFilterState = _this.updateEdgeFilterState.bind(_this);
-    _this.handleDataUpdate = _this.handleDataUpdate.bind(_this);
-    _this.handleFilterDataUpdate = _this.handleFilterDataUpdate.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.OnTemplateUpdate = _this.OnTemplateUpdate.bind(_this);
-    _this.onViewButtonClick = _this.onViewButtonClick.bind(_this);
-    _this.onEditButtonClick = _this.onEditButtonClick.bind(_this);
-    _this.onToggleExpanded = _this.onToggleExpanded.bind(_this);
-    _this.onHighlightNode = _this.onHighlightNode.bind(_this);
-    _this.m_FindMatchingObjsByProp = _this.m_FindMatchingObjsByProp.bind(_this);
-    _this.m_FindMatchingEdgeByProp = _this.m_FindMatchingEdgeByProp.bind(_this);
-    _this.m_FindEdgeById = _this.m_FindEdgeById.bind(_this);
-    _this.lookupNodeLabel = _this.lookupNodeLabel.bind(_this);
-
-    _this.SetColumnDefs = _this.SetColumnDefs.bind(_this);
-
-    _this.sortDirection = 1;
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-
-    UDATA.HandleMessage('EDGE_OPEN', _this.onEDGE_OPEN);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.updateEditState);
-
-    // SESSION is called by SessionSHell when the ID changes
-    //  set system-wide. data: { classId, projId, hashedId, groupId, isValid }
-    _this.OnAppStateChange('SESSION', _this.onStateChange_SESSION);
-
-    // Always make sure class methods are bind()'d before using them
-    // as a handler, otherwise object context is lost
-    _this.OnAppStateChange('NCDATA', _this.handleDataUpdate);
-
-    // Handle Template updates
-    _this.OnAppStateChange('TEMPLATE', _this.OnTemplateUpdate);
-
-    // Track Filtered Data Updates too
-    _this.OnAppStateChange('FILTEREDNCDATA', _this.handleFilterDataUpdate);
-
-    _this.OnAppStateChange('SELECTION', _this.onStateChange_SELECTION);
-
-    // Comment Message Handlers
-    // Force update whenever threads are opened or closed
-    UDATA.HandleMessage('CTHREADMGR_THREAD_OPENED', _this.onUpdateCommentUI);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_CLOSED', _this.onUpdateCommentUI);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_CLOSED_ALL', _this.onUpdateCommentUI);
-    return _this;
-  } // constructor
-
+  /// UR HANDLERS /////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /// FILTEREDNCDATA is the reduced list of nodes, not ALL edges
+  function urstate_FILTEREDNCDATA(data) {
+    if (data.edges) {
+      // If we're transitioning from "COLLAPSE" or "FOCUS" to "HILIGHT/FADE", then we
+      // also need to add back in edges that are not in filteredEdges
+      // (because "COLLAPSE" and "FOCUS" removes edges that are not matched)
+      var FILTERDEFS = UDATA.AppState('FILTERDEFS');
+      if (FILTERDEFS.filterAction === _FilterEnums2.default.ACTION.FADE) {
+        var NCDATA = UDATA.AppState('NCDATA');
+        m_updateEdgeFilterState(NCDATA.edges);
+      } else {
+        m_updateEdgeFilterState(data.edges);
+      }
+    }
+  }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-  _createClass(NCEdgeTable, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      if (DBG) console.log('EdgeTable.componentDidMount!');
-
-      this.onStateChange_SESSION(this.AppState('SESSION'));
-
-      // Explicitly retrieve data because we may not have gotten a NCDATA
-      // update while we were hidden.
-      // filtered data needs to be set before D3Data
-      var FILTEREDNCDATA = UDATA.AppState('FILTEREDNCDATA');
-      this.setState({ filteredEdges: FILTEREDNCDATA.edges }, function () {
-        var NCDATA = _this2.AppState('NCDATA');
-        _this2.handleDataUpdate(NCDATA);
-        _this2.SetColumnDefs();
-      });
-
-      // Request edit state too because the update may have come
-      // while we were hidden
-      this.updateEditState();
+  function m_updateEdgeFilterState(edges) {
+    setState(function (prevState) {
+      return _extends({}, prevState, { edges: edges });
+    });
+    return;
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urstate_SESSION(decoded) {
+    var isLocked = !decoded.isValid;
+    if (isLocked === this.state.isLocked) {
+      return;
     }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      UDATA.UnhandleMessage('EDGE_OPEN', this.onEDGE_OPEN);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.updateEditState);
-      this.AppStateChangeOff('SESSION', this.onStateChange_SESSION);
-      this.AppStateChangeOff('NCDATA', this.handleDataUpdate);
-      this.AppStateChangeOff('FILTEREDNCDATA', this.handleFilterDataUpdate);
-      this.AppStateChangeOff('TEMPLATE', this.OnTemplateUpdate);
-      this.AppStateChangeOff('SELECTION', this.onStateChange_SELECTION);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_OPENED', this.onUpdateCommentUI);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_CLOSED', this.onUpdateCommentUI);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_CLOSED_ALL', this.onUpdateCommentUI);
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// Force update so that URCommentVBtn selection state is updated
-
-  }, {
-    key: 'onUpdateCommentUI',
-    value: function onUpdateCommentUI(data) {
-      this.setState({ dummy: this.state.dummy + 1 });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'onStateChange_SELECTION',
-    value: function onStateChange_SELECTION(data) {
-      this.setState({
-        selectedEdgeId: data.edges.length > 0 ? data.edges[0].id : undefined
-      });
-    }
-    /** Handle change in SESSION data
-      Called both by componentWillMount() and AppStateChange handler.
-      The 'SESSION' state change is triggered in two places in SessionShell during
-      its handleChange() when active typing is occuring, and also during
-      SessionShell.componentWillMount()
-     */
-
-  }, {
-    key: 'onStateChange_SESSION',
-    value: function onStateChange_SESSION(decoded) {
-      this.setState({ isLocked: !decoded.isValid });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'displayUpdated',
-    value: function displayUpdated(nodeEdge) {
-      // Prevent error if `meta` info is not defined yet, or not properly imported
-      if (!nodeEdge.meta) return '';
-
-      var d = new Date(nodeEdge.meta.revision > 0 ? nodeEdge.meta.updated : nodeEdge.meta.created);
-
-      var year = String(d.getFullYear());
-      var date = d.getMonth() + 1 + '/' + d.getDate() + '/' + year.substr(2, 4);
-      var time = d.toTimeString().substr(0, 5);
-      var dateTime = date + ' at ' + time;
-      var titleString = 'v' + nodeEdge.meta.revision;
-      if (nodeEdge._nlog) titleString += ' by ' + nodeEdge._nlog[nodeEdge._nlog.length - 1];
-      var tag = React.createElement(
-        'span',
-        { title: titleString },
-        ' ',
-        dateTime,
-        ' '
-      );
-
-      return tag;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// User selected edge usu by clicking NCNode's edge item in Edges tab
-
-  }, {
-    key: 'onEDGE_OPEN',
-    value: function onEDGE_OPEN(data) {
-      this.setState({ selectedEdgeId: data.edge.id });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// Set edge filtered status based on current filteredNodes
-
-  }, {
-    key: 'updateEdgeFilterState',
-    value: function updateEdgeFilterState(edges, filteredEdges) {
-      // add highlight/filter status
-      if (filteredEdges.length > 0) {
-        // If we're transitioning from "HILIGHT/FADE" to "COLLAPSE" or "FOCUS", then we
-        // also need to remove edges that are not in filteredEdges
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.REDUCE || FILTERDEFS.filterAction === FILTER.ACTION.FOCUS) {
-          // Reduce (remove) or Focus
-          edges = edges.filter(function (edge) {
-            var filteredEdge = filteredEdges.find(function (e) {
-              return e.id === edge.id;
-            });
-            return filteredEdge; // keep if it's in the list of filtered edges
-          });
-        } else {
-          // Fade
-          // Fading is handled by setting node.filteredTransparency which is
-          // directly handled by the filter now.  So no need to process it
-          // here in the table.
-        }
-      }
-      this.setState({ edges: edges });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle updated SELECTION: NCDATA updates
-     */
-
-  }, {
-    key: 'handleDataUpdate',
-    value: function handleDataUpdate(data) {
-      var _this3 = this;
-
-      if (data && data.edges && data.nodes) {
-        // NCDATA.edges no longer uses source/target objects
-        // ...1. So we need to save nodes for dereferencing.
-        this.setState({ nodes: data.nodes }, function () {
-          // ...2. So we stuff 'sourceLabel' and 'targetLabel' into the local edges array
-          var edges = data.edges.map(function (e) {
-            e.sourceLabel = _this3.lookupNodeLabel(e.source); // requires `state.nodes` be set
-            e.targetLabel = _this3.lookupNodeLabel(e.target);
-            return e;
-          });
-          _this3.setState({ edges: edges });
-          var filteredEdges = _this3.state.filteredEdges;
-
-          _this3.updateEdgeFilterState(edges, filteredEdges);
-        });
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle FILTEREDNCDATA updates sent by filters-logic.m_FiltersApply
-        Note that edge.soourceLabel and edge.targetLabel should already be set
-        by filter-mgr.
-     */
-
-  }, {
-    key: 'handleFilterDataUpdate',
-    value: function handleFilterDataUpdate(data) {
-      var _this4 = this;
-
-      if (data.edges) {
-        var filteredEdges = data.edges;
-        // If we're transitioning from "COLLAPSE" or "FOCUS" to "HILIGHT/FADE", then we
-        // also need to add back in edges that are not in filteredEdges
-        // (because "COLLAPSE" and "FOCUS" removes edges that are not matched)
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.FADE) {
-          var NCDATA = UDATA.AppState('NCDATA');
-          this.setState({
-            edges: NCDATA.edges,
-            filteredEdges: filteredEdges
-          }, function () {
-            var edges = NCDATA.edges;
-            _this4.updateEdgeFilterState(edges, filteredEdges);
-          });
-        } else {
-          this.setState({
-            edges: filteredEdges,
-            filteredEdges: filteredEdges
-          }, function () {
-            var edges = filteredEdges;
-            _this4.updateEdgeFilterState(edges, filteredEdges);
-          });
-        }
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this5 = this;
-
-      // disable edit if someone else is editing a template, node, or edge
-      var disableEdit = false;
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        // someone else might be editing a template or importing or editing node or edge
-        disableEdit = data.templateBeingEdited || data.importActive || data.nodeOrEdgeBeingEdited || data.commentBeingEditedByMe; // only lock out if this user is the one editing comments, allow network commen edits
-        _this5.setState({ disableEdit: disableEdit });
-      });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'OnTemplateUpdate',
-    value: function OnTemplateUpdate(data) {
-      this.setState({
+    setState(function (prevState) {
+      return _extends({}, prevState, { isLocked: isLocked });
+    });
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urstate_TEMPLATE(data) {
+    setState(function (prevState) {
+      return _extends({}, prevState, {
         edgeDefs: data.edgeDefs,
         selectedEdgeColor: data.sourceColor
       });
-    }
+    });
+  }
 
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Look up the Node label for source / target ids
-     */
+  /// COLUMN DEFINTION GENERATION /////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function DeriveColumnDefs(incomingEdgeDefs) {
+    var edges = state.edges,
+        edgeDefs = state.edgeDefs,
+        disableEdit = state.disableEdit,
+        isLocked = state.isLocked;
 
-  }, {
-    key: 'lookupNodeLabel',
-    value: function lookupNodeLabel(nodeId) {
-      var node = this.state.nodes.find(function (n) {
-        return n.id === nodeId;
-      });
-      if (node === undefined) return '...';
-      // if (node === undefined) throw new Error('EdgeTable: Could not find node', nodeId);
-      return node.label;
-    }
+    var defs = incomingEdgeDefs || edgeDefs;
 
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
+    // Only include built in fields
+    // Only include non-hidden fields
+    // Only include non-provenance fields
+    var attributeDefs = Object.keys(defs).filter(function (k) {
+      return !_enum.BUILTIN_FIELDS_EDGE.includes(k) && !defs[k].isProvenance && !defs[k].hidden;
+    });
+    var provenanceDefs = Object.keys(defs).filter(function (k) {
+      return !_enum.BUILTIN_FIELDS_EDGE.includes(k) && defs[k].isProvenance && !defs[k].hidden;
+    });
 
-  }, {
-    key: 'onViewButtonClick',
-    value: function onViewButtonClick(event, edgeId) {
-      event.preventDefault();
-      event.stopPropagation();
-      var edgeID = parseInt(edgeId);
-      var edge = this.m_FindEdgeById(edgeID);
-      if (DBG) console.log('EdgeTable: Edge id', edge.id, 'selected for viewing');
-      // Load Source Node then Edge
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [edge.source] }).then(function () {
-        UDATA.LocalCall('EDGE_SELECT', { edgeId: edge.id });
-      });
-    }
-  }, {
-    key: 'onEditButtonClick',
-    value: function onEditButtonClick(event, edgeId) {
-      event.preventDefault();
-      event.stopPropagation();
-      var edgeID = parseInt(edgeId);
-      var edge = this.m_FindEdgeById(edgeID);
-      if (DBG) console.log('EdgeTable: Edge id', edge.id, 'selected for editing');
-      // Load Source Node then Edge
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [edge.source] }).then(function () {
-        UDATA.LocalCall('EDGE_SELECT_AND_EDIT', { edgeId: edge.id });
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onToggleExpanded',
-    value: function onToggleExpanded(event) {
-      this.setState({
-        isExpanded: !this.state.isExpanded
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-    /*/
-
-  }, {
-    key: 'onHighlightNode',
-    value: function onHighlightNode(nodeId) {
-      UDATA.LocalCall('TABLE_HILITE_NODE', { nodeId: nodeId });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /*/
-     */
-
-  }, {
-    key: 'setSortKey',
-    value: function setSortKey(key, type) {
-      if (key === this.state.sortkey) this.sortDirection = -1 * this.sortDirection;
-      // if this was already the key, flip the direction
-      else this.sortDirection = 1;
-
-      var edges = this.sortTable(key, this.state.edges, type);
-      this.setState({
-        edges: edges,
-        sortkey: key
-      });
-      UNISYS.Log('sort edge table', key, this.sortDirection);
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'selectNode',
-    value: function selectNode(id, event) {
-      event.preventDefault();
-
-      // Load Source
-      if (DBG) console.log('EdgeTable: Edge id', id, 'selected for editing');
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [id] });
-    }
-
-    /// URTABLE COLUMN DEFS /////////////////////////////////////////////////////
+    /// CLICK HANDLERS
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function ui_ClickViewEdge(event, value) {
+      event.preventDefault();
+      event.stopPropagation();
+      var edgeId = value.edgeId,
+          sourceId = value.sourceId;
+      // Load Source Node then Edge
 
-  }, {
-    key: 'SetColumnDefs',
-    value: function SetColumnDefs() {
-      var _state = this.state,
-          edges = _state.edges,
-          edgeDefs = _state.edgeDefs,
-          disableEdit = _state.disableEdit,
-          isLocked = _state.isLocked;
-
-      var attributeDefs = Object.keys(edgeDefs).filter(function (k) {
-        return !BUILTIN_FIELDS_EDGE.includes(k);
+      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [sourceId] }).then(function () {
+        UDATA.LocalCall('EDGE_SELECT', { edgeId: edgeId });
       });
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function ui_ClickEditEdge(event, value) {
+      event.preventDefault();
+      event.stopPropagation();
+      var edgeId = value.edgeId,
+          sourceId = value.sourceId;
+      // Load Source Node then Edge
 
-      /// CLICK HANDLERS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function ui_ClickViewEdge(event, value) {
-        event.preventDefault();
-        event.stopPropagation();
-        var edgeId = value.edgeId,
-            sourceId = value.sourceId;
-        // Load Source Node then Edge
-
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [sourceId] }).then(function () {
-          UDATA.LocalCall('EDGE_SELECT', { edgeId: edgeId });
-        });
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function ui_ClickEditEdge(event, value) {
-        event.preventDefault();
-        event.stopPropagation();
-        var edgeId = value.edgeId,
-            sourceId = value.sourceId;
-        // Load Source Node then Edge
-
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [sourceId] }).then(function () {
-          UDATA.LocalCall('EDGE_SELECT_AND_EDIT', { edgeId: edgeId });
-        });
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function ui_ClickViewNode(event, nodeId) {
-        event.preventDefault();
-        event.stopPropagation();
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(nodeId)] });
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      /// Toggle Comment Button on and off
-      function ui_ClickComment(cref) {
-        var position = CMTMGR.GetCommentThreadPosition(u_GetButtonId(cref));
-        var uiref = u_GetButtonId(cref);
-        CMTMGR.ToggleCommentCollection(uiref, cref, position);
-      }
-      /// RENDERERS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function RenderViewOrEdit(value) {
-        return React.createElement(
-          'div',
-          null,
-          !disableEdit && React.createElement(
-            'button',
-            {
-              className: 'outline',
-              onClick: function onClick(event) {
-                return ui_ClickViewEdge(event, value);
-              }
-            },
-            ICON_VIEW
-          ),
-          !disableEdit && !isLocked && React.createElement(
-            'button',
-            {
-              className: 'outline',
-              onClick: function onClick(event) {
-                return ui_ClickEditEdge(event, value);
-              }
-            },
-            ICON_PENCIL
-          )
-        );
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      // interface TTblNodeObject {
-      //   id: String;
-      //   label: String;
-      // }
-      function RenderNode(value) {
-        if (!value) return; // skip if not defined yet
-        if (value.id === undefined || value.label === undefined) {
-          // During Edge creation, source/target may not be defined yet
-          return React.createElement(
-            'span',
-            { style: { color: 'red' } },
-            '...'
-          );
-        }
-        return React.createElement(
+      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [sourceId] }).then(function () {
+        UDATA.LocalCall('EDGE_SELECT_AND_EDIT', { edgeId: edgeId });
+      });
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function ui_ClickViewNode(event, nodeId) {
+      event.preventDefault();
+      event.stopPropagation();
+      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(nodeId)] });
+    }
+    /// RENDERERS
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function col_RenderViewOrEdit(key, tdata, coldef) {
+      var value = tdata[key];
+      return _react2.default.createElement(
+        'div',
+        null,
+        !disableEdit && _react2.default.createElement(
           'button',
           {
             className: 'outline',
             onClick: function onClick(event) {
-              return ui_ClickViewNode(event, value.id);
+              return ui_ClickViewEdge(event, value);
             }
           },
-          React.createElement(
-            'span',
-            { style: { color: 'blue' } },
-            value.label
-          )
-        );
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function RenderCommentBtn(value) {
-        return React.createElement(_URCommentVBtn2.default, {
-          uiref: u_GetButtonId(value.cref),
-          count: value.count,
-          hasUnreadComments: value.hasUnreadComments,
-          selected: value.selected,
-          cb: function cb(e) {
-            return ui_ClickComment(value.cref);
-          }
-        });
-      }
-      /// CUSTOM SORTERS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      /// tdata = TTblNodeObject[] = { id: String, label: String }
-      function SortNodes(key, tdata, order) {
-        var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
-          if (a[key].label < b[key].label) return order;
-          if (a[key].label > b[key].label) return order * -1;
-          return 0;
-        });
-        return sortedData;
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function SortCommentsByCount(key, tdata, order) {
-        var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
-          if (a[key].count < b[key].count) return order;
-          if (a[key].count > b[key].count) return order * -1;
-          return 0;
-        });
-        return sortedData;
-      }
-      /// COLUMN DEFINITIONS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      // column definitions for custom attributes
-      // (built in columns are: view, degrees, label)
-      var ATTRIBUTE_COLUMNDEFS = attributeDefs.map(function (key) {
-        var title = edgeDefs[key].displayLabel;
-        var type = edgeDefs[key].type;
-        return {
-          title: title,
-          type: type,
-          data: key
-        };
-      });
-      var COLUMNDEFS = [{
-        title: '', // View/Edit
-        data: 'id',
-        type: 'number',
-        width: 50, // in px
-        renderer: RenderViewOrEdit
-      }, {
-        title: edgeDefs['source'].displayLabel,
-        width: 130, // in px
-        data: 'sourceDef',
-        renderer: RenderNode,
-        sorter: SortNodes
-      }];
-      if (edgeDefs['type'] && !edgeDefs['type'].hidden) {
-        COLUMNDEFS.push({
-          title: edgeDefs['type'].displayLabel,
-          type: 'text',
-          width: 130, // in px
-          data: 'type'
-        });
-      }
-      COLUMNDEFS.push.apply(COLUMNDEFS, [{
-        title: edgeDefs['target'].displayLabel,
-        width: 130, // in px
-        data: 'targetDef',
-        renderer: RenderNode,
-        sorter: SortNodes
-      }].concat(_toConsumableArray(ATTRIBUTE_COLUMNDEFS), [{
-        title: 'Comments',
-        data: 'commentVBtnDef',
-        type: 'text',
-        width: 50, // in px
-        renderer: RenderCommentBtn,
-        sorter: SortCommentsByCount
-      }]));
-      this.setState({ COLUMNDEFS: COLUMNDEFS });
-    }
-
-    /// OBJECT HELPERS ////////////////////////////////////////////////////////////
-    /// these probably should go into a utility class
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Return array of objects that match the match_me object keys/values
-      NOTE: make sure that strings are compared with strings, etc
-     */
-
-  }, {
-    key: 'm_FindMatchingObjsByProp',
-    value: function m_FindMatchingObjsByProp(obj_list) {
-      var match_me = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      // operate on arrays only
-      if (!Array.isArray(obj_list)) throw Error('FindMatchingObjectsByProp arg1 must be array');
-      var matches = obj_list.filter(function (obj) {
-        var pass = true;
-        for (var key in match_me) {
-          if (match_me[key] !== obj[key]) pass = false;
-          break;
-        }
-        return pass;
-      });
-      // return array of matches (can be empty array)
-      return matches;
-    }
-
-    /// EDGE HELPERS //////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Return array of nodes that match the match_me object keys/values
-      NOTE: make sure that strings are compared with strings, etc
-     */
-
-  }, {
-    key: 'm_FindMatchingEdgeByProp',
-    value: function m_FindMatchingEdgeByProp() {
-      var match_me = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-      return this.m_FindMatchingObjsByProp(this.state.edges, match_me);
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Convenience function to retrieve edge by ID
-     */
-
-  }, {
-    key: 'm_FindEdgeById',
-    value: function m_FindEdgeById(id) {
-      return this.m_FindMatchingEdgeByProp({ id: id })[0];
-    }
-
-    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** This is not yet implemented as of React 16.2.  It's implemented in 16.3.
-        getDerivedStateFromProps (props, state) {
-          console.error('getDerivedStateFromProps!!!');
-        }
-     */
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _state2 = this.state,
-          edges = _state2.edges,
-          edgeDefs = _state2.edgeDefs,
-          disableEdit = _state2.disableEdit,
-          isLocked = _state2.isLocked,
-          COLUMNDEFS = _state2.COLUMNDEFS;
-      var _props = this.props,
-          isOpen = _props.isOpen,
-          tableHeight = _props.tableHeight;
-
-      var uid = CMTMGR.GetCurrentUserId();
-
-      // Only include built in fields
-      // Only include non-hidden fields
-      var attributeDefs = Object.keys(edgeDefs).filter(function (k) {
-        return !BUILTIN_FIELDS_EDGE.includes(k) && !edgeDefs[k].hidden;
-      });
-
-      // show 'type' between 'source' and 'target' if `type` has been defined
-      // if it isn't defined, just show attribute fields after `source` and 'target`
-      var hasTypeField = edgeDefs['type'];
-      if (hasTypeField) attributeDefs = attributeDefs.filter(function (a) {
-        return a !== 'type';
-      });
-
-      /// TABLE DATA GENERATION
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      var TABLEDATA = edges.map(function (edge, i) {
-        var id = edge.id,
-            source = edge.source,
-            target = edge.target,
-            sourceLabel = edge.sourceLabel,
-            targetLabel = edge.targetLabel,
-            type = edge.type;
-
-
-        var sourceDef = { id: source, label: sourceLabel };
-        var targetDef = { id: target, label: targetLabel };
-
-        // custom attributes
-        var attributes = {};
-        attributeDefs.forEach(function (key, i) {
-          var data = {};
-          if (edgeDefs[key].type === 'markdown') {
-            // for markdown:
-            // a. provide the raw markdown string
-            // b. provide the HTML string
-            data.html = NCUI.Markdownify(edge[key]);
-            data.raw = edge[key];
-          } else if (edgeDefs[key].type === 'hdate') data = edge[key] && edge[key].formattedDateString;else data = edge[key];
-          attributes[key] = data;
-        });
-
-        // comment button definition
-        var cref = CMTMGR.GetNodeCREF(id);
-        var commentCount = CMTMGR.GetCommentCollectionCount(cref);
-        var ccol = CMTMGR.GetCommentCollection(cref) || {};
-        var hasUnreadComments = ccol.hasUnreadComments;
-        var selected = CMTMGR.GetOpenComments(cref);
-        var commentVBtnDef = {
-          cref: cref,
-          count: commentCount,
-          hasUnreadComments: hasUnreadComments,
-          selected: selected
-        };
-
-        return _extends({
-          id: { edgeId: id, sourceId: source }, // { edgeId, sourceId} for click handler
-          sourceDef: sourceDef, // { id: String, label: String }
-          targetDef: targetDef, // { id: String, label: String }
-          type: type
-        }, attributes, {
-          commentVBtnDef: commentVBtnDef,
-          meta: {
-            filteredTransparency: edge.filteredTransparency
-          }
-        });
-      });
-      return React.createElement(
-        'div',
-        { className: 'NCEdgeTable', style: { height: tableHeight } },
-        React.createElement(_URTable2.default, { isOpen: isOpen, data: TABLEDATA, columns: COLUMNDEFS })
+          _constant.ICON_VIEW
+        ),
+        !disableEdit && !isLocked && _react2.default.createElement(
+          'button',
+          {
+            className: 'outline',
+            onClick: function onClick(event) {
+              return ui_ClickEditEdge(event, value);
+            }
+          },
+          _constant.ICON_PENCIL
+        )
       );
     }
-  }]);
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // interface TTblNodeObject {
+    //   id: String;
+    //   label: String;
+    // }
+    function col_RenderNode(key, tdata, coldef) {
+      var value = tdata[key];
+      if (!value) return; // skip if not defined yet
+      if (tdata.id === undefined) throw new Error('RenderNode: id is undefined. tdata=' + tdata);
+      if (value === undefined) throw new Error('RenderNode: label is undefined. value=' + value);
+      return _react2.default.createElement(
+        'button',
+        {
+          className: 'outline',
+          onClick: function onClick(event) {
+            return ui_ClickViewNode(event, value.id);
+          }
+        },
+        _react2.default.createElement(
+          'span',
+          null,
+          value.label
+        )
+      );
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function col_RenderCommentBtn(key, tdata, coldef) {
+      var value = tdata[key];
+      return _react2.default.createElement(_URCommentVBtn2.default, { cref: value.cref });
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /// tdata = { weight: Number, size: Number }
+    function col_RenderWeight(key, tdata, coldef) {
+      var value = tdata[key];
+      return value.weight + ' (' + value.size + ')';
+    }
+    /// CUSTOM SORTERS
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /// tdata = TTblNodeObject[] = { id: String, label: String }
+    function col_SortNodes(key, tdata, order) {
+      var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
+        if (String(a[key].label).toLowerCase() < String(b[key].label).toLowerCase()) return order;
+        if (String(a[key].label).toLowerCase() > String(b[key].label).toLowerCase()) return order * -1;
+        return 0;
+      });
+      return sortedData;
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function col_SortCommentsByCount(key, tdata, order) {
+      var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
+        if (!a[key].count) return 1; // Move undefined or '' to the bottom regardless of sort order
+        if (!b[key].count) return -1; // Move undefined or '' the bottom regardless of sort order
+        if (a[key].count < b[key].count) return order;
+        if (a[key].count > b[key].count) return order * -1;
+        return 0;
+      });
+      return sortedData;
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /// tdata = { weight: Number, size: Number }
+    function col_SortWeight(key, tdata, order) {
+      var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
+        if (a[key].weight < b[key].weight) return order;
+        if (a[key].weight > b[key].weight) return order * -1;
+        return 0;
+      });
+      return sortedData;
+    }
+    /// COLUMN DEFINITIONS
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // column definitions for custom attributes
+    // (built in columns are: view, degrees, label)
+    var ATTRIBUTE_COLUMNDEFS = attributeDefs.map(function (key) {
+      return {
+        title: defs[key].displayLabel,
+        type: defs[key].type,
+        data: key
+      };
+    });
+    var PROVENANCE_COLUMNDEFS = provenanceDefs.map(function (key) {
+      return {
+        title: defs[key].displayLabel,
+        type: defs[key].type,
+        data: key
+      };
+    });
+    var COLUMNDEFS = [{
+      title: '', // View/Edit
+      data: 'id',
+      type: defs['id'].type,
+      width: 45, // in px
+      renderer: col_RenderViewOrEdit,
+      sortDisabled: true,
+      tipDisabled: true
+    }, {
+      title: defs['source'].displayLabel,
+      width: 130, // in px
+      data: 'sourceDef',
+      renderer: col_RenderNode,
+      sorter: col_SortNodes
+    }];
+    if (defs['type'] && !defs['type'].hidden) {
+      COLUMNDEFS.push({
+        title: defs['type'].displayLabel,
+        type: 'text-case-insensitive',
+        width: 130, // in px
+        data: 'type'
+      });
+    }
+    COLUMNDEFS.push.apply(COLUMNDEFS, [{
+      title: defs['target'].displayLabel,
+      width: 130, // in px
+      data: 'targetDef',
+      renderer: col_RenderNode,
+      sorter: col_SortNodes
+    }].concat(_toConsumableArray(ATTRIBUTE_COLUMNDEFS)));
+    if (defs['weight'] && !defs['weight'].hidden) COLUMNDEFS.push({
+      title: defs['weight'].displayLabel,
+      type: 'number',
+      width: 45, // in px
+      data: 'weightDef',
+      renderer: col_RenderWeight,
+      sorter: col_SortWeight
+    });
+    COLUMNDEFS.push.apply(COLUMNDEFS, _toConsumableArray(PROVENANCE_COLUMNDEFS));
+    // History
+    if (defs['createdBy'] && !defs['createdBy'].hidden) COLUMNDEFS.push({
+      title: defs['createdBy'].displayLabel,
+      type: 'text-case-insensitive',
+      width: 60, // in px
+      data: 'createdBy'
+    });
+    if (defs['created'] && !defs['created'].hidden) COLUMNDEFS.push({
+      title: defs['created'].displayLabel,
+      type: 'timestamp-short',
+      width: 60, // in px
+      data: 'created'
+    });
+    if (defs['updatedBy'] && !defs['updatedBy'].hidden) COLUMNDEFS.push({
+      title: defs['updatedBy'].displayLabel,
+      type: 'text-case-insensitive',
+      width: 60, // in px
+      data: 'updatedBy'
+    });
+    if (defs['updated'] && !defs['updated'].hidden) COLUMNDEFS.push({
+      title: defs['updated'].displayLabel,
+      type: 'timestamp-short',
+      width: 60, // in px
+      data: 'updated'
+    }); // Comment is last
+    COLUMNDEFS.push({
+      title: ' ',
+      data: 'commentVBtnDef',
+      type: 'text',
+      width: 40, // in px
+      renderer: col_RenderCommentBtn,
+      sorter: col_SortCommentsByCount,
+      tipDisabled: true
+    });
+    return COLUMNDEFS;
+  }
 
-  return NCEdgeTable;
-}(UNISYS.Component); // class EdgeTable
+  /// TABLE DATA GENERATION ///////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function DeriveTableData(_ref2) {
+    var edgeDefs = _ref2.edgeDefs,
+        edges = _ref2.edges;
+
+    // Only include built in fields
+    // Only include non-hidden fields
+    // Only include non-provenance fields
+    var attributeDefs = Object.keys(edgeDefs).filter(function (k) {
+      return !_enum.BUILTIN_FIELDS_EDGE.includes(k) && !edgeDefs[k].hidden && !edgeDefs[k].isProvenance;
+    });
+    var provenanceDefs = Object.keys(edgeDefs).filter(function (k) {
+      return edgeDefs[k].isProvenance;
+    });
+
+    return edges.map(function (edge, i) {
+      var id = edge.id,
+          source = edge.source,
+          target = edge.target,
+          sourceLabel = edge.sourceLabel,
+          targetLabel = edge.targetLabel,
+          type = edge.type,
+          weight = edge.weight,
+          size = edge.size;
+
+      var sourceDef = { id: source, label: sourceLabel };
+      var targetDef = { id: target, label: targetLabel };
+
+      // weightDef
+      var weightDef = { weight: weight, size: size };
+
+      // custom attributes
+      var attributes = {};
+      attributeDefs.forEach(function (key, i) {
+        var data = {};
+        if (edgeDefs[key].type === 'markdown') {
+          // for markdown:
+          // a. provide the raw markdown string
+          // b. provide the HTML string
+          data.html = _ncUi2.default.Markdownify(edge[key]);
+          data.raw = edge[key];
+        } else if (edgeDefs[key].type === 'hdate') {
+          data = edge[key] && edge[key].formattedDateString;
+        } else if (edgeDefs[key].type === 'infoOrigin') {
+          data = edge[key] === undefined || edge[key] === '' ? _ncUtils2.default.DeriveInfoOriginString(edge.createdBy, edge.meta ? edge.meta.created : '') : edge[key];
+        } else data = edge[key];
+        attributes[key] = data;
+      });
+
+      // comment button definition
+      var cref = _commentMgr2.default.GetEdgeCREF(id);
+      var commentCount = _commentMgr2.default.GetCommentCollectionCount(cref);
+      var ccol = _commentMgr2.default.GetCommentCollection(cref) || {};
+      var hasUnreadComments = ccol.hasUnreadComments;
+      var selected = _commentMgr2.default.GetOpenComments(cref);
+      var commentVBtnDef = {
+        cref: cref,
+        count: commentCount,
+        hasUnreadComments: hasUnreadComments,
+        selected: selected
+      };
+
+      // provenance
+      var provenance = {};
+      provenanceDefs.forEach(function (key, i) {
+        var data = {};
+        if (edgeDefs[key].type === 'markdown') {
+          // for markdown:
+          // a. provide the raw markdown string
+          // b. provide the HTML string
+          data.html = _ncUi2.default.Markdownify(edge[key]);
+          data.raw = edge[key];
+        } else if (edgeDefs[key].type === 'hdate') {
+          data = edge[key] && edge[key].formattedDateString;
+        } else if (edgeDefs[key].type === 'infoOrigin') {
+          data = edge[key] === undefined || edge[key] === '' ? _ncUtils2.default.DeriveInfoOriginString(edge.createdBy, edge.meta ? edge.meta.created : '') : edge[key];
+        } else data = edge[key] || '';
+        provenance[key] = data;
+      });
+
+      // history
+      var history = {
+        createdBy: edge.createdBy,
+        created: edge.meta ? edge.meta.created : '', // meta may not be defined when a new node is creatd
+        updatedBy: edge.updatedBy,
+        updated: edge.meta ? edge.meta.updated : '' // meta may not be defined when a new node is creatd
+      };
+
+      return _extends({
+        id: { edgeId: id, sourceId: source }, // { edgeId, sourceId} for click handler
+        sourceDef: sourceDef, // { id: String, label: String }
+        targetDef: targetDef, // { id: String, label: String }
+        type: type,
+        weightDef: weightDef, // { weight: Number, size: Number }
+        weight: weight,
+        size: size
+      }, attributes, {
+        commentVBtnDef: commentVBtnDef
+      }, provenance, history, {
+        meta: {
+          filteredTransparency: edge.filteredTransparency
+        }
+      });
+    });
+  }
+
+  /// COMPONENT RENDER ////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  if (state.edges === undefined) return 'loading...waiting for edges ' + state.edges;
+  if (state.edgeDefs === undefined) return 'loading...waiting for nodeDefs ' + state.edgeDefs;
+  var COLUMNDEFS = DeriveColumnDefs();
+  var TABLEDATA = DeriveTableData({ edgeDefs: state.edgeDefs, edges: state.edges });
+  return _react2.default.createElement(
+    'div',
+    { className: 'NCEdgeTable', style: { height: tableHeight } },
+    _react2.default.createElement(_URTable2.default, { isOpen: isOpen, data: TABLEDATA, columns: COLUMNDEFS })
+  );
+}
 
 /// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = NCEdgeTable;
+exports.default = NCEdgeTable;
 });
 
 require.register("view/netcreate/components/NCGraph.jsx", function(exports, require, module) {
@@ -19483,11 +16028,13 @@ ZoomPanReset
 ;require.register("view/netcreate/components/NCNode.jsx", function(exports, require, module) {
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _URCommentBtn = require('./URCommentBtn');
+var _URCommentVBtn = require('./URCommentVBtn');
 
-var _URCommentBtn2 = _interopRequireDefault(_URCommentBtn);
+var _URCommentVBtn2 = _interopRequireDefault(_URCommentVBtn);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19539,10 +16086,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var React = require('react');
 var UNISYS = require('unisys/client');
 var EDGEMGR = require('../edge-mgr'); // handles edge synthesis
+var LOCKMGR = require('../lock-mgr');
 var CMTMGR = require('../comment-mgr');
 
 var _require = require('system/util/enum'),
-    EDITORTYPE = _require.EDITORTYPE,
     BUILTIN_FIELDS_NODE = _require.BUILTIN_FIELDS_NODE;
 
 var _require2 = require('system/util/constant'),
@@ -19590,32 +16137,31 @@ var NCNode = function (_UNISYS$Component) {
 
     // STATE MANAGEMENT
     _this.ResetState = _this.ResetState.bind(_this);
-    _this.UpdateSession = _this.UpdateSession.bind(_this);
-    _this.UpdateNCData = _this.UpdateNCData.bind(_this);
-    _this.SetPermissions = _this.SetPermissions.bind(_this);
-    _this.UpdatePermissions = _this.UpdatePermissions.bind(_this);
+    _this.urstate_SESSION = _this.urstate_SESSION.bind(_this);
+    _this.urstate_LOCKSTATE = _this.urstate_LOCKSTATE.bind(_this);
+    _this.urstate_NCDATA = _this.urstate_NCDATA.bind(_this);
+    _this.IsLoggedIn = _this.IsLoggedIn.bind(_this);
+    _this.DerivePermissions = _this.DerivePermissions.bind(_this);
 
     // EVENT HANDLERS
     _this.CheckUnload = _this.CheckUnload.bind(_this);
     _this.DoUnload = _this.DoUnload.bind(_this);
     _this.ClearSelection = _this.ClearSelection.bind(_this);
-    _this.UpdateSelection = _this.UpdateSelection.bind(_this);
+    _this.urstate_SELECTION = _this.urstate_SELECTION.bind(_this);
     _this.SelectEdgeAndEdit = _this.SelectEdgeAndEdit.bind(_this);
     _this.SelectEdge = _this.SelectEdge.bind(_this);
     _this.DeselectEdge = _this.DeselectEdge.bind(_this);
     // DATA LOADING
     _this.LoadNode = _this.LoadNode.bind(_this);
-    _this.LoadEdges = _this.LoadEdges.bind(_this);
+    _this.FindLinkedEdges = _this.FindLinkedEdges.bind(_this);
     _this.LoadAttributes = _this.LoadAttributes.bind(_this);
-    _this.LockNode = _this.LockNode.bind(_this);
     _this.UnlockNode = _this.UnlockNode.bind(_this);
-    _this.IsNodeLocked = _this.IsNodeLocked.bind(_this);
     // DATA SAVING
     _this.SaveNode = _this.SaveNode.bind(_this);
     _this.DeleteNode = _this.DeleteNode.bind(_this);
     // HELPER METHODS
-    _this.SetBackgroundColor = _this.SetBackgroundColor.bind(_this);
-    _this.UpdateMatchingList = _this.UpdateMatchingList.bind(_this);
+    _this.LookupBackgroundColor = _this.LookupBackgroundColor.bind(_this);
+    _this.FindMatchingList = _this.FindMatchingList.bind(_this);
     // UI HANDLERS
     _this.UISelectTab = _this.UISelectTab.bind(_this);
     _this.UIRequestEditNode = _this.UIRequestEditNode.bind(_this);
@@ -19638,14 +16184,14 @@ var NCNode = function (_UNISYS$Component) {
     _this.RenderEdgesTab = _this.RenderEdgesTab.bind(_this);
 
     /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
+    UDATA = _this; // UNISYS.NewDataLink(this);
 
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /// REGISTER LISTENERS
-    UDATA.OnAppStateChange('SESSION', _this.UpdateSession);
-    UDATA.OnAppStateChange('NCDATA', _this.UpdateNCData);
-    UDATA.OnAppStateChange('SELECTION', _this.UpdateSelection);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.SetPermissions);
+    UDATA.OnAppStateChange('SESSION', _this.urstate_SESSION);
+    UDATA.OnAppStateChange('NCDATA', _this.urstate_NCDATA);
+    UDATA.OnAppStateChange('SELECTION', _this.urstate_SELECTION);
+    UDATA.OnAppStateChange('LOCKSTATE', _this.urstate_LOCKSTATE);
     UDATA.HandleMessage('NODE_EDIT', _this.UIRequestEditNode); // Node Table request
     UDATA.HandleMessage('EDGE_SELECT_AND_EDIT', _this.SelectEdgeAndEdit);
     UDATA.HandleMessage('EDGE_SELECT', _this.SelectEdge);
@@ -19663,10 +16209,10 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      UDATA.AppStateChangeOff('SESSION', this.UpdateSession);
-      UDATA.AppStateChangeOff('NCDATA', this.UpdateNCData);
-      UDATA.AppStateChangeOff('SELECTION', this.UpdateSelection);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.SetPermissions);
+      UDATA.AppStateChangeOff('SESSION', this.urstate_SESSION);
+      UDATA.AppStateChangeOff('NCDATA', this.urstate_NCDATA);
+      UDATA.AppStateChangeOff('SELECTION', this.urstate_SELECTION);
+      UDATA.AppStateChangeOff('LOCKSTATE', this.urstate_LOCKSTATE);
       UDATA.UnhandleMessage('NODE_EDIT', this.UIRequestEditNode);
       UDATA.UnhandleMessage('EDGE_SELECT_AND_EDIT', this.SelectEdgeAndEdit);
       UDATA.UnhandleMessage('EDGE_SELECT', this.SelectEdge);
@@ -19689,8 +16235,8 @@ var NCNode = function (_UNISYS$Component) {
         label: '',
         type: '',
         degrees: null,
-        attributes: [],
-        provenance: [],
+        attributes: {},
+        provenance: {},
         created: undefined,
         createdBy: undefined,
         updated: undefined,
@@ -19712,7 +16258,8 @@ var NCNode = function (_UNISYS$Component) {
         uIsLockedByDB: false, // shows db lock message next to Edit Node button
         uIsLockedByTemplate: false,
         uIsLockedByImport: false,
-        uIsLockedByComment: false,
+        // uIsLockedByComment: false,     // NOT IMPLEMENTED
+
         uEditLockMessage: '',
         uHideDeleteNodeButton: TEMPLATE.hideDeleteNodeButton,
         uReplacementNodeId: '',
@@ -19741,8 +16288,7 @@ var NCNode = function (_UNISYS$Component) {
     key: 'DoUnload',
     value: function DoUnload(event) {
       if (this.state.uViewMode === NCUI.VIEWMODE.EDIT) {
-        UDATA.NetCall('SRV_DBUNLOCKNODE', { nodeID: this.state.id });
-        UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
+        LOCKMGR.RequestUnlockNode(this.state.id);
       }
     }
 
@@ -19757,64 +16303,76 @@ var NCNode = function (_UNISYS$Component) {
      */
 
   }, {
-    key: 'UpdateSession',
-    value: function UpdateSession(decoded) {
-      var _this2 = this;
-
-      this.setState({ isLoggedIn: decoded.isValid }, function () {
-        return _this2.UpdatePermissions();
-      });
+    key: 'urstate_SESSION',
+    value: function urstate_SESSION(decoded) {
+      this.urstate_LOCKSTATE();
+    }
+  }, {
+    key: 'urstate_LOCKSTATE',
+    value: function urstate_LOCKSTATE() {
+      var permissionsState = this.DerivePermissions(this.state.id);
+      this.setState(_extends({}, permissionsState));
     }
     /*
         Called by NCDATA AppState updates
     */
 
   }, {
-    key: 'UpdateNCData',
-    value: function UpdateNCData(data) {
-      var _this3 = this;
+    key: 'urstate_NCDATA',
+    value: function urstate_NCDATA(data) {
+      var _this2 = this;
 
       // If NCDATA is updated, reload the node AND the edges b/c db has changed
       var updatedNode = data.nodes.find(function (n) {
-        return n.id === _this3.state.id;
+        return n.id === _this2.state.id;
       });
       this.LoadNode(updatedNode);
-      this.LoadEdges(this.state.id);
     }
+
+    /**
+     * Checks current SESSION state to see if user is logged in.
+     * Since NCNode is dynamically created and closed, we can't rely on
+     * SESSION AppState updates messages.
+     * NOTE updates state.
+     * @returns {boolean} True if user is logged in
+     */
+
   }, {
-    key: 'SetPermissions',
-    value: function SetPermissions(data) {
-      var _this4 = this;
-
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        // someone else might be editing a template or importing or editing node or edge
-        var id = _this4.state.id;
-
-        var nodeIsLocked = data.lockedNodes.includes(id);
-        _this4.setState({
-          uIsLockedByDB: nodeIsLocked,
-          uIsLockedByTemplate: data.templateBeingEdited,
-          uIsLockedByImport: data.importActive,
-          uIsLockedByComment: data.commentBeingEditedByMe
-        }, function () {
-          return _this4.UpdatePermissions();
-        });
-      });
+    key: 'IsLoggedIn',
+    value: function IsLoggedIn() {
+      var SESSION = UDATA.AppState('SESSION');
+      var isLoggedIn = SESSION.isValid;
+      return isLoggedIn;
     }
-  }, {
-    key: 'UpdatePermissions',
-    value: function UpdatePermissions() {
-      var _state = this.state,
-          isLoggedIn = _state.isLoggedIn,
-          uIsLockedByDB = _state.uIsLockedByDB,
-          uIsLockedByTemplate = _state.uIsLockedByTemplate,
-          uIsLockedByImport = _state.uIsLockedByImport,
-          uIsLockedByComment = _state.uIsLockedByComment;
 
-      var TEMPLATE = UDATA.AppState('TEMPLATE');
+    // 1. Read the LOCKSTATE
+    // 2. Derive the permissions state (hide/disable the edit button)
+    // 3. Look up any lock messages
+
+  }, {
+    key: 'DerivePermissions',
+    value: function DerivePermissions(nodeId) {
+      var isLoggedIn = this.IsLoggedIn();
+
+      var LOCKSTATE = UDATA.AppState('LOCKSTATE');
+      var uIsLockedByDB = LOCKSTATE.lockedNodes.includes(nodeId);
+      var uIsLockedByTemplate = LOCKSTATE.templateBeingEdited;
+      var uIsLockedByImport = LOCKSTATE.importActive;
+      // NOT IMPLEMENTED
+      // FUTURE: We may want to lock the node if a comment is being edited
+      //         but currently there isn't an easy way to do this
+      //         because while we know that a comment is being edited (via LOCKSTATE.lockedComments)
+      //         we don't know if the comment is being edited by the current user or someone else.
+      //         So for now, we allow the node to be edited while a comment is being edited.
+      //         If we wanted to implement this, we probably need to introduce a new parameter
+      //         or properly implement commentBeingEditedByMe.
+      // const uIsLockedByComment = LOCKSTATE.commentBeingEditedByMe;
+
+      // Derive new message and EditBtn status
       var uEditLockMessage = '';
       var uEditBtnDisable = false;
       var uEditBtnHide = true;
+      var TEMPLATE = UDATA.AppState('TEMPLATE');
       if (isLoggedIn) uEditBtnHide = false;
       if (uIsLockedByDB) {
         uEditBtnDisable = true;
@@ -19828,11 +16386,25 @@ var NCNode = function (_UNISYS$Component) {
         uEditBtnDisable = true;
         uEditLockMessage += TEMPLATE.importIsLockedMessage;
       }
-      if (uIsLockedByComment) {
-        uEditBtnDisable = true;
-        uEditLockMessage += '';
-      }
-      this.setState({ uEditBtnDisable: uEditBtnDisable, uEditBtnHide: uEditBtnHide, uEditLockMessage: uEditLockMessage });
+      // NOT IMPLEMENTED
+      // if (uIsLockedByComment) {
+      //   uEditBtnDisable = true;
+      //   // no change to lock message for comments
+      // }
+
+      // return all state values
+      return {
+        // User Permissions
+        isLoggedIn: isLoggedIn,
+        uIsLockedByDB: uIsLockedByDB,
+        uIsLockedByTemplate: uIsLockedByTemplate,
+        uIsLockedByImport: uIsLockedByImport,
+        // uIsLockedByComment,  // NOT IMPLEMENTED
+        // UI State
+        uEditBtnDisable: uEditBtnDisable,
+        uEditBtnHide: uEditBtnHide,
+        uEditLockMessage: uEditLockMessage
+      };
     }
   }, {
     key: 'ClearSelection',
@@ -19840,8 +16412,8 @@ var NCNode = function (_UNISYS$Component) {
       this.ResetState();
     }
   }, {
-    key: 'UpdateSelection',
-    value: function UpdateSelection(data) {
+    key: 'urstate_SELECTION',
+    value: function urstate_SELECTION(data) {
       if (!data.nodes) return; // SELECTION cleared?
       var node = data.nodes[0]; // select the first node
       this.LoadNode(node);
@@ -19859,17 +16431,17 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'SelectEdgeAndEdit',
     value: function SelectEdgeAndEdit(data) {
-      var _this5 = this;
+      var _this3 = this;
 
       var edgeId = data.edgeId;
 
       this.setState({ uSelectedTab: TABS.EDGES, selectedEdgeId: edgeId }, function () {
-        var edges = _this5.state.edges;
+        var edges = _this3.state.edges;
 
         var edge = edges.find(function (e) {
           return e.id === Number(edgeId);
         });
-        _this5.setState({ selectedEdgeId: edgeId });
+        _this3.setState({ selectedEdgeId: edgeId });
         UDATA.LocalCall('EDGE_OPEN', { edge: edge }).then(function () {
           UDATA.LocalCall('EDGE_EDIT', { edgeId: edgeId });
         });
@@ -19878,17 +16450,17 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'SelectEdge',
     value: function SelectEdge(data) {
-      var _this6 = this;
+      var _this4 = this;
 
       var edgeId = data.edgeId;
 
       this.setState({ uSelectedTab: TABS.EDGES, selectedEdgeId: edgeId }, function () {
-        var edges = _this6.state.edges;
+        var edges = _this4.state.edges;
 
         var edge = edges.find(function (e) {
           return e.id === Number(edgeId);
         });
-        _this6.setState({ selectedEdgeId: edgeId });
+        _this4.setState({ selectedEdgeId: edgeId });
         UDATA.LocalCall('EDGE_OPEN', { edge: edge });
       });
     }
@@ -19905,11 +16477,9 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'LoadNode',
     value: function LoadNode(node) {
-      var _this7 = this;
-
-      var _state2 = this.state,
-          id = _state2.id,
-          uViewMode = _state2.uViewMode;
+      var _state = this.state,
+          id = _state.id,
+          uViewMode = _state.uViewMode;
 
       // If we're editing, ignore the select!
 
@@ -19925,9 +16495,14 @@ var NCNode = function (_UNISYS$Component) {
       if (node.id !== id) UDATA.LocalCall('EDGE_DESELECT');
 
       // Load the node
+      var edges = this.FindLinkedEdges(node.id);
       var attributes = this.LoadAttributes(node);
       var provenance = this.LoadProvenance(node);
-      this.setState({
+      var uBackgroundColor = this.LookupBackgroundColor(node.type);
+      var matchingNodes = this.FindMatchingList(node.label);
+      var permissionsState = this.DerivePermissions(node.id);
+      this.setState(_extends({
+        // node parameters
         id: node.id,
         label: node.label,
         type: node.type,
@@ -19938,23 +16513,16 @@ var NCNode = function (_UNISYS$Component) {
         createdBy: node.createdBy,
         updated: node.meta ? new Date(node.meta.updated).toLocaleString() : '',
         updatedBy: node.updatedBy,
-        revision: node.meta ? node.meta.revision : ''
-      }, function () {
-        _this7.SetBackgroundColor();
-        _this7.UpdateMatchingList(node.label);
-        _this7.LoadEdges(node.id);
-        _this7.IsNodeLocked(function (nodeIsLocked) {
-          _this7.setState({
-            uIsLockedByDB: nodeIsLocked
-          }, function () {
-            return _this7.UpdatePermissions();
-          });
-        });
-      });
+        revision: node.meta ? node.meta.revision : '',
+        edges: edges,
+        // UI parameters
+        uBackgroundColor: uBackgroundColor,
+        matchingNodes: matchingNodes
+      }, permissionsState));
     }
   }, {
-    key: 'LoadEdges',
-    value: function LoadEdges(id) {
+    key: 'FindLinkedEdges',
+    value: function FindLinkedEdges(id) {
       // -- First, sort edges by source, then target
       var NCDATA = UDATA.AppState('NCDATA');
       var linkedEdges = NCDATA.edges.filter(function (e) {
@@ -19974,7 +16542,7 @@ var NCNode = function (_UNISYS$Component) {
         if (a.sourceLabel > b.sourceLabel) return 1;
         return 0;
       });
-      this.setState({ edges: linkedEdges });
+      return linkedEdges;
     }
     /**
      * Loads up the `attributes` object defined by the TEMPLATE
@@ -20024,67 +16592,10 @@ var NCNode = function (_UNISYS$Component) {
       });
       return provenance;
     }
-
-    /**
-     * Tries to lock the node for editing.
-     * If the lock fails, then it means the node was already locked
-     * previously and we're not allowed to edit
-     * @param {function} cb callback function
-     * @returns {boolean} true if lock was successful
-     */
-
-  }, {
-    key: 'LockNode',
-    value: function LockNode(cb) {
-      var id = this.state.id;
-
-      var lockSuccess = false;
-      UDATA.NetCall('SRV_DBLOCKNODE', { nodeID: id }).then(function (data) {
-        if (data.NOP) {
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.locked) {
-          console.log('SERVER SAYS: lock success! you can edit Node ' + data.nodeID);
-          console.log('SERVER SAYS: unlock the node after successful DBUPDATE');
-          lockSuccess = true;
-          // When a node is being edited, lock the Template from being edited
-          UDATA.NetCall('SRV_REQ_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-        }
-        if (typeof cb === 'function') cb(lockSuccess);
-      });
-    }
   }, {
     key: 'UnlockNode',
     value: function UnlockNode(cb) {
-      var id = this.state.id;
-
-      var unlockSuccess = false;
-      UDATA.NetCall('SRV_DBUNLOCKNODE', { nodeID: id }).then(function (data) {
-        if (data.NOP) {
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.unlocked) {
-          console.log('SERVER SAYS: unlock success! you have released Node ' + data.nodeID);
-          unlockSuccess = true;
-          // Release Template lock
-          UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-        }
-        if (typeof cb === 'function') cb(unlockSuccess);
-      });
-    }
-  }, {
-    key: 'IsNodeLocked',
-    value: function IsNodeLocked(cb) {
-      var id = this.state.id;
-
-      var nodeIsLocked = false;
-      UDATA.NetCall('SRV_DBISNODELOCKED', { nodeID: id }).then(function (data) {
-        if (data.NOP) {
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.locked) {
-          console.log('SERVER SAYS: Node is locked! You cannot edit Node ' + data.nodeID);
-          nodeIsLocked = true;
-        }
-        if (typeof cb === 'function') cb(nodeIsLocked);
-      });
+      LOCKMGR.RequestUnlockNode(this.state.id, cb);
     }
 
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -20094,17 +16605,17 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'SaveNode',
     value: function SaveNode() {
-      var _this8 = this;
+      var _this5 = this;
 
-      var _state3 = this.state,
-          id = _state3.id,
-          label = _state3.label,
-          type = _state3.type,
-          attributes = _state3.attributes,
-          provenance = _state3.provenance,
-          created = _state3.created,
-          updated = _state3.updated,
-          revision = _state3.revision;
+      var _state2 = this.state,
+          id = _state2.id,
+          label = _state2.label,
+          type = _state2.type,
+          attributes = _state2.attributes,
+          provenance = _state2.provenance,
+          created = _state2.created,
+          updated = _state2.updated,
+          revision = _state2.revision;
 
       var uid = NCLOGIC.GetCurrentUserId();
       var node = {
@@ -20130,10 +16641,8 @@ var NCNode = function (_UNISYS$Component) {
         // write data to database
         // setting dbWrite to true will distinguish this update
         // from a remote one
-        _this8.AppCall('DB_UPDATE', { node: node }).then(function () {
-          _this8.UnlockNode(function () {
-            _this8.setState({ uIsLockedByDB: false });
-          });
+        _this5.AppCall('DB_UPDATE', { node: node }).then(function () {
+          _this5.UnlockNode();
         });
       });
       UNISYS.Log('click save node', id, label, JSON.stringify(node));
@@ -20141,9 +16650,9 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'DeleteNode',
     value: function DeleteNode() {
-      var _state4 = this.state,
-          id = _state4.id,
-          uReplacementNodeId = _state4.uReplacementNodeId;
+      var _state3 = this.state,
+          id = _state3.id,
+          uReplacementNodeId = _state3.uReplacementNodeId;
 
       // Re-link edges or delete edges?
       // `NaN` is not valid JSON, so we need to pass -1
@@ -20160,33 +16669,29 @@ var NCNode = function (_UNISYS$Component) {
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /// HELPER METHODS
     /**
-     * Sets the background color of the node editor via `uBackgroundColor` state.
+     * Looks up the background color of the node editor for the
+     * `uBackgroundColor` state.
      * Currently the background color is determined by the template node type
      * color mapping.  This will eventually be replaced with a color manager.
      */
 
   }, {
-    key: 'SetBackgroundColor',
-    value: function SetBackgroundColor() {
-      var type = this.state.type;
-
+    key: 'LookupBackgroundColor',
+    value: function LookupBackgroundColor(type) {
       var COLORMAP = UDATA.AppState('COLORMAP');
       var uBackgroundColor = COLORMAP.nodeColorMap[type] || '#555555';
-      this.setState({ uBackgroundColor: uBackgroundColor });
+      return uBackgroundColor;
     }
   }, {
-    key: 'UpdateMatchingList',
-    value: function UpdateMatchingList(value) {
-      var _this9 = this;
-
+    key: 'FindMatchingList',
+    value: function FindMatchingList(label) {
       var id = this.state.id;
 
-      UDATA.LocalCall('FIND_MATCHING_NODES', { searchString: value }).then(function (data) {
-        var matchingNodes = data.nodes.filter(function (n) {
-          return n.id !== id;
-        }); // don't include self
-        _this9.setState({ matchingNodes: matchingNodes });
-      });
+      var foundNodes = NCLOGIC.FindMatchingNodesByLabel(label);
+      var matchingNodes = foundNodes.filter(function (n) {
+        return n.id !== id;
+      }); // don't include self
+      return matchingNodes;
     }
 
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -20195,9 +16700,9 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'UISelectTab',
     value: function UISelectTab(event) {
-      var _state5 = this.state,
-          id = _state5.id,
-          label = _state5.label;
+      var _state4 = this.state,
+          id = _state4.id,
+          label = _state4.label;
 
       var uSelectedTab = event.target.value;
       this.setState({ uSelectedTab: uSelectedTab });
@@ -20213,14 +16718,14 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'UIRequestEditNode',
     value: function UIRequestEditNode() {
-      var _this10 = this;
+      var _this6 = this;
 
       var isLoggedIn = this.state.isLoggedIn;
 
       if (!isLoggedIn) return;
-      this.LockNode(function (lockSuccess) {
-        _this10.setState({ uIsLockedByDB: !lockSuccess }, function () {
-          if (lockSuccess) _this10.UIEnableEditMode();
+      LOCKMGR.RequestLockNode(this.state.id, function (lockSuccess) {
+        _this6.setState({ uIsLockedByDB: !lockSuccess }, function () {
+          if (lockSuccess) _this6.UIEnableEditMode();
         });
       });
     }
@@ -20243,24 +16748,24 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'UIAddEdge',
     value: function UIAddEdge(event) {
-      var _this11 = this;
+      var _this7 = this;
 
       event.preventDefault();
       UDATA.LocalCall('EDGE_CREATE', { nodeId: this.state.id }).then(function (edge) {
         // enable editing right away
-        _this11.UIEditEdge(edge.id);
+        _this7.UIEditEdge(edge.id);
       });
     }
   }, {
     key: 'UIEnableEditMode',
     value: function UIEnableEditMode() {
-      var _state6 = this.state,
-          uSelectedTab = _state6.uSelectedTab,
-          id = _state6.id,
-          label = _state6.label,
-          type = _state6.type,
-          attributes = _state6.attributes,
-          provenance = _state6.provenance;
+      var _state5 = this.state,
+          uSelectedTab = _state5.uSelectedTab,
+          id = _state5.id,
+          label = _state5.label,
+          type = _state5.type,
+          attributes = _state5.attributes,
+          provenance = _state5.provenance;
       // If user was on Edges tab while requesting edit (e.g. from Node Table), then
       // switch to Attributes tab first.
 
@@ -20268,8 +16773,8 @@ var NCNode = function (_UNISYS$Component) {
       var previousState = {
         label: label,
         type: type,
-        attributes: Object.assign({}, attributes)
-        // provenance: Object.assign({}, provenance) // uncomment after provenence is implemented
+        attributes: Object.assign({}, attributes),
+        provenance: Object.assign({}, provenance)
       };
       this.setState({
         uViewMode: NCUI.VIEWMODE.EDIT,
@@ -20294,13 +16799,13 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'UICancelEditMode',
     value: function UICancelEditMode() {
-      var _this12 = this;
+      var _this8 = this;
 
-      var _state7 = this.state,
-          id = _state7.id,
-          label = _state7.label,
-          revision = _state7.revision,
-          previousState = _state7.previousState;
+      var _state6 = this.state,
+          id = _state6.id,
+          label = _state6.label,
+          revision = _state6.revision,
+          previousState = _state6.previousState;
 
       // if user is cancelling a newly created unsaved node, delete the node instead
       // Initial Node creation is rev 0, saving it for the first time bumps it to rev 1
@@ -20315,31 +16820,27 @@ var NCNode = function (_UNISYS$Component) {
       this.setState({
         label: previousState.label,
         type: previousState.type,
-        attributes: previousState.attributes
-        // provenance: previousState.provenance // uncomment after provenence is implemented
+        attributes: previousState.attributes,
+        provenance: previousState.provenance
       }, function () {
-        return _this12.UIDisableEditMode();
+        return _this8.UIDisableEditMode();
       });
       UNISYS.Log('cancel edit node', id, label);
     }
   }, {
     key: 'UIDisableEditMode',
     value: function UIDisableEditMode() {
-      var _this13 = this;
+      var _this9 = this;
 
       this.UnlockNode(function () {
-        _this13.setState({
-          uViewMode: NCUI.VIEWMODE.VIEW,
-          uIsLockedByDB: false
+        _this9.setState({
+          uViewMode: NCUI.VIEWMODE.VIEW
         });
-        UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
       });
     }
   }, {
     key: 'UIInputUpdate',
     value: function UIInputUpdate(key, value) {
-      var _this14 = this;
-
       if (BUILTIN_FIELDS_NODE.includes(key)) {
         var data = {};
         data[key] = value;
@@ -20348,16 +16849,16 @@ var NCNode = function (_UNISYS$Component) {
         var attributes = this.state.attributes;
 
         attributes[key] = value;
-        this.setState({ attributes: attributes }, function () {
-          return _this14.SetBackgroundColor();
-        });
+
+        // special handling to update the background color immediately if `type` is changed
+        var type = key === 'type' ? value : this.state.type;
+        var uBackgroundColor = this.LookupBackgroundColor(type);
+        this.setState({ attributes: attributes, uBackgroundColor: uBackgroundColor });
       }
     }
   }, {
     key: 'UIProvenanceInputUpdate',
     value: function UIProvenanceInputUpdate(key, value) {
-      var _this15 = this;
-
       if (BUILTIN_FIELDS_NODE.includes(key)) {
         var data = {};
         data[key] = value;
@@ -20366,9 +16867,7 @@ var NCNode = function (_UNISYS$Component) {
         var provenance = this.state.provenance;
 
         provenance[key] = value;
-        this.setState({ provenance: provenance }, function () {
-          return _this15.SetBackgroundColor();
-        });
+        this.setState({ provenance: provenance });
       }
     }
   }, {
@@ -20376,8 +16875,8 @@ var NCNode = function (_UNISYS$Component) {
     value: function UILabelInputUpdate(key, value) {
       var data = {};
       data[key] = value;
+      data.matchingNodes = this.FindMatchingList(value);
       this.setState(data);
-      this.UpdateMatchingList(value);
     }
   }, {
     key: 'UIViewEdge',
@@ -20420,19 +16919,19 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'RenderView',
     value: function RenderView() {
-      var _state8 = this.state,
-          uSelectedTab = _state8.uSelectedTab,
-          uBackgroundColor = _state8.uBackgroundColor,
-          uEditBtnDisable = _state8.uEditBtnDisable,
-          uEditBtnHide = _state8.uEditBtnHide,
-          uEditLockMessage = _state8.uEditLockMessage,
-          uHideDeleteNodeButton = _state8.uHideDeleteNodeButton,
-          uReplacementNodeId = _state8.uReplacementNodeId,
-          uIsValidReplacementNodeID = _state8.uIsValidReplacementNodeID,
-          uShowCitationDialog = _state8.uShowCitationDialog,
-          id = _state8.id,
-          label = _state8.label,
-          type = _state8.type;
+      var _state7 = this.state,
+          uSelectedTab = _state7.uSelectedTab,
+          uBackgroundColor = _state7.uBackgroundColor,
+          uEditBtnDisable = _state7.uEditBtnDisable,
+          uEditBtnHide = _state7.uEditBtnHide,
+          uEditLockMessage = _state7.uEditLockMessage,
+          uHideDeleteNodeButton = _state7.uHideDeleteNodeButton,
+          uReplacementNodeId = _state7.uReplacementNodeId,
+          uIsValidReplacementNodeID = _state7.uIsValidReplacementNodeID,
+          uShowCitationDialog = _state7.uShowCitationDialog,
+          id = _state7.id,
+          label = _state7.label,
+          type = _state7.type;
 
       var TEMPLATE = UDATA.AppState('TEMPLATE');
       var defs = TEMPLATE.nodeDefs;
@@ -20460,7 +16959,7 @@ var NCNode = function (_UNISYS$Component) {
               { className: 'nodelabel' },
               NCUI.RenderLabel('label', label)
             ),
-            React.createElement(_URCommentBtn2.default, { cref: collection_ref })
+            React.createElement(_URCommentVBtn2.default, { cref: collection_ref, key: collection_ref })
           ),
           defs['type'] && !defs['type'].hidden && React.createElement(
             'div',
@@ -20564,16 +17063,16 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'RenderEdit',
     value: function RenderEdit() {
-      var _this16 = this;
+      var _this10 = this;
 
-      var _state9 = this.state,
-          uSelectedTab = _state9.uSelectedTab,
-          uBackgroundColor = _state9.uBackgroundColor,
-          uShowMatchlist = _state9.uShowMatchlist,
-          matchingNodes = _state9.matchingNodes,
-          id = _state9.id,
-          label = _state9.label,
-          type = _state9.type;
+      var _state8 = this.state,
+          uSelectedTab = _state8.uSelectedTab,
+          uBackgroundColor = _state8.uBackgroundColor,
+          uShowMatchlist = _state8.uShowMatchlist,
+          matchingNodes = _state8.matchingNodes,
+          id = _state8.id,
+          label = _state8.label,
+          type = _state8.type;
 
       var defs = UDATA.AppState('TEMPLATE').nodeDefs;
       var bgcolor = uBackgroundColor + '66'; // hack opacity
@@ -20615,9 +17114,9 @@ var NCNode = function (_UNISYS$Component) {
               'div',
               { className: 'nodelabel' },
               NCUI.RenderStringInput('label', label, this.UILabelInputUpdate, '', function () {
-                return _this16.setState({ uShowMatchlist: true });
+                return _this10.setState({ uShowMatchlist: true });
               }, function () {
-                return _this16.setState({ uShowMatchlist: false });
+                return _this10.setState({ uShowMatchlist: false });
               }),
               uShowMatchlist && matchList && React.createElement(
                 'div',
@@ -20679,16 +17178,16 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'RenderEdgesTab',
     value: function RenderEdgesTab() {
-      var _this17 = this;
+      var _this11 = this;
 
-      var _state10 = this.state,
-          uSelectedTab = _state10.uSelectedTab,
-          selectedEdgeId = _state10.selectedEdgeId,
-          uEditBtnDisable = _state10.uEditBtnDisable,
-          uEditBtnHide = _state10.uEditBtnHide,
-          id = _state10.id,
-          label = _state10.label,
-          edges = _state10.edges;
+      var _state9 = this.state,
+          uSelectedTab = _state9.uSelectedTab,
+          selectedEdgeId = _state9.selectedEdgeId,
+          uEditBtnDisable = _state9.uEditBtnDisable,
+          uEditBtnHide = _state9.uEditBtnHide,
+          id = _state9.id,
+          label = _state9.label,
+          edges = _state9.edges;
 
       var NCDATA = UDATA.AppState('NCDATA');
       var TEMPLATE = UDATA.AppState('TEMPLATE');
@@ -20724,7 +17223,7 @@ var NCNode = function (_UNISYS$Component) {
                 {
                   className: 'edgebutton',
                   onClick: function onClick() {
-                    return _this17.UIViewEdge(e.id);
+                    return _this11.UIViewEdge(e.id);
                   },
                   style: { backgroundColor: bgcolor }
                 },
@@ -20759,9 +17258,9 @@ var NCNode = function (_UNISYS$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _state11 = this.state,
-          id = _state11.id,
-          uViewMode = _state11.uViewMode;
+      var _state10 = this.state,
+          id = _state10.id,
+          uViewMode = _state10.uViewMode;
 
       if (!id) return ''; // nothing selected
       if (uViewMode === NCUI.VIEWMODE.VIEW) {
@@ -20785,417 +17284,194 @@ module.exports = NCNode;
 require.register("view/netcreate/components/NCNodeTable.jsx", function(exports, require, module) {
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ## OVERVIEW
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             NCNodeTable is used to to display a table of nodes for review.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             It checks FILTEREDNCDATA to show highlight/filtered state
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             It uses URTable for rendering and sorting.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ## PROPS
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * tableHeight -- sets height based on InfoPanel dragger
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * isOpen -- whether the table is visible
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ## TO USE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             NCNodeTable is self contained and relies on global FILTEREDNCDATA to load.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <NCNodeTable tableHeight isOpen/>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
 
-var _hdate = require('system/util/hdate');
+var _react = require('react');
 
-var _hdate2 = _interopRequireDefault(_hdate);
+var _react2 = _interopRequireDefault(_react);
 
-var _URCommentVBtn = require('./URCommentVBtn');
+var _client = require('unisys/client');
 
-var _URCommentVBtn2 = _interopRequireDefault(_URCommentVBtn);
+var _client2 = _interopRequireDefault(_client);
+
+var _ncUi = require('../nc-ui');
+
+var _ncUi2 = _interopRequireDefault(_ncUi);
+
+var _ncUtils = require('../nc-utils');
+
+var _ncUtils2 = _interopRequireDefault(_ncUtils);
+
+var _FilterEnums = require('./filter/FilterEnums');
+
+var _FilterEnums2 = _interopRequireDefault(_FilterEnums);
+
+var _commentMgr = require('../comment-mgr');
+
+var _commentMgr2 = _interopRequireDefault(_commentMgr);
 
 var _URTable = require('./URTable');
 
 var _URTable2 = _interopRequireDefault(_URTable);
 
+var _URCommentVBtn = require('./URCommentVBtn');
+
+var _URCommentVBtn2 = _interopRequireDefault(_URCommentVBtn);
+
+var _enum = require('system/util/enum');
+
+var _constant = require('system/util/constant');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-    NCNodeTable is used to to display a table of nodes for review.
-
-    It displays NCDATA.
-    But also checks FILTEREDNCDATA to show highlight/filtered state
-
-    This is intended to be a generic table implementation that enables
-    swapping in different table implementations.
-
-    This is an abstraction of the original NodeTable component to make
-    it easier to swap in custom table components.
-
-
-  ## PROPS
-
-    * tableHeight -- sets height based on InfoPanel dragger
-    * isOpen -- whether the table is visible
-
-  ## TO USE
-
-    NCNodeTable is self contained and relies on global NCDATA to load.
-
-      <NCNodeTable tableHeight isOpen/>
-
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var NCUI = require('../nc-ui');
-var CMTMGR = require('../comment-mgr');
-var SETTINGS = require('settings');
-var FILTER = require('./filter/FilterEnums');
-
-var _require = require('system/util/enum'),
-    BUILTIN_FIELDS_NODE = _require.BUILTIN_FIELDS_NODE;
-
-var UNISYS = require('unisys/client');
-
-var _require2 = require('system/util/constant'),
-    ICON_PENCIL = _require2.ICON_PENCIL,
-    ICON_VIEW = _require2.ICON_VIEW;
-
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+/// Initialize UNISYS DATA LINK for functional react component
+var UDATAOwner = { name: 'NCNodeTable' };
+var UDATA = _client2.default.NewDataLink(UDATAOwner);
 
 var DBG = false;
-var UDATA = null;
 
-/// UTILITY METHODS ///////////////////////////////////////////////////////////
+/// REACT FUNCTIONAL COMPONENT ////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// Comment Button ID based on cref
-/// NOTE: This is different from the commenButtonID of URComentBtn,
-/// which is simply `comment-button-${cref}` so that we can distinguish
-/// clicks from the NCNodeTable from clicks from Node/Edges.
-function u_GetButtonId(cref) {
-  return 'table-comment-button-' + cref;
-}
+function NCNodeTable(_ref) {
+  var tableHeight = _ref.tableHeight,
+      isOpen = _ref.isOpen;
 
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
+  var _useState = (0, _react.useState)({}),
+      _useState2 = _slicedToArray(_useState, 2),
+      state = _useState2[0],
+      setState = _useState2[1];
 
-var NCNodeTable = function (_UNISYS$Component) {
-  _inherits(NCNodeTable, _UNISYS$Component);
+  /// USEEFFECT ///////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  function NCNodeTable(props) {
-    _classCallCheck(this, NCNodeTable);
 
-    var _this = _possibleConstructorReturn(this, (NCNodeTable.__proto__ || Object.getPrototypeOf(NCNodeTable)).call(this, props));
-
-    var TEMPLATE = _this.AppState('TEMPLATE');
-    _this.state = {
+  (0, _react.useEffect)(function () {
+    var TEMPLATE = UDATA.AppState('TEMPLATE');
+    var SESSION = UDATA.AppState('SESSION');
+    setState({
       nodeDefs: TEMPLATE.nodeDefs,
       nodes: [],
-      selectedNodeId: undefined,
-      hilitedNodeId: undefined,
-      selectedNodeColor: TEMPLATE.sourceColor,
-      hilitedNodeColor: TEMPLATE.searchColor,
-      filteredNodes: [],
       disableEdit: false,
-      isLocked: false,
-      isExpanded: true,
-      sortkey: 'label',
-      dummy: 0, // used to force render update
+      isLocked: !SESSION.isValid
+    });
 
-      COLUMNDEFS: []
+    UDATA.OnAppStateChange('FILTEREDNCDATA', urstate_FILTEREDNCDATA);
+    UDATA.OnAppStateChange('SESSION', urstate_SESSION);
+    UDATA.OnAppStateChange('TEMPLATE', urstate_TEMPLATE);
+    return function () {
+      UDATA.AppStateChangeOff('FILTEREDNCDATA', urstate_FILTEREDNCDATA);
+      UDATA.AppStateChangeOff('SESSION', urstate_SESSION);
+      UDATA.AppStateChangeOff('TEMPLATE', urstate_TEMPLATE);
     };
+  }, []);
 
-    _this.onUpdateCommentUI = _this.onUpdateCommentUI.bind(_this);
-    _this.onStateChange_SESSION = _this.onStateChange_SESSION.bind(_this);
-    _this.onStateChange_SELECTION = _this.onStateChange_SELECTION.bind(_this);
-    _this.onStateChange_HILITE = _this.onStateChange_HILITE.bind(_this);
-    _this.displayUpdated = _this.displayUpdated.bind(_this);
-    _this.updateNodeFilterState = _this.updateNodeFilterState.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.handleDataUpdate = _this.handleDataUpdate.bind(_this);
-    _this.handleFilterDataUpdate = _this.handleFilterDataUpdate.bind(_this);
-    _this.OnTemplateUpdate = _this.OnTemplateUpdate.bind(_this);
-    _this.onViewButtonClick = _this.onViewButtonClick.bind(_this);
-    _this.onEditButtonClick = _this.onEditButtonClick.bind(_this);
-    _this.onToggleExpanded = _this.onToggleExpanded.bind(_this);
-    _this.onHighlightRow = _this.onHighlightRow.bind(_this);
-
-    _this.SetColumnDefs = _this.SetColumnDefs.bind(_this);
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.updateEditState);
-
-    // SESSION is called by SessionSHell when the ID changes
-    //  set system-wide. data: { classId, projId, hashedId, groupId, isValid }
-    _this.OnAppStateChange('SESSION', _this.onStateChange_SESSION);
-
-    // Always make sure class methods are bind()'d before using them
-    // as a handler, otherwise object context is lost
-    _this.OnAppStateChange('NCDATA', _this.handleDataUpdate);
-
-    // Track Filtered Data Updates too
-    _this.OnAppStateChange('FILTEREDNCDATA', _this.handleFilterDataUpdate);
-
-    // Handle Template updates
-    _this.OnAppStateChange('TEMPLATE', _this.OnTemplateUpdate);
-
-    _this.OnAppStateChange('SELECTION', _this.onStateChange_SELECTION);
-    _this.OnAppStateChange('HILITE', _this.onStateChange_HILITE);
-
-    // Comment Message Handlers
-    // Force update whenever threads are opened or closed
-    UDATA.HandleMessage('CTHREADMGR_THREAD_OPENED', _this.onUpdateCommentUI);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_CLOSED', _this.onUpdateCommentUI);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_CLOSED_ALL', _this.onUpdateCommentUI);
-    return _this;
-  } // constructor
-
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /**
-   */
-
-
-  _createClass(NCNodeTable, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      if (DBG) console.log('NodeTable.componentDidMount!');
-      this.onStateChange_SESSION(this.AppState('SESSION'));
-
-      // Explicitly retrieve data because we may not have gotten a NCDATA
-      // update while we were hidden.
-      // filtered data needs to be set before D3Data
-      var FILTEREDNCDATA = UDATA.AppState('FILTEREDNCDATA');
-      this.setState({ filteredNodes: FILTEREDNCDATA.nodes }, function () {
-        var NCDATA = _this2.AppState('NCDATA');
-        _this2.handleDataUpdate(NCDATA);
-        _this2.SetColumnDefs();
-      });
-
-      // Request edit state too because the update may have come
-      // while we were hidden
-      this.updateEditState();
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.updateEditState);
-      this.AppStateChangeOff('SESSION', this.onStateChange_SESSION);
-      this.AppStateChangeOff('NCDATA', this.handleDataUpdate);
-      this.AppStateChangeOff('FILTEREDNCDATA', this.handleFilterDataUpdate);
-      this.AppStateChangeOff('TEMPLATE', this.OnTemplateUpdate);
-      this.AppStateChangeOff('SELECTION', this.onStateChange_SELECTION);
-      this.AppStateChangeOff('HILITE', this.onStateChange_HILITE);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_OPENED', this.onUpdateCommentUI);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_CLOSED', this.onUpdateCommentUI);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_CLOSED_ALL', this.onUpdateCommentUI);
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// Force update so that URCommentVBtn selection state is updated
-
-  }, {
-    key: 'onUpdateCommentUI',
-    value: function onUpdateCommentUI(data) {
-      this.setState({ dummy: this.state.dummy + 1 });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'onStateChange_SELECTION',
-    value: function onStateChange_SELECTION(data) {
-      this.setState({
-        selectedNodeId: data.nodes.length > 0 ? data.nodes[0].id : undefined
-      });
-    }
-  }, {
-    key: 'onStateChange_HILITE',
-    value: function onStateChange_HILITE(data) {
-      var userHighlightNodeId = data.userHighlightNodeId,
-          autosuggestHiliteNodeId = data.autosuggestHiliteNodeId; // ignores `tableHiliteNodeId`
-
-      var hilitedNodeId = void 0;
-      if (autosuggestHiliteNodeId !== undefined) hilitedNodeId = autosuggestHiliteNodeId;
-      if (userHighlightNodeId !== undefined) hilitedNodeId = userHighlightNodeId;
-      this.setState({ hilitedNodeId: hilitedNodeId });
-    }
-
-    /** Handle change in SESSION data
-      Called both by componentWillMount() and AppStateChange handler.
-      The 'SESSION' state change is triggered in two places in SessionShell during
-      its handleChange() when active typing is occuring, and also during
-      SessionShell.componentWillMount()
-     */
-
-  }, {
-    key: 'onStateChange_SESSION',
-    value: function onStateChange_SESSION(decoded) {
-      this.setState({ isLocked: !decoded.isValid });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'displayUpdated',
-    value: function displayUpdated(nodeEdge) {
-      // Prevent error if `meta` info is not defined yet, or not properly imported
-
-      // this does not ever fire, revert!
-      console.error('NodeTable meta not defined yet', nodeEdge);
-      if (!nodeEdge.meta) {
-        return '';
-      }
-      var d = new Date(nodeEdge.meta.revision > 0 ? nodeEdge.meta.updated : nodeEdge.meta.created);
-
-      var year = String(d.getFullYear());
-      var date = d.getMonth() + 1 + '/' + d.getDate() + '/' + year.substr(2, 4);
-      var time = d.toTimeString().substr(0, 5);
-      var dateTime = date + ' at ' + time;
-      var titleString = 'v' + nodeEdge.meta.revision;
-      if (nodeEdge._nlog) titleString += ' by ' + nodeEdge._nlog[nodeEdge._nlog.length - 1];
-      var tag = React.createElement(
-        'span',
-        { title: titleString },
-        ' ',
-        dateTime,
-        ' '
-      );
-
-      return tag;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// Set node filtered status based on current filteredNodes
-
-  }, {
-    key: 'updateNodeFilterState',
-    value: function updateNodeFilterState(nodes, filteredNodes) {
-      // set filter status
-      if (filteredNodes.length > 0) {
-        // If we're transitioning from "HILIGHT/FADE" to "COLLAPSE" or "FOCUS", then we
-        // also need to remove nodes that are not in filteredNodes
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.REDUCE || FILTERDEFS.filterAction === FILTER.ACTION.FOCUS) {
-          // Reduce (remove) or Focus
-          nodes = nodes.filter(function (node) {
-            var filteredNode = filteredNodes.find(function (n) {
-              return n.id === node.id;
-            });
-            return filteredNode; // keep if it's in the list of filtered nodes
-          });
-        } else {
-          // Fade
-          // Fading is handled by setting node.filteredTransparency which is
-          // directly handled by the filter now.  So no need to process it
-          // here in the table.
-        }
-      }
-      this.setState({ nodes: nodes, filteredNodes: filteredNodes });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this3 = this;
-
-      // disable edit if someone else is editing a template, node, or edge
-      var disableEdit = false;
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        // someone else might be editing a template or importing or editing node or edge
-        disableEdit = data.templateBeingEdited || data.importActive || data.nodeOrEdgeBeingEdited || data.commentBeingEditedByMe; // only lock out if this user is the one editing comments, allow network commen edits
-        _this3.setState({ disableEdit: disableEdit });
-      });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle updated SELECTION
-     */
-
-  }, {
-    key: 'handleDataUpdate',
-    value: function handleDataUpdate(data) {
-      if (DBG) console.log('handle data update');
-      if (data.nodes) {
-        // const nodes = this.sortTable(this.state.sortkey, data.nodes);
-        var nodes = data.nodes;
-        var filteredNodes = this.state.filteredNodes;
-
-        this.updateNodeFilterState(nodes, filteredNodes);
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'handleFilterDataUpdate',
-    value: function handleFilterDataUpdate(data) {
-      var _this4 = this;
-
-      if (data.nodes) {
-        var filteredNodes = data.nodes;
-        // If we're transitioning from "COLLAPSE" or "FOCUS" to "HILIGHT/FADE", then we
-        // also need to add back in nodes that are not in filteredNodes
-        // (because "COLLAPSE" and "FOCUS" removes nodes that are not matched)
+  /// UR HANDLERS /////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /// FILTEREDNCDATA is the reduced list of nodes, not ALL nodes
+  function urstate_FILTEREDNCDATA(data) {
+    if (data.nodes) {
+      // If we're transitioning from "COLLAPSE" or "FOCUS" to "HILIGHT/FADE", then we
+      // also need to add back in nodes that are not in filteredNodes
+      // (because "COLLAPSE" and "FOCUS" removes nodes that are not matched)
+      var FILTERDEFS = UDATA.AppState('FILTERDEFS');
+      if (FILTERDEFS.filterAction === _FilterEnums2.default.ACTION.FADE) {
+        // show ALL nodes
         var NCDATA = UDATA.AppState('NCDATA');
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.FADE) {
-          this.setState({
-            nodes: NCDATA.nodes,
-            filteredNodes: filteredNodes
-          }, function () {
-            var nodes = NCDATA.nodes;
-            _this4.updateNodeFilterState(nodes, filteredNodes);
-          });
-        } else {
-          this.setState({
-            nodes: filteredNodes,
-            filteredNodes: filteredNodes
-          }, function () {
-            var nodes = filteredNodes;
-            _this4.updateNodeFilterState(nodes, filteredNodes);
-          });
-        }
+        m_updateNodeFilterState(NCDATA.nodes);
+      } else {
+        // show only filtered nodes from the filter update
+        m_updateNodeFilterState(data.nodes);
       }
     }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'OnTemplateUpdate',
-    value: function OnTemplateUpdate(data) {
-      this.setState({
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function m_updateNodeFilterState(nodes) {
+    setState(function (prevState) {
+      return _extends({}, prevState, { nodes: nodes });
+    });
+    return;
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urstate_SESSION(decoded) {
+    var isLocked = !decoded.isValid;
+    if (isLocked === this.state.isLocked) {
+      return;
+    }
+    setState(function (prevState) {
+      return _extends({}, prevState, { isLocked: isLocked });
+    });
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urstate_TEMPLATE(data) {
+    setState(function (prevState) {
+      return _extends({}, prevState, {
         nodeDefs: data.nodeDefs,
         selectedNodeColor: data.sourceColor,
         hilitedNodeColor: data.searchColor
       });
-    }
+    });
+  }
 
-    /// UTILITIES /////////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /// COLUMN DEFINTION GENERATION /////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function DeriveColumnDefs(incomingNodeDefs) {
+    var nodeDefs = state.nodeDefs,
+        disableEdit = state.disableEdit,
+        isLocked = state.isLocked;
 
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
+    var defs = incomingNodeDefs || nodeDefs;
 
-  }, {
-    key: 'onViewButtonClick',
-    value: function onViewButtonClick(event, nodeId) {
+    // Only include built in fields
+    // Only include non-hidden fields
+    // Only include non-provenance fields
+    var attributeDefs = Object.keys(defs).filter(function (k) {
+      return !_enum.BUILTIN_FIELDS_NODE.includes(k) && !defs[k].isProvenance && !defs[k].hidden;
+    });
+    var provenanceDefs = Object.keys(defs).filter(function (k) {
+      return !_enum.BUILTIN_FIELDS_NODE.includes(k) && defs[k].isProvenance && !defs[k].hidden;
+    });
+
+    /// CLICK HANDLERS
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function ui_ClickViewNode(event, nodeId) {
       event.preventDefault();
       event.stopPropagation();
-      var nodeID = parseInt(nodeId);
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [nodeID] });
+      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(nodeId)] });
     }
-    /**
-     */
-
-  }, {
-    key: 'onEditButtonClick',
-    value: function onEditButtonClick(event, nodeId) {
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function ui_ClickEditNode(event, nodeId) {
       event.preventDefault();
       event.stopPropagation();
       var nodeID = parseInt(nodeId);
@@ -21204,316 +17480,273 @@ var NCNodeTable = function (_UNISYS$Component) {
         UDATA.LocalCall('NODE_EDIT', { nodeID: nodeID });
       });
     }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onToggleExpanded',
-    value: function onToggleExpanded(event) {
-      this.setState({
-        isExpanded: !this.state.isExpanded
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onHighlightRow',
-    value: function onHighlightRow(nodeId) {
-      UDATA.LocalCall('TABLE_HILITE_NODE', { nodeId: nodeId });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'selectNode',
-    value: function selectNode(id, event) {
-      event.preventDefault();
-
-      // REVIEW: For some reason React converts the integer IDs into string
-      // values when returned in event.target.value.  So we have to convert
-      // it here.
-      // Load Source
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(id)] });
-    }
-
-    /// URTABLE COLUMN DEFS /////////////////////////////////////////////////////
+    /// RENDERERS
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'SetColumnDefs',
-    value: function SetColumnDefs() {
-      var _state = this.state,
-          nodeDefs = _state.nodeDefs,
-          disableEdit = _state.disableEdit,
-          isLocked = _state.isLocked;
-
-      // Only include built in fields
-      // Only include non-hidden fields
-
-      var attributeDefs = Object.keys(nodeDefs).filter(function (k) {
-        return !BUILTIN_FIELDS_NODE.includes(k) && !nodeDefs[k].hidden;
-      });
-
-      /// CLICK HANDLERS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function ui_ClickViewNode(event, nodeId) {
-        event.preventDefault();
-        event.stopPropagation();
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(nodeId)] });
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function ui_ClickEditNode(event, nodeId) {
-        event.preventDefault();
-        event.stopPropagation();
-        var nodeID = parseInt(nodeId);
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [nodeID] }).then(function () {
-          if (DBG) console.error('NodeTable: Calling NODE_EDIT', nodeID);
-          UDATA.LocalCall('NODE_EDIT', { nodeID: nodeID });
-        });
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function ui_ClickCommentBtn(cref) {
-        var position = CMTMGR.GetCommentThreadPosition(u_GetButtonId(cref));
-        var uiref = u_GetButtonId(cref);
-        CMTMGR.ToggleCommentCollection(uiref, cref, position);
-      }
-      /// RENDERERS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function RenderViewOrEdit(value) {
-        return React.createElement(
-          'div',
-          null,
-          !disableEdit && React.createElement(
-            'button',
-            {
-              className: 'outline',
-              onClick: function onClick(event) {
-                return ui_ClickViewNode(event, value);
-              }
-            },
-            ICON_VIEW
-          ),
-          !disableEdit && !isLocked && React.createElement(
-            'button',
-            {
-              className: 'outline',
-              onClick: function onClick(event) {
-                return ui_ClickEditNode(event, value);
-              }
-            },
-            ICON_PENCIL
-          )
-        );
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      // interface TTblNodeObject {
-      //   id: String;
-      //   label: String;
-      // }
-      function RenderNode(value) {
-        if (!value) return; // skip if not defined yet
-        if (value.id === undefined) throw new Error('RenderNode: value.id is undefined');
-        if (value.label === undefined) throw new Error('RenderNode: value.label is undefined');
-        return React.createElement(
+    function col_RenderViewOrEdit(key, tdata, coldef) {
+      var value = tdata[key];
+      return _react2.default.createElement(
+        'div',
+        null,
+        !disableEdit && _react2.default.createElement(
           'button',
           {
             className: 'outline',
             onClick: function onClick(event) {
-              return ui_ClickViewNode(event, value.id);
+              return ui_ClickViewNode(event, value);
             }
           },
-          React.createElement(
-            'span',
-            { style: { color: 'blue' } },
-            value.label
-          )
-        );
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function RenderCommentBtn(value) {
-        return React.createElement(_URCommentVBtn2.default, {
-          uiref: u_GetButtonId(value.cref),
-          count: value.count,
-          hasUnreadComments: value.hasUnreadComments,
-          selected: value.selected,
-          cb: function cb(e) {
-            return ui_ClickCommentBtn(value.cref);
-          }
-        });
-      }
-      /// CUSTOM SORTERS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      /// tdata = TTblNodeObject[] = { id: String, label: String }
-      function SortNodes(key, tdata, order) {
-        var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
-          if (a[key].label < b[key].label) return order;
-          if (a[key].label > b[key].label) return order * -1;
-          return 0;
-        });
-        return sortedData;
-      }
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      function SortCommentsByCount(key, tdata, order) {
-        var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
-          if (a[key].count < b[key].count) return order;
-          if (a[key].count > b[key].count) return order * -1;
-          return 0;
-        });
-        return sortedData;
-      }
-      /// COLUMN DEFINITIONS
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      // column definitions for custom attributes
-      // (built in columns are: view, degrees, label)
-      var ATTRIBUTE_COLUMNDEFS = attributeDefs.map(function (key) {
-        var title = nodeDefs[key].displayLabel;
-        var type = nodeDefs[key].type;
-        return {
-          title: title,
-          type: type,
-          data: key
-        };
-      });
-      var COLUMNDEFS = [{
-        title: '', // View/Edit
-        data: 'id',
-        type: 'number',
-        width: 45, // in px
-        renderer: RenderViewOrEdit
-      }, {
-        title: nodeDefs['degrees'].displayLabel,
-        type: 'number',
-        width: 50, // in px
-        data: 'degrees'
-      }, {
-        title: nodeDefs['label'].displayLabel,
-        data: 'label',
-        width: 300, // in px
-        renderer: RenderNode,
-        sorter: SortNodes
-      }];
-      if (nodeDefs['type'] && !nodeDefs['type'].hidden) {
-        COLUMNDEFS.push({
-          title: nodeDefs['type'].displayLabel,
-          type: 'text',
-          width: 130, // in px
-          data: 'type'
-        });
-      }
-      COLUMNDEFS.push.apply(COLUMNDEFS, _toConsumableArray(ATTRIBUTE_COLUMNDEFS).concat([{
-        title: 'Comments',
-        data: 'commentVBtnDef',
-        width: 50, // in px
-        renderer: RenderCommentBtn,
-        sorter: SortCommentsByCount
-      }]));
-      this.setState({ COLUMNDEFS: COLUMNDEFS });
-    }
-
-    /// REACT LIFECYCLE METHODS /////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _state2 = this.state,
-          nodes = _state2.nodes,
-          nodeDefs = _state2.nodeDefs,
-          selectedNodeId = _state2.selectedNodeId,
-          hilitedNodeId = _state2.hilitedNodeId,
-          selectedNodeColor = _state2.selectedNodeColor,
-          hilitedNodeColor = _state2.hilitedNodeColor,
-          disableEdit = _state2.disableEdit,
-          isLocked = _state2.isLocked,
-          COLUMNDEFS = _state2.COLUMNDEFS;
-
-      if (nodes === undefined) return '';
-      var _props = this.props,
-          isOpen = _props.isOpen,
-          tableHeight = _props.tableHeight;
-
-      // skip rendering if COLUMNDEFS is not defined yet
-      // This ensures that URTable is inited only AFTER data has been loaded.
-
-      if (COLUMNDEFS.length < 1) return '';
-
-      var uid = CMTMGR.GetCurrentUserId();
-
-      var attributeDefs = Object.keys(nodeDefs).filter(function (k) {
-        return !BUILTIN_FIELDS_NODE.includes(k);
-      });
-
-      /// TABLE DATA GENERATION
-      /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      var TABLEDATA = nodes.map(function (node, i) {
-        var id = node.id,
-            label = node.label,
-            type = node.type,
-            degrees = node.degrees;
-
-
-        var sourceDef = { id: id, label: label };
-
-        // custom attributes
-        var attributes = {};
-        attributeDefs.forEach(function (key, i) {
-          var data = {};
-          if (nodeDefs[key].type === 'markdown') {
-            // for markdown:
-            // a. provide the raw markdown string
-            // b. provide the HTML string
-            data.html = NCUI.Markdownify(node[key]);
-            data.raw = node[key];
-          } else if (nodeDefs[key].type === 'hdate') data = node[key] && node[key].formattedDateString;else data = node[key];
-          attributes[key] = data;
-        });
-
-        // comment button definition
-        var cref = CMTMGR.GetNodeCREF(id);
-        var commentCount = CMTMGR.GetCommentCollectionCount(cref);
-        var ccol = CMTMGR.GetCommentCollection(cref) || {};
-        var hasUnreadComments = ccol.hasUnreadComments;
-        var selected = CMTMGR.GetOpenComments(cref);
-        var commentVBtnDef = {
-          cref: cref,
-          count: commentCount,
-          hasUnreadComments: hasUnreadComments,
-          selected: selected
-        };
-
-        return _extends({
-          id: id,
-          label: sourceDef, // { id, label } so that we can render a button
-          type: type,
-          degrees: degrees
-        }, attributes, {
-          commentVBtnDef: commentVBtnDef,
-          meta: {
-            filteredTransparency: node.filteredTransparency
-          }
-        });
-      });
-
-      return React.createElement(
-        'div',
-        { className: 'NCNodeTable', style: { height: tableHeight } },
-        React.createElement(_URTable2.default, { isOpen: isOpen, data: TABLEDATA, columns: COLUMNDEFS })
+          _constant.ICON_VIEW
+        ),
+        !disableEdit && !isLocked && _react2.default.createElement(
+          'button',
+          {
+            className: 'outline',
+            onClick: function onClick(event) {
+              return ui_ClickEditNode(event, value);
+            }
+          },
+          _constant.ICON_PENCIL
+        )
       );
     }
-  }]);
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // interface TTblNodeObject {
+    //   id: String;
+    //   label: String;
+    // }
+    function col_RenderNode(key, tdata, coldef) {
+      var value = tdata[key];
+      if (!value) return; // skip if not defined yet
+      if (tdata.id === undefined) throw new Error('RenderNode: id is undefined. tdata=' + tdata);
+      if (value === undefined) throw new Error('RenderNode: label is undefined. value=' + value);
+      return _react2.default.createElement(
+        'button',
+        {
+          className: 'outline',
+          onClick: function onClick(event) {
+            return ui_ClickViewNode(event, tdata.id);
+          }
+        },
+        _react2.default.createElement(
+          'span',
+          null,
+          value
+        )
+      );
+    }
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function col_RenderCommentBtn(key, tdata, coldef) {
+      var value = tdata[key];
+      return _react2.default.createElement(_URCommentVBtn2.default, { cref: value.cref });
+    }
+    /// CUSTOM SORTERS
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    function col_SortCommentsByCount(key, tdata, order) {
+      var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
+        if (!a[key].count) return 1; // Move undefined or '' to the bottom regardless of sort order
+        if (!b[key].count) return -1; // Move undefined or '' the bottom regardless of sort order
+        if (a[key].count < b[key].count) return order;
+        if (a[key].count > b[key].count) return order * -1;
+        return 0;
+      });
+      return sortedData;
+    }
+    /// COLUMN DEFINITIONS
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // column definitions for custom attributes
+    // (built in columns are: view, degrees, label)
+    var ATTRIBUTE_COLUMNDEFS = attributeDefs.map(function (key) {
+      return {
+        title: defs[key].displayLabel,
+        type: defs[key].type,
+        data: key
+      };
+    });
+    var PROVENANCE_COLUMNDEFS = provenanceDefs.map(function (key) {
+      return {
+        title: defs[key].displayLabel,
+        type: defs[key].type,
+        data: key
+      };
+    });
+    var COLUMNDEFS = [{
+      title: '', // View/Edit
+      data: 'id',
+      type: defs['id'].type,
+      width: 45, // in px
+      renderer: col_RenderViewOrEdit,
+      sortDisabled: true,
+      tipDisabled: true
+    }, {
+      title: defs['degrees'].displayLabel,
+      type: defs['degrees'].type,
+      width: 50, // in px
+      data: 'degrees'
+    }, {
+      title: defs['label'].displayLabel,
+      type: 'text-case-insensitive',
+      data: 'label',
+      width: 200, // in px
+      renderer: col_RenderNode
+    }];
+    if (defs['type'] && !defs['type'].hidden) {
+      COLUMNDEFS.push({
+        title: defs['type'].displayLabel,
+        type: 'text-case-insensitive',
+        width: 130, // in px
+        data: 'type'
+      });
+    }
+    COLUMNDEFS.push.apply(COLUMNDEFS, _toConsumableArray(ATTRIBUTE_COLUMNDEFS));
+    COLUMNDEFS.push.apply(COLUMNDEFS, _toConsumableArray(PROVENANCE_COLUMNDEFS));
+    // History
+    if (defs['createdBy'] && !defs['createdBy'].hidden) COLUMNDEFS.push({
+      title: defs['createdBy'].displayLabel,
+      type: 'text-case-insensitive',
+      width: 60, // in px
+      data: 'createdBy'
+    });
+    if (defs['created'] && !defs['created'].hidden) COLUMNDEFS.push({
+      title: defs['created'].displayLabel,
+      type: 'timestamp-short',
+      width: 60, // in px
+      data: 'created'
+    });
+    if (defs['updatedBy'] && !defs['updatedBy'].hidden) COLUMNDEFS.push({
+      title: defs['updatedBy'].displayLabel,
+      type: 'text-case-insensitive',
+      width: 60, // in px
+      data: 'updatedBy'
+    });
+    if (defs['updated'] && !defs['updated'].hidden) COLUMNDEFS.push({
+      title: defs['updated'].displayLabel,
+      type: 'timestamp-short',
+      width: 60, // in px
+      data: 'updated'
+    });
+    // Comment is last
+    COLUMNDEFS.push({
+      title: ' ',
+      data: 'commentVBtnDef',
+      width: 40, // in px
+      renderer: col_RenderCommentBtn,
+      sorter: col_SortCommentsByCount,
+      tipDisabled: true
+    });
+    return COLUMNDEFS;
+  }
 
-  return NCNodeTable;
-}(UNISYS.Component);
+  /// TABLE DATA GENERATION ///////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function DeriveTableData(_ref2) {
+    var nodeDefs = _ref2.nodeDefs,
+        nodes = _ref2.nodes;
+
+    // Only include built in fields
+    // Only include non-hidden fields
+    // Only include non-provenance fields
+    var attributeDefs = Object.keys(nodeDefs).filter(function (k) {
+      return !_enum.BUILTIN_FIELDS_NODE.includes(k) && !nodeDefs[k].hidden && !nodeDefs[k].isProvenance;
+    });
+    var provenanceDefs = Object.keys(nodeDefs).filter(function (k) {
+      return nodeDefs[k].isProvenance;
+    });
+
+    return nodes.map(function (node, i) {
+      var id = node.id,
+          label = node.label,
+          type = node.type,
+          degrees = node.degrees;
+
+      // custom attributes
+
+      var attributes = {};
+      attributeDefs.forEach(function (key, i) {
+        var data = {};
+        if (nodeDefs[key].type === 'markdown') {
+          // for markdown:
+          // a. provide the raw markdown string
+          // b. provide the HTML string
+          data.html = _ncUi2.default.Markdownify(node[key]);
+          data.raw = node[key];
+        } else if (nodeDefs[key].type === 'hdate') {
+          data = node[key] && node[key].formattedDateString;
+        } else if (nodeDefs[key].type === 'infoOrigin') {
+          data = node[key] === undefined || node[key] === '' ? _ncUtils2.default.DeriveInfoOriginString(node.createdBy, node.meta ? node.meta.created : '') : node[key];
+        } else data = node[key];
+        attributes[key] = data;
+      });
+
+      // comment button definition
+      var cref = _commentMgr2.default.GetNodeCREF(id);
+      var commentCount = _commentMgr2.default.GetCommentCollectionCount(cref);
+      var ccol = _commentMgr2.default.GetCommentCollection(cref) || {};
+      var hasUnreadComments = ccol.hasUnreadComments;
+      var selected = _commentMgr2.default.GetOpenComments(cref);
+      var commentVBtnDef = {
+        cref: cref,
+        count: commentCount,
+        hasUnreadComments: hasUnreadComments,
+        selected: selected
+      };
+
+      // provenance
+      var provenance = {};
+      provenanceDefs.forEach(function (key, i) {
+        var data = {};
+        if (nodeDefs[key].type === 'markdown') {
+          // for markdown:
+          // a. provide the raw markdown string
+          // b. provide the HTML string
+          data.html = _ncUi2.default.Markdownify(node[key]);
+          data.raw = node[key];
+        } else if (nodeDefs[key].type === 'hdate') {
+          data = node[key] && node[key].formattedDateString;
+        } else if (nodeDefs[key].type === 'infoOrigin') {
+          data = node[key] === undefined || node[key] === '' ? _ncUtils2.default.DeriveInfoOriginString(node.createdBy, node.meta ? node.meta.created : '') : node[key];
+        } else data = node[key] || '';
+        provenance[key] = data;
+      });
+
+      // history
+      var history = {
+        createdBy: node.createdBy,
+        created: node.meta ? node.meta.created : '', // meta may not be defined when a new node is creatd
+        updatedBy: node.updatedBy,
+        updated: node.meta ? node.meta.updated : '' // meta may not be defined when a new node is creatd
+      };
+
+      return _extends({
+        id: id,
+        label: label,
+        type: type,
+        degrees: degrees
+      }, attributes, {
+        commentVBtnDef: commentVBtnDef
+      }, provenance, history, {
+        meta: {
+          filteredTransparency: node.filteredTransparency
+        }
+      });
+    });
+  }
+
+  /// COMPONENT RENDER ////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  if (state.nodes === undefined) return 'loading...waiting for nodes ' + state.nodes;
+  if (state.nodeDefs === undefined) return 'loading...waiting for nodeDefs ' + state.nodeDefs;
+  var COLUMNDEFS = DeriveColumnDefs();
+  var TABLEDATA = DeriveTableData({ nodeDefs: state.nodeDefs, nodes: state.nodes });
+  return _react2.default.createElement(
+    'div',
+    { className: 'NCNodeTable', style: { height: tableHeight } },
+    _react2.default.createElement(_URTable2.default, { isOpen: isOpen, data: TABLEDATA, columns: COLUMNDEFS })
+  );
+}
 
 /// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = NCNodeTable;
+exports.default = NCNodeTable;
 });
 
 require.register("view/netcreate/components/NCSearch.jsx", function(exports, require, module) {
@@ -21574,7 +17807,7 @@ var NCSearch = function (_UNISYS$Component) {
     }; // initialized on componentDidMount and clearSelection
 
     _this.UpdateSession = _this.UpdateSession.bind(_this);
-    _this.SetPermissions = _this.SetPermissions.bind(_this);
+    _this.urstate_LOCKSTATE = _this.urstate_LOCKSTATE.bind(_this);
     _this.UIOnChange = _this.UIOnChange.bind(_this);
     _this.UIOnSelect = _this.UIOnSelect.bind(_this);
     _this.UINewNode = _this.UINewNode.bind(_this);
@@ -21584,7 +17817,7 @@ var NCSearch = function (_UNISYS$Component) {
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     /// REGISTER LISTENERS
     UDATA.OnAppStateChange('SESSION', _this.UpdateSession);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.SetPermissions);
+    UDATA.OnAppStateChange('LOCKSTATE', _this.urstate_LOCKSTATE);
     return _this;
   }
 
@@ -21592,7 +17825,7 @@ var NCSearch = function (_UNISYS$Component) {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       UDATA.AppStateChangeOff('SESSION', this.UpdateSession);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.SetPermissions);
+      UDATA.AppStateChangeOff('LOCKSTATE', this.urstate_LOCKSTATE);
     }
 
     /**
@@ -21611,16 +17844,14 @@ var NCSearch = function (_UNISYS$Component) {
       this.setState({ isLoggedIn: decoded.isValid });
     }
   }, {
-    key: 'SetPermissions',
-    value: function SetPermissions(data) {
-      var _this2 = this;
+    key: 'urstate_LOCKSTATE',
+    value: function urstate_LOCKSTATE(LOCKSTATE) {}
+    // DEPRECATED -- comment editing lock state is only relevant if you are editing your own comment
+    //   this.setState({
+    //   // uIsLockedByComment: LOCKSTATE.commentBeingEditedByMe  // NOT IMPLEMENTED
+    // });
 
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        _this2.setState({
-          uIsLockedByComment: data.commentBeingEditedByMe
-        });
-      });
-    }
+
     /**
      * The callback function (cb) is used to restore the selection point
      * otherwise the `value` state update will leave the cursor at the end of the field.
@@ -21642,7 +17873,7 @@ var NCSearch = function (_UNISYS$Component) {
   }, {
     key: 'UIOnSelect',
     value: function UIOnSelect(key, value, id) {
-      var _this3 = this;
+      var _this2 = this;
 
       var isLoggedIn = this.state.isLoggedIn;
       // match existing vs create new
@@ -21653,7 +17884,7 @@ var NCSearch = function (_UNISYS$Component) {
           UDATA.LocalCall('D3_SELECT_NODE', { nodeIDs: [id] });
         } else if (isLoggedIn) {
           // create a new node
-          _this3.UINewNode();
+          _this2.UINewNode();
         }
       }); // Enter will create a new node
     }
@@ -21718,7 +17949,7 @@ var NCSearch = function (_UNISYS$Component) {
 module.exports = NCSearch;
 });
 
-require.register("view/netcreate/components/NetGraph.jsx", function(exports, require, module) {
+require.register("view/netcreate/components/NCTemplate.jsx", function(exports, require, module) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21729,49 +17960,46 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/* eslint-disable no-alert */
 /*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
 
+  NC Template Editor View
+  (replaces `Template.jsx`)
 
-    DEPRECATED -- NCGraph replaces NetGraph
+  Displays a variety of tools to edit templates:
+  * Edit Node Types
+  * Edit Edge Types
+  * Download Current Template
+  * Create New Template
+  * Import Template from File
 
+  This is displayed on the More.jsx component/panel but can be moved
+  anywhere.
 
+  Templates can only be edited if:
+  * There are no nodes or edges being edited
+  * No one is trying to import data
+  * There are no other templates being edited
 
+  Conversely, if a Template is being edited, Import, Node and Edge editing
+  will be disabled.
 
+  ## BACKGROUND
 
-    NetGraph is a React wrapper for a D3 net graph component.
-
-    This component uses React to create the base dom element, but D3NetGraph
-    handles the data updates, rendering and animation updates.
-
-    React is explicitly prevented from updating the component (see
-    shouldComponentUpdate)
-
-    ## TO USE
-
-            <NetGraph/>
-
-    ## Why not use FauxDom?
-
-    https://lab.oli.me.uk/react-faux-dom-state/
-    This article suggests that maybe using force graphs with react-faux-dom
-    not quite work.
-        "If you want to animate things, use a React animation library (they’re
-         great and work fine with faux DOM), you have to find the React way to
-         do things, sadly some D3 concepts just don’t translate. If you want
-         some physics based graph full of state then you’re probably better
-         off keeping to the original way of embedding D3 in React, dropping
-         out of React and letting D3 mutate that element."
-    Indeed, in our testing, the animation updates were not optimal.
+    Template data is loaded by `server-database` DB.InitializeDatabase call.
 
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
 
 var React = require('react');
-var ReactDOM = require('react-dom');
-var ReactStrap = require('reactstrap');
-var Button = ReactStrap.Button;
-
-var D3NetGraph = require('./d3-simplenetgraph');
 var UNISYS = require('unisys/client');
+
+var _require = require('system/util/enum'),
+    EDITORTYPE = _require.EDITORTYPE;
+
+var TEMPLATE_MGR = require('../templateEditor-mgr');
+var LOCKMGR = require('../lock-mgr');
+var SCHEMA = require('../template-schema');
+var DATASTORE = require('system/datastore');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -21781,297 +18009,486 @@ var UDATA = null;
 
 /// REACT COMPONENT ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
 
-var NetGraph = function (_UNISYS$Component) {
-  _inherits(NetGraph, _UNISYS$Component);
+var NCTemplate = function (_UNISYS$Component) {
+  _inherits(NCTemplate, _UNISYS$Component);
 
-  function NetGraph(props) {
-    _classCallCheck(this, NetGraph);
+  function NCTemplate(props) {
+    _classCallCheck(this, NCTemplate);
 
-    var _this = _possibleConstructorReturn(this, (NetGraph.__proto__ || Object.getPrototypeOf(NetGraph)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (NCTemplate.__proto__ || Object.getPrototypeOf(NCTemplate)).call(this, props));
 
     _this.state = {
-      d3NetGraph: {},
-      nodeTypes: [],
-      edgeTypes: []
+      disableEdit: false,
+      isBeingEdited: false,
+      editScope: undefined, // Determines whether the user is tring to edit the
+      // template's root (everything in the template),
+      // or just focused on a subsection: nodeTypeOptions,
+      // edgeTypeOptions
+      tomlfile: undefined,
+      tomlfileStatus: '',
+      tomlfileErrors: undefined,
+      tomlfilename: 'loading...'
     };
+    _this.urstate_LOCKSTATE = _this.urstate_LOCKSTATE.bind(_this);
+    _this.loadEditor = _this.loadEditor.bind(_this);
+    _this.disableOrigLabelFields = _this.disableOrigLabelFields.bind(_this);
+    _this.releaseOpenEditor = _this.releaseOpenEditor.bind(_this);
+    _this.onNewTemplate = _this.onNewTemplate.bind(_this);
+    _this.onCurrentTemplateLoad = _this.onCurrentTemplateLoad.bind(_this);
+    _this.onEditNodeTypes = _this.onEditNodeTypes.bind(_this);
+    _this.onEditEdgeTypes = _this.onEditEdgeTypes.bind(_this);
+    _this.onTOMLfileSelect = _this.onTOMLfileSelect.bind(_this);
+    _this.onDownloadTemplate = _this.onDownloadTemplate.bind(_this);
+    _this.onSaveChanges = _this.onSaveChanges.bind(_this);
+    _this.onCancelEdit = _this.onCancelEdit.bind(_this);
 
-    _this.onZoomReset = _this.onZoomReset.bind(_this);
-    _this.onZoomIn = _this.onZoomIn.bind(_this);
-    _this.onZoomOut = _this.onZoomOut.bind(_this);
-    _this.updateLegend = _this.updateLegend.bind(_this);
-    _this.constructGraph = _this.constructGraph.bind(_this);
-
-    /// Initialize UNISYS DATA LINK for REACT
     UDATA = UNISYS.NewDataLink(_this);
-
-    _this.OnAppStateChange('TEMPLATE', _this.updateLegend);
-    UDATA.HandleMessage('CONSTRUCT_GRAPH', _this.constructGraph);
+    UDATA.OnAppStateChange('LOCKSTATE', _this.urstate_LOCKSTATE);
     return _this;
   } // constructor
 
-  /// CLASS PRIVATE METHODS /////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-  _createClass(NetGraph, [{
-    key: 'onZoomReset',
-    value: function onZoomReset() {
-      this.AppCall('ZOOM_RESET', {});
-    }
-  }, {
-    key: 'onZoomIn',
-    value: function onZoomIn() {
-      this.AppCall('ZOOM_IN', {});
-    }
-  }, {
-    key: 'onZoomOut',
-    value: function onZoomOut() {
-      this.AppCall('ZOOM_OUT', {});
-    }
-  }, {
-    key: 'updateLegend',
-    value: function updateLegend() {
+  _createClass(NCTemplate, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
       var _this2 = this;
 
-      // Update Legends
-      var TEMPLATE = this.AppState('TEMPLATE');
-      var nodeTypes = TEMPLATE.nodeDefs.type.options;
-      var edgeTypes = TEMPLATE.edgeDefs.type.options;
-      this.setState({ nodeTypes: nodeTypes, edgeTypes: edgeTypes }, function () {
-        _this2.forceUpdate(); // just once, needed to overcome shouldComponentUpdate override
+      var LOCKSTATE = UDATA.AppState('LOCKSTATE');
+      this.urstate_LOCKSTATE(LOCKSTATE);
+      DATASTORE.GetTemplateTOMLFileName().then(function (result) {
+        _this2.setState({ tomlfilename: result.filename });
+      });
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.releaseOpenEditor();
+      UDATA.AppStateChangeOff('LOCKSTATE', this.urstate_LOCKSTATE);
+    }
+
+    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  }, {
+    key: 'urstate_LOCKSTATE',
+    value: function urstate_LOCKSTATE(LOCKSTATE) {
+      // someone else might be editing a template or importing or editing node or edge
+      var disableEdit = LOCKSTATE.templateBeingEdited || LOCKSTATE.importActive || LOCKSTATE.nodeOrEdgeBeingEdited;
+      this.setState({ disableEdit: disableEdit });
+    }
+
+    /// METHODS /////////////////////////////////////////////////////////////////
+    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    /**
+     * Was Load JSON Editor
+     * -- If schema is not defined, the default schema is used
+     * -- If startval is not defined, an empty template created from the default
+     *    schema is used.
+     * @param {object} parms { schema, startval }
+     * @param {function} cb - Callback function
+     */
+
+  }, {
+    key: 'loadEditor',
+    value: function loadEditor(parms, cb) {
+      LOCKMGR.RequestEditLock(EDITORTYPE.TEMPLATE).then(function (data) {
+        console.error('NCTemplate.loadEditor NOT IMPLEMENTED', data);
       });
     }
 
-    /// REACT LIFECYCLE ///////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // When editing Node or Edge Type Options, the original label field should be
+    // disabled so they can't be edited
+    // ClassName added in template-schema.GetTypeEditorSchema()
 
   }, {
-    key: 'constructGraph',
-    value: function constructGraph() {
-      // first destroy any existing SVG graph elements
-      var netgraph = document.getElementById('netgraph');
-      if (netgraph) netgraph.remove();
-      // D3NetGraph Constructor
+    key: 'disableOrigLabelFields',
+    value: function disableOrigLabelFields() {
+      var origLabelFields = document.getElementsByClassName('disabledField');
+      // origLabelFields is a HTMLCollection, not an array
+      // FISHY FIX...is the use of arrow function here correct? The arrow function
+      // arg 'f' is shadowing the 'const f' in the for...of...
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
-      // eslint-disable-next-line react/no-find-dom-node
-      var el = ReactDOM.findDOMNode(this);
-      var TEMPLATE = this.AppState('TEMPLATE');
-      if (this.state.d3NetGraph && this.state.d3NetGraph.Deregister) {
-        // if d3NetGraph was previously created, deregister it so it stops receiving data updates
-        this.state.d3NetGraph.Deregister();
+      try {
+        for (var _iterator = origLabelFields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var f = _step.value;
+          (function (f) {
+            return f.setAttribute('disabled', 'disabled');
+          });
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
       }
-      var d3NetGraph = new D3NetGraph(el, TEMPLATE.nodeDefs);
-      var nodeTypes = TEMPLATE.nodeDefs.type.options;
-      var edgeTypes = TEMPLATE.edgeDefs.type.options;
-      this.setState({ d3NetGraph: d3NetGraph, nodeTypes: nodeTypes, edgeTypes: edgeTypes });
-      this.forceUpdate(); // just once, needed to overcome shouldComponentUpdate override
     }
-
-    /// REACT LIFECYCLE ///////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.constructGraph();
+    key: 'releaseOpenEditor',
+    value: function releaseOpenEditor() {
+      LOCKMGR.RequestEditUnlock(EDITORTYPE.TEMPLATE);
     }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   }, {
-    key: 'componentWillUnMount',
-    value: function componentWillUnMount() {
-      this.AppStateChangeOff('TEMPLATE', this.updateLegend);
-      UDATA.UnhandleMessage('CONSTRUCT_GRAPH', this.constructGraph);
+    key: 'onNewTemplate',
+    value: function onNewTemplate() {
+      this.setState({ editScope: 'root', isBeingEdited: true });
+      this.loadEditor(); // new blank template with default schema
     }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   }, {
-    key: 'shouldComponentUpdate',
-    value: function shouldComponentUpdate() {
-      // This prevents React from updating the component,
-      // allowing D3 to handle the simulation animation updates
-      // This is also necessary for D3 to handle the
-      // drag events.
-      return false;
+    key: 'onCurrentTemplateLoad',
+    value: function onCurrentTemplateLoad(e) {
+      var _this3 = this;
+
+      UDATA.LocalCall('EDIT_CURRENT_TEMPLATE') // nc-logic
+      .then(function (result) {
+        _this3.setState({ editScope: 'root', isBeingEdited: true });
+        _this3.loadEditor({ startval: result.template });
+      });
     }
+  }, {
+    key: 'onEditNodeTypes',
+    value: function onEditNodeTypes() {
+      var _this4 = this;
+
+      // REVIEW: Once this is working we'll need to use lock-mgr to manage locking
+      UDATA.LocalCall('EDIT_CURRENT_TEMPLATE') // nc-logic
+      .then(function (result) {
+        var schemaNodeTypeOptions = SCHEMA.NODETYPEOPTIONS;
+        // Wrap options in custom Schema to show Delete management UI
+        var nodeTypeEditorSchema = SCHEMA.GetTypeEditorSchema(schemaNodeTypeOptions);
+        var startval = { options: result.template.nodeDefs.type.options };
+        _this4.setState({ editScope: 'nodeTypeOptions', isBeingEdited: true });
+        _this4.loadEditor({
+          schema: nodeTypeEditorSchema,
+          startval: startval
+        }, function () {
+          _this4.disableOrigLabelFields();
+          // HACK: After a row is added, we need to also disable the newly added
+          // "Label" field -- the new label should be added in the "Change To" field
+          EDITOR.on('addRow', function (editor) {
+            _this4.disableOrigLabelFields();
+          });
+        });
+      });
+    }
+  }, {
+    key: 'onEditEdgeTypes',
+    value: function onEditEdgeTypes() {
+      var _this5 = this;
+
+      // REVIEW: Once this is working we'll need to use lock-mgr to manage locking
+      UDATA.LocalCall('EDIT_CURRENT_TEMPLATE') // nc-logic
+      .then(function (result) {
+        var schemaEdgeTypeOptions = SCHEMA.EDGETYPEOPTIONS;
+        // Wrap options in custom Schema to show Delete management UI
+        var edgeTypeEditorSchema = SCHEMA.GetTypeEditorSchema(schemaEdgeTypeOptions);
+        var startval = { options: result.template.edgeDefs.type.options };
+        _this5.setState({ editScope: 'edgeTypeOptions', isBeingEdited: true });
+        _this5.loadEditor({
+          schema: edgeTypeEditorSchema,
+          startval: startval
+        }, function () {
+          _this5.disableOrigLabelFields();
+          // HACK: After a row is added, we need to also disable the newly added
+          // "Label" field -- the new label should be added in the "Change To" field
+          EDITOR.on('addRow', function (editor) {
+            _this5.disableOrigLabelFields();
+          });
+        });
+      });
+    }
+  }, {
+    key: 'onTOMLfileSelect',
+    value: function onTOMLfileSelect(e) {
+      var _this6 = this;
+
+      // import
+      var tomlfile = e.target.files[0];
+      TEMPLATE_MGR.ValidateTOMLFile({ tomlfile: tomlfile }).then(function (result) {
+        if (result.isValid) {
+          console.log('got template', result.templateJSON);
+          _this6.onSaveChanges(result.templateJSON);
+        } else {
+          var errorMsg = result.error;
+          _this6.setState({
+            tomlfile: undefined,
+            tomlfileStatus: 'Invalid template file!!!',
+            tomlfileErrors: errorMsg
+          });
+          _this6.releaseOpenEditor();
+        }
+      });
+    }
+  }, {
+    key: 'onDownloadTemplate',
+    value: function onDownloadTemplate() {
+      TEMPLATE_MGR.DownloadTemplate();
+    }
+  }, {
+    key: 'onSaveChanges',
+    value: function onSaveChanges(templateJSON) {
+      var _this7 = this;
+
+      TEMPLATE_MGR.SaveTemplateToFile(templateJSON).then(function (result) {
+        console.error('onSaveChanges', result, templateJSON);
+        if (!result.OK) {
+          alert(result.info);
+        } else {
+          alert('Template Saved: ' + templateJSON.name);
+          _this7.setState({ isBeingEdited: false });
+        }
+        _this7.releaseOpenEditor();
+      });
+    }
+  }, {
+    key: 'onCancelEdit',
+    value: function onCancelEdit() {
+      this.setState({ isBeingEdited: false });
+      this.releaseOpenEditor();
+    }
+
+    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
     /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   }, {
     key: 'render',
     value: function render() {
       var _state = this.state,
-          nodeTypes = _state.nodeTypes,
-          edgeTypes = _state.edgeTypes;
+          disableEdit = _state.disableEdit,
+          isBeingEdited = _state.isBeingEdited,
+          tomlfile = _state.tomlfile,
+          tomlfileStatus = _state.tomlfileStatus,
+          tomlfileErrors = _state.tomlfileErrors,
+          tomlfilename = _state.tomlfilename;
 
-      return React.createElement(
-        'div',
-        { style: { height: '100%' } },
-        React.createElement(
+      var editorjsx = void 0;
+
+      if (disableEdit && !isBeingEdited) {
+        // Node or Edge is being edited, show disabled message
+        editorjsx = React.createElement(
           'div',
-          { style: { margin: '10px 0 0 10px' } },
+          null,
           React.createElement(
-            'div',
-            { className: 'tooltipAnchor' },
+            'p',
+            null,
             React.createElement(
-              'span',
-              { style: { fontSize: '9px' } },
-              React.createElement(
-                'div',
-                { className: 'badge' },
-                '?'
-              ),
-              'NETGRAPH for ',
-              this.AppState('TEMPLATE').name
-            ),
+              'i',
+              null,
+              'Templates cannot be edited while someone is editing a node, edge, or template, or importing data.'
+            )
+          ),
+          React.createElement(
+            'p',
+            null,
             React.createElement(
-              'span',
-              { style: { fontSize: '12px' }, className: 'tooltiptext' },
-              this.AppState('TEMPLATE').description
+              'i',
+              null,
+              'Please finish editing and try again.'
             )
           )
+        );
+      } else {
+        // OK to Edit, show edit buttons
+        editorjsx = React.createElement(
+          'div',
+          { hidden: isBeingEdited },
+          React.createElement(
+            'p',
+            null,
+            React.createElement(
+              'b',
+              null,
+              'PROCEED WITH CAUTION!'
+            ),
+            ': Editing templates will modify the data in your dataset and may leave your dataset in an unusable state. Only',
+            ' ',
+            React.createElement(
+              'b',
+              null,
+              'expert users'
+            ),
+            ' who know how the data is set up should do this.'
+          ),
+          React.createElement(
+            'div',
+            {
+              style: {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                columnGap: '10px',
+                rowGap: '5px'
+              }
+            },
+            React.createElement(
+              'i',
+              { className: 'small text-muted' },
+              'Edit Current Template Options'
+            ),
+            React.createElement('br', null),
+            React.createElement(
+              'button',
+              { size: 'sm', onClick: this.onEditNodeTypes, disabled: true },
+              'Edit Node Types'
+            ),
+            React.createElement(
+              'button',
+              { size: 'sm', onClick: this.onEditEdgeTypes, disabled: true },
+              'Edit Edge Types'
+            )
+          ),
+          React.createElement(
+            'div',
+            null,
+            React.createElement(
+              'div',
+              { style: { color: 'red' } },
+              '[Edit Node Types] and [Edit Edge Types] are currently disabled because JSON Editor has been deprecated. Stay tuned for return of that functionality.'
+            ),
+            React.createElement('p', null),
+            React.createElement('p', null),
+            React.createElement('hr', null),
+            React.createElement('hr', null),
+            React.createElement(
+              'p',
+              null,
+              'ADVANCED USERS ONLY'
+            ),
+            React.createElement('p', null),
+            React.createElement(
+              'div',
+              null,
+              React.createElement(
+                'i',
+                { className: 'small text-muted' },
+                'Import TOML template (replace existing template)'
+              ),
+              React.createElement('br', null),
+              React.createElement(
+                'label',
+                null,
+                React.createElement('input', {
+                  type: 'file',
+                  accept: 'text/toml',
+                  id: 'tomlfileInput',
+                  onChange: this.onTOMLfileSelect
+                }),
+                '\xA0',
+                React.createElement(
+                  'i',
+                  null,
+                  tomlfileStatus
+                ),
+                React.createElement('br', null),
+                tomlfileErrors && React.createElement(
+                  'span',
+                  { style: { color: 'red' } },
+                  tomlfileErrors
+                )
+              )
+            ),
+            React.createElement('p', null),
+            React.createElement(
+              'i',
+              { className: 'small text-muted' },
+              'Current Template'
+            ),
+            React.createElement('br', null),
+            React.createElement(
+              'button',
+              { size: 'sm', onClick: this.onDownloadTemplate },
+              'Download Current Template'
+            ),
+            React.createElement('p', null),
+            React.createElement(
+              'i',
+              { className: 'small text-muted' },
+              'Create New Template'
+            ),
+            React.createElement('br', null),
+            React.createElement(
+              'button',
+              { size: 'sm', onClick: this.onNewTemplate, disabled: true },
+              'New Template'
+            ),
+            React.createElement('br', null),
+            React.createElement(
+              'div',
+              { style: { color: 'red' } },
+              '[New Template] is disabled because JSON Editor has been deprecated. Stay tuned for return of that functionality.'
+            ),
+            React.createElement('p', null)
+          ),
+          React.createElement('hr', null)
+        );
+      }
+      return React.createElement(
+        'div',
+        {
+          style: {
+            backgroundColor: '#0003',
+            padding: '10px 20px'
+          }
+        },
+        React.createElement(
+          'h4',
+          null,
+          'Template Editor'
         ),
         React.createElement(
-          'div',
-          {
-            style: { position: 'absolute', right: '10px', width: '50px', zIndex: 1001 }
-          },
+          'p',
+          null,
           React.createElement(
-            Button,
-            {
-              outline: true,
-              onClick: this.onZoomIn,
-              style: { width: '35px', backgroundColor: '#fff', opacity: '0.8' }
-            },
-            '+'
+            'label',
+            null,
+            'Current Template File Name:'
           ),
-          '\xA0',
+          ' ',
           React.createElement(
-            Button,
-            {
-              outline: true,
-              onClick: this.onZoomReset,
-              style: { width: '35px', backgroundColor: '#fff', opacity: '0.8' }
-            },
-            '\u2022'
-          ),
-          '\xA0',
-          React.createElement(
-            Button,
-            {
-              outline: true,
-              onClick: this.onZoomOut,
-              style: { width: '35px', backgroundColor: '#fff', opacity: '0.8' }
-            },
-            '-'
+            'code',
+            null,
+            tomlfilename
           )
         ),
+        editorjsx,
         React.createElement(
           'div',
-          {
-            style: {
-              position: 'absolute',
-              bottom: '40px',
-              marginLeft: '10px',
-              marginBottom: '15px',
-              fontSize: '10px'
-            }
-          },
+          { hidden: !isBeingEdited },
           React.createElement(
-            'div',
-            { style: { display: 'inline-block', paddingRight: '2em' } },
-            'KEY'
+            'button',
+            { onClick: this.onCancelEdit, size: 'sm' },
+            'Cancel'
           ),
-          React.createElement('br', null),
+          '\xA0',
           React.createElement(
-            'div',
-            { style: { display: 'inline-block', paddingRight: '2em' } },
-            ' ',
-            '- Node Types:'
+            'button',
+            { onClick: this.onSaveChanges, size: 'sm', color: 'primary' },
+            'Save Changes'
           ),
-          nodeTypes.map(function (type, i) {
-            return React.createElement(
-              'div',
-              { key: i, className: 'tooltipAnchor' },
-              React.createElement(
-                'div',
-                {
-                  style: {
-                    display: 'inline-block',
-                    paddingRight: '2em',
-                    lineHeight: '10px'
-                  }
-                },
-                React.createElement('div', {
-                  style: {
-                    display: 'inline-block',
-                    width: '10px',
-                    height: '8px',
-                    backgroundColor: type.color
-                  }
-                }),
-                '\xA0',
-                type.label === '' ? 'No Type Selected' : type.label
-              ),
-              React.createElement(
-                'span',
-                { className: 'tooltiptextabove' },
-                type.label === '' ? 'No Type Selected' : type.help || type.label
-              )
-            );
-          }),
-          React.createElement('br', null),
-          React.createElement(
-            'div',
-            { style: { display: 'inline-block', paddingRight: '2em' } },
-            ' ',
-            '- Edge Types:'
-          ),
-          edgeTypes.map(function (type, i) {
-            return React.createElement(
-              'div',
-              { key: i, className: 'tooltipAnchor' },
-              React.createElement(
-                'div',
-                {
-                  style: {
-                    display: 'inline-block',
-                    paddingRight: '2em',
-                    lineHeight: '10px'
-                  }
-                },
-                React.createElement('div', {
-                  style: {
-                    display: 'inline-block',
-                    width: '10px',
-                    height: '8px',
-                    backgroundColor: type.color
-                  }
-                }),
-                '\xA0',
-                type.label === '' ? 'No Type Selected' : type.label
-              ),
-              React.createElement(
-                'span',
-                { className: 'tooltiptextabove' },
-                type.label === '' ? 'No Type Selected' : type.help || type.label
-              )
-            );
-          })
-        )
+          React.createElement('hr', null)
+        ),
+        React.createElement('div', { id: 'editor', hidden: !isBeingEdited })
       );
     }
   }]);
 
-  return NetGraph;
-}(UNISYS.Component); // class NetGraph
+  return NCTemplate;
+}(UNISYS.Component);
 
 /// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-module.exports = NetGraph;
+module.exports = NCTemplate;
 });
 
 require.register("view/netcreate/components/NodeDetail.jsx", function(exports, require, module) {
@@ -22266,3600 +18683,6 @@ var NodeDetail = function (_UNISYS$Component) {
 module.exports = NodeDetail;
 });
 
-require.register("view/netcreate/components/NodeSelector.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/* eslint-disable complexity */
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-  NodeSelector is a form for searching for, viewing, selecting, and editing
-  Node information.
-
-  NodeSelector does not modify any data.  It passes all events (text updates,
-  highlights, and suggestion selections) up to nc-logic. it
-  should process the events and update the data accordingly.  The
-  updated data is then rendered by NodeSelector.
-
-  ## USAGE
-
-    <NodeSelector/>
-
-  ## TECHNICAL DESCRIPTION
-
-  NodeSelector handles three basic functions:
-
-  1. Display the current SELECTION.nodes[0]
-  2. Support input of node fields
-  3. Send updated node field data to SOURCE_UPDATE
-
-  As the user edits the form, we locally save the changes and send it to UNISYS
-  when the user clicks "SAVE"
-
-  The currently selected/editing node is set via SELECTION.nodes.
-
-  Updates are sent to UNISYS via SOURCE_UPDATE.
-
-  The AutoComplete search field is handled a little differently from the other
-  input fields because it is independent of NodeSelector.  In order to keep
-  NodeSelector's internal representation of form data up-to-date, we rely on
-  the SELECTION updates' searchLabel field to update the label.
-
-  There are different levels of write-access:
-
-    isLocked        Nodes can be selected for viewing, but editing
-                    cannot be enabled.
-
-    isStandalone    Nodes can be selected for viewing, but editing
-                    cannot be enabled.
-
-    disableEdit     Template is being edited, disable "Edit Node" button
-
-    isBeingEdited   The form fields are active and text can be changed.
-
-
-  Delete Button
-  The Delete button is only displayed for an admin user.  Right now we are detecting
-  this by displaying it only when the user is on `localhost`,
-
-
-  ## STATES
-
-    formData        Node data that is shown in the form
-
-    isLocked        If true (defauilt), nodes can be displayed, but
-                    "Add New Node" and "Edit Node" buttons are hidden.
-                    The state is unlocked when the user logs in.
-
-    isEditable      If true, form fields are enabled for editing
-                    If false, form is readonly
-
-    dbIsLocked
-                    If someone else has selected the node for editing,
-                    this flag will cause the dbIsLockedMessage
-                    to be displayed.  This is only checked when
-                    the user clicks "Edit".
-
-
-  ## TESTING
-
-  Edit Existing Node
-
-    1. Type 'ah'
-          * Nodes on graph should hilite
-          * Suggestions should be displayed
-          * "Add New Node" should be shown.
-    2. Highlight 'Ah Sing'
-          * Ah Sing node detail should be shown
-    3. Unhighlight all selections (move mouse out)
-          * NodeDetail should disappear
-    4. Click 'Ah Sing'
-          * 'Ah Sing's details should load in form
-          * "Edit Node" button should be shown.
-    5. Click "Edit Node"
-          * "Save" should be shown
-          * All fields should be enabled
-    6. Edit 'Ah Sing' to 'Ah Sing A'
-          * Form should not change
-          * Hilited graph node should go away
-    7. Edit fields (add text)
-    8. Click "Save"
-          * Form should clear
-    9. Check 'Ah Sing' contents to make sure changes were saved
-
-  Create New Node
-
-    1. Type 'ah'
-          * Nodes on graph should hilite
-          * Suggestions should be displayed
-          * "Add New Node" should be shown.
-    2. Click 'Add New Node'
-          * Fields should be enabled
-          * A new ID should be added
-          * "Save" button should appear
-    3. Edit fields
-    4. Click "Save"
-          * New node should appear in graph
-          * The node should have the label you added 'ah'
-    5. Select the node to verify the contents
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var mdReact = require('markdown-react-js');
-var mdEmoji = require('markdown-it-emoji');
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var Button = ReactStrap.Button,
-    Col = ReactStrap.Col,
-    Form = ReactStrap.Form,
-    FormGroup = ReactStrap.FormGroup,
-    FormFeedback = ReactStrap.FormFeedback,
-    FormText = ReactStrap.FormText,
-    Label = ReactStrap.Label,
-    Input = ReactStrap.Input;
-
-var AutoComplete = require('./AutoComplete');
-var NodeDetail = require('./NodeDetail');
-var EdgeEditor = require('./EdgeEditor');
-
-var UNISYS = require('unisys/client');
-var DATASTORE = require('system/datastore');
-var SETTINGS = require('settings');
-
-var _require = require('system/util/enum'),
-    EDITORTYPE = _require.EDITORTYPE;
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-var DBG = false;
-var PR = 'NodeSelector';
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var thisIdentifier = 'nodeSelector'; // SELECTION identifier
-var isAdmin = SETTINGS.IsAdmin();
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var NodeSelector = function (_UNISYS$Component) {
-  _inherits(NodeSelector, _UNISYS$Component);
-
-  function NodeSelector(props) {
-    _classCallCheck(this, NodeSelector);
-
-    var _this = _possibleConstructorReturn(this, (NodeSelector.__proto__ || Object.getPrototypeOf(NodeSelector)).call(this, props));
-
-    var TEMPLATE = _this.AppState('TEMPLATE');
-    _this.state = {
-      nodeDefs: TEMPLATE.nodeDefs,
-      citation: TEMPLATE.citation,
-      duplicateWarning: TEMPLATE.duplicateWarning,
-      nodeIsLockedMessage: TEMPLATE.nodeIsLockedMessage,
-      editLockMessage: '',
-      hideDeleteNodeButton: TEMPLATE.hideDeleteNodeButton,
-      formData: {
-        label: '',
-        type: '',
-        info: '',
-        provenance: '',
-        comments: '',
-        notes: '',
-        degrees: 0,
-        id: '', // Always convert this to a Number
-        isNewNode: true
-      },
-      edges: [],
-      isLocked: true,
-      isStandalone: false,
-      edgesAreLocked: false,
-      dbIsLocked: false,
-      disableEdit: false,
-      isBeingEdited: false,
-      isValid: false,
-      isDuplicateNodeLabel: false,
-      duplicateNodeID: '',
-      replacementNodeID: '',
-      isValidReplacementNodeID: true,
-      hideModal: true
-    };
-    // Bind functions to this component's object context
-    _this.clearForm = _this.clearForm.bind(_this);
-    _this.setTemplate = _this.setTemplate.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.setEditState = _this.setEditState.bind(_this);
-    _this.releaseOpenEditor = _this.releaseOpenEditor.bind(_this);
-    _this.getNewNodeID = _this.getNewNodeID.bind(_this);
-    _this.handleSelection = _this.handleSelection.bind(_this);
-    _this.onStateChange_SEARCH = _this.onStateChange_SEARCH.bind(_this);
-    _this.onStateChange_SESSION = _this.onStateChange_SESSION.bind(_this);
-    _this.loadFormFromNode = _this.loadFormFromNode.bind(_this);
-    _this.validateForm = _this.validateForm.bind(_this);
-    _this.onLabelChange = _this.onLabelChange.bind(_this);
-    _this.onTypeChange = _this.onTypeChange.bind(_this);
-    _this.onNotesChange = _this.onNotesChange.bind(_this);
-    _this.onInfoChange = _this.onInfoChange.bind(_this);
-    _this.onProvenanceChange = _this.onProvenanceChange.bind(_this);
-    _this.onCommentsChange = _this.onCommentsChange.bind(_this);
-    _this.onReplacementNodeIDChange = _this.onReplacementNodeIDChange.bind(_this);
-    _this.onNewNodeButtonClick = _this.onNewNodeButtonClick.bind(_this);
-    _this.onDeleteButtonClick = _this.onDeleteButtonClick.bind(_this);
-    _this.onEditButtonClick = _this.onEditButtonClick.bind(_this);
-    _this.onCiteButtonClick = _this.onCiteButtonClick.bind(_this);
-    _this.onCloseCiteClick = _this.onCloseCiteClick.bind(_this);
-    _this.dateFormatted = _this.dateFormatted.bind(_this);
-    _this.requestEditNode = _this.requestEditNode.bind(_this);
-    _this.editNode = _this.editNode.bind(_this);
-    _this.onAddNewEdgeButtonClick = _this.onAddNewEdgeButtonClick.bind(_this);
-    _this.onCancelButtonClick = _this.onCancelButtonClick.bind(_this);
-    _this.onEditOriginal = _this.onEditOriginal.bind(_this);
-    _this.onCloseDuplicateDialog = _this.onCloseDuplicateDialog.bind(_this);
-    _this.onSubmit = _this.onSubmit.bind(_this);
-    _this.checkUnload = _this.checkUnload.bind(_this);
-    _this.doUnload = _this.doUnload.bind(_this);
-    _this.onForceUnlock = _this.onForceUnlock.bind(_this);
-
-    // NOTE: assign UDATA handlers AFTER functions have been bind()'ed
-    // otherwise they will lose context
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** SESSION is called by SessionSHell when the ID changes
-      set system-wide. data: { classId, projId, hashedId, groupId, isValid }
-    */
-    _this.OnAppStateChange('SESSION', _this.onStateChange_SESSION);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    _this.OnAppStateChange('SELECTION', _this.handleSelection);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    _this.OnAppStateChange('SEARCH', _this.onStateChange_SEARCH);
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // Handle Template updates
-    _this.OnAppStateChange('TEMPLATE', _this.setTemplate);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.setEditState);
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** If someone on the network updates a node or edge, SOURCE_UPDATE is broadcast.
-      We catch it here and update the selection if the node we're displaying matches
-      the updated node.
-      This basically handles updated Node labels in both the main node and in related
-      edges.
-    */
-    UDATA.HandleMessage('SOURCE_UPDATE', function (data) {
-      var needsUpdate = false;
-      var currentNodeID = _this.state.formData.id;
-      var updatedNodeID = data.node.id;
-      if (currentNodeID === updatedNodeID) needsUpdate = true;
-      _this.state.edges.forEach(function (edge) {
-        if (edge.source === updatedNodeID || edge.target === updatedNodeID) needsUpdate = true;
-      });
-      if (needsUpdate) {
-        if (DBG) console.log('NodeSelector.SOURCE_UPDATE triggering SOURCE_SELECT with', currentNodeID);
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [currentNodeID] });
-      }
-    });
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** NODE_EDIT is usually requested by NodeTable. Only allow edit if the
-     *  request has a valid nodeID Ignore the request if we're already editing
-     *  a node.
-     */
-    UDATA.HandleMessage('NODE_EDIT', function (data) {
-      var _this$state = _this.state,
-          isBeingEdited = _this$state.isBeingEdited,
-          isLocked = _this$state.isLocked;
-
-      if (data.nodeID !== undefined && typeof data.nodeID === 'number' && !isBeingEdited && !isLocked) {
-        _this.requestEditNode(data.nodeID);
-      } else {
-        if (typeof data.nodeID !== 'number') console.warn('NodeSelector.NODE_EDIT called with bad data.nodeID:', data.nodeID);
-        if (isBeingEdited) console.warn('NodeSelector.NODE_EDIT denied because isBeingEdited', isBeingEdited);
-        if (isLocked) console.warn('NodeSelector.NODE_EDIT denied because isLocked', isLocked);
-      }
-    });
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** This will add any new edges that have links to the currently selected node
-      to the list of edges in the NodeSelector.
-      IMPORTANT: We ignore edge updates if an edge is currently being edited to
-      prevent edge updates from clobbering the edit.  The list of edges is
-      updated after the edit is completed, so new edges are added then.
-    */
-    UDATA.HandleMessage('EDGE_UPDATE', function (data) {
-      if (DBG) console.log('NodeSelector: Received EDGE_UPDATE edgesAreLocked', _this.state.edgesAreLocked, data);
-      var currentNodeID = _this.state.formData.id;
-      /* EDGE_UPDATES are triggered under two circumnstances:
-           a. When an existing edge is updated
-           b. When a new edge is created
-           The call sequence is:
-           1. EdgeEditor.Submit calls datastore.DB_UPDATE
-           2. datastore.DB_UPDATE calls server.SRV_DBUPDATE
-           3. server.SRV_DBUPDATE broadcasts EDGE_UPDATE
-              At this point, edge.source and edge.target are broadcast as Numbers.
-           4. EDGE_UPDATE is handled by:
-              a. nc-logic.handleMessage("EDGE_UPDATE"), and
-              b. NodeSelector.handlemMessage("EDGE_UPDATE") (this method)
-           5. nc-logic.handleMessage("EDGE_UPDATE") processes the data and
-              actually adds a new edge or updates the existing edge in D3DATA.
-              *** The key is that there is a difference in how it's handled.
-              For updates, the edge is simply updated.
-              But for new edges, the edge object is updated and then pushed to D3DATA.
-           6. When the edge object is pushed to D3DATA, D3 processes it and converts
-              edge.source and edge.target into node objects.
-              *** By the time NodeSelector receives the edge data, edge.source and
-              edge.target are node objects, not numbers.
-           So this method needs to account for the fact that edge.source and edge.target might be
-           received as either numbers or objects.
-        */
-      var sourceID = typeof data.edge.source === 'number' ? data.edge.source : data.edge.source.id;
-      var targetID = typeof data.edge.target === 'number' ? data.edge.target : data.edge.target.id;
-      var updatedNodeIDs = [sourceID, targetID];
-      if (updatedNodeIDs.includes(currentNodeID) && !_this.state.edgesAreLocked) {
-        if (DBG) console.log('NodeSelector: EDGE UPDATE: Calling SOURCE_SELECT!');
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [currentNodeID] });
-      }
-    });
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handler for canceling a new edge
-      Called by EdgeEditor
-      Normally we would just use SOURCE_SELECT to reload the node.
-      There are two issues with just using SOURCE_SELECT:
-      1. This special handler is necessary because the newly added edge
-         component is not affected by updates to this.state.edges.  Its key
-         is not in the this.state.edges array, so it is not properly cleared
-         even if we use SOURCE_SELECT to reset the node.
-      2. In order for `handleSelection` to properly reload all the edges,
-         two states have to be cleared first: this node needs to NOT be
-         the ACTIVEAUTOCOMPLETE field, and this node's edges need to be
-         EDGEEDIT_UNLOCKed.  The problem is that these states are set
-         asynchronously, so `handleSelection` ends up getting called
-         before the states are updated.
-      To fix this, we use setState's callback to trigger the reload.
-       Call this with no data object to trigger deselect.  Used when
-      source is deleted by admin user.
-    */
-    UDATA.HandleMessage('EDGE_NEW_CANCEL', function (data) {
-      if (data.nodeID === _this.state.formData.id) {
-        _this.setState({ edgesAreLocked: false }, function () {
-          // Do this in callback, otherwise, edges are not unlocked
-          // and the source_select never triggers an update
-          UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [_this.state.formData.id] });
-        });
-      } else {
-        // Edge is requesting a SOURCE deselect because the source
-        // node was deleted by admin
-        _this.setState({ edgesAreLocked: false }, function () {
-          // Do this in callback, otherwise, edges are not unlocked
-          // and the source_select never triggers an update
-          UDATA.LocalCall('SOURCE_SELECT'); // Deselect
-        });
-      }
-    });
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // This handler is not necessary because SELECTION event clears the form
-    // UDATA.HandleMessage("NODE_DELETE", (data) => {
-    // });
-    // This handler is not necessary because SELECTION event will update the edges
-    // UDATA.HandleMessage("EDGE_DELETE", (data) => {
-    // });
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** This keeps track of whether an edge is being edited to prevent network
-      updates from clobbering an in-process edit.
-    */
-    UDATA.HandleMessage('EDGEEDIT_LOCK', function (data) {
-      _this.setState({ edgesAreLocked: true });
-    });
-    UDATA.HandleMessage('EDGEEDIT_UNLOCK', function (data) {
-      _this.setState({ edgesAreLocked: false });
-    });
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Prevent editing if server is disconnected.
-      This is necessary to hide the "Add New Node" button.
-    */
-    _this.OnDisconnect(function () {
-      console.log('NodeSelector got disconnect');
-      _this.setState({ isLocked: true });
-    });
-    return _this;
-  } // constructor
-
-  /// UTILITIES /////////////////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /** Clear the form with optional label
-   */
-
-
-  _createClass(NodeSelector, [{
-    key: 'clearForm',
-    value: function clearForm() {
-      var label = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-      this.releaseOpenEditor();
-      this.setState({
-        formData: {
-          label: label,
-          type: '',
-          info: '',
-          provenance: '',
-          comments: '',
-          notes: '',
-          degrees: 0,
-          id: '', // Always convert this to a Number
-          isNewNode: true
-        },
-        edges: [],
-        dbIsLocked: false,
-        isBeingEdited: false,
-        isValid: false,
-        isDuplicateNodeLabel: false,
-        duplicateNodeID: '',
-        replacementNodeID: '',
-        isValidReplacementNodeID: true,
-        hideModal: true
-      });
-    } // clearFform
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'setTemplate',
-    value: function setTemplate(data) {
-      this.setState({ nodeDefs: data.nodeDefs });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Disable Node Edit if a Template is being edited
-     */
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this2 = this;
-
-      // disable edit if template is being edited
-      this.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        _this2.setEditState(data);
-      });
-    }
-  }, {
-    key: 'setEditState',
-    value: function setEditState(data) {
-      var disableEdit = data.templateBeingEdited || data.importActive;
-      var TEMPLATE = this.AppState('TEMPLATE');
-      var editLockMessage = '';
-      if (data.templateBeingEdited) editLockMessage = TEMPLATE.templateIsLockedMessage;
-      if (data.importActive) editLockMessage = TEMPLATE.importIsLockedMessage;
-      this.setState({ disableEdit: disableEdit, editLockMessage: editLockMessage });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Deregister as an open editor
-      Remove 'node' from OPENEDITORS
-    */
-
-  }, {
-    key: 'releaseOpenEditor',
-    value: function releaseOpenEditor() {
-      // NOTE: We only deregister if we're currently actively editing
-      //       otherwise we might inadvertently deregister
-      if (this.state.isBeingEdited) this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Return a new unique ID
-      REVIEW: Should this be in nc-logic?
-      ANSWER: YES. There shouldn't be ANY data-synthesis code in a component!
-      HACK: Replace this code with a server call
-    */
-  }, {
-    key: 'getNewNodeID',
-    value: function getNewNodeID() {
-      throw new Error("Don't use getNewNodeID() because it is not network safe");
-      /*/
-        let highestID = 0;
-        let ids  = this.AppState('D3DATA').nodes.map( node => { return Number(node.id) } );
-        if (ids.length>0) {
-          highestID = ids.reduce( (a,b) => { return Math.max(a,b) } );
-        }
-        // REVIEW: Should ids be strings or numbers?
-        // Right now most edge ids are strings
-        return (highestID+1).toString();
-        /*/
-    } // getNewNodeID
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Return a new unique ID
-     */
-
-  }, {
-    key: 'getNewEdgeID',
-    value: function getNewEdgeID() {
-      throw new Error("Don't use getNewEdgeID() because it is not network safe");
-      /*/
-        let highestID = 0;
-        let ids  = this.AppState('D3DATA').edges.map( edge => { return Number(edge.id) } )
-        if (ids.length>0) {
-          highestID = ids.reduce( (a,b) => { return Math.max(a,b) } );
-        }
-        // REVIEW: Should ids be strings or numbers?
-        // Right now most edge ids are strings
-        return (highestID+1).toString();
-        /*/
-    } // getNewEdgeID
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle updated SELECTION
-     */
-
-  }, {
-    key: 'handleSelection',
-    value: function handleSelection(data) {
-      if (DBG) console.log('NodeSelector: got state SELECTION', data);
-
-      // Only update if we are the currently active field
-      // otherwise an Edge might be active
-
-      var _AppState = this.AppState('ACTIVEAUTOCOMPLETE'),
-          activeAutoCompleteId = _AppState.activeAutoCompleteId;
-
-      if (activeAutoCompleteId !== thisIdentifier && activeAutoCompleteId !== 'search') return;
-
-      if (!this.state.isBeingEdited && !this.state.edgesAreLocked) {
-        if (data.nodes && data.nodes.length > 0) {
-          // A node was selected, so load it
-          // We're not editing, so it's OK to update the form
-          if (DBG) console.log('NodeSelector: updating selection', data.nodes[0]);
-          // grab the first node
-          var node = data.nodes[0];
-          this.loadFormFromNode(node);
-
-          // Load edges
-          var thisId = this.state.formData.id;
-          // -- First, sort edges by source, then target
-          data.edges.sort(function (a, b) {
-            // same source label, sort on target
-            if (a.sourceLabel === b.sourceLabel) {
-              if (a.targetLabel < b.targetLabel) {
-                return -1;
-              }
-              if (a.targetLabel > b.targetLabel) {
-                return 1;
-              }
-            }
-            // Always list `this` node first
-            if (a.source === thisId) {
-              return -1;
-            }
-            if (b.source === thisId) {
-              return 1;
-            }
-            // Otherwise sort on source
-            if (a.sourceLabel < b.sourceLabel) {
-              return -1;
-            }
-            if (a.sourceLabel > b.sourceLabel) {
-              return 1;
-            }
-
-            return 0;
-          });
-          this.setState({
-            edges: data.edges
-          });
-          // Exit now because we just selected a node and don't want to
-          // override the form label with form updates.  Otherwise, the
-          // the form label is overriden with old form data.
-          return;
-        } else {
-          if (DBG) console.log('NodeSelector: No data.nodes, so clearing form');
-          this.clearForm();
-        }
-      } else {
-        // We're already editing, and another selection has come in.
-        // What should we do?
-        // * force exit?
-        // * prevent load?
-        // * prevent selection?
-        if (DBG) console.log('NodeSelector: Already editing, ignoring SELECTION');
-      }
-
-      this.validateForm();
-    } // handleSelection
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle change in SESSION data
-      Called both by componentWillMount() and AppStateChange handler.
-      The 'SESSION' state change is triggered in two places in SessionShell during
-      its handleChange() when active typing is occuring, and also during
-      SessionShell.componentWillMount()
-    */
-
-  }, {
-    key: 'onStateChange_SESSION',
-    value: function onStateChange_SESSION(decoded) {
-      var update = { isLocked: !decoded.isValid };
-      this.setState(update);
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle updated SEARCH
-      AutoComplete handles its internal updates, but we do need to validate the form
-      When AutoComplete's input field is updated, it sends a SOURCE_SEARCH to ACL
-      which returns the updated value in SEARCH state.  AutoComplete updates
-      the input field using SEARCH.  We need to update the form data here
-      and validate it for NodeSelector.
-    */
-
-  }, {
-    key: 'onStateChange_SEARCH',
-    value: function onStateChange_SEARCH(data) {
-      // Only update if we are the currently active field
-      // otherwise an Edge might be active
-      var _AppState2 = this.AppState('ACTIVEAUTOCOMPLETE'),
-          activeAutoCompleteId = _AppState2.activeAutoCompleteId;
-
-      if (activeAutoCompleteId !== thisIdentifier) return;
-      var formData = this.state.formData;
-      formData.label = data.searchLabel;
-
-      // "Duplicate Node Label" is only a warning, not an error.
-      // We want to allow students to enter a duplicate label if necessary
-      // This is a case insensitive search
-      var isDuplicateNodeLabel = false;
-      var duplicateNodeID = void 0;
-      if (formData.label !== '' && this.AppState('NCDATA').nodes.find(function (node) {
-        if (node.id !== formData.id) {
-          if (node.label) {
-            if (node.label.localeCompare(formData.label, 'en', {
-              usage: 'search',
-              sensitivity: 'base'
-            }) === 0) {
-              duplicateNodeID = node.id;
-              return true;
-            }
-            return false;
-          } else {
-            console.log('error processing node: ' + node.id + ' in netc-app.js\n');
-            return false;
-          }
-        }
-      })) {
-        isDuplicateNodeLabel = true;
-      }
-
-      this.setState({
-        formData: formData,
-        isDuplicateNodeLabel: isDuplicateNodeLabel,
-        duplicateNodeID: duplicateNodeID
-      });
-
-      this.validateForm();
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Copy the node data passed via SELECTION in the form
-     */
-
-  }, {
-    key: 'loadFormFromNode',
-    value: function loadFormFromNode(newNode) {
-      if (DBG) console.log('NodeSelector.loadFormFromNode', newNode);
-      if (newNode === undefined) {
-        throw 'NodeSelector.loadFormFromNode called with undefined newNode!';
-      }
-      // Clean data
-      // REVIEW: Basic data structure probably needs updating
-      var node = { attributes: {} };
-      if (newNode.attributes === undefined) {
-        newNode.attributes = {};
-      }
-      // Backward Compatibility: Always convert ids to a Number or loki lookups will fail.
-      if (isNaN(newNode.id)) {
-        newNode.id = parseInt(newNode.id);
-      }
-      //
-      node.label = newNode.label || '';
-      node.id = newNode.id || '';
-      node.type = newNode.type;
-      node.info = newNode.info;
-      node.provenance = newNode.provenance;
-      node.comments = newNode.comments;
-      node.notes = newNode.notes;
-      node.degrees = newNode.degrees;
-
-      // Copy to form
-      this.releaseOpenEditor();
-      this.setState({
-        formData: {
-          label: node.label,
-          type: node.type,
-          info: node.info,
-          provenance: node.provenance,
-          comments: node.comments,
-          notes: node.notes,
-          degrees: node.degrees,
-          id: node.id,
-          isNewNode: false
-        },
-        dbIsLocked: false,
-        isBeingEdited: false,
-        isDuplicateNodeLabel: false,
-        hideModal: true
-      });
-
-      this.validateForm();
-    } // loadFormFromNode
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'validateForm',
-    value: function validateForm() {
-      var isValid = false;
-      var formData = this.state.formData;
-
-      if (formData.label !== '' && formData.label !== undefined) isValid = true;
-      if (DBG) console.log('NodeSElector.validateForm: Validating', isValid, 'because label is', formData.label, '!');
-      this.setState({
-        isValid: isValid
-      });
-    }
-
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// REVIEW: Do we really need to manage each input field change with a state update
-    /// or can we just grab the final text during the "SAVE"?
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onLabelChange',
-    value: function onLabelChange(label) {
-      // REVIEW: Currently this is not being called because AutoComplete
-      // doesn't have a change handler
-      var node = this.state.formData;
-      node.label = label;
-      this.setState({ formData: node });
-      this.validateForm();
-    } // onLabelChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onTypeChange',
-    value: function onTypeChange(event) {
-      var node = this.state.formData;
-      node.type = event.target.value;
-      this.setState({ formData: node });
-    } // onTypeChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onNotesChange',
-    value: function onNotesChange(event) {
-      var node = this.state.formData;
-      node.notes = event.target.value;
-      this.setState({ formData: node });
-    } // onNotesChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onInfoChange',
-    value: function onInfoChange(event) {
-      var node = this.state.formData;
-      node.info = event.target.value;
-      this.setState({ formData: node });
-    } // onInfoChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onProvenanceChange',
-    value: function onProvenanceChange(event) {
-      var node = this.state.formData;
-      node.provenance = event.target.value;
-      this.setState({ formData: node });
-    } // onProvenanceChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCommentsChange',
-    value: function onCommentsChange(event) {
-      var node = this.state.formData;
-      node.comments = event.target.value;
-      this.setState({ formData: node });
-    } // onCommentsChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onReplacementNodeIDChange',
-    value: function onReplacementNodeIDChange(event) {
-      var replacementNodeID = parseInt(event.target.value);
-      var isValid = false;
-      // Allow `` because we use a a blank field to indicate delete node without relinking edges.
-      if (event.target.value === '' || this.AppState('NCDATA').nodes.find(function (node) {
-        return node.id === replacementNodeID;
-      })) {
-        isValid = true;
-      }
-      this.setState({
-        replacementNodeID: replacementNodeID,
-        isValidReplacementNodeID: isValid
-      });
-    } // onReplacementNodeIDChange
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onNewNodeButtonClick',
-    value: function onNewNodeButtonClick(event) {
-      var _this3 = this;
-
-      event.preventDefault();
-
-      // Save the search label to re-insert into the new node
-      var label = this.AppState('SEARCH').searchLabel;
-
-      // claim the AutoComplete form and populate it with the
-      // current search term
-      this.AppCall('AUTOCOMPLETE_SELECT', { id: thisIdentifier }).then(function () {
-        _this3.AppCall('SOURCE_SEARCH', { searchString: label });
-      });
-
-      // provenance
-      var session = this.AppState('SESSION');
-      var timestamp = new Date().toLocaleDateString('en-US');
-      var provenance_str = 'Added by ' + session.token + ' on ' + timestamp;
-
-      // HACK: call server to retrieve an unused node ID
-      // FIXME: this kind of data manipulation should not be in a GUI component
-      DATASTORE.PromiseNewNodeID().then(function (newNodeID) {
-        _this3.setState({
-          formData: {
-            label: label,
-            type: '',
-            info: '',
-            provenance: provenance_str,
-            comments: '',
-            notes: '',
-            degrees: 0,
-            id: newNodeID,
-            isNewNode: true
-          },
-          edges: [],
-          isBeingEdited: true,
-          isValid: false
-        });
-
-        _this3.validateForm();
-      });
-    } // onNewNodeButtonClick
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onDeleteButtonClick',
-    value: function onDeleteButtonClick() {
-      // nodeID needs to be a Number.  It should have been set in loadFormFromNode
-      var nodeID = this.state.formData.id;
-
-      // Re-link edges or delete edges?
-      // `NaN` is not valid JSON, so we need to pass -1
-      var replacementNodeID = this.state.replacementNodeID === '' ? -1 : parseInt(this.state.replacementNodeID); // '' = Delete edges by default
-
-      this.clearForm();
-      this.AppCall('DB_UPDATE', {
-        nodeID: nodeID,
-        replacementNodeID: replacementNodeID
-      });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-    // this is an admin only function to allow unlocking of locked nodes without having to reload
-
-  }, {
-    key: 'onForceUnlock',
-    value: function onForceUnlock() {
-      var _this4 = this;
-
-      // nodeID needs to be a Number.  It should have been set in loadFormFromNode
-      var nodeID = this.state.formData.id;
-
-      this.NetCall('SRV_DBUNLOCKNODE', { nodeID: this.state.formData.id }).then(function (data) {
-        if (data.NOP) {
-          if (DBG) console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-        } else if (data.unlocked) {
-          if (DBG) console.log('SERVER SAYS: unlock success! you have released Node ' + data.nodeID);
-          _this4.setState({ dbIsLocked: false });
-        }
-      });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onEditButtonClick',
-    value: function onEditButtonClick(event) {
-      event.preventDefault();
-
-      // hide the modal window if it is open (probably this can be handled better)
-      this.setState({ hideModal: true });
-
-      // nodeID needs to be a Number.  It should have been set in loadFormFromNode
-      var nodeID = this.state.formData.id;
-      this.requestEditNode(nodeID);
-    } // onEditButtonClick
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCiteButtonClick',
-    value: function onCiteButtonClick(event) {
-      event.preventDefault();
-
-      this.setState({ hideModal: false });
-    } // onCiteButtonClick
-
-  }, {
-    key: 'onCloseCiteClick',
-    value: function onCloseCiteClick(event) {
-      event.preventDefault();
-
-      this.setState({ hideModal: true });
-    } //   this.onCloseCiteClick
-
-  }, {
-    key: 'dateFormatted',
-    value: function dateFormatted() {
-      var today = new Date();
-      var year = '' + today.getFullYear();
-      var date = today.getMonth() + 1 + '/' + today.getDate() + '/' + year.substr(2, 4);
-      var time = today.toTimeString().substr(0, 5);
-      var dateTime = time + ' on ' + date;
-      return dateTime;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'requestEditNode',
-    value: function requestEditNode(nodeID) {
-      var _this5 = this;
-
-      this.NetCall('SRV_DBLOCKNODE', { nodeID: nodeID }).then(function (data) {
-        if (data.NOP) {
-          console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-          _this5.setState({ dbIsLocked: true });
-        } else if (data.locked) {
-          console.log('SERVER SAYS: lock success! you can edit Node ' + data.nodeID);
-          console.log('SERVER SAYS: unlock the node after successful DBUPDATE');
-          _this5.setState({ dbIsLocked: false });
-          _this5.editNode();
-        }
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'editNode',
-    value: function editNode() {
-      var _this6 = this;
-
-      // Add ID if one isn't already defined
-      var formData = this.state.formData;
-      if (formData.id === '') {
-        throw Error("NodeSelector.onEditButtonClick trying to edit a node with no id!  This shouldn't happen!");
-      }
-      this.AppCall('AUTOCOMPLETE_SELECT', { id: thisIdentifier }).then(function () {
-        // Set AutoComplete field to current data, otherwise, previously canceled label
-        // might be displayed
-        // this.AppCall('SOURCE_SEARCH', { searchString: formData.label }); // JD removed because I think it is redundant and slowing things down?
-      });
-      this.setState({
-        formData: formData,
-        isBeingEdited: true
-      });
-      this.validateForm();
-
-      // When a node is being edited, lock the Template from being edited
-      this.NetCall('SRV_REQ_EDIT_LOCK', { editor: EDITORTYPE.NODE }).then(function (data) {
-        var disableEdit = data.isBeingEdited;
-        _this6.setState({ disableEdit: disableEdit });
-      });
-    } // editNode
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onAddNewEdgeButtonClick',
-    value: function onAddNewEdgeButtonClick(event) {
-      var _this7 = this;
-
-      event.preventDefault();
-      /*
-              When creating a new edge, we first
-              1. Add a bare bones edge object with a new ID to the local state.edges
-              2. Pass it to render, so that a new EdgeEditor will be created.
-              3. In EdgeEditor, we create a dummy edge object
-        */
-
-      // HACK: call server to retrieve an unused edge ID
-      // FIXME: this kind of data manipulation should not be in a GUI component
-      DATASTORE.PromiseNewEdgeID().then(function (newEdgeID) {
-        // Add it to local state for now
-        var edge = {
-          id: newEdgeID,
-          source: undefined,
-          target: undefined,
-          attributes: {}
-        };
-        var edges = _this7.state.edges;
-        edges.push(edge);
-        _this7.setState({ edges: edges });
-      });
-    } // onAddNewEdgeButtonClick
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onCancelButtonClick',
-    value: function onCancelButtonClick() {
-      var _this8 = this;
-
-      // If we were editing, then revert and exit
-      if (this.state.isBeingEdited) {
-        var originalNode = this.AppState('NCDATA').nodes.filter(function (node) {
-          return node.id === _this8.state.formData.id;
-        })[0];
-        if (originalNode === undefined) {
-          // user abandoned editing a new node that was never saved
-          this.clearForm();
-        } else {
-          // restore original node
-          this.loadFormFromNode(originalNode);
-          this.releaseOpenEditor();
-          this.setState({ isBeingEdited: false });
-          // unlock
-          this.NetCall('SRV_DBUNLOCKNODE', { nodeID: this.state.formData.id }).then(function (data) {
-            if (data.NOP) {
-              console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-            } else if (data.unlocked) {
-              console.log('SERVER SAYS: unlock success! you have released Node ' + data.nodeID);
-              _this8.setState({ dbIsLocked: false });
-            }
-          });
-        }
-        this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-        this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-      }
-    } // onCancelButtonClick
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Select the node for editing
-     */
-
-  }, {
-    key: 'onEditOriginal',
-    value: function onEditOriginal(event) {
-      event.preventDefault();
-      var duplicateNodeID = parseInt(this.state.duplicateNodeID);
-      this.clearForm();
-      this.releaseOpenEditor();
-      this.setState({
-        isBeingEdited: false,
-        isDuplicateNodeLabel: false
-      }, function () {
-        // Wait for the edit state to clear, then open up the original node
-        if (DBG) console.log('NodeSelector.onEditOriginal triggering SOURCE_SELECT with', duplicateNodeID);
-        UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [duplicateNodeID] });
-      });
-      this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** User confirms they want to edit the existing node.
-     */
-
-  }, {
-    key: 'onCloseDuplicateDialog',
-    value: function onCloseDuplicateDialog() {
-      this.setState({ isDuplicateNodeLabel: false });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onSubmit',
-    value: function onSubmit(event) {
-      var _this9 = this;
-
-      event.preventDefault();
-      // Update the data with the selectedNode
-      var formData = this.state.formData;
-      var node = {
-        label: formData.label ? formData.label : '',
-        id: formData.id,
-        type: formData.type,
-        info: formData.info,
-        provenance: formData.provenance,
-        comments: formData.comments,
-        notes: formData.notes,
-        degrees: formData.degrees
-      };
-      this.releaseOpenEditor();
-      this.setState({ isBeingEdited: false });
-      // clear AutoComplete form
-      this.AppCall('AUTOCOMPLETE_SELECT', { id: 'search' }).then(function () {
-        // Reselect the saved node
-        _this9.AppCall('SOURCE_SEARCH', { searchString: node.label });
-      });
-      // write data to database
-      // setting dbWrite to true will distinguish this update
-      // from a remote one
-      this.AppCall('DB_UPDATE', { node: node }).then(function () {
-        _this9.NetCall('SRV_DBUNLOCKNODE', { nodeID: formData.id }).then(function (data) {
-          if (data.NOP) {
-            console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-          } else if (data.unlocked) {
-            console.log('SERVER SAYS: unlock success! you have released Node ' + data.nodeID);
-            _this9.setState({ dbIsLocked: false });
-          }
-        });
-      });
-      // probably should unlock the node:
-      this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-    } // onSubmit
-
-    /// REACT LIFECYCLE ///////////////////////////////////////////////////////////
-    /** REACT calls this to receive the component layout and data sources
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _state = this.state,
-          nodeDefs = _state.nodeDefs,
-          duplicateWarning = _state.duplicateWarning,
-          nodeIsLockedMessage = _state.nodeIsLockedMessage,
-          editLockMessage = _state.editLockMessage,
-          hideDeleteNodeButton = _state.hideDeleteNodeButton,
-          formData = _state.formData,
-          isLocked = _state.isLocked,
-          isStandalone = _state.isStandalone,
-          disableEdit = _state.disableEdit,
-          isBeingEdited = _state.isBeingEdited;
-      var citation = this.state.citation;
-
-      if (citation == undefined) {
-        citation = {};
-        citation.hidden = true;
-      }
-      return React.createElement(
-        'div',
-        null,
-        React.createElement(
-          FormGroup,
-          {
-            className: 'text-right',
-            style: { marginTop: '10px', paddingRight: '5px' }
-          },
-          React.createElement(
-            Button,
-            {
-              outline: true,
-              size: 'sm',
-              disabled: disableEdit,
-              hidden: isLocked || isBeingEdited,
-              onClick: this.onNewNodeButtonClick
-            },
-            'Add New Node'
-          )
-        ),
-        React.createElement(
-          Form,
-          {
-            className: 'nodeEntry',
-            style: {
-              minHeight: '300px',
-              backgroundColor: '#B8EDFF',
-              padding: '5px',
-              marginBottom: '0px'
-            },
-            onSubmit: this.onSubmit
-          },
-          React.createElement(
-            FormText,
-            null,
-            React.createElement(
-              'b',
-              null,
-              'NODE ',
-              formData.id || ''
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            { row: true },
-            React.createElement(
-              Col,
-              { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-              React.createElement(
-                Label,
-                { 'for': 'nodeLabel', className: 'tooltipAnchor small text-muted' },
-                nodeDefs.label.displayLabel,
-                React.createElement(
-                  'span',
-                  { className: 'tooltiptext' },
-                  this.helpText(nodeDefs.label)
-                )
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 9 },
-              React.createElement(AutoComplete, {
-                identifier: thisIdentifier,
-                disabledValue: formData.label,
-                inactiveMode: 'disabled',
-                shouldIgnoreSelection: isBeingEdited
-              })
-            ),
-            React.createElement(
-              'div',
-              {
-                hidden: !this.state.isDuplicateNodeLabel,
-                style: {
-                  width: '200px',
-                  height: '150px',
-                  backgroundColor: '#B8EDFF',
-                  position: 'fixed',
-                  left: '350px',
-                  zIndex: '1000',
-                  padding: '10px'
-                }
-              },
-              React.createElement(
-                'p',
-                { className: 'text-danger small' },
-                duplicateWarning
-              ),
-              React.createElement(
-                Button,
-                { size: 'sm', onClick: this.onEditOriginal },
-                'View Existing'
-              ),
-              React.createElement(
-                Button,
-                { outline: true, size: 'sm', onClick: this.onCloseDuplicateDialog },
-                'Continue'
-              )
-            )
-          ),
-          React.createElement(
-            'div',
-            { style: { position: 'absolute', left: '300px', maxWidth: '300px' } },
-            React.createElement(NodeDetail, null)
-          ),
-          React.createElement(
-            FormGroup,
-            { row: true, hidden: nodeDefs.type.hidden },
-            React.createElement(
-              Col,
-              { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-              React.createElement(
-                Label,
-                { 'for': 'type', className: 'tooltipAnchor small text-muted' },
-                nodeDefs.type.displayLabel,
-                React.createElement(
-                  'span',
-                  { className: 'tooltiptext' },
-                  this.helpText(nodeDefs.type)
-                )
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 9 },
-              React.createElement(
-                Input,
-                {
-                  type: 'select',
-                  name: 'type',
-                  id: 'typeSelect',
-                  value: formData.type || '',
-                  onChange: this.onTypeChange,
-                  disabled: !isBeingEdited
-                },
-                nodeDefs.type.options.map(function (option) {
-                  return React.createElement(
-                    'option',
-                    { key: option.label },
-                    option.label
-                  );
-                })
-              )
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            { row: true, hidden: nodeDefs.notes.hidden },
-            React.createElement(
-              Col,
-              { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-              React.createElement(
-                Label,
-                { 'for': 'notes', className: 'tooltipAnchor small text-muted' },
-                nodeDefs.notes.displayLabel,
-                React.createElement(
-                  'span',
-                  { className: 'tooltiptext' },
-                  this.helpText(nodeDefs.notes)
-                )
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 9 },
-              React.createElement(Input, {
-                type: 'textarea',
-                name: 'note',
-                id: 'notesText',
-                style: { display: isBeingEdited ? 'block' : 'none' },
-                value: formData.notes || '',
-                onChange: this.onNotesChange,
-                readOnly: !isBeingEdited
-              }),
-              this.markdownDisplay(formData.notes || '')
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            { row: true, hidden: nodeDefs.info.hidden },
-            React.createElement(
-              Col,
-              { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-              React.createElement(
-                Label,
-                { 'for': 'info', className: 'tooltipAnchor small text-muted' },
-                nodeDefs.info.displayLabel,
-                React.createElement(
-                  'span',
-                  { className: 'tooltiptext' },
-                  this.helpText(nodeDefs.info)
-                )
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 9 },
-              React.createElement(Input, {
-                type: 'text',
-                name: 'info',
-                id: 'info',
-                value: formData.info || '',
-                onChange: this.onInfoChange,
-                readOnly: !isBeingEdited
-              })
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            { row: true, hidden: nodeDefs.provenance.hidden },
-            React.createElement(
-              Col,
-              { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-              React.createElement(
-                Label,
-                { 'for': 'provenance', className: 'tooltipAnchor small text-muted' },
-                nodeDefs.provenance.displayLabel,
-                React.createElement(
-                  'span',
-                  { className: 'tooltiptext' },
-                  this.helpText(nodeDefs.provenance)
-                )
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 9 },
-              React.createElement(Input, {
-                type: 'textarea',
-                name: 'provenance',
-                id: 'provenance',
-                value: formData.provenance || '',
-                onChange: this.onProvenanceChange,
-                readOnly: !isBeingEdited
-              })
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            { row: true, hidden: nodeDefs.comments.hidden },
-            React.createElement(
-              Col,
-              { sm: 3, style: { hyphens: 'auto' }, className: 'pr-0' },
-              React.createElement(
-                Label,
-                { 'for': 'comments', className: 'tooltipAnchor small text-muted' },
-                nodeDefs.comments.displayLabel,
-                React.createElement(
-                  'span',
-                  { className: 'tooltiptext' },
-                  this.helpText(nodeDefs.comments)
-                )
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 9 },
-              React.createElement(Input, {
-                type: 'textarea',
-                name: 'comments',
-                id: 'comments',
-                className: 'comments',
-                value: formData.comments || '',
-                onChange: this.onCommentsChange,
-                readOnly: !isBeingEdited,
-                disabled: !isBeingEdited
-              })
-            )
-          ),
-          React.createElement(
-            'div',
-            {
-              id: 'citationWindow',
-              hidden: this.state.hideModal,
-              className: 'modal-content'
-            },
-            React.createElement(
-              'span',
-              { className: 'close', onClick: this.onCloseCiteClick },
-              '\xD7'
-            ),
-            React.createElement(
-              'p',
-              null,
-              React.createElement(
-                'em',
-                null,
-                'Copy the text below:'
-              ),
-              React.createElement('br', null),
-              React.createElement('br', null),
-              'NetCreate ',
-              this.AppState('TEMPLATE').name,
-              ' network, Node:',
-              ' ',
-              formData.label,
-              ' (ID ',
-              formData.id,
-              '). ',
-              citation.text,
-              '. Last accessed at',
-              ' ',
-              this.dateFormatted(),
-              '.'
-            )
-          ),
-          React.createElement('br', null),
-          React.createElement(
-            FormGroup,
-            { className: 'text-right', style: { paddingRight: '5px' } },
-            React.createElement(
-              Button,
-              {
-                outline: true,
-                size: 'sm',
-                hidden: citation.hidden || formData.id === '',
-                onClick: this.onCiteButtonClick
-              },
-              'Cite Node'
-            ),
-            '\xA0\xA0',
-            React.createElement(
-              'div',
-              {
-                hidden: isLocked || isStandalone || isBeingEdited || formData.id === '',
-                style: { display: 'inline' }
-              },
-              React.createElement(
-                Button,
-                {
-                  outline: true,
-                  size: 'sm',
-                  disabled: disableEdit,
-                  onClick: this.onEditButtonClick
-                },
-                'Edit Node'
-              ),
-              React.createElement(
-                'p',
-                {
-                  hidden: !this.state.dbIsLocked,
-                  className: 'small text-danger warning'
-                },
-                nodeIsLockedMessage,
-                React.createElement(
-                  'span',
-                  { hidden: !isAdmin },
-                  '\xA0',
-                  React.createElement(
-                    'b',
-                    null,
-                    'ADMINISTRATOR ONLY'
-                  ),
-                  ': If you are absolutely sure this is an error, you can force the unlock:',
-                  React.createElement('br', null),
-                  React.createElement(
-                    Button,
-                    {
-                      className: 'small btn btn-outline-light warning',
-                      size: 'sm',
-                      onClick: this.onForceUnlock
-                    },
-                    'Force Unlock'
-                  )
-                )
-              ),
-              React.createElement(
-                'p',
-                { hidden: !disableEdit, className: 'small text-danger warning' },
-                editLockMessage
-              )
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            { className: 'text-right', style: { paddingRight: '5px' } },
-            React.createElement(
-              Button,
-              {
-                outline: true,
-                size: 'sm',
-                hidden: !isBeingEdited,
-                onClick: this.onCancelButtonClick
-              },
-              isBeingEdited ? 'Cancel' : 'Close'
-            ),
-            '\xA0',
-            React.createElement(
-              Button,
-              {
-                color: 'primary',
-                size: 'sm',
-                disabled: !this.state.isValid,
-                hidden: !isBeingEdited
-              },
-              'Save'
-            )
-          ),
-          React.createElement(
-            FormGroup,
-            {
-              row: true,
-              className: 'text-left',
-              style: {
-                padding: '10px 5px',
-                margin: '0 -4px',
-                backgroundColor: '#c5e0ef'
-              },
-              hidden: !isAdmin || isLocked || formData.id === '' || hideDeleteNodeButton
-            },
-            React.createElement(
-              Col,
-              { sm: 6 },
-              React.createElement(
-                FormText,
-                null,
-                'Re-link edges to this Node ID (leave blank to delete edge)'
-              )
-            ),
-            React.createElement(
-              Col,
-              { sm: 6 },
-              React.createElement(Input, {
-                type: 'text',
-                name: 'replacementNodeID',
-                id: 'replacementNodeID',
-                value: this.state.replacementNodeID || '',
-                onChange: this.onReplacementNodeIDChange,
-                className: '',
-                style: { width: '4em' },
-                bsSize: 'sm',
-                invalid: !this.state.isValidReplacementNodeID
-              }),
-              React.createElement(
-                FormFeedback,
-                null,
-                'Invalid Node ID!'
-              ),
-              React.createElement(
-                Button,
-                {
-                  className: 'small btn btn-outline-light',
-                  size: 'sm',
-                  onClick: this.onDeleteButtonClick
-                },
-                'Delete'
-              )
-            )
-          )
-        ),
-        React.createElement(
-          'div',
-          {
-            style: { backgroundColor: '#B9DFFF', padding: '5px', marginBottom: '10px' }
-          },
-          React.createElement(
-            FormText,
-            null,
-            'EDGES'
-          ),
-          this.state.edges.map(function (edge, i) {
-            return React.createElement(EdgeEditor, {
-              edgeID: edge.id,
-              key: edge.id,
-              parentNodeLabel: formData.label,
-              parentNodeIsLocked: isLocked
-            });
-          }),
-          React.createElement(
-            FormGroup,
-            { className: 'text-right' },
-            React.createElement(
-              Button,
-              {
-                outline: true,
-                size: 'sm',
-                disabled: disableEdit,
-                hidden: isLocked || formData.id === '' || isBeingEdited,
-                onClick: this.onAddNewEdgeButtonClick
-              },
-              'Add New Edge'
-            )
-          )
-        )
-      );
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'helpText',
-    value: function helpText(obj) {
-      if (!obj) return;
-      var text = '';
-
-      if (obj.help == undefined || obj.help == '') text = obj.label;else text = obj.help;
-      return text;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'markdownDisplay',
-    value: function markdownDisplay(text) {
-      if (!this.state.isBeingEdited) return mdReact({
-        onIterate: this.markdownIterate,
-        markdownOptions: { typographer: true, linkify: true },
-        plugins: [mdEmoji]
-      })(text);
-    }
-  }, {
-    key: 'markdownIterate',
-    value: function markdownIterate(Tag, props, children, level) {
-      if (Tag === 'a') {
-        props.target = '_blank';
-      }
-
-      return React.createElement(
-        Tag,
-        props,
-        children
-      );
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.onStateChange_SESSION(this.AppState('SESSION'));
-      this.validateForm();
-      this.updateEditState();
-      this.setState({
-        // hide Edit button if in standalone mode
-        isStandalone: UNISYS.IsStandaloneMode()
-      });
-      window.addEventListener('beforeunload', this.checkUnload);
-      window.addEventListener('unload', this.doUnload);
-    }
-  }, {
-    key: 'checkUnload',
-    value: function checkUnload(e) {
-      e.preventDefault();
-      if (this.state.isBeingEdited) {
-        (e || window.event).returnValue = null;
-      } else {
-        Reflect.deleteProperty(e, 'returnValue');
-      }
-      return e;
-    }
-  }, {
-    key: 'doUnload',
-    value: function doUnload(e) {
-      if (this.state.isBeingEdited) {
-        this.NetCall('SRV_DBUNLOCKNODE', { nodeID: this.state.formData.id });
-        this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-      }
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Release the lock if we're unmounting
-     */
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      var _this10 = this;
-
-      if (DBG) console.log('NodeEditor.componentWillUnMount!');
-      if (this.state.isBeingEdited) {
-        this.NetCall('SRV_DBUNLOCKNODE', { nodeID: this.state.formData.id }).then(function (data) {
-          if (data.NOP) {
-            if (DBG) console.log('SERVER SAYS: ' + data.NOP + ' ' + data.INFO);
-          } else if (data.unlocked) {
-            if (DBG) console.log('SERVER SAYS: unlock success! you have released Node ' + data.nodeID);
-            _this10.setState({ dbIsLocked: false });
-          }
-        });
-        this.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.NODE });
-      }
-      // deregister ACTIVEAUTOMPLETE when component unmounts
-      // otherwise state updates trigger a setState on unmounted component error
-      this.AppStateChangeOff('SESSION', this.onStateChange_SESSION);
-      this.AppStateChangeOff('SELECTION', this.handleSelection);
-      this.AppStateChangeOff('SEARCH', this.onStateChange_SEARCH);
-      this.AppStateChangeOff('TEMPLATE', this.setTemplate);
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.setEditState);
-      window.removeEventListener('beforeunload', this.checkUnload);
-      window.removeEventListener('unload', this.doUnload);
-    }
-  }]);
-
-  return NodeSelector;
-}(UNISYS.Component); // class NodeSelector
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = NodeSelector;
-});
-
-require.register("view/netcreate/components/NodeTable.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _hdate = require('system/util/hdate');
-
-var _hdate2 = _interopRequireDefault(_hdate);
-
-var _URCommentBtn = require('./URCommentBtn');
-
-var _URCommentBtn2 = _interopRequireDefault(_URCommentBtn);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-    NodeTable is used to to display a table of nodes for review.
-
-    It displays NCDATA.
-    But also checks FILTEREDNCDATA to show highlight/filtered state
-
-  ## TO USE
-
-    NodeTable is self contained and relies on global NCDATA to load.
-
-      <NodeTable/>
-
-  ## 2018-12-07 Update
-
-    Since we're not using tab navigation:
-    1. The table isExpanded is now true by default.
-    2. The "Show/Hide Table" button is hidden.
-
-    Reset these to restore previous behavior.
-
-
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var NCUI = require('../nc-ui');
-var CMTMGR = require('../comment-mgr');
-var SETTINGS = require('settings');
-var FILTER = require('./filter/FilterEnums');
-
-var _require = require('system/util/enum'),
-    BUILTIN_FIELDS_NODE = _require.BUILTIN_FIELDS_NODE;
-
-var _require2 = require('system/util/constant'),
-    ICON_PENCIL = _require2.ICON_PENCIL,
-    ICON_VIEW = _require2.ICON_VIEW;
-
-var Button = ReactStrap.Button;
-
-var UNISYS = require('unisys/client');
-
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var DBG = false;
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var isLocalHost = SETTINGS.EJSProp('client').ip === '127.0.0.1' || location.href.includes('admin=true');
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var NodeTable = function (_UNISYS$Component) {
-  _inherits(NodeTable, _UNISYS$Component);
-
-  function NodeTable(props) {
-    _classCallCheck(this, NodeTable);
-
-    var _this = _possibleConstructorReturn(this, (NodeTable.__proto__ || Object.getPrototypeOf(NodeTable)).call(this, props));
-
-    var TEMPLATE = _this.AppState('TEMPLATE');
-    _this.state = {
-      nodeDefs: TEMPLATE.nodeDefs,
-      nodes: [],
-      selectedNodeId: undefined,
-      hilitedNodeId: undefined,
-      selectedNodeColor: TEMPLATE.sourceColor,
-      hilitedNodeColor: TEMPLATE.searchColor,
-      filteredNodes: [],
-      disableEdit: false,
-      isLocked: false,
-      isExpanded: true,
-      sortkey: 'label'
-    };
-
-    _this.onStateChange_SESSION = _this.onStateChange_SESSION.bind(_this);
-    _this.onStateChange_SELECTION = _this.onStateChange_SELECTION.bind(_this);
-    _this.onStateChange_HILITE = _this.onStateChange_HILITE.bind(_this);
-    _this.displayUpdated = _this.displayUpdated.bind(_this);
-    _this.updateNodeFilterState = _this.updateNodeFilterState.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.handleDataUpdate = _this.handleDataUpdate.bind(_this);
-    _this.handleFilterDataUpdate = _this.handleFilterDataUpdate.bind(_this);
-    _this.OnTemplateUpdate = _this.OnTemplateUpdate.bind(_this);
-    _this.onViewButtonClick = _this.onViewButtonClick.bind(_this);
-    _this.onEditButtonClick = _this.onEditButtonClick.bind(_this);
-    _this.onToggleExpanded = _this.onToggleExpanded.bind(_this);
-    _this.onHighlightRow = _this.onHighlightRow.bind(_this);
-    _this.setSortKey = _this.setSortKey.bind(_this);
-    _this.sortSymbol = _this.sortSymbol.bind(_this);
-
-    _this.sortDirection = 1; // alphabetical A-Z
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.updateEditState);
-
-    // SESSION is called by SessionSHell when the ID changes
-    //  set system-wide. data: { classId, projId, hashedId, groupId, isValid }
-    _this.OnAppStateChange('SESSION', _this.onStateChange_SESSION);
-
-    // Always make sure class methods are bind()'d before using them
-    // as a handler, otherwise object context is lost
-    _this.OnAppStateChange('NCDATA', _this.handleDataUpdate);
-
-    // Track Filtered Data Updates too
-    _this.OnAppStateChange('FILTEREDNCDATA', _this.handleFilterDataUpdate);
-
-    // Handle Template updates
-    _this.OnAppStateChange('TEMPLATE', _this.OnTemplateUpdate);
-
-    _this.OnAppStateChange('SELECTION', _this.onStateChange_SELECTION);
-    _this.OnAppStateChange('HILITE', _this.onStateChange_HILITE);
-    return _this;
-  } // constructor
-
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /**
-   */
-
-
-  _createClass(NodeTable, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      if (DBG) console.error('NodeTable.componentDidMount!');
-
-      this.onStateChange_SESSION(this.AppState('SESSION'));
-
-      // Explicitly retrieve data because we may not have gotten a NCDATA
-      // update while we were hidden.
-      // filtered data needs to be set before D3Data
-      var FILTEREDNCDATA = UDATA.AppState('FILTEREDNCDATA');
-      this.setState({ filteredNodes: FILTEREDNCDATA.nodes }, function () {
-        var NCDATA = _this2.AppState('NCDATA');
-        _this2.handleDataUpdate(NCDATA);
-      });
-
-      // Request edit state too because the update may have come
-      // while we were hidden
-      this.updateEditState();
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.updateEditState);
-      this.AppStateChangeOff('SESSION', this.onStateChange_SESSION);
-      this.AppStateChangeOff('NCDATA', this.handleDataUpdate);
-      this.AppStateChangeOff('FILTEREDNCDATA', this.handleFilterDataUpdate);
-      this.AppStateChangeOff('TEMPLATE', this.OnTemplateUpdate);
-      this.AppStateChangeOff('SELECTION', this.onStateChange_SELECTION);
-      this.AppStateChangeOff('HILITE', this.onStateChange_HILITE);
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'onStateChange_SELECTION',
-    value: function onStateChange_SELECTION(data) {
-      this.setState({
-        selectedNodeId: data.nodes.length > 0 ? data.nodes[0].id : undefined
-      });
-    }
-  }, {
-    key: 'onStateChange_HILITE',
-    value: function onStateChange_HILITE(data) {
-      var userHighlightNodeId = data.userHighlightNodeId,
-          autosuggestHiliteNodeId = data.autosuggestHiliteNodeId; // ignores `tableHiliteNodeId`
-
-      var hilitedNodeId = void 0;
-      if (autosuggestHiliteNodeId !== undefined) hilitedNodeId = autosuggestHiliteNodeId;
-      if (userHighlightNodeId !== undefined) hilitedNodeId = userHighlightNodeId;
-      this.setState({ hilitedNodeId: hilitedNodeId });
-    }
-
-    /** Handle change in SESSION data
-      Called both by componentWillMount() and AppStateChange handler.
-      The 'SESSION' state change is triggered in two places in SessionShell during
-      its handleChange() when active typing is occuring, and also during
-      SessionShell.componentWillMount()
-     */
-
-  }, {
-    key: 'onStateChange_SESSION',
-    value: function onStateChange_SESSION(decoded) {
-      this.setState({ isLocked: !decoded.isValid });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'displayUpdated',
-    value: function displayUpdated(nodeEdge) {
-      // Prevent error if `meta` info is not defined yet, or not properly imported
-
-      // this does not ever fire, revert!
-      console.error('NodeTable meta not defined yet', nodeEdge);
-      if (!nodeEdge.meta) {
-        return '';
-      }
-      var d = new Date(nodeEdge.meta.revision > 0 ? nodeEdge.meta.updated : nodeEdge.meta.created);
-
-      var year = String(d.getFullYear());
-      var date = d.getMonth() + 1 + '/' + d.getDate() + '/' + year.substr(2, 4);
-      var time = d.toTimeString().substr(0, 5);
-      var dateTime = date + ' at ' + time;
-      var titleString = 'v' + nodeEdge.meta.revision;
-      if (nodeEdge._nlog) titleString += ' by ' + nodeEdge._nlog[nodeEdge._nlog.length - 1];
-      var tag = React.createElement(
-        'span',
-        { title: titleString },
-        ' ',
-        dateTime,
-        ' '
-      );
-
-      return tag;
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /// Set node filtered status based on current filteredNodes
-
-  }, {
-    key: 'updateNodeFilterState',
-    value: function updateNodeFilterState(nodes, filteredNodes) {
-      // set filter status
-      if (filteredNodes.length > 0) {
-        // If we're transitioning from "HILIGHT/FADE" to "COLLAPSE" or "FOCUS", then we
-        // also need to remove nodes that are not in filteredNodes
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.REDUCE || FILTERDEFS.filterAction === FILTER.ACTION.FOCUS) {
-          nodes = nodes.filter(function (node) {
-            var filteredNode = filteredNodes.find(function (n) {
-              return n.id === node.id;
-            });
-            return filteredNode; // keep if it's in the list of filtered nodes
-          });
-        } else {
-          nodes = nodes.map(function (node) {
-            var filteredNode = filteredNodes.find(function (n) {
-              return n.id === node.id;
-            });
-            node.isFiltered = !filteredNode; // not in filteredNode, so it's been removed
-            return node;
-          });
-        }
-      }
-      this.setState({ nodes: nodes, filteredNodes: filteredNodes });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this3 = this;
-
-      // disable edit if someone else is editing a template, node, or edge
-      var disableEdit = false;
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        // someone else might be editing a template or importing or editing node or edge
-        disableEdit = data.templateBeingEdited || data.importActive || data.nodeOrEdgeBeingEdited || data.commentBeingEditedByMe; // only lock out if this user is the one editing comments, allow network commen edits
-        _this3.setState({ disableEdit: disableEdit });
-      });
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** Handle updated SELECTION
-     */
-
-  }, {
-    key: 'handleDataUpdate',
-    value: function handleDataUpdate(data) {
-      if (DBG) console.log('handle data update');
-      if (data.nodes) {
-        var nodes = this.sortTable(this.state.sortkey, data.nodes);
-        var filteredNodes = this.state.filteredNodes;
-
-        this.updateNodeFilterState(nodes, filteredNodes);
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'handleFilterDataUpdate',
-    value: function handleFilterDataUpdate(data) {
-      var _this4 = this;
-
-      if (data.nodes) {
-        var filteredNodes = data.nodes;
-        // If we're transitioning from "COLLAPSE" or "FOCUS" to "HILIGHT/FADE", then we
-        // also need to add back in nodes that are not in filteredNodes
-        // (because "COLLAPSE" and "FOCUS" removes nodes that are not matched)
-        var FILTERDEFS = UDATA.AppState('FILTERDEFS');
-        if (FILTERDEFS.filterAction === FILTER.ACTION.FADE) {
-          var NCDATA = UDATA.AppState('NCDATA');
-          this.setState({
-            nodes: NCDATA.nodes,
-            filteredNodes: filteredNodes
-          }, function () {
-            var nodes = _this4.sortTable(_this4.state.sortkey, NCDATA.nodes);
-            _this4.updateNodeFilterState(nodes, filteredNodes);
-          });
-        } else {
-          this.setState({
-            nodes: filteredNodes,
-            filteredNodes: filteredNodes
-          }, function () {
-            var nodes = _this4.sortTable(_this4.state.sortkey, filteredNodes);
-            _this4.updateNodeFilterState(nodes, filteredNodes);
-          });
-        }
-      }
-    }
-
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'OnTemplateUpdate',
-    value: function OnTemplateUpdate(data) {
-      this.setState({
-        nodeDefs: data.nodeDefs,
-        selectedNodeColor: data.sourceColor,
-        hilitedNodeColor: data.searchColor
-      });
-    }
-
-    /// UTILITIES /////////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByID',
-    value: function sortByID(nodes) {
-      var _this5 = this;
-
-      if (nodes) {
-        return nodes.sort(function (a, b) {
-          var akey = a.id,
-              bkey = b.id;
-          if (akey < bkey) return -1 * Number(_this5.sortDirection);
-          if (akey > bkey) return 1 * Number(_this5.sortDirection);
-          return 0;
-        });
-      }
-      return 0;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByEdgeCount',
-    value: function sortByEdgeCount(nodes) {
-      var _this6 = this;
-
-      if (nodes) {
-        return nodes.sort(function (a, b) {
-          var akey = a.degrees || 0,
-              bkey = b.degrees || 0;
-          // sort descending
-          if (akey > bkey) return 1 * Number(_this6.sortDirection);
-          if (akey < bkey) return -1 * Number(_this6.sortDirection);
-          return 0;
-        });
-      }
-      return 0;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByLabel',
-    value: function sortByLabel(nodes) {
-      var _this7 = this;
-
-      if (nodes) {
-        return nodes.sort(function (a, b) {
-          var akey = a.label ? a.label : '',
-              bkey = b.label ? b.label : '';
-          return akey.localeCompare(bkey) * _this7.sortDirection;
-        });
-      }
-      return 0;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** DEPRECATED -- 'attributes' is no longer being used
-     */
-
-  }, {
-    key: 'sortByAttribute',
-    value: function sortByAttribute(nodes, key) {
-      var _this8 = this;
-
-      if (nodes) {
-        return nodes.sort(function (a, b) {
-          var akey = a.attributes[key],
-              bkey = b.attributes[key];
-          if (akey < bkey) return -1 * Number(_this8.sortDirection);
-          if (akey > bkey) return 1 * Number(_this8.sortDirection);
-          return 0;
-        });
-      }
-      return 0;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByKey',
-    value: function sortByKey(nodes, key, type) {
-      var _this9 = this;
-
-      if (nodes) {
-        return nodes.sort(function (a, b) {
-          var akey = void 0,
-              bkey = void 0;
-          if (type === FILTER.TYPES.STRING) {
-            akey = a[key] || ''; // fall back to blank if a[key] is not defined
-            // a[key] might be undefined if the template/db
-            // was changed but the full db wasn't updated
-            bkey = b[key] || '';
-          } else if (type === FILTER.TYPES.NUMBER) {
-            akey = Number(a[key] || ''); // force number for sorting
-            bkey = Number(b[key] || '');
-          } else if (type === FILTER.TYPES.HDATE) {
-            if (!a[key] || !b[key]) return 0;
-            akey = _hdate2.default.Parse(a[key].value); // parseResult
-            bkey = _hdate2.default.Parse(b[key].value);
-            if (akey.length < 1 || bkey.length < 1) return '';
-            var da = akey[0].start.knownValues;
-            var db = bkey[0].start.knownValues;
-            var order = void 0;
-            if (da.year !== db.year) {
-              order = da.year - db.year;
-            } else if (da.month !== db.month) {
-              order = da.month - db.month;
-            } else if (da.day !== db.day) {
-              order = da.day - db.day;
-            } else if (da.hour !== db.hour) {
-              order = da.hour - db.hour;
-            } else if (da.minute !== db.minute) {
-              order = da.minute - db.minute;
-            } else if (da.second !== db.second) {
-              order = da.second - db.second;
-            }
-            return order * Number(_this9.sortDirection);
-          } else {
-            /* some other type */
-            akey = a[key];
-            bkey = b[key];
-          }
-          if (akey < bkey) return -1 * Number(_this9.sortDirection);
-          if (akey > bkey) return 1 * Number(_this9.sortDirection);
-          return 0;
-        });
-      }
-      return 0;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByUpdated',
-    value: function sortByUpdated(nodes) {
-      var _this10 = this;
-
-      if (nodes) {
-        return nodes.sort(function (a, b) {
-          var akey = a.meta.revision > 0 ? a.meta.updated : a.meta.created,
-              bkey = b.meta.revision > 0 ? b.meta.updated : b.meta.created;
-          if (akey < bkey) return -1 * Number(_this10.sortDirection);
-          if (akey > bkey) return 1 * Number(_this10.sortDirection);
-          return 0;
-        });
-      }
-      return undefined;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'sortByComment',
-    value: function sortByComment(nodes) {
-      var _this11 = this;
-
-      // stuff the count into nodes for calculation
-      var uid = CMTMGR.GetCurrentUserId();
-      var countednodes = nodes.map(function (n) {
-        var cref = CMTMGR.GetNodeCREF(n.id);
-        n.commentcount = CMTMGR.GetThreadedViewObjectsCount(cref, uid);
-        return n;
-      });
-      if (countednodes) {
-        return countednodes.sort(function (a, b) {
-          var akey = a.commentcount || 0,
-              bkey = b.commentcount || 0;
-          // sort descending
-          if (akey > bkey) return 1 * Number(_this11.sortDirection);
-          if (akey < bkey) return -1 * Number(_this11.sortDirection);
-          return 0;
-        });
-      }
-      return 0;
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** If no `sortkey` is passed, the sort will use the existing state.sortkey
-      Returns the sorted nodes so that the calling function can handle
-      state updates all at once.
-     */
-
-  }, {
-    key: 'sortTable',
-    value: function sortTable() {
-      var sortkey = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.sortkey;
-      var nodes = arguments[1];
-      var type = arguments[2];
-
-      switch (sortkey) {
-        case 'id':
-          return this.sortByID(nodes);
-        case 'edgeCount':
-          return this.sortByEdgeCount(nodes);
-        // case 'updated':
-        //   return this.sortByUpdated(nodes);
-        case 'label':
-          return this.sortByLabel(nodes);
-        case 'commentbtn':
-          return this.sortByComment(nodes);
-        default:
-          return this.sortByKey(nodes, sortkey, type);
-      }
-    }
-  }, {
-    key: 'sortSymbol',
-    value: function sortSymbol(key) {
-      if (key !== this.state.sortkey) return ''; // this is not the current sort, so don't show anything
-      else return this.sortDirection === 1 ? '▼' : '▲'; // default to "decreasing" and flip if clicked again
-    }
-
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onViewButtonClick',
-    value: function onViewButtonClick(event, nodeId) {
-      event.preventDefault();
-      event.stopPropagation();
-      var nodeID = parseInt(nodeId);
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [nodeID] });
-    }
-    /**
-     */
-
-  }, {
-    key: 'onEditButtonClick',
-    value: function onEditButtonClick(event, nodeId) {
-      event.preventDefault();
-      event.stopPropagation();
-      var nodeID = parseInt(nodeId);
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [nodeID] }).then(function () {
-        if (DBG) console.error('NodeTable: Calling NODE_EDIT', nodeID);
-        UDATA.LocalCall('NODE_EDIT', { nodeID: nodeID });
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onToggleExpanded',
-    value: function onToggleExpanded(event) {
-      this.setState({
-        isExpanded: !this.state.isExpanded
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'onHighlightRow',
-    value: function onHighlightRow(nodeId) {
-      UDATA.LocalCall('TABLE_HILITE_NODE', { nodeId: nodeId });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'setSortKey',
-    value: function setSortKey(key, type) {
-      if (key === this.state.sortkey) this.sortDirection = -1 * this.sortDirection;
-      // if this was already the key, flip the direction
-      else this.sortDirection = 1;
-
-      var nodes = this.sortTable(key, this.state.nodes, type);
-      this.setState({ sortkey: key, nodes: nodes });
-      UNISYS.Log('sort node table', key, this.sortDirection);
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'selectNode',
-    value: function selectNode(id, event) {
-      event.preventDefault();
-
-      // REVIEW: For some reason React converts the integer IDs into string
-      // values when returned in event.target.value.  So we have to convert
-      // it here.
-      // Load Source
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [parseInt(id)] });
-    }
-
-    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /*/ This is not yet implemented as of React 16.2.  It's implemented in 16.3.
-      getDerivedStateFromProps (props, state) {
-        console.error('getDerivedStateFromProps!!!');
-      }
-    /*/
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this12 = this;
-
-      if (this.state.nodes === undefined) return '';
-      var _state = this.state,
-          nodeDefs = _state.nodeDefs,
-          selectedNodeId = _state.selectedNodeId,
-          hilitedNodeId = _state.hilitedNodeId,
-          selectedNodeColor = _state.selectedNodeColor,
-          hilitedNodeColor = _state.hilitedNodeColor,
-          disableEdit = _state.disableEdit,
-          isLocked = _state.isLocked;
-      var tableHeight = this.props.tableHeight;
-
-      var styles = 'thead, tbody { font-size: 0.8em }\n                  .table {\n                    display: table; /* override bootstrap for fixed header */\n                    border-spacing: 0;\n                  }\n                  .table th {\n                    position: -webkit-sticky;\n                    position: sticky;\n                    top: 0;\n                    background-color: #eafcff;\n                    border-top: none;\n                  }\n                  xtbody { overflow: auto; }\n                  .btn-sm { font-size: 0.6rem; padding: 0.1rem 0.2rem }\n                  ';
-      var attributes = Object.keys(nodeDefs).filter(function (k) {
-        return !BUILTIN_FIELDS_NODE.includes(k);
-      });
-      return React.createElement(
-        'div',
-        {
-          onMouseLeave: function onMouseLeave() {
-            return _this12.onHighlightRow(undefined);
-          },
-          style: {
-            overflow: 'auto',
-            position: 'relative',
-            display: 'block',
-            left: '1px',
-            right: '10px',
-            height: tableHeight,
-            backgroundColor: '#eafcff'
-          }
-        },
-        React.createElement(
-          'style',
-          null,
-          styles
-        ),
-        React.createElement(
-          'table',
-          {
-            hidden: !this.state.isExpanded
-            // size="sm" hover responsive striped // ReactStrap properties
-            // Need to use a standard 'table' not ReactStrap so that we can set
-            // the container div height and support non-scrolling headers
-            , className: 'table table-striped table-responsive table-hover table-sm nodetable w-auto'
-          },
-          React.createElement(
-            'thead',
-            null,
-            React.createElement(
-              'tr',
-              null,
-              React.createElement(
-                'th',
-                { width: '4%' },
-                React.createElement(
-                  'div',
-                  { style: { color: '#f3f3ff' } },
-                  '_Edit_'
-                )
-              ),
-              React.createElement(
-                'th',
-                { width: '4%', hidden: !DBG },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this12.setSortKey('id', nodeDefs.id.type);
-                    }
-                  },
-                  'ID'
-                )
-              ),
-              React.createElement(
-                'th',
-                { width: '4%' },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this12.setSortKey('edgeCount', nodeDefs.degrees.type);
-                    }
-                  },
-                  nodeDefs.degrees.displayLabel,
-                  ' ',
-                  this.sortSymbol('edgeCount')
-                )
-              ),
-              React.createElement(
-                'th',
-                { width: '15%' },
-                React.createElement(
-                  Button,
-                  {
-                    size: 'sm',
-                    onClick: function onClick() {
-                      return _this12.setSortKey('label', nodeDefs.label.type);
-                    }
-                  },
-                  nodeDefs.label.displayLabel,
-                  ' ',
-                  this.sortSymbol('label')
-                )
-              ),
-              attributes.map(function (a) {
-                return React.createElement(
-                  'th',
-                  { hidden: nodeDefs[a].hidden, key: a },
-                  React.createElement(
-                    Button,
-                    {
-                      size: 'sm',
-                      onClick: function onClick() {
-                        return _this12.setSortKey(a, nodeDefs[a].type);
-                      }
-                    },
-                    nodeDefs[a].displayLabel,
-                    ' ',
-                    _this12.sortSymbol(a)
-                  )
-                );
-              }),
-              React.createElement(
-                'th',
-                { style: { zIndex: 1 } },
-                React.createElement(
-                  'div',
-                  {
-                    className: 'comment-icon-inline comment-intable',
-                    onClick: function onClick() {
-                      return _this12.setSortKey('commentbtn');
-                    }
-                  },
-                  CMTMGR.COMMENTICON,
-                  this.sortSymbol('commentbtn')
-                )
-              )
-            )
-          ),
-          React.createElement(
-            'tbody',
-            { style: { maxHeight: tableHeight, fontSize: '12px' } },
-            this.state.nodes.map(function (node, i) {
-              return React.createElement(
-                'tr',
-                {
-                  key: i,
-                  style: {
-                    color: node.isFiltered ? 'red' : 'black',
-                    opacity: node.filteredTransparency,
-                    border: (hilitedNodeId === node.id ? '3px solid ' + hilitedNodeColor : false) || (selectedNodeId === node.id ? '3px solid ' + selectedNodeColor : 'none')
-                  },
-                  onMouseOver: function onMouseOver() {
-                    return _this12.onHighlightRow(node.id);
-                  }
-                },
-                React.createElement(
-                  'td',
-                  null,
-                  !disableEdit && React.createElement(
-                    'button',
-                    {
-                      className: 'small outline',
-                      onClick: function onClick(event) {
-                        return _this12.onViewButtonClick(event, node.id);
-                      }
-                    },
-                    ICON_VIEW
-                  ),
-                  !disableEdit && !isLocked && React.createElement(
-                    'button',
-                    {
-                      className: 'small outline',
-                      onClick: function onClick(event) {
-                        return _this12.onEditButtonClick(event, node.id);
-                      }
-                    },
-                    ICON_PENCIL
-                  )
-                ),
-                React.createElement(
-                  'td',
-                  { hidden: !DBG },
-                  node.id
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  node.degrees
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  !disableEdit ? React.createElement(
-                    'a',
-                    { href: '#', onClick: function onClick(e) {
-                        return _this12.selectNode(node.id, e);
-                      } },
-                    node.label
-                  ) : node.label
-                ),
-                attributes.map(function (a) {
-                  return React.createElement(
-                    'td',
-                    { hidden: nodeDefs[a].hidden, key: '' + node.id + a },
-                    nodeDefs[a].type === 'markdown' ? NCUI.Markdownify(node[a]) : nodeDefs[a].type === 'hdate' ? node[a] && node[a].formattedDateString || '' : node[a]
-                  );
-                }),
-                React.createElement(
-                  'td',
-                  null,
-                  React.createElement(_URCommentBtn2.default, {
-                    cref: CMTMGR.GetNodeCREF(node.id),
-                    uuiid: 'nodetable'
-                  })
-                )
-              );
-            })
-          )
-        )
-      );
-    }
-  }]);
-
-  return NodeTable;
-}(UNISYS.Component); // class NodeTable
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = NodeTable;
-});
-
-require.register("view/netcreate/components/SaveEditsDialog.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-  The DuplicateNodeDialog is displayed when the user is trying to add a new
-  node that share the same label as an existing node.  It presents the user
-  with two options:
-  * Edit the existing ndoe
-  * Continue adding the new node
-
-  The dialog is displayed next to the node label so that the user can make
-  a decision.
-
-  We allow duplicate nodes because there might be places/people with the
-  same name.
-
-  ## PROPS
-      nodeID
-
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var UNISYS = require('unisys/client');
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var TabContent = ReactStrap.TabContent,
-    TabPane = ReactStrap.TabPane,
-    Nav = ReactStrap.Nav,
-    NavItem = ReactStrap.NavItem,
-    NavLink = ReactStrap.NavLink,
-    Row = ReactStrap.Row,
-    Col = ReactStrap.Col,
-    Button = ReactStrap.Button;
-
-var classnames = require('classnames');
-var Help = require('./Help');
-var NodeTable = require('./NodeTable');
-var EdgeTable = require('./EdgeTable');
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var DBG = true;
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var SaveChangesDialog = function (_UNISYS$Component) {
-  _inherits(SaveChangesDialog, _UNISYS$Component);
-
-  function SaveChangesDialog(props) {
-    _classCallCheck(this, SaveChangesDialog);
-
-    var _this = _possibleConstructorReturn(this, (SaveChangesDialog.__proto__ || Object.getPrototypeOf(SaveChangesDialog)).call(this, props));
-
-    _this.state = {
-      nodeDefs: _this.AppState('TEMPLATE').nodeDefs
-    };
-
-    _this.handleEdit = _this.handleEdit.bind(_this);
-    _this.handleCancel = _this.handleCancel.bind(_this);
-
-    /// Initialize UNISYS DATA LINK for REACT
-    UDATA = UNISYS.NewDataLink(_this);
-    return _this;
-  } // constructor
-
-  /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /** Select the node for editing
-   */
-
-
-  _createClass(SaveChangesDialog, [{
-    key: 'handleEdit',
-    value: function handleEdit(event) {
-      event.preventDefault();
-      var nodeID = parseInt(event.target.value);
-      UDATA.LocalCall('SOURCE_SELECT', { nodeIDs: [nodeID] });
-    }
-  }, {
-    key: 'handleCancel',
-    value: function handleCancel() {
-      event.preventDefault();
-    }
-
-    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /** This this fires after render().
-     */
-
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var tabpanel = document.getElementById('tabpanel');
-      this.setState({
-        tabpanelTop: tabpanel.offsetTop
-      });
-    }
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var nodeDefs = this.state.nodeDefs;
-
-      var Modal = function Modal(props) {};
-      var ModalBody = function ModalBody(props) {};
-      return React.createElement(
-        Modal,
-        null,
-        React.createElement(
-          ModalBody,
-          null,
-          "You've made changes to the Node. Are you sure you want to"
-        )
-      );
-    }
-  }]);
-
-  return SaveChangesDialog;
-}(UNISYS.Component); // class SaveChangesDialog
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = SaveChangesDialog;
-});
-
-require.register("view/netcreate/components/Search.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  ## OVERVIEW
-
-      This provides a search field for looking up nodes.
-
-      1. Users type in the field.
-      2. The field will suggest matching nodes.
-      3. User selects something from the suggestion list.
-      4. The node will get loaded in NodeSelector.
-
-  ## USAGE
-
-    <Search/>
-
-  ## TECHNICAL DESCRIPTION
-
-      This provides a simple wrapper around AutoSuggest to handle
-      messaging and data passing.
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var Col = ReactStrap.Col,
-    FormGroup = ReactStrap.FormGroup,
-    Label = ReactStrap.Label;
-
-var AutoComplete = require('./AutoComplete');
-var UNISYS = require('unisys/client');
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var DBG = false;
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var thisIdentifier = 'search'; // SELECTION identifier
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// export a class object for consumption by brunch/require
-
-var Search = function (_UNISYS$Component) {
-  _inherits(Search, _UNISYS$Component);
-
-  function Search(props) {
-    _classCallCheck(this, Search);
-
-    var _this = _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).call(this, props));
-
-    _this.state = {
-      searchString: ''
-    };
-    _this.OnStart(function () {
-      // always wrap UNISYS calls in a lifescycle hook otherwise you may try to execute a call
-      // before it has been declared in another module
-      if (DBG) console.log('Search.OnStart: Setting active autocomplete id to', thisIdentifier);
-      _this.AppCall('AUTOCOMPLETE_SELECT', {
-        id: thisIdentifier,
-        value: _this.state.searchString
-      });
-    });
-    return _this;
-  } // constructor
-
-  /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  /// REACT LIFECYCLE ///////////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /**
-   */
-
-
-  _createClass(Search, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {}
-    /** REACT calls this to receive the component layout and data sources
-     */
-
-  }, {
-    key: 'render',
-    value: function render() {
-      return React.createElement(
-        FormGroup,
-        { row: true },
-        React.createElement(
-          Col,
-          null,
-          React.createElement(AutoComplete, {
-            identifier: thisIdentifier,
-            disabledValue: this.state.searchString,
-            inactiveMode: 'disabled'
-          }),
-          React.createElement(
-            Label,
-            { className: 'small text-muted' },
-            'Type to search or add a node:'
-          )
-        )
-      );
-    }
-  }]);
-
-  return Search;
-}(UNISYS.Component); // class Search
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = Search;
-});
-
-require.register("view/netcreate/components/Template.jsx", function(exports, require, module) {
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _jsonEditor = require('@json-editor/json-editor');
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/* eslint-disable no-alert */
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  Template Editor View
-
-  Displays a variety of tools to edit templates:
-  * Edit Node Types
-  * Edit Edge Types
-  * Edit Current Template
-  * Download Current Template
-  * Create New Template
-  * Import Template from File
-
-  This is displayed on the More.jsx component/panel but can be moved
-  anywhere.
-
-  Templates can only be edited if:
-  * There are no nodes or edges being edited
-  * No one is trying to import data
-  * There are no other templates being edited
-
-  Conversely, if a Template is being edited, Import, Node and Edge editing
-  will be disabled.
-
-  ## BACKGROUND
-
-    Template data is loaded by `server-database` DB.InitializeDatabase call.
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-var React = require('react');
-var ReactStrap = require('reactstrap');
-var Button = ReactStrap.Button;
-
-var UNISYS = require('unisys/client');
-
-var _require = require('system/util/enum'),
-    EDITORTYPE = _require.EDITORTYPE;
-
-var TEMPLATE_MGR = require('../templateEditor-mgr');
-var SCHEMA = require('../template-schema');
-var DATASTORE = require('system/datastore');
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var DBG = false;
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-var UDATA = null;
-var EDITOR = void 0; // json-editor object
-var typeOptions = void 0;
-
-/// REACT COMPONENT ///////////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-var Template = function (_UNISYS$Component) {
-  _inherits(Template, _UNISYS$Component);
-
-  function Template(props) {
-    _classCallCheck(this, Template);
-
-    var _this = _possibleConstructorReturn(this, (Template.__proto__ || Object.getPrototypeOf(Template)).call(this, props));
-
-    _this.state = {
-      disableEdit: false,
-      isBeingEdited: false,
-      editScope: undefined, // Determines whether the user is tring to edit the
-      // template's root (everything in the template),
-      // or just focused on a subsection: nodeTypeOptions,
-      // edgeTypeOptions
-      tomlfile: undefined,
-      tomlfileStatus: '',
-      tomlfileErrors: undefined,
-      tomlfilename: 'loading...'
-    };
-    _this.loadEditor = _this.loadEditor.bind(_this);
-    _this.updateEditState = _this.updateEditState.bind(_this);
-    _this.disableOrigLabelFields = _this.disableOrigLabelFields.bind(_this);
-    _this.releaseOpenEditor = _this.releaseOpenEditor.bind(_this);
-    _this.onNewTemplate = _this.onNewTemplate.bind(_this);
-    _this.onCurrentTemplateLoad = _this.onCurrentTemplateLoad.bind(_this);
-    _this.onEditNodeTypes = _this.onEditNodeTypes.bind(_this);
-    _this.onEditEdgeTypes = _this.onEditEdgeTypes.bind(_this);
-    _this.onTOMLfileSelect = _this.onTOMLfileSelect.bind(_this);
-    _this.onDownloadTemplate = _this.onDownloadTemplate.bind(_this);
-    _this.onSaveChanges = _this.onSaveChanges.bind(_this);
-    _this.onCancelEdit = _this.onCancelEdit.bind(_this);
-
-    UDATA = UNISYS.NewDataLink(_this);
-    UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', _this.updateEditState);
-    return _this;
-  } // constructor
-
-  _createClass(Template, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.updateEditState();
-      DATASTORE.GetTemplateTOMLFileName().then(function (result) {
-        _this2.setState({ tomlfilename: result.filename });
-      });
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      if (EDITOR) EDITOR.destroy();
-      this.releaseOpenEditor();
-      UDATA.UnhandleMessage('EDIT_PERMISSIONS_UPDATE', this.updateEditState);
-    }
-
-    /// METHODS /////////////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    /**
-     * Load JSON Editor
-     * -- If schema is not defined, the default schema is used
-     * -- If startval is not defined, an empty template created from the default
-     *    schema is used.
-     * @param {object} parms { schema, startval }
-     * @param {function} cb - Callback function
-     */
-
-  }, {
-    key: 'loadEditor',
-    value: function loadEditor(parms, cb) {
-      var _this3 = this;
-
-      UDATA.NetCall('SRV_REQ_EDIT_LOCK', { editor: EDITORTYPE.TEMPLATE }).then(function (data) {
-        var el = document.getElementById('editor');
-        var schema = parms && parms.schema || SCHEMA.TEMPLATE;
-        var startval = parms && parms.startval;
-
-        var options = {
-          theme: 'bootstrap4', // spectre, bootstrap3, tailwind, html
-          disable_edit_json: true, // set to false allow direct viewing/editing of json for debugging
-          disable_properties: false, // needed to allow user to add missing properties
-          object_layout: 'table', // 'grid', 'grid-strict', 'categories'
-          no_additional_properties: true, // prevent users from adding new non-schema properties
-          schema: schema
-          // iconlib: 'fontawesome5', // fontawesome is not currently loaded
-        };
-        if (startval) options.startval = startval; // only add startval if its defined, otherwise you end up with an empty template
-        if (EDITOR) EDITOR.destroy(); // clear any existing editor
-        EDITOR = new _jsonEditor.JSONEditor(el, options);
-
-        _this3.setState({ isBeingEdited: true });
-
-        if (cb === undefined || typeof cb !== 'function') return;
-        cb();
-      });
-    }
-
-    /// UI EVENT HANDLERS /////////////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'updateEditState',
-    value: function updateEditState() {
-      var _this4 = this;
-
-      // disable edit if someone else is editing a template, node, or edge
-      var disableEdit = false;
-      UDATA.NetCall('SRV_GET_EDIT_STATUS').then(function (data) {
-        // someone else might be editing a template or importing or editing node or edge
-        disableEdit = data.templateBeingEdited || data.importActive || data.nodeOrEdgeBeingEdited;
-        _this4.setState({ disableEdit: disableEdit });
-      });
-    }
-
-    // When editing Node or Edge Type Options, the original label field should be
-    // disabled so they can't be edited
-    // ClassName added in template-schema.GetTypeEditorSchema()
-
-  }, {
-    key: 'disableOrigLabelFields',
-    value: function disableOrigLabelFields() {
-      var origLabelFields = document.getElementsByClassName('disabledField');
-      // origLabelFields is a HTMLCollection, not an array
-      // FISHY FIX...is the use of arrow function here correct? The arrow function
-      // arg 'f' is shadowing the 'const f' in the for...of...
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = origLabelFields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var f = _step.value;
-          (function (f) {
-            return f.setAttribute('disabled', 'disabled');
-          });
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    }
-  }, {
-    key: 'releaseOpenEditor',
-    value: function releaseOpenEditor() {
-      UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: EDITORTYPE.TEMPLATE });
-    }
-  }, {
-    key: 'onNewTemplate',
-    value: function onNewTemplate() {
-      this.setState({ editScope: 'root', isBeingEdited: true });
-      this.loadEditor(); // new blank template with default schema
-    }
-  }, {
-    key: 'onCurrentTemplateLoad',
-    value: function onCurrentTemplateLoad(e) {
-      var _this5 = this;
-
-      UDATA.LocalCall('EDIT_CURRENT_TEMPLATE') // nc-logic
-      .then(function (result) {
-        _this5.setState({ editScope: 'root', isBeingEdited: true });
-        _this5.loadEditor({ startval: result.template });
-      });
-    }
-  }, {
-    key: 'onEditNodeTypes',
-    value: function onEditNodeTypes() {
-      var _this6 = this;
-
-      UDATA.LocalCall('EDIT_CURRENT_TEMPLATE') // nc-logic
-      .then(function (result) {
-        var schemaNodeTypeOptions = SCHEMA.NODETYPEOPTIONS;
-        // Wrap options in custom Schema to show Delete management UI
-        var nodeTypeEditorSchema = SCHEMA.GetTypeEditorSchema(schemaNodeTypeOptions);
-        var startval = { options: result.template.nodeDefs.type.options };
-        _this6.setState({ editScope: 'nodeTypeOptions', isBeingEdited: true });
-        _this6.loadEditor({
-          schema: nodeTypeEditorSchema,
-          startval: startval
-        }, function () {
-          _this6.disableOrigLabelFields();
-          // HACK: After a row is added, we need to also disable the newly added
-          // "Label" field -- the new label should be added in the "Change To" field
-          EDITOR.on('addRow', function (editor) {
-            _this6.disableOrigLabelFields();
-          });
-        });
-      });
-    }
-  }, {
-    key: 'onEditEdgeTypes',
-    value: function onEditEdgeTypes() {
-      var _this7 = this;
-
-      UDATA.LocalCall('EDIT_CURRENT_TEMPLATE') // nc-logic
-      .then(function (result) {
-        var schemaEdgeTypeOptions = SCHEMA.EDGETYPEOPTIONS;
-        // Wrap options in custom Schema to show Delete management UI
-        var edgeTypeEditorSchema = SCHEMA.GetTypeEditorSchema(schemaEdgeTypeOptions);
-        var startval = { options: result.template.edgeDefs.type.options };
-        _this7.setState({ editScope: 'edgeTypeOptions', isBeingEdited: true });
-        _this7.loadEditor({
-          schema: edgeTypeEditorSchema,
-          startval: startval
-        }, function () {
-          _this7.disableOrigLabelFields();
-          // HACK: After a row is added, we need to also disable the newly added
-          // "Label" field -- the new label should be added in the "Change To" field
-          EDITOR.on('addRow', function (editor) {
-            _this7.disableOrigLabelFields();
-          });
-        });
-      });
-    }
-  }, {
-    key: 'onTOMLfileSelect',
-    value: function onTOMLfileSelect(e) {
-      var _this8 = this;
-
-      // import
-      var tomlfile = e.target.files[0];
-      TEMPLATE_MGR.ValidateTOMLFile({ tomlfile: tomlfile }).then(function (result) {
-        if (result.isValid) {
-          _this8.setState({
-            editScope: 'root'
-          });
-          _this8.loadEditor({
-            schema: SCHEMA.TEMPLATE,
-            startval: result.templateJSON
-          });
-        } else {
-          var errorMsg = result.error;
-          _this8.setState({
-            tomlfile: undefined,
-            tomlfileStatus: 'Invalid template file!!!',
-            tomlfileErrors: errorMsg
-          });
-        }
-      });
-    }
-  }, {
-    key: 'onDownloadTemplate',
-    value: function onDownloadTemplate() {
-      TEMPLATE_MGR.DownloadTemplate();
-    }
-  }, {
-    key: 'onSaveChanges',
-    value: function onSaveChanges() {
-      var _this9 = this;
-
-      var templateJSON = EDITOR.getValue(); // could be a snippet
-      var editScope = this.state.editScope;
-
-      var template = TEMPLATE_MGR.UpdateTemplate(templateJSON, editScope);
-      TEMPLATE_MGR.SaveTemplateToFile(template).then(function (result) {
-        if (!result.OK) {
-          alert(result.info);
-        } else {
-          _this9.setState({ isBeingEdited: false });
-        }
-      });
-      this.releaseOpenEditor();
-    }
-  }, {
-    key: 'onCancelEdit',
-    value: function onCancelEdit() {
-      this.setState({ isBeingEdited: false });
-      this.releaseOpenEditor();
-    }
-
-    /// REACT LIFECYCLE METHODS ///////////////////////////////////////////////////
-    /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-  }, {
-    key: 'render',
-    value: function render() {
-      var _state = this.state,
-          disableEdit = _state.disableEdit,
-          isBeingEdited = _state.isBeingEdited,
-          tomlfile = _state.tomlfile,
-          tomlfileStatus = _state.tomlfileStatus,
-          tomlfileErrors = _state.tomlfileErrors,
-          tomlfilename = _state.tomlfilename;
-
-      var editorjsx = void 0;
-
-      if (disableEdit && !isBeingEdited) {
-        // Node or Edge is being edited, show disabled message
-        editorjsx = React.createElement(
-          'div',
-          null,
-          React.createElement(
-            'p',
-            null,
-            React.createElement(
-              'i',
-              null,
-              'Templates cannot be edited while someone is editing a node, edge, or template, or importing data.'
-            )
-          ),
-          React.createElement(
-            'p',
-            null,
-            React.createElement(
-              'i',
-              null,
-              'Please finish editing and try again.'
-            )
-          )
-        );
-      } else {
-        // OK to Edit, show edit buttons
-        editorjsx = React.createElement(
-          'div',
-          { hidden: isBeingEdited },
-          React.createElement(
-            'p',
-            null,
-            React.createElement(
-              'b',
-              null,
-              'PROCEED WITH CAUTION!'
-            ),
-            ': Editing templates will modify the data in your dataset and may leave your dataset in an unusable state. Only',
-            ' ',
-            React.createElement(
-              'b',
-              null,
-              'expert users'
-            ),
-            ' who know how the data is set up should do this.'
-          ),
-          React.createElement(
-            'div',
-            {
-              style: {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                columnGap: '10px',
-                rowGap: '5px'
-              }
-            },
-            React.createElement(
-              'i',
-              { className: 'small text-muted' },
-              'Edit Current Template Options'
-            ),
-            React.createElement('br', null),
-            React.createElement(
-              Button,
-              { size: 'sm', onClick: this.onEditNodeTypes },
-              'Edit Node Types'
-            ),
-            React.createElement(
-              Button,
-              { size: 'sm', onClick: this.onEditEdgeTypes },
-              'Edit Edge Types'
-            ),
-            React.createElement('p', null),
-            React.createElement('p', null),
-            React.createElement('hr', null),
-            React.createElement('hr', null),
-            React.createElement(
-              'p',
-              null,
-              'ADVANCED USERS ONLY'
-            ),
-            React.createElement('p', null),
-            React.createElement(
-              'i',
-              { className: 'small text-muted' },
-              'Edit Current Template'
-            ),
-            React.createElement('br', null),
-            React.createElement(
-              Button,
-              { size: 'sm', onClick: this.onCurrentTemplateLoad },
-              'Edit Current Template'
-            ),
-            React.createElement(
-              Button,
-              { outline: true, size: 'sm', onClick: this.onDownloadTemplate },
-              'Download Current Template'
-            ),
-            React.createElement('p', null),
-            React.createElement('p', null),
-            React.createElement(
-              'i',
-              { className: 'small text-muted' },
-              'Create New Template'
-            ),
-            React.createElement('br', null),
-            React.createElement(
-              Button,
-              { size: 'sm', onClick: this.onNewTemplate },
-              'New Template'
-            ),
-            React.createElement(
-              'div',
-              null,
-              React.createElement(
-                'i',
-                { className: 'small text-muted' },
-                'Import TOML template (replace existing template)'
-              ),
-              React.createElement('br', null),
-              React.createElement(
-                'label',
-                null,
-                React.createElement('input', {
-                  type: 'file',
-                  accept: 'text/toml',
-                  id: 'tomlfileInput',
-                  onChange: this.onTOMLfileSelect
-                }),
-                '\xA0',
-                React.createElement(
-                  'i',
-                  null,
-                  tomlfileStatus
-                ),
-                React.createElement('br', null),
-                tomlfileErrors && React.createElement(
-                  'span',
-                  { style: { color: 'red' } },
-                  tomlfileErrors
-                )
-              ),
-              React.createElement('br', null)
-            )
-          ),
-          React.createElement('hr', null)
-        );
-      }
-      return React.createElement(
-        'div',
-        {
-          style: {
-            backgroundColor: 'rgba(240,240,240,0.95)',
-            padding: '10px 20px'
-          }
-        },
-        React.createElement(
-          'h4',
-          null,
-          'Template Editor'
-        ),
-        React.createElement(
-          'p',
-          null,
-          React.createElement(
-            'label',
-            null,
-            'Current Template File Name:'
-          ),
-          ' ',
-          React.createElement(
-            'code',
-            null,
-            tomlfilename
-          )
-        ),
-        editorjsx,
-        React.createElement(
-          'div',
-          { hidden: !isBeingEdited },
-          React.createElement(
-            Button,
-            { onClick: this.onCancelEdit, size: 'sm', outline: true },
-            'Cancel'
-          ),
-          '\xA0',
-          React.createElement(
-            Button,
-            { onClick: this.onSaveChanges, size: 'sm', color: 'primary' },
-            'Save Changes'
-          ),
-          React.createElement('hr', null)
-        ),
-        React.createElement('div', { id: 'editor', hidden: !isBeingEdited })
-      );
-    }
-  }]);
-
-  return Template;
-}(UNISYS.Component); // class Help
-
-// NOTES on using json-editor
-// Not needed anymore, but keep for reference for managing json-editor
-//
-// // Handle Delete Events
-// EDITOR.on('deleteRow', editor => {
-//   const val = EDITOR.getValue();
-//   const currentOptions = val ? val.options : [];
-//   console.log('currentOptions', currentOptions);
-//   typeOptionsRemoved = []; // start from scratch each time
-//   typeOptions.forEach(o => {
-//     if (!currentOptions.find(c => c.label === o.label)) typeOptionsRemoved.push(o);
-//   });
-//   console.log('removed options', typeOptionsRemoved);
-//   const deletions = EDITOR.getEditor('root.deletions');
-//   if (deletions) deletions.setValue(typeOptionsRemoved);
-//
-//   // key is 0 for first row
-//   // editor and key are undefined for last row
-//   // console.log('deleteRow', editor && editor.key)
-//   // const deletions = EDITOR.getEditor('root.deletions');
-//   // if (deletions) deletions.setValue([{ label: 'yo', color: '#ffffff' }]);
-//   // EDITOR.setValue({ deleted: 'yes' });
-// });
-//
-//
-// watch one
-// root.1 refers to second field, fields are 0-indexed
-// EDITOR.watch('root.1.label', (e) => {
-//   // `e` is undefined
-//   console.log('change', e);
-// });
-//
-// watch ALL
-// works but watches too much?
-// const watcherCallback = function (path) {
-//   console.log(`field with path: [${path}] changed to [${JSON.stringify(this.getEditor(path).getValue())}]`);
-//   // Do something
-// }
-// for (let key in EDITOR.editors) {
-//   if (EDITOR.editors.hasOwnProperty(key) && key !== 'root') {
-//     EDITOR.watch(key, watcherCallback.bind(EDITOR, key));
-//   }
-// }
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-module.exports = Template;
-});
-
 require.register("view/netcreate/components/URComment.jsx", function(exports, require, module) {
 'use strict';
 
@@ -25882,6 +18705,15 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                uid={uid} // user id
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                key={cvobj.comment_id} // part of thread array
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           1. UI input cycle
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               URComment handles updates from by the URCommentPrompt component.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               The data is stored locally until evt_SaveBtn is clicked, which then
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               calls comment-mgr.UpdateComment.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           2. Data State management
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               comment-mgr saves the data to the database
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               and updates COMMENTVOJBS state, which triggers a re-render of the
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               URCommentThread component.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
 
@@ -25938,6 +18770,7 @@ function URComment(_ref) {
       setElement = _useState2[1];
 
   var _useState3 = (0, _react.useState)({
+    id: undefined,
     commenter: '',
     createtime_string: '',
     modifytime_string: '',
@@ -25970,12 +18803,10 @@ function URComment(_ref) {
 
   /** Component Effect - updated comment */
   (0, _react.useEffect)(function () {
-    // declare helpers
-    var urmsg_UpdatePermissions = function urmsg_UpdatePermissions(data) {
-      var isLoggedIn = _commonNetmessageClass2.default.GlobalGroupID();
+    var urstate_CMT_LOCKSTATE = function urstate_CMT_LOCKSTATE(data) {
       setState(function (prevState) {
         return _extends({}, prevState, {
-          uIsDisabled: data.commentBeingEditedByMe || !isLoggedIn
+          uIsDisabled: c_IsDisabled()
         });
       });
     };
@@ -25985,28 +18816,44 @@ function URComment(_ref) {
 
     // hook UNISYS state change and message handlers
     UDATA.OnAppStateChange('COMMENTVOBJS', urstate_UpdateCommentVObjs);
-    UDATA.HandleMessage('COMMENT_UPDATE_PERMISSIONS', urmsg_UpdatePermissions);
+    UDATA.OnAppStateChange('CMTLOCKSTATE', urstate_CMT_LOCKSTATE);
 
     // cleanup methods for functional component unmount
     return function () {
       if (state.uIsBeingEdited) _commentMgr2.default.UnlockComment(cid);
       UDATA.AppStateChangeOff('COMMENTVOBJS', urstate_UpdateCommentVObjs);
-      UDATA.UnhandleMessage('COMMENT_UPDATE_PERMISSIONS', urmsg_UpdatePermissions);
+      UDATA.AppStateChangeOff('CMTLOCKSTATE', urstate_CMT_LOCKSTATE);
     };
   }, [state.uIsBeingEdited]); // run when uIsBeingEdited changes
 
   /// COMPONENT HELPER METHODS ////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /** UI is disabled if either:
+   *  - the comment is being edited by this user
+   *  - someone else is editing this comment
+   */
+  function c_IsDisabled() {
+    var LOCKSTATE = UDATA.AppState('LOCKSTATE');
+    return LOCKSTATE.lockedComments.includes(cid) || _commentMgr2.default.GetCommentsAreBeingEdited();
+  }
+
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** Declare helper method to load viewdata from comment manager into the
    *  component state */
   function c_LoadCommentVObj() {
+    // If the comment is being edited, skip the update, else we'd lose the edit
+    if (state.uIsBeingEdited) {
+      if (DBG) console.log('COMMENTVOBJS Update!  ' + cid + ' is being edited skipping update!!!');
+      return;
+    }
+
     var cvobj = _commentMgr2.default.GetCommentVObj(cref, cid);
     var comment = _commentMgr2.default.GetComment(cid);
 
     // When deleting, COMMENTVOBJS state change will trigger a load and render
     // before the component is unmounted.  So catch it and skip the state update.
     if (!cvobj || !comment) {
-      console.error('c_LoadCommentVObj: comment or cvobj not found!');
+      console.log('c_LoadCommentVObj: comment or cvobj not found!  Usually because it has been deleted.');
       return;
     }
 
@@ -26021,6 +18868,8 @@ function URComment(_ref) {
 
     setState({
       // Data
+      // REVIEW MEME uses `comment.id` and NC uses `comment.comment_id`
+      id: comment.comment_id, // human readable "#xxx" id matching db id // MEME uses comment.id, matching pmcData id
       comment_id_parent: comment.comment_id_parent,
       commenter: _commentMgr2.default.GetUserName(comment.commenter_id),
       selected_comment_type: selected_comment_type,
@@ -26034,7 +18883,8 @@ function URComment(_ref) {
       uIsSelected: cvobj.isSelected,
       uIsBeingEdited: cvobj.isBeingEdited,
       uIsEditable: cvobj.isEditable,
-      uAllowReply: cvobj.allowReply
+      uAllowReply: cvobj.allowReply,
+      uIsDisabled: c_IsDisabled()
     });
 
     // Lock edit upon creation of a new comment or a new reply
@@ -26065,8 +18915,7 @@ function URComment(_ref) {
         uViewMode: uViewMode
       });
     });
-
-    _commentMgr2.default.LockComment(cid);
+    _commentMgr2.default.UIEditComment(cid);
   }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** handle save button, which saves the state to comment manager.
@@ -26079,8 +18928,7 @@ function URComment(_ref) {
     comment.comment_type = selected_comment_type;
     comment.commenter_text = [].concat(_toConsumableArray(commenter_text)); // clone, not byref
     comment.commenter_id = uid;
-    _commentMgr2.default.UpdateComment(comment);
-    _commentMgr2.default.UnlockComment(cid);
+    _commentMgr2.default.UISaveComment(comment);
     setState(function (prevState) {
       return _extends({}, prevState, {
         uViewMode: _commentMgr2.default.VIEWMODE.VIEW
@@ -26115,50 +18963,59 @@ function URComment(_ref) {
   /** handle delete button, which removes the comment associated with this
    *  commment from the comment manager */
   function evt_DeleteBtn() {
+    var id = state.id;
+
     _commentMgr2.default.RemoveComment({
       collection_ref: cref,
+      id: id,
       comment_id: cid,
       uid: uid
     });
   }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** handle cancel button, which reverts the comment to its previous state,
-   *  doing additional housekeeping to keep comment manager consistent */
+   *  doing additional housekeeping to keep comment manager consistent
+   *  If the comment is empty and it's a new comment, just remove it
+   * */
   function evt_CancelBtn() {
-    var commenter_text = state.commenter_text;
+    var commenter_text = state.commenter_text,
+        id = state.id;
 
-    var savedCommentIsEmpty = true;
-    commenter_text.forEach(function (t) {
-      if (t !== '') savedCommentIsEmpty = false;
+
+    var previouslyHadText = false;
+    _commentMgr2.default.GetComment(cid).commenter_text.forEach(function (t) {
+      if (t !== '') previouslyHadText = true;
     });
 
-    var cb = function cb() {
-      return _commentMgr2.default.UnlockComment(cid);
-    };
-
-    if (savedCommentIsEmpty) {
-      // "Cancel" will always remove the comment if the comment is empty
-      // - usually because it's a newly created comment
-      // - but also if the user clears all the text fields
-      // We don't care if the user entered any text
-      _commentMgr2.default.RemoveComment({
-        collection_ref: cref,
-        comment_id: cid,
-        uid: uid,
-        showCancelDialog: true
-      }, cb);
-    } else {
-      // revert to previous text if current text is empty
+    if (previouslyHadText) {
+      // revert to previous text
+      _commentMgr2.default.UICancelComment(cid);
       var _comment = _commentMgr2.default.GetComment(cid);
       setState(function (prevState) {
         return _extends({}, prevState, {
+          modifytime_string: _comment.modifytime_string,
+          selected_comment_type: _comment.comment_type,
           commenter_text: [].concat(_toConsumableArray(_comment.commenter_text)), // restore previous text clone, not by ref
+          comment_error: '',
           uViewMode: _commentMgr2.default.VIEWMODE.VIEW
         });
       });
-
-      cb();
+    } else {
+      // Remove the temporary comment and unlock
+      _commentMgr2.default.RemoveComment({
+        collection_ref: cref,
+        id: id,
+        comment_id: cid,
+        uid: uid,
+        skipDialog: true
+      });
+      setState({
+        commenter_text: [],
+        uViewMode: _commentMgr2.default.VIEWMODE.VIEW
+      });
     }
+
+    return;
   }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** handle select button, which updates the comment type associated with this
@@ -26265,7 +19122,7 @@ function URComment(_ref) {
       );
     })
   );
-  var SelectedType = commentTypes.get(selected_comment_type); //(type => type[0] === selected_comment_type);
+  var SelectedType = commentTypes.get(selected_comment_type);
   var SelectedTypeLabel = SelectedType ? SelectedType.label : 'Type not found';
   // Alternative three-dot menu approach to hide "Edit" and "Delete"
   // const UIOnEditMenuSelect = event => {
@@ -26322,14 +19179,18 @@ function URComment(_ref) {
         null,
         _react2.default.createElement(
           'div',
-          { className: 'commentId' },
-          '#',
-          cid
-        ),
-        _react2.default.createElement(
-          'div',
-          null,
-          TypeSelector
+          { className: 'commentTypeBar' },
+          _react2.default.createElement(
+            'div',
+            { className: 'commentTypeLabel' },
+            TypeSelector
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'commentId' },
+            '#',
+            comment.comment_id
+          )
         ),
         _react2.default.createElement(_URCommentPrompt2.default, {
           cref: cref,
@@ -26356,7 +19217,7 @@ function URComment(_ref) {
       {
         id: cid,
         ref: setElement,
-        className: 'comment ' + (comment.comment_isMarkedDeleted ? 'deleted' : '')
+        className: 'comment ' + (comment.comment_isMarkedDeleted ? 'deleted' : '') + ' ' + (cvobj.isMarkedRead ? '' : 'unread')
       },
       _react2.default.createElement(
         'div',
@@ -26377,22 +19238,26 @@ function URComment(_ref) {
         null,
         _react2.default.createElement(
           'div',
-          { className: 'commentId' },
-          '#',
-          cid
-        ),
-        _react2.default.createElement(
-          'div',
-          null,
+          { className: 'commentTypeBar' },
           _react2.default.createElement(
-            'span',
-            { className: 'date' },
-            'TYPE: '
+            'div',
+            { className: 'commentTypeLabel' },
+            _react2.default.createElement(
+              'span',
+              { className: 'date' },
+              'TYPE: '
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'type' },
+              SelectedTypeLabel
+            )
           ),
           _react2.default.createElement(
-            'span',
-            { className: 'type' },
-            SelectedTypeLabel
+            'div',
+            { className: 'commentId' },
+            '#',
+            comment.comment_id
           )
         ),
         _react2.default.createElement(_URCommentPrompt2.default, {
@@ -26402,15 +19267,14 @@ function URComment(_ref) {
           isMarkedDeleted: comment.comment_isMarkedDeleted,
           isMarkedRead: cvobj.isMarkedRead,
           viewMode: _commentMgr2.default.VIEWMODE.VIEW,
-          onChange: evt_CommentText,
           errorMessage: comment_error
         }),
-        uid && _react2.default.createElement(
+        uid && !uIsDisabled && _react2.default.createElement(
           'div',
           { className: 'commentbar' },
-          !uIsDisabled && !comment.comment_isMarkedDeleted && ReplyBtn,
-          !uIsDisabled && isAllowedToEditOwnComment && !comment.comment_isMarkedDeleted && EditBtn || _react2.default.createElement('div', null),
-          (!uIsDisabled && isAllowedToEditOwnComment && !comment.comment_isMarkedDeleted || isAdmin) && DeleteBtn || _react2.default.createElement('div', null)
+          !comment.comment_isMarkedDeleted && ReplyBtn,
+          isAllowedToEditOwnComment && !comment.comment_isMarkedDeleted && EditBtn || _react2.default.createElement('div', null),
+          (isAllowedToEditOwnComment && !comment.comment_isMarkedDeleted || isAdmin) && DeleteBtn || _react2.default.createElement('div', null)
         )
       )
     );
@@ -26428,7 +19292,7 @@ function URComment(_ref) {
 exports.default = URComment;
 });
 
-require.register("view/netcreate/components/URCommentBtn.jsx", function(exports, require, module) {
+require.register("view/netcreate/components/URCommentCollectionMgr.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -26437,68 +19301,57 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentCollectionMgr
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentBtn is the main UI element for comments.  It can be attached to any
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           UI component and provides a place to anchor and display comments.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Clicking the CommentBtn will toggle the comment view on and off
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Closing the comment by clicking the "Close" or "X" button will mark
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             the comments "read".
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * "Read/Unread" status is tied to a user id.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Any open URCommentThread windows will be positioned close to the
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             URCommentBtn that opened it upon a window resize.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Comment collection components are dynamically created and destroyed in the
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           DOM as the user requests opening and closing comment collection windows.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           The URCommentCollectionMgr handles the insertion and removal of these
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           components.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           It displays a summary of the comment status:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * count of number of comments
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * has unread comments (gold color)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * all comments are read (gray color)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           During Edit
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           While a comment is being edited, we need to catch events to prevent
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           the comment from inadvertently being closed, e.g. for Net.Create:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * prevent NodeTable or EdgeTable view/edit actions from triggering
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             (handled by selection-mgr)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * prevent NCNode from being able to click "Edit"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * prevent URCommentBtn close toggles (handled by URCommentBtn)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * prevent NCGraphRenderer events from selecting another node
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             (handled by selection-mgr)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           This is handled via comment-mgr.LockComment.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           UR MESSAGES
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           *  CMT_COLLECTION_SHOW {cref, position}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           *  CMT_COLLECTION_HIDE {cref}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           *  CMT_COLLECTION_HIDE_ALL
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            USE:
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <URCommentBtn
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               cref={collection_ref}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               uuiid={uuiid}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <URCommentCollectionMgr message={message} handleMessageUpdate/>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           PROPS:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * cref    -- collection reference (usu node id, edge id)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * uuiid   -- unique user interface id
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          used to differentiate comment buttons on tables vs nodes/edges
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ensures that each comment button id is unique
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           STATES:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Empty             -- No comments.  Empty chat bubble.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * HasUnreadComments -- Gold comment icon with count of comments in red
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * HasReadComments   -- Gray comment icon with count of comments in white
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           HISTORY
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Originally, URCommentBtn were designed to handle comment opening
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           in Net.Create from two types componets: nodes/edges and
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           NodeTables/EdgeTables.  Since the requests could come
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           from different components, we had to keep track of which component
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           was requesting the opening, so they could close the corresponding
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           comment.  In order to do this, we used a reference that combined
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           the comment id reference (collection reference, or cref)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           with a unique user interface id (uuiid).
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * commentIsOpen     -- Corresponding comment window is open.  Comment icon outlined.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * commentBtnIsSelected -- This comment button is selected.  Comment icon outlined.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * x, y              -- position of CommentThread window
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * commentButtonId   -- unique id for each button
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    allows showing open/closed status for the same comment
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           MEME doesn't need that so we simply use `cref` as the
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           comment id.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           STRUCTURE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           That simplifies the comment references, but there was a second
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           challenge:
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <URCommentBtn>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <URCommentThread>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <URComment />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <URComment />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ...
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               </URCommentThread>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             </URCommentBtn>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Since the SVG props and mechanisms are NOT react components, we
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           cannot use URCommentBtn to manage opening and editing comments.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Moreover, URCommentBtns opened inside Evidence Links are embedded
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           inside the Evidence Library and comments created inside the library
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           end up hidden due to layers of overflow divs.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           To get around this, URCommentCollectionMgr essentially replaces the
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           functionality of URCommentBtn with three pieces, acting as a middle
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           man and breaking out the...
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * visual display    -- URCommentSVGBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * UI click requests -- URCommentVBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * thread opening / closing requests -- URCommentCollectionMgr
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ...into different functions handled by different components.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
+
+// import UR from '../../../system/ursys';
+// const STATE = require('../lib/client-state');
 
 var _react = require('react');
 
@@ -26518,210 +19371,113 @@ var _URCommentThread2 = _interopRequireDefault(_URCommentThread);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/// Initialize UNISYS DATA LINK for functional react component
-var UDATAOwner = { name: 'URCommentThread' };
+var DBG = true;
+var PR = 'URCommentCollectionMgr';
+
+var UDATAOwner = { name: 'URCommentCollectionMgr' };
 var UDATA = _client2.default.NewDataLink(UDATAOwner);
-/// Debug Flags
-var DBG = false;
-var PR = 'URCommentBtn';
 
 /// REACT FUNCTIONAL COMPONENT ////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/** URCommentBtn renders the comment icon button on objects that can support
- *  comments.  It displays the number of comments and the "read" status.
- *  @param {string} cref - Collection reference
- *  @param {boolean} [uuiid] - Optional secondary identifier for comment button
- *  @returns {React.Component} - URCommentBtn
- */
-function URCommentBtn(_ref) {
-  var cref = _ref.cref,
-      uuiid = _ref.uuiid;
-
+function URCommentCollectionMgr(props) {
   var uid = _commentMgr2.default.GetCurrentUserId();
-  var btnid = c_GenerateBtnId(cref, uuiid);
 
-  var _useState = (0, _react.useState)(c_GenerateCommentButtonId(btnid)),
+  var _useState = (0, _react.useState)([]),
       _useState2 = _slicedToArray(_useState, 2),
-      commentButtonId = _useState2[0],
-      setCommentButtonId = _useState2[1];
+      cmtBtns = _useState2[0],
+      setCmtBtns = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(false),
+  var _useState3 = (0, _react.useState)(0),
       _useState4 = _slicedToArray(_useState3, 2),
-      commentIsOpen = _useState4[0],
-      setCommentIsOpen = _useState4[1];
+      dummy = _useState4[0],
+      setDummy = _useState4[1]; // Dummy state variable to force update
 
-  var _useState5 = (0, _react.useState)(false),
-      _useState6 = _slicedToArray(_useState5, 2),
-      commentBtnIsSelected = _useState6[0],
-      setCommentBtnIsSelected = _useState6[1];
-
-  var _useState7 = (0, _react.useState)(false),
-      _useState8 = _slicedToArray(_useState7, 2),
-      isDisabled = _useState8[0],
-      setIsDisabled = _useState8[1];
-
-  var _useState9 = (0, _react.useState)({ x: '300px', y: '120px' }),
-      _useState10 = _slicedToArray(_useState9, 2),
-      position = _useState10[0],
-      setPosition = _useState10[1];
-
-  var _useState11 = (0, _react.useState)(0),
-      _useState12 = _slicedToArray(_useState11, 2),
-      dummy = _useState12[0],
-      setDummy = _useState12[1]; // Dummy state variable to force update
-
-  /** Component Effect - set up listeners on mount */
+  /** Component Effect - register listeners on mount */
 
 
   (0, _react.useEffect)(function () {
-    UDATA.OnAppStateChange('COMMENTCOLLECTION', urstate_UpdateCommentCollection);
-    UDATA.OnAppStateChange('COMMENTVOBJS', urstate_UpdateCommentVObjs);
-    UDATA.HandleMessage('COMMENT_UPDATE_PERMISSIONS', urmsg_UpdatePermissions);
-    UDATA.HandleMessage('COMMENT_SELECT', urmsg_COMMENT_SELECT);
-    window.addEventListener('resize', evt_OnResize);
-
-    setPosition(c_GetCommentThreadPosition());
+    UDATA.OnAppStateChange('COMMENTVOBJS', redraw, UDATAOwner);
+    UDATA.HandleMessage('CMT_COLLECTION_SHOW', urmsg_COLLECTION_SHOW);
+    UDATA.HandleMessage('CMT_COLLECTION_HIDE', urmsg_COLLECTION_HIDE);
+    UDATA.HandleMessage('CMT_COLLECTION_HIDE_ALL', urmsg_COLLECTION_HIDE_ALL);
 
     return function () {
-      UDATA.AppStateChangeOff('COMMENTCOLLECTION', urstate_UpdateCommentCollection);
-      UDATA.AppStateChangeOff('COMMENTVOBJS', urstate_UpdateCommentVObjs);
-      UDATA.UnhandleMessage('COMMENT_UPDATE_PERMISSIONS', urmsg_UpdatePermissions);
-      UDATA.UnhandleMessage('COMMENT_SELECT', urmsg_COMMENT_SELECT);
-      window.removeEventListener('resize', evt_OnResize);
+      UDATA.AppStateChangeOff('COMMENTVOBJS', redraw);
+      UDATA.UnhandleMessage('CMT_COLLECTION_SHOW', urmsg_COLLECTION_SHOW);
+      UDATA.UnhandleMessage('CMT_COLLECTION_HIDE', urmsg_COLLECTION_HIDE);
+      UDATA.UnhandleMessage('CMT_COLLECTION_HIDE_ALL', urmsg_COLLECTION_HIDE_ALL);
     };
   }, []);
 
+  /// COMPONENT HELPER METHODS ////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   /// UR HANDLERS /////////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urstate_UpdateCommentCollection(COMMENTCOLLECTION) {
-    var uistate = _commentMgr2.default.GetCommentUIState(commentButtonId);
-    var open_uiref = _commentMgr2.default.GetOpenComments(cref);
-    if (open_uiref === commentButtonId) {
-      // The currently open comment is connected to this button
-      setCommentIsOpen(true);
-      setCommentBtnIsSelected(true);
-    } else if (open_uiref !== undefined) {
-      // The currently open comment is this comment, but connected to another button
-      setCommentIsOpen(false);
-      setCommentBtnIsSelected(true);
-    } else {
-      // No comments are open
-      setCommentIsOpen(false);
-      setCommentBtnIsSelected(false);
-    }
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urstate_UpdateCommentVObjs() {
+  function redraw(data) {
     // This is necessary to force a re-render of the threads
     // when the comment collection changes on the net
+    // especially when a new comment is added.
     setDummy(function (dummy) {
       return dummy + 1;
     }); // Trigger re-render
   }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urmsg_UpdatePermissions(data) {
-    setIsDisabled(data.commentBeingEditedByMe);
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urmsg_COMMENT_SELECT(data) {
-    if (data.cref === cref) c_OpenComment(true);
-  }
-
-  /// COMPONENT HELPER METHODS ////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function c_GenerateBtnId(cref, uuiid) {
-    return '' + cref + (uuiid ? uuiid : '');
-  }
-  function c_GenerateCommentButtonId(btnid) {
-    return 'comment-button-' + btnid;
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function c_OpenComment(isOpen) {
-    var position = c_GetCommentThreadPosition();
-    setCommentIsOpen(isOpen);
-    setPosition(position);
-    _commentMgr2.default.ToggleCommentCollection(commentButtonId, cref, position);
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function c_GetCommentThreadPosition() {
-    var btn = document.getElementById(commentButtonId);
-    var cmtbtnx = btn.getBoundingClientRect().left;
-    var windowWidth = Math.min(screen.width, window.innerWidth);
-    var x = void 0;
-    if (windowWidth - cmtbtnx < 500) {
-      x = cmtbtnx - 405;
-    } else {
-      x = cmtbtnx + 35;
-    }
-    var y = btn.getBoundingClientRect().top + window.scrollY;
-    return { x: x, y: y };
-  }
-
-  /// COMPONENT UI HANDLERS ///////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /** handle URCommentBtn click, which opens and closes the URCommentThread */
-  function evt_OnClick(event) {
-    event.stopPropagation();
-    if (!isDisabled) {
-      var updatedIsOpen = !commentIsOpen;
-      c_OpenComment(updatedIsOpen);
-    }
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /** handles window resize, which will adjust the URCommentThread window
-   *  position relative to the resized location of the URCommentBtn
+  /**
+   * Handle urmsg_COLLECTION_SHOW message
+   * 1. Register the button, and
+   * 2. Open the URCommentBtn
+   * @param {Object} data
+   * @param {string} data.cref - Collection reference
+   * @param {Object} data.position - Position of the button
    */
-  function evt_OnResize() {
-    var position = c_GetCommentThreadPosition();
-    setPosition(position);
+  function urmsg_COLLECTION_SHOW(data) {
+    if (DBG) console.log(PR, 'CMT_COLLECTION_SHOW', data);
+    setCmtBtns(function (prevBtns) {
+      return [].concat(_toConsumableArray(prevBtns), [data]);
+    });
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urmsg_COLLECTION_HIDE(data) {
+    if (DBG) console.log(PR, 'CMT_COLLECTION_HIDE', data);
+    setCmtBtns(function (prevBtns) {
+      return prevBtns.filter(function (btn) {
+        return btn.cref !== data.cref;
+      });
+    });
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urmsg_COLLECTION_HIDE_ALL(data) {
+    if (DBG) console.log(PR, 'CMT_COLLECTION_HIDE_ALL', data);
+    setCmtBtns([]);
   }
 
   /// COMPONENT RENDER ////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /** URCommentBtn displays:
-   *  - the number of comments in the thread
-   *  - the "read" status of all comments: unread (gold) or read (gray)
-   *  - isOpen - click on the button to display threads in a new window
-   */
-  var count = _commentMgr2.default.GetCommentCollectionCount(cref);
-  var ccol = _commentMgr2.default.GetCommentCollection(cref) || {};
-
-  var css = 'commentbtn ';
-  if (ccol.hasUnreadComments) css += 'hasUnreadComments ';else if (ccol.hasReadComments) css += 'hasReadComments ';
-  css += commentBtnIsSelected ? 'isOpen ' : '';
-
-  // REVIEW: Replace with svg symbols!
-
-  var label = count > 0 ? count : '';
 
   return _react2.default.createElement(
     'div',
-    { id: commentButtonId },
-    _react2.default.createElement(
-      'div',
-      { className: css, onClick: evt_OnClick },
-      _commentMgr2.default.COMMENTICON,
-      _react2.default.createElement(
-        'div',
-        { className: 'comment-count' },
-        label
-      )
-    ),
-    commentIsOpen && _react2.default.createElement(_URCommentThread2.default, {
-      uiref: commentButtonId,
-      cref: cref,
-      uid: uid,
-      x: position.x,
-      y: position.y
+    { className: 'URCommentCollectionMgr' },
+    cmtBtns.map(function (btn) {
+      return _react2.default.createElement(_URCommentThread2.default, {
+        key: btn.cref,
+        uiref: btn.cref,
+        cref: btn.cref,
+        uid: uid,
+        x: btn.position.x,
+        y: btn.position.y
+      });
     })
   );
 }
 
 /// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-exports.default = URCommentBtn;
+exports.default = URCommentCollectionMgr;
 });
 
 require.register("view/netcreate/components/URCommentPrompt.jsx", function(exports, require, module) {
@@ -26925,6 +19681,14 @@ function URCommentPrompt(_ref) {
           });
           break;
         case 'dropdown':
+          if (!prompt.options.includes(commenterText[promptIndex])) {
+            // currently selected value does not match an item in the dropdown
+            // fall back to the first item in the dropdown
+            if (prompt.options.length > 0) commenterText[promptIndex] = prompt.options[0];else {
+              console.warn('Dropdown for ' + commentType + ' has no options!  Check definition!');
+              commenterText[promptIndex] = ''; // fall back to an empty string
+            }
+          }
           inputJSX = _react2.default.createElement(
             'select',
             {
@@ -27054,8 +19818,7 @@ function URCommentPrompt(_ref) {
           'div',
           { className: 'error' },
           errorMessage
-        ),
-        _react2.default.createElement('hr', null)
+        )
       );
     });
   };
@@ -27067,13 +19830,11 @@ function URCommentPrompt(_ref) {
       { className: 'help' },
       '(nothing selected)'
     );
-
     if (isMarkedDeleted) return _react2.default.createElement(
       'div',
       { className: 'commenttext' },
       'DELETED'
     );
-
     return commentTypes.get(commentType).prompts.map(function (prompt, promptIndex) {
       var displayJSX = void 0;
       switch (prompt.format) {
@@ -27158,11 +19919,6 @@ function URCommentPrompt(_ref) {
         _react2.default.createElement(
           'div',
           { className: 'label' },
-          _react2.default.createElement(
-            'div',
-            { className: 'comment-icon-inline' },
-            !isMarkedRead && !isMarkedDeleted && _commentMgr2.default.COMMENTICON
-          ),
           prompt.prompt
         ),
         displayJSX,
@@ -27170,8 +19926,7 @@ function URCommentPrompt(_ref) {
           'div',
           { className: 'error' },
           errorMessage
-        ),
-        _react2.default.createElement('hr', null)
+        )
       );
     });
   };
@@ -27180,6 +19935,178 @@ function URCommentPrompt(_ref) {
 }
 
 exports.default = URCommentPrompt;
+});
+
+require.register("view/netcreate/components/URCommentSVGBtn.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentSVGBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           A purely visual button that uses SVG Symbols.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Relies on props to render.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           USE:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <URCommentSVGBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 uiref={cref}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 count={countRepliesToMe}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 hasUnreadComments={countRepliesToMe > 0}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 hasReadComments={countRepliesToMe === 0}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 selected={false}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 disabled={false}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 small={false}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 onClick={evt_ExpandPanel}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Used by:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           - URCommentStatus
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Displays three visual states:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           - read/unread status
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             - has unread comments (gold color)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             - all comments are read (gray color)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           - is open / selected (displaying comments)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           - the number of comments.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           NOTE: Unlike MEME's implementation, we do not use svgjs
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 we retain svgjs for documentation purposes only.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _commentMgr = require('../comment-mgr');
+
+var _commentMgr2 = _interopRequireDefault(_commentMgr);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// MEME implementation
+// import { SVG } from '@svgdotjs/svg.js'; // esm version // MEME implementation
+// import './URComment.css'; // MEME implementation
+
+/// REACT FUNCTIONAL COMPONENT ////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function URCommentSVGBtn(_ref) {
+  var uiref = _ref.uiref,
+      count = _ref.count,
+      hasUnreadComments = _ref.hasUnreadComments,
+      hasReadComments = _ref.hasReadComments,
+      selected = _ref.selected,
+      disabled = _ref.disabled,
+      small = _ref.small,
+      onClick = _ref.onClick;
+
+  // REVIEW: Remove?  not being used?
+  var svgRef = (0, _react.useRef)(null);
+
+  var _useState = (0, _react.useState)({
+    label: '',
+    css: '',
+    svgClass: ''
+  }),
+      _useState2 = _slicedToArray(_useState, 2),
+      state = _useState2[0],
+      setState = _useState2[1];
+
+  /// USEEFFECT ///////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+  (0, _react.useEffect)(function () {
+    // MEME implementation
+    // const draw = SVG(svgRef.current);
+
+    c_DrawCommentIcon();
+
+    return function () {
+      // MEME implementation
+      // draw.remove();
+    };
+  }, []);
+
+  (0, _react.useEffect)(function () {
+    c_DrawCommentIcon();
+  }, [count, hasUnreadComments, hasReadComments, selected]);
+
+  /// COMPONENT HELPER METHODS ////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function c_DrawCommentIcon() {
+    // css
+    var css = ' ';
+    if (hasUnreadComments) css += 'hasUnreadComments ';else if (hasReadComments) css += 'hasReadComments ';
+    css += selected ? 'isOpen ' : '';
+    css += disabled ? 'disabled ' : '';
+
+    var commentCountLabel = count > 0 ? count : ' ';
+
+    var SVGClass = 'svgcmt-unread';
+    if (hasReadComments && !hasUnreadComments || count === '' || count === 0) {
+      // it's possible to have both read and unread comments
+      // if there's anything unread, we want to mark it unread
+      if (selected) SVGClass = 'svgcmt-readSelected';else SVGClass = 'svgcmt-read-outlined'; // only vprops use non-outlined
+    } else {
+      // hasUnreadComments or no comments
+      if (selected) SVGClass = 'svgcmt-unreadSelected';else SVGClass = 'svgcmt-unread';
+    }
+
+    setState({
+      label: commentCountLabel,
+      css: css,
+      svgClass: SVGClass
+    });
+
+    // MEME implementation
+    // const draw = SVG(svgRef.current);
+    // draw.clear();
+    // draw
+    //   .group()
+    //   .attr('class', svgDefKey)
+    //   .add(CMTMGR.COMMENTICON)
+    //   // .add(CMTMGR.COMMENTICON(draw).clone())
+    //   // .add(SVGDEFS.get('comment').clone())
+    //   .transform({
+    //     translate: [4, 0], // center within 32,32
+    //     origin: 'top left', // seems to default to 'center' if not specified
+    //     scale: small ? 0.9 : 1.6
+    //   });
+  }
+
+  /// COMPONENT RENDER ////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  var size = small ? '24' : '32';
+  return _react2.default.createElement(
+    'div',
+    { id: uiref, className: 'commentbtn' + state.css, onClick: onClick },
+    _react2.default.createElement(
+      'div',
+      { className: 'comment-count' },
+      state.label
+    ),
+    _react2.default.createElement(
+      'svg',
+      { width: size, height: size },
+      _react2.default.createElement(
+        'g',
+        { className: state.svgClass },
+        _commentMgr2.default.COMMENTICON
+      )
+    )
+  );
+}
+
+/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+exports.default = URCommentSVGBtn;
 });
 
 require.register("view/netcreate/components/URCommentStatus.jsx", function(exports, require, module) {
@@ -27216,17 +20143,21 @@ var _client = require('unisys/client');
 
 var _client2 = _interopRequireDefault(_client);
 
-var _commonNetmessageClass = require('unisys/common-netmessage-class');
-
-var _commonNetmessageClass2 = _interopRequireDefault(_commonNetmessageClass);
-
 var _commentMgr = require('../comment-mgr');
 
 var _commentMgr2 = _interopRequireDefault(_commentMgr);
 
-var _URCommentThreadMgr = require('./URCommentThreadMgr');
+var _URCommentCollectionMgr = require('./URCommentCollectionMgr');
 
-var _URCommentThreadMgr2 = _interopRequireDefault(_URCommentThreadMgr);
+var _URCommentCollectionMgr2 = _interopRequireDefault(_URCommentCollectionMgr);
+
+var _URCommentSVGBtn = require('./URCommentSVGBtn');
+
+var _URCommentSVGBtn2 = _interopRequireDefault(_URCommentSVGBtn);
+
+var _URDialog = require('./URDialog');
+
+var _URDialog2 = _interopRequireDefault(_URDialog);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27237,6 +20168,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 /// Initialize UNISYS DATA LINK for functional react component
 var UDATAOwner = { name: 'URCommentStatus' };
 var UDATA = _client2.default.NewDataLink(UDATAOwner);
+
 /// Debug Flags
 var DBG = false;
 var PR = 'URCommentStatus';
@@ -27252,50 +20184,66 @@ var ResetTimer = void 0;
  * @returns
  */
 function URCommentStatus(props) {
-  var _useState = (0, _react.useState)(''),
+  var uid = _commentMgr2.default.GetCurrentUserId();
+
+  var _useState = (0, _react.useState)({}),
       _useState2 = _slicedToArray(_useState, 2),
-      message = _useState2[0],
-      setMessage = _useState2[1];
+      CMTSTATUS = _useState2[0],
+      setCMTSTATUS = _useState2[1];
 
-  var _useState3 = (0, _react.useState)([]),
+  var _useState3 = (0, _react.useState)(''),
       _useState4 = _slicedToArray(_useState3, 2),
-      messages = _useState4[0],
-      setMessages = _useState4[1];
+      message = _useState4[0],
+      setMessage = _useState4[1];
 
-  var _useState5 = (0, _react.useState)(''),
+  var _useState5 = (0, _react.useState)([]),
       _useState6 = _slicedToArray(_useState5, 2),
-      activeCSS = _useState6[0],
-      setActiveCSS = _useState6[1];
+      messages = _useState6[0],
+      setMessages = _useState6[1];
 
-  var _useState7 = (0, _react.useState)(false),
+  var _useState7 = (0, _react.useState)(''),
       _useState8 = _slicedToArray(_useState7, 2),
-      uiIsExpanded = _useState8[0],
-      setUiIsExpanded = _useState8[1];
+      activeCSS = _useState8[0],
+      setActiveCSS = _useState8[1];
 
-  var _useState9 = (0, _react.useState)(0),
+  var _useState9 = (0, _react.useState)(false),
       _useState10 = _slicedToArray(_useState9, 2),
-      dummy = _useState10[0],
-      setDummy = _useState10[1]; // Dummy state variable to force update
+      uiIsExpanded = _useState10[0],
+      setUiIsExpanded = _useState10[1];
+
+  var _useState11 = (0, _react.useState)(0),
+      _useState12 = _slicedToArray(_useState11, 2),
+      dummy = _useState12[0],
+      setDummy = _useState12[1]; // Dummy state variable to force update
 
   /** Component Effect - register listeners on mount */
 
 
   (0, _react.useEffect)(function () {
-    UDATA.OnAppStateChange('COMMENTCOLLECTION', urmsg_DUMMY_COMMENTS_UPDATE); // respond to close
-    UDATA.HandleMessage('COMMENTS_UPDATE', urmsg_DUMMY_COMMENTS_UPDATE);
+    UDATA.OnAppStateChange('CMTSTATUS', state_CMTSTATUS, UDATAOwner);
+    UDATA.OnAppStateChange('COMMENTCOLLECTION', redraw, UDATAOwner); // respond to close
+    UDATA.HandleMessage('COMMENTS_UPDATE', redraw);
     UDATA.HandleMessage('COMMENT_UPDATE', urmsg_COMMENT_UPDATE);
 
     return function () {
-      UDATA.AppStateChangeOff('COMMENTCOLLECTION', urmsg_DUMMY_COMMENTS_UPDATE); // respond to close
-      UDATA.UnhandleMessage('COMMENTS_UPDATE', urmsg_DUMMY_COMMENTS_UPDATE);
+      UDATA.AppStateChangeOff('CMTSTATUS', state_CMTSTATUS, UDATAOwner);
+      UDATA.AppStateChangeOff('COMMENTCOLLECTION', redraw, UDATAOwner); // respond to close
+      UDATA.UnhandleMessage('COMMENTS_UPDATE', redraw);
       UDATA.UnhandleMessage('COMMENT_UPDATE', urmsg_COMMENT_UPDATE);
+      clearTimeout(AppearTimer);
+      clearTimeout(DisappearTimer);
+      clearTimeout(ResetTimer);
     };
   }, []);
 
   /// UR HANDLERS /////////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function state_CMTSTATUS(CMTSTATUS) {
+    setCMTSTATUS(CMTSTATUS);
+  }
+
   /** force re-render after COMMENTS_UPDATE from a new comment another user */
-  function urmsg_DUMMY_COMMENTS_UPDATE() {
+  function redraw() {
     // This is necessary to force a re-render of the comment summaries
     // when the comment collection changes on the net
     setDummy(function (dummy) {
@@ -27335,7 +20283,6 @@ function URCommentStatus(props) {
         clearTimeout(ResetTimer);
         // clear it first, then appear (so that each new comment triggers the animation)
         setMessage(_message);
-        setActiveCSS('');
         AppearTimer = setTimeout(function () {
           setActiveCSS('appear');
         }, 250);
@@ -27382,7 +20329,7 @@ function URCommentStatus(props) {
   function evt_OpenComment(event, cref, cid) {
     event.preventDefault();
     event.stopPropagation();
-    _commentMgr2.default.OpenComment(cref, cid);
+    _commentMgr2.default.OpenCommentStatusComment(cref, cid);
   }
 
   /// RENDER HELPERS //////////////////////////////////////////////////////////
@@ -27437,19 +20384,19 @@ function URCommentStatus(props) {
         },
         '#' + comment.comment_id
       ),
-      '\xA0\u201C',
       _react2.default.createElement(
         'div',
         { className: 'comment-text' },
-        String(comment.commenter_text.join('|')).trim()
-      ),
-      '\u201D'
+        '\xA0\u201C',
+        String(comment.commenter_text.join('|')).trim(),
+        '\u201D'
+      )
     );
   }
 
   /// COMPONENT RENDER ////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  var isLoggedIn = _commonNetmessageClass2.default.GlobalGroupID();
+  if (!uid) return ''; // if not logged in, there's no comment status
 
   var _CMTMGR$GetCommentSta = _commentMgr2.default.GetCommentStats(),
       countRepliesToMe = _CMTMGR$GetCommentSta.countRepliesToMe,
@@ -27467,19 +20414,14 @@ function URCommentStatus(props) {
   var UnreadRepliesToMeButtonJSX = _react2.default.createElement(
     'div',
     null,
-    _react2.default.createElement(
-      'div',
-      {
-        className: 'commentbtn ' + (countRepliesToMe ? 'hasNewComments' : 'hasReadComments'),
-        onClick: evt_ExpandPanel
-      },
-      _commentMgr2.default.COMMENTICON,
-      _react2.default.createElement(
-        'div',
-        { className: 'comment-count' },
-        countRepliesToMe
-      )
-    ),
+    _react2.default.createElement(_URCommentSVGBtn2.default, {
+      uiref: 'unreadRepliesToMe',
+      count: countRepliesToMe,
+      hasUnreadComments: countRepliesToMe > 0,
+      hasReadComments: countRepliesToMe === 0,
+      selected: false,
+      onClick: evt_ExpandPanel
+    }),
     _react2.default.createElement(
       'h3',
       null,
@@ -27489,19 +20431,14 @@ function URCommentStatus(props) {
   var UnreadButtonJSX = _react2.default.createElement(
     'div',
     null,
-    _react2.default.createElement(
-      'div',
-      {
-        className: 'commentbtn ' + (countUnread ? 'hasUnreadComments' : 'hasReadComments'),
-        onClick: evt_ExpandPanel
-      },
-      _commentMgr2.default.COMMENTICON,
-      _react2.default.createElement(
-        'div',
-        { className: 'comment-count' },
-        countUnread
-      )
-    ),
+    _react2.default.createElement(_URCommentSVGBtn2.default, {
+      uiref: 'unread',
+      count: countUnread,
+      hasUnreadComments: countUnread > 0,
+      hasReadComments: countUnread === 0,
+      selected: false,
+      onClick: evt_ExpandPanel
+    }),
     _react2.default.createElement(
       'h3',
       null,
@@ -27512,7 +20449,8 @@ function URCommentStatus(props) {
   return _react2.default.createElement(
     'div',
     null,
-    _react2.default.createElement(_URCommentThreadMgr2.default, null),
+    _react2.default.createElement(_URCommentCollectionMgr2.default, null),
+    _react2.default.createElement(_URDialog2.default, { info: CMTSTATUS.dialog }),
     _react2.default.createElement(
       'div',
       { id: 'comment-bar' },
@@ -27539,7 +20477,7 @@ function URCommentStatus(props) {
             onClick: evt_ExpandPanel
           },
           UnreadRepliesToMeButtonJSX,
-          '\xA0\xA0',
+          '\xA0',
           UnreadButtonJSX
         ),
         _react2.default.createElement(
@@ -27667,25 +20605,33 @@ function URCommentThread(_ref) {
       x = _ref.x,
       y = _ref.y;
 
-  var _useState = (0, _react.useState)(false),
+  var _useState = (0, _react.useState)(0),
       _useState2 = _slicedToArray(_useState, 2),
-      isDisabled = _useState2[0],
-      setIsDisabled = _useState2[1];
+      forceRender = _useState2[0],
+      setForceRender = _useState2[1]; // Dummy state variable to force update
 
   /** Component Effect - set up listeners on mount */
 
 
   (0, _react.useEffect)(function () {
-    function urmsg_UpdatePermissions(data) {
-      setIsDisabled(data.commentBeingEditedByMe);
-    }
-
-    UDATA.HandleMessage('COMMENT_UPDATE_PERMISSIONS', urmsg_UpdatePermissions);
+    UDATA.OnAppStateChange('CMTLOCKSTATE', urmsg_ForceRender);
 
     return function () {
-      UDATA.UnhandleMessage('COMMENT_UPDATE_PERMISSIONS', urmsg_UpdatePermissions);
+      UDATA.AppStateChangeOff('CMTLOCKSTATE', urmsg_ForceRender);
     };
   }, []);
+
+  /// UR HANDLERS /////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urmsg_ForceRender() {
+    // This is necessary to force a re-render of "Click to add a Comment"
+    // text area if the comment edit is cancelled and placeholder
+    // comment is removed
+    // Current disabled state is refreshed with each render
+    setForceRender(function (forceRender) {
+      return forceRender + 1;
+    }); // Trigger re-render
+  }
 
   /// COMPONENT UI HANDLERS ///////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -27719,7 +20665,7 @@ function URCommentThread(_ref) {
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** handles the "X" or "Close" button click, marks all comments "read" */
   function evt_OnClose() {
-    _commentMgr2.default.CloseCommentCollection(uiref, cref, uid);
+    _commentMgr2.default.CloseCommentCollectionAndMarkRead(uiref, cref, uid);
   }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** handles clicking on the name of the object being commented on
@@ -27735,6 +20681,7 @@ function URCommentThread(_ref) {
   /// COMPONENT RENDER ////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   var commentVObjs = _commentMgr2.default.GetThreadedViewObjects(cref, uid);
+  var isDisabled = _commentMgr2.default.GetCommentsAreBeingEdited();
 
   /// SUB COMPONENTS
   var CloseBtn = _react2.default.createElement(
@@ -27745,11 +20692,18 @@ function URCommentThread(_ref) {
 
   // HACK: To keep the comment from going off screen:
   var windowHeight = Math.min(screen.height, window.innerHeight);
-  var commentMaxHeight = windowHeight - y - 100 + 'px';
+  // max 350 ensures that comments near the bottom of the screen
+  var commentMaxHeight = Math.max(350, windowHeight - y - 100) + 'px';
 
   var _CMTMGR$GetCREFSource = _commentMgr2.default.GetCREFSourceLabel(cref),
       typeLabel = _CMTMGR$GetCREFSource.typeLabel,
       sourceLabel = _CMTMGR$GetCREFSource.sourceLabel;
+
+  // This is the text area that the user clicks to add a comment
+  // emulates Google Doc comments
+
+
+  var showAddCommentClickTarget = !_commentMgr2.default.GetCommentsAreBeingEdited();
 
   return _react2.default.createElement(
     _reactDraggable2.default,
@@ -27797,7 +20751,7 @@ function URCommentThread(_ref) {
             key: cvobj.comment_id
           });
         }),
-        !isDisabled && uid && _react2.default.createElement('textarea', {
+        showAddCommentClickTarget && !isDisabled && uid && _react2.default.createElement('textarea', {
           className: 'add',
           placeholder: 'Click to add a Comment...',
           readOnly: true,
@@ -27823,7 +20777,7 @@ function URCommentThread(_ref) {
 exports.default = URCommentThread;
 });
 
-require.register("view/netcreate/components/URCommentThreadMgr.jsx", function(exports, require, module) {
+require.register("view/netcreate/components/URCommentVBtn.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27832,54 +20786,45 @@ Object.defineProperty(exports, "__esModule", {
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentThreadMgr
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentVBtn
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentThreadMgr handles the opening and closing of URCommentThreads
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           being requested from three sources:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Evidence Links -- via URCOmmentBtnAlias
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * SVG props      -- in class-vbadge via UR.Publish(`CTHREADMGR_THREAD_OPENED`) calls
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * SVG Mechanisms -- in class-vbadge via UR.Publish(`CTHREADMGR_THREAD_OPENED`) calls
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           NOTE: This is a different implementation from Net.Create's.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 MEME's URCommentVBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * uses props only for id (instead of ALL parameters)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * id is `cref` (instead of `uiref)`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * comment state is derived from global state objects (not props)
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentVBtn is a visual component that passes clicks
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           to URCommentThreadMgr via UR.Publish(`CTHREADMGR_THREAD_OPENED`) calls
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           A display button that calls URCommentCollectionMgr to open comments.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           It emulates the visual functionality of URCommentBtn but is not a parent
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           of the URCommentThread and does not directly handle the opening and closing
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           of URCommentThreads.  URCommentThreads are opened separately via
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           URCommentCollectionMgr.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           HOW IT WORKS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             When an EVLink, SVG prop, or SVG mechanism clicks on the
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             URCommentVBtn, URCommentThreadMgr will:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Add the requested Thread to the URCommentThreadMgr
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Open the URCommentThread
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * When the URCommentThread is closed, it will be removed from the URCommentThreadMgr
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           See [Whimsical Comment Data Structures](https://whimsical.com/comment-data-structures-3zPhDYLVsEKt2gY7xyMMKS) for how the current system is implemented.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           UR MESSAGES
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             *  CTHREADMGR_THREAD_OPENED {cref, position}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             *  CTHREADMGR_THREAD_CLOSED {cref}            Just closed, update views
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             *  CTHREADMGR_THREAD_CLOSED_ALL
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           NOTES
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Differences with URCommentBtn
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             URCommentBtn displays Comment Collections (e.g. URCommentThread) as children
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             of the URCommentBtn.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             In contrast, URCommentThread are displayed as children of URCommentTHreadMgr.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             This gets around the problem of URCommentBtns beimg hidden inside Evidence Links.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             To get around this, URCommentThreadMgr essentially replaces the
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             functionality of URCommentBtn with three pieces, acting as a middle
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             man and breaking out the...
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * visual display    -- URCommentBtnAlias
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * UI click requests -- UR messages
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * thread opening / closing requests -- URCommentThreadMgr
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ...into different functions handled by different components.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           FUNCTIONALITY:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             URCommentVBtn does five things:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             1. Displays whether the comment thread is open (bordered) or closed (no border)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             2. Displays the number of comments in the thread
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             3. Provides the position of the source component requesting the thread
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             4. Requests URCommentCollectionMgr to open the comment thread
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             5. Requests URCommentCollectionMgr to close the comment thread
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             4. // REVIEW: isDisabled is not used -- where do we get that status forom?
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            USE:
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <URCommentThreadMgr message={message} handleMessageUpdate/>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <URCommentVBtn
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               cref={collection_ref}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             />
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           PROPS:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * cref    -- collection reference (usu node id, edge id)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           USED BY:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * URCommentStatus > URCommentCollectionMgr
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * Navbar
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             * ELink
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           NOTE unlike URCommentBtn, URCommentVBtn does not use the unique user
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           interface id (uuiid) to differentiate comment buttons on EVLinks vs props.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
@@ -27896,194 +20841,131 @@ var _commentMgr = require('../comment-mgr');
 
 var _commentMgr2 = _interopRequireDefault(_commentMgr);
 
-var _URCommentThread = require('./URCommentThread');
+var _URCommentSVGBtn = require('./URCommentSVGBtn');
 
-var _URCommentThread2 = _interopRequireDefault(_URCommentThread);
+var _URCommentSVGBtn2 = _interopRequireDefault(_URCommentSVGBtn);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /// Initialize UNISYS DATA LINK for functional react component
-var UDATAOwner = { name: 'URCommentThreadMgr' };
+var UDATAOwner = { name: 'URCommentVBtn' };
 var UDATA = _client2.default.NewDataLink(UDATAOwner);
-//
-var DBG = true;
-var PR = 'URCommentThreadMgr';
+/// Debug Flags
+var DBG = false;
+var PR = 'URCommentVBtn';
 
 /// REACT FUNCTIONAL COMPONENT ////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function URCommentThreadMgr() {
-  var uid = _commentMgr2.default.GetCurrentUserId();
+/** URCommentVBtn
+ *  @param {string} cref - Collection reference
+ *  @returns {React.Component} - URCommentVBtn
+ */
+function URCommentVBtn(_ref) {
+  var cref = _ref.cref;
 
-  var _useState = (0, _react.useState)([]),
+  var btnRef = (0, _react.useRef)(null);
+
+  var _useState = (0, _react.useState)({
+    count: 0,
+    hasUnreadComments: false,
+    hasReadComments: false,
+    isOpen: false
+  }),
       _useState2 = _slicedToArray(_useState, 2),
-      cmtBtns = _useState2[0],
-      setCmtBtns = _useState2[1]; // { uiref, cref, position }
+      state = _useState2[0],
+      setState = _useState2[1];
 
-
-  var _useState3 = (0, _react.useState)(100),
-      _useState4 = _slicedToArray(_useState3, 2),
-      dummy = _useState4[0],
-      setDummy = _useState4[1];
-
-  /** Component Effect - register listeners on mount */
+  /// USEEFFECT ///////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
   (0, _react.useEffect)(function () {
-    UDATA.OnAppStateChange('COMMENTVOBJS', urstate_UpdateCommentVObjs);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_OPENED', urmsg_THREAD_OPEN);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_CLOSED', urmsg_THREAD_CLOSE);
-    UDATA.HandleMessage('CTHREADMGR_THREAD_CLOSED_ALL', urmsg_THREAD_CLOSE_ALL);
-
+    c_Update();
+    // Handlers
+    UDATA.OnAppStateChange('COMMENTCOLLECTION', urstate_UpdateCollection, UDATAOwner);
+    UDATA.OnAppStateChange('COMMENTVOBJS', urstate_UpdateVObj, UDATAOwner);
+    // window.addEventListener('resize', evt_OnResize);
+    // clean up on unmount
     return function () {
-      UDATA.AppStateChangeOff('COMMENTVOBJS', urstate_UpdateCommentVObjs);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_OPENED', urmsg_THREAD_OPEN);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_CLOSED', urmsg_THREAD_CLOSE);
-      UDATA.UnhandleMessage('CTHREADMGR_THREAD_CLOSED_ALL', urmsg_THREAD_CLOSE_ALL);
+      UDATA.AppStateChangeOff('COMMENTCOLLECTION', urstate_UpdateCollection);
+      UDATA.AppStateChangeOff('COMMENTVOBJS', urstate_UpdateVObj, UDATAOwner);
+      // window.removeEventListener('resize', evt_OnResize);
     };
   }, []);
+
+  (0, _react.useEffect)(function () {
+    c_Update();
+  }, [cref]);
+
+  /// UR HANDLERS /////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function urstate_UpdateCollection(COMMENTCOLLECTION) {
+    c_Update();
+  }
+  function urstate_UpdateVObj(COMMENTVOBJS) {}
 
   /// COMPONENT HELPER METHODS ////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  /// UR HANDLERS /////////////////////////////////////////////////////////////
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urstate_UpdateCommentVObjs(data) {
-    // This is necessary to force a re-render of the threads
-    // when the comment collection changes on the net
-    // especially when a new comment is added.
-    setDummy(function (dummy) {
-      return dummy + 1;
-    }); // Trigger re-render
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  /**
-   * Handle CTHREADMGR_THREAD_OPENED message
-   * 1. Register the button, and
-   * 2. Open the URCommentBtn
-   * @param {Object} data
-   * @param {string} data.uiref - ID of UI component initiating the request
-   * @param {string} data.cref - Collection reference
-   * @param {Object} data.position - Position of the button
-   */
-  function urmsg_THREAD_OPEN(data) {
-    if (DBG) console.log(PR, 'urmsg_THREAD_OPEN', data);
-    // Validate
-    if (data.uiref === undefined) throw new Error('URCommentThreadMgr: urmsg_THREAD_OPEN: missing uiref ' + JSON.stringify(data));
-    if (data.position === undefined || data.position.x === undefined || data.position.y === undefined) throw new Error('URCommentThreadMgr: urmsg_THREAD_OPEN: missing position data ' + JSON.stringify(data));
-    // 1. Register the button
-    setCmtBtns(function (prevBtns) {
-      return [].concat(_toConsumableArray(prevBtns), [data]);
-    });
-    // 2. Open the URCommentThread
-    // NOTE: Call is to data.uiref, not data.cref
-    _commentMgr2.default.UpdateCommentUIState(data.uiref, { cref: data.cref, isOpen: true });
-  }
-  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urmsg_THREAD_CLOSE(data) {
-    if (DBG) console.log('urmsg_THREAD_CLOSE', data);
-    setCmtBtns(function (prevBtns) {
-      return prevBtns.filter(function (btn) {
-        return btn.cref !== data.cref;
-      });
+  function c_Update() {
+    var ccol = _commentMgr2.default.GetCommentCollection(cref) || {};
+    var hasReadComments = ccol.hasReadComments,
+        hasUnreadComments = ccol.hasUnreadComments;
+
+
+    var uistate = _commentMgr2.default.GetCommentUIState(cref);
+    var isOpen = uistate ? uistate.isOpen : false;
+
+    // commentCountLabel
+    var commentCount = _commentMgr2.default.GetCommentCollectionCount(cref);
+
+    setState({
+      count: commentCount,
+      hasUnreadComments: hasUnreadComments,
+      hasReadComments: hasReadComments,
+      isOpen: isOpen
     });
   }
+  /// COMPONENT UI HANDLERS ///////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function urmsg_THREAD_CLOSE_ALL(data) {
-    if (DBG) console.log('urmsg_THREAD_CLOSE_ALL', data);
-    setCmtBtns([]);
+  /** handle URCommentBtn click, which opens and closes the URCommentThread */
+  function evt_OnClick(event) {
+    event.stopPropagation();
+    if (state.isOpen) {
+      // is currently open, so close it
+      var uid = _commentMgr2.default.GetCurrentUserId();
+      _commentMgr2.default.CloseCommentCollection(cref, cref, uid);
+    } else {
+      // is currently closed, so open it
+      _commentMgr2.default.OpenCommentCollectionByCref(cref);
+    }
   }
+  /// DEPRECATED FOR NOW
+  /// -- URCommentCollectionMgr should handle window resize?
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // /** handles window resize, which will adjust the URCommentThread window
+  //  *  position relative to the resized location of the URCommentBtn
+  //  */
+  // function evt_OnResize() {
+  //   const position = c_GetCommentThreadPosition();
+  //   setPosition(position);
+  // }
 
   /// COMPONENT RENDER ////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
   return _react2.default.createElement(
     'div',
-    { className: 'URCommentThreadMgr' },
-    cmtBtns.map(function (btn) {
-      return _react2.default.createElement(_URCommentThread2.default, {
-        key: btn.cref,
-        uiref: btn.uiref,
-        cref: btn.cref,
-        uid: uid,
-        x: btn.position.x,
-        y: btn.position.y
-      });
+    { ref: btnRef },
+    _react2.default.createElement(_URCommentSVGBtn2.default, {
+      uiref: cref,
+      count: state.count,
+      hasUnreadComments: state.hasUnreadComments,
+      hasReadComments: state.hasReadComments,
+      selected: state.isOpen,
+      onClick: evt_OnClick
     })
-  );
-}
-
-/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-exports.default = URCommentThreadMgr;
-});
-
-require.register("view/netcreate/components/URCommentVBtn.jsx", function(exports, require, module) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _commentMgr = require('../comment-mgr');
-
-var _commentMgr2 = _interopRequireDefault(_commentMgr);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-/// REACT FUNCTIONAL COMPONENT ////////////////////////////////////////////////
-/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
-
-  URCommentVBtn
-
-  A purely visual button.
-
-  It shows three visual states:
-  * read/unread status
-    * has unread comments (gold color)
-    * all comments are read (gray color)
-  * is open / selected (displaying comments)
-  * the number of comments.
-
-
-
-\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
-
-function URCommentVBtn(_ref) {
-  var uiref = _ref.uiref,
-      count = _ref.count,
-      hasUnreadComments = _ref.hasUnreadComments,
-      selected = _ref.selected,
-      cb = _ref.cb;
-
-  var icon = void 0;
-  if (selected) {
-    if (hasUnreadComments) icon = _commentMgr2.default.ICN_COMMENT_UNREAD_SELECTED;else if (count === 0) icon = _commentMgr2.default.ICN_COMMENT_UNREAD_SELECTED;else icon = _commentMgr2.default.ICN_COMMENT_READ_SELECTED;
-  } else {
-    // not selected
-    if (hasUnreadComments) icon = _commentMgr2.default.ICN_COMMENT_UNREAD;else if (count === 0) icon = _commentMgr2.default.ICN_COMMENT_UNREAD;else icon = _commentMgr2.default.ICN_COMMENT_READ;
-  }
-
-  return _react2.default.createElement(
-    'button',
-    { id: uiref, onClick: cb, className: 'URCommentVBtn' },
-    icon,
-    _react2.default.createElement(
-      'div',
-      { className: 'count ' + (hasUnreadComments ? 'unread' : '') },
-      count === 0 ? '' : count
-    )
   );
 }
 
@@ -28300,7 +21182,7 @@ function URDateField(_ref) {
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   var READONLY = _react2.default.createElement(
     'div',
-    null,
+    { className: 'viewvalue' },
     hdate.formattedDateString
   );
 
@@ -28389,6 +21271,105 @@ function URDateField(_ref) {
 exports.default = URDateField;
 });
 
+require.register("view/netcreate/components/URDialog.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDraggable = require('react-draggable');
+
+var _reactDraggable2 = _interopRequireDefault(_reactDraggable);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import './URDialog.css'; // MEME-only
+
+/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
+
+  Generic Dialog
+
+  USE:
+
+    <URDialog
+      dialog={CMTSTATUS.dialog}
+    />
+
+\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
+
+var DBG = false;
+var PR = 'URDialog';
+
+/// REACT COMPONENT ///////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function URDialog(_ref) {
+  var info = _ref.info;
+
+  if (info === undefined) return null;
+
+  var isOpen = info.isOpen,
+      _info$message = info.message,
+      message = _info$message === undefined ? 'Are you sure?' : _info$message,
+      _info$okmessage = info.okmessage,
+      okmessage = _info$okmessage === undefined ? 'OK' : _info$okmessage,
+      _info$cancelmessage = info.cancelmessage,
+      cancelmessage = _info$cancelmessage === undefined ? 'Cancel' : _info$cancelmessage,
+      onOK = info.onOK,
+      onCancel = info.onCancel;
+
+  /// COMPONENT RENDER ////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  var BTN_OK = _react2.default.createElement(
+    'button',
+    { onClick: onOK },
+    okmessage
+  );
+  var BTN_CANCEL = onCancel ? _react2.default.createElement(
+    'button',
+    { onClick: onCancel },
+    cancelmessage
+  ) : '';
+
+  return isOpen && _react2.default.createElement(
+    'div',
+    { id: 'urdialog' },
+    _react2.default.createElement('div', { className: 'screen' }),
+    _react2.default.createElement(
+      _reactDraggable2.default,
+      null,
+      _react2.default.createElement(
+        'div',
+        { className: 'dialogwindow' },
+        _react2.default.createElement(
+          'div',
+          { className: 'dialogmessage' },
+          message
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'dialogcontrolbar' },
+          BTN_CANCEL,
+          '\xA0',
+          BTN_OK
+        )
+      )
+    )
+  );
+}
+
+/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+exports.default = URDialog;
+});
+
 require.register("view/netcreate/components/URTable.jsx", function(exports, require, module) {
 'use strict';
 
@@ -28396,13 +21377,128 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*///////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          UR Table
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Implements a table with resizable columns.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Implements a table with resizable and sortable columns.
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Emulates the API of Handsontable.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Used also on https://github.com/netcreateorg/netcreate-itest/
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         # API - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Renderers
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           This emulates Handsontable's renderer concept.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * A renderer is a function that takes a value and returns a JSX element
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * If a column has a renderer, it will be used to render the value in the cell
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Sorters
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           This emulates Handsontable's sorter concept.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * A sorter is a function that takes a key, the table data, and the sort order
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * If a column has a sorter, it will be used to sort the table data
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Column Widths
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Column widths can be set in the column definition
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Columns without a width will be evenly distributed
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Column Types
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Note that `type` determines both the default renderer and sorter
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           but they can be separately overriden.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         # User Interaction - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Resizing Columns
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Columns can be resized by dragging the right edge of the column header
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             The column to the right of the dragged edge will expand or contract
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Max resize -- Resizing is done between two columns: the current column,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           and the column to the right. (We assume the table width is fixed or 100%).
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           To give you simple, but finer control over resizing columns, you can expand or
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           contract the current column and the next column up/down to a minimum size.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Once you hit the max size, you need to resize other columns to adjust.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           (We don't allow you to resize neighboring columns once you've hit the
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           max/min just to simplify the math).
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Sort Order
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           By default the table is unsorted.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Clicking on a column header will sort the table by that column in ascending order
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Subsequent clicks will toggle to descending to unsorted and back to ascending
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * The next sort order is highlighted on hover with a transparent arrow
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * The column remembers the previous sort order when another column is selected
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             so re-selecting the column will restore the previous sort order
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * A column can be designated unsortable by setting `sortDisabled` to `true`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ## Tooltips
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Tooltips are displayed when hovering over a cell
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * The tooltip text is the same as the cell text
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           * Tooltips can be disabled by setting `tipDisabled` to `true`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         # PROPS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           `tableData`: array
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               The data to be displayed in the table.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               [
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 { id: 1, label: 'Constantinople', founding: '100 ce' },
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 { id: 2, label: 'Athens', founding: '1000 bce' },
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 { id: 3, label: 'Cairo', founding: '3000 bce' },
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ]
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           `isOpen`: boolean
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               To optimize performance, the column widths are only calculated
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               when it's open.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           `columns`: array
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Specifications for how each column is to be rendered and sorted.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Column Definition
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 title: string
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 data: string
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 type: 'text' | 'text-case-insensitive' | 'number' | 'timestamp' | 'markdown' | 'hdate'
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 width: number in px
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 renderer: (value: any) => JSX.Element
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 sorter: (key: string, tdata: any[], order: number) => any[]
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 sortDisabled: boolean
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 tipDisabled: boolean
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Example usage:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             const COLUMNDEFS = [
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 title: 'TITLE',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 data: 'title',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 type: 'text',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 width: 300, // in px
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 renderer: this.RendererTitle,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 sorter: (key, tdata, order) => {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   const sortedData = [...tdata].sort((a, b) => {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     // note `title` is stuffed into `tdata`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     if (a[key].title < b[key].title) return order;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     if (a[key].title > b[key].title) return order * -1;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     return 0;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   });
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   return sortedData;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 title: 'UPDATED',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 data: 'dateModified',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 type: 'text',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 width: 300 // in px
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               },
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ]
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             const TABLEDATA = modelsWithGroupLabels.map(model => {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               return {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 id: model.id,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 title: model.title,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 groupLabel: model.groupLabel,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 dateModified: HumanDate(model.dateModified),
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 dateCreated: HumanDate(model.dateCreated)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               };
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             });
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * /////////////////////////////////////*/
 
@@ -28420,11 +21516,18 @@ var _hdate2 = _interopRequireDefault(_hdate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 var DBG = false;
+
+var SORTORDER = new Map();
+SORTORDER.set(0, '▲▼');
+SORTORDER.set(1, '▲');
+SORTORDER.set(-1, '▼');
 
 /// FUNCTIONAL COMPONENT DECLARATION //////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -28435,37 +21538,48 @@ function URTable(_ref) {
 
   var _useState = (0, _react.useState)([]),
       _useState2 = _slicedToArray(_useState, 2),
-      tabledata = _useState2[0],
+      _tabledata = _useState2[0],
       setTableData = _useState2[1];
 
   var _useState3 = (0, _react.useState)([]),
       _useState4 = _slicedToArray(_useState3, 2),
-      columndefs = _useState4[0],
+      _columndefs = _useState4[0],
       setColumnDefs = _useState4[1];
 
   var _useState5 = (0, _react.useState)([]),
       _useState6 = _slicedToArray(_useState5, 2),
-      columnWidths = _useState6[0],
+      _columnWidths = _useState6[0],
       setColumnWidths = _useState6[1];
 
   var _useState7 = (0, _react.useState)(0),
       _useState8 = _slicedToArray(_useState7, 2),
-      sortColumnIdx = _useState8[0],
+      _sortColumnIdx = _useState8[0],
       setSortColumnIdx = _useState8[1];
 
-  var _useState9 = (0, _react.useState)(1),
+  var _useState9 = (0, _react.useState)(0),
       _useState10 = _slicedToArray(_useState9, 2),
-      sortOrder = _useState10[0],
+      _sortOrder = _useState10[0],
       setSortOrder = _useState10[1];
 
-  var tableRef = (0, _react.useRef)(null);
-  var resizeRef = (0, _react.useRef)(null);
+  var _useState11 = (0, _react.useState)({}),
+      _useState12 = _slicedToArray(_useState11, 2),
+      _previousColSortOrder = _useState12[0],
+      setPreviousColSortOrder = _useState12[1];
+
+  var ref_Table = (0, _react.useRef)(null);
+  var ref_Resize = (0, _react.useRef)(null);
 
   /// USE EFFECT //////////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /// Init table data
   (0, _react.useEffect)(function () {
     setTableData(data);
+    // default to ascending when a column is first clicked
+    var defaultSortOrders = {};
+    columns.forEach(function (item, idx) {
+      return defaultSortOrders[idx] = -1;
+    });
+    setPreviousColSortOrder(defaultSortOrders);
   }, []);
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /// Calculate Initial Column Widths
@@ -28493,17 +21607,49 @@ function URTable(_ref) {
   (0, _react.useEffect)(function () {
     // Sort table data
     m_ExecuteSorter(data);
-  }, [sortColumnIdx, sortOrder]);
+  }, [_sortColumnIdx, _sortOrder, _previousColSortOrder]);
 
   /// UTILITIES ///////////////////////////////////////////////////////////////
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /// e.g. Jan 7 10:05:29 AM
+  function u_HumanDate(timestamp) {
+    if (timestamp === undefined || timestamp === '') return '<no date>';
+    var date = new Date(timestamp);
+    var timestring = date.toLocaleTimeString('en-Us', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    var datestring = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    return datestring + ' ' + timestring;
+  }
+  /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  /// e.g. 1/7/25 10:05a
+  function u_HumanDateShort(timestamp) {
+    if (timestamp === undefined || timestamp === '') return '<no date>';
+    var date = new Date(timestamp);
+    var timestring = date.toLocaleTimeString('en-Us', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    var datestring = date.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit'
+    });
+    return datestring + ' ' + timestring;
+  }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   var u_CalculateColumnWidths = function u_CalculateColumnWidths() {
-
     // if table is not drawn yet, skip
-    if (tableRef.current.clientWidth < 1) return;
+    if (ref_Table.current.clientWidth < 1) return;
 
     // if it's already set, don't recalculate
-    if (columnWidths.length > 0 && tableRef.current.clientWidth > 0) {
+    if (_columnWidths.length > 0 && ref_Table.current.clientWidth > 0) {
       return;
     }
 
@@ -28515,7 +21661,7 @@ function URTable(_ref) {
     var definedColWidthSum = definedColWidths.reduce(function (a, b) {
       return a + b;
     }, 0);
-    var remainingWidth = tableRef.current.clientWidth - definedColWidthSum;
+    var remainingWidth = ref_Table.current.clientWidth - definedColWidthSum;
     var colWidths = columns.map(function (col) {
       return col.width || remainingWidth / (columns.length - definedColWidths.length);
     });
@@ -28527,41 +21673,55 @@ function URTable(_ref) {
   var ui_MouseDown = function ui_MouseDown(event, index) {
     event.preventDefault();
     event.stopPropagation();
-    resizeRef.current = {
+    ref_Resize.current = {
       index: index,
       startX: event.clientX,
-      startWidth: columnWidths[index],
-      nextStartWidth: columnWidths[index + 1],
-      maxCombinedWidth: columnWidths[index] + columnWidths[index + 1] - 50
+      startWidth: _columnWidths[index],
+      nextStartWidth: _columnWidths[index + 1],
+      maxCombinedWidth: _columnWidths[index] + _columnWidths[index + 1] - 50
     };
   };
   var ui_MouseMove = function ui_MouseMove(event) {
-    if (resizeRef.current !== null) {
-      var _resizeRef$current = resizeRef.current,
-          index = _resizeRef$current.index,
-          startX = _resizeRef$current.startX,
-          startWidth = _resizeRef$current.startWidth,
-          nextStartWidth = _resizeRef$current.nextStartWidth,
-          maxCombinedWidth = _resizeRef$current.maxCombinedWidth;
+    if (ref_Resize.current !== null) {
+      var _ref_Resize$current = ref_Resize.current,
+          index = _ref_Resize$current.index,
+          startX = _ref_Resize$current.startX,
+          startWidth = _ref_Resize$current.startWidth,
+          nextStartWidth = _ref_Resize$current.nextStartWidth,
+          maxCombinedWidth = _ref_Resize$current.maxCombinedWidth;
 
       var delta = event.clientX - startX;
-      var newWidths = [].concat(_toConsumableArray(columnWidths));
+      var newWidths = [].concat(_toConsumableArray(_columnWidths));
       newWidths[index] = Math.min(Math.max(50, startWidth + delta), maxCombinedWidth); // Minimum width set to 50px
       newWidths[index + 1] = Math.min(Math.max(50, nextStartWidth - delta), maxCombinedWidth);
       setColumnWidths(newWidths);
     }
   };
   var ui_MouseUp = function ui_MouseUp() {
-    resizeRef.current = null; // Reset on mouse up
+    ref_Resize.current = null; // Reset on mouse up
   };
 
   /// CLICK HANDLERS //////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function ui_ClickSorter(event, index) {
+  function ui_SetSelectedColumn(event, index) {
     event.preventDefault();
     event.stopPropagation();
+    if (_columndefs[index].sortDisabled) return; // If sort is disabled, do nothing
+
+    if (_sortColumnIdx === index) {
+      // if already selected, toggle the sort order
+      var newSortOrder = void 0;
+      if (_sortOrder === 0) newSortOrder = -1;else if (_sortOrder > 0) newSortOrder = 0;else newSortOrder = 1;
+      setSortOrder(newSortOrder);
+    } else {
+      // otherwise default to the previous order
+      setSortOrder(_previousColSortOrder[index]);
+    }
+
+    // update the previous sort order
+    setPreviousColSortOrder(_extends({}, _previousColSortOrder, _defineProperty({}, _sortColumnIdx, _sortOrder)));
+
     setSortColumnIdx(index);
-    setSortOrder(sortOrder * -1);
   }
 
   /// BUILT-IN SORTERS ////////////////////////////////////////////////////////
@@ -28578,12 +21738,25 @@ function URTable(_ref) {
     });
     return sortedData;
   }
+  function m_SortCaseInsensitive(key, tdata, order) {
+    var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
+      if (!a[key] && !b[key]) return 0;
+      if (!a[key]) return 1; // Move undefined or '' to the bottom regardless of sort order
+      if (!b[key]) return -1; // Move undefined or '' the bottom regardless of sort order
+      if (a[key].toLowerCase() < b[key].toLowerCase()) return order;
+      if (a[key].toLowerCase() > b[key].toLowerCase()) return order * -1;
+      return 0;
+    });
+    return sortedData;
+  }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   function m_SortByMarkdown(key, tdata, order) {
     var sortedData = [].concat(_toConsumableArray(tdata)).sort(function (a, b) {
       // NC's markdown format from NCNodeTable will pass:
       // { html, raw}
       // We will sort by the raw text
+      if (!a[key].raw) return 1; // Move undefined or '' to the bottom regardless of sort order
+      if (!b[key].raw) return -1; // Move undefined or '' the bottom regardless of sort order
       if (a[key].raw < b[key].raw) return order;
       if (a[key].raw > b[key].raw) return order * -1;
       return 0;
@@ -28637,68 +21810,139 @@ function URTable(_ref) {
   /// BUILT-IN TABLE METHODS //////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /**
-   *
-   * @param {*} value
-   * @param {*} col
-   * @param {*} idx
+   * Executes the renderer for a given column
+   * @param {string} key tdata object key
+   * @param {Object} tdata full table data object so you can access other keys
+   * @param {Object} coldef column definition
    * @returns The final value to be rendered in the table cell
    */
-  function m_ExecuteRenderer(value, col, idx) {
-    var customRenderer = col.renderer;
+  function m_ExecuteRenderer(key, tdata, coldef) {
+    var result = '';
+    var customRenderer = coldef.renderer;
     if (customRenderer) {
-      if (typeof customRenderer !== 'function') throw new Error('Invalid renderer for', col);
-      return customRenderer(value);
+      if (typeof customRenderer !== 'function') throw new Error('Invalid renderer for', coldef);
+      result = customRenderer(key, tdata, coldef);
     } else {
       // Run built-in renderers
-      switch (col.type) {
+      var value = tdata[key];
+      switch (coldef.type) {
         case 'markdown':
-          return value.html;
+          // Net.Create
+          result = value.html;
+          break;
         case 'hdate':
+          // Net.Create
+          result = value; // display the raw user-entered string
+          break;
+        case 'timestamp':
+          result = u_HumanDate(value);
+          break;
+        case 'hdate-short': // Net.Create
+        case 'timestamp-short':
+          result = u_HumanDateShort(value);
+          break;
         case 'number':
         case 'text':
+        case 'text-case-insensitive':
         default:
-          return value;
+          result = value;
       }
     }
+    if (coldef.tipDisabled) return result;
+    return _react2.default.createElement(
+      'div',
+      { className: 'tabletip' },
+      _react2.default.createElement(
+        'div',
+        { className: 'tabletip-source' },
+        result
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'tabletip-text' },
+        result
+      )
+    );
   }
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /// Sorts then sets the table data
   function m_ExecuteSorter(tdata) {
-    if (columndefs.length < 1) return [];
+    if (_columndefs.length < 1) return [];
 
-    var customSorter = columndefs[sortColumnIdx].sorter;
-    var key = columndefs[sortColumnIdx].data;
+    var customSorter = _columndefs[_sortColumnIdx].sorter;
+    var key = _columndefs[_sortColumnIdx].data;
     var sortedData = [];
     if (customSorter) {
       if (typeof customSorter !== 'function') throw new Error('Invalid sorter');
-      sortedData = customSorter(key, tdata, sortOrder);
+      sortedData = customSorter(key, tdata, _sortOrder);
     } else {
       // Run built-in sorters
-      switch (columndefs[sortColumnIdx].type) {
+      switch (_columndefs[_sortColumnIdx].type) {
         case 'hdate':
-          sortedData = m_SortByHDate(key, tdata, sortOrder);
+          sortedData = m_SortByHDate(key, tdata, _sortOrder);
           break;
         case 'markdown':
-          sortedData = m_SortByMarkdown(key, tdata, sortOrder);
+          sortedData = m_SortByMarkdown(key, tdata, _sortOrder);
           break;
-        case 'date':
         case 'number':
-          sortedData = m_SortByNumber(key, tdata, sortOrder);
+          sortedData = m_SortByNumber(key, tdata, _sortOrder);
           break;
+        case 'text-case-insensitive':
+          sortedData = m_SortCaseInsensitive(key, tdata, _sortOrder);
+          break;
+        case 'timestamp': // timestamp is a string
         case 'text':
         default:
-          sortedData = m_SortByText(key, tdata, sortOrder);
+          sortedData = m_SortByText(key, tdata, _sortOrder);
       }
     }
     setTableData(sortedData);
   }
   /// RENDER //////////////////////////////////////////////////////////////////
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  /**
+   * jsx_SortBtn tracks two states:
+   * if sort is disabled:
+   *  - do not show sort button in header
+   *  - the header is not clickable (no cursor pointer)
+   * if sort is enabled:
+   *  - show sort erder: '▲' or '▼' or '▲▼'
+   *  - show cursor pointer
+   */
+  function jsx_SortBtn(columndef, idx) {
+    var isSelected = _sortColumnIdx === idx;
+    if (columndef.sortDisabled) {
+      return _react2.default.createElement(
+        'span',
+        { className: 'sortDisabled' },
+        '-'
+      );
+    } else if (isSelected) {
+      console.log('selected sort order', _sortOrder);
+      return _react2.default.createElement(
+        'span',
+        { className: 'sortEnabled' },
+        SORTORDER.get(_sortOrder)
+      );
+    } else {
+      // not selected, so sort order is the previous sort order
+      return _react2.default.createElement(
+        'span',
+        { className: 'sortEnabled' },
+        SORTORDER.get(_previousColSortOrder[idx])
+      );
+    }
+  }
+
+  // show cursor pointer if not sortDisabled
+  // needs to be set at `th` not at `th span`
+
   return _react2.default.createElement(
     'div',
     {
       className: 'URTable',
-      ref: tableRef,
+      ref: ref_Table,
       onMouseMove: ui_MouseMove,
       onMouseUp: ui_MouseUp
     },
@@ -28711,27 +21955,29 @@ function URTable(_ref) {
         _react2.default.createElement(
           'tr',
           null,
-          columndefs.map(function (col, idx) {
+          _columndefs.map(function (coldef, idx) {
             return _react2.default.createElement(
               'th',
               {
                 key: idx,
-                className: sortColumnIdx === idx ? 'selected' : '',
-                width: '' + columnWidths[idx]
+                className: _sortColumnIdx === idx ? 'selected' : '',
+                width: '' + _columnWidths[idx]
               },
               _react2.default.createElement(
                 'div',
                 { onClick: function onClick(e) {
-                    return ui_ClickSorter(e, idx);
+                    return ui_SetSelectedColumn(e, idx);
                   } },
-                col.title
+                coldef.title,
+                '\xA0',
+                jsx_SortBtn(coldef, idx)
               ),
               _react2.default.createElement('div', {
                 className: 'resize-handle',
                 onMouseDown: function onMouseDown(e) {
                   return ui_MouseDown(e, idx);
                 },
-                hidden: idx === columndefs.length - 1 // hide last resize handle
+                hidden: idx === _columndefs.length - 1 // hide last resize handle
               })
             );
           })
@@ -28740,17 +21986,20 @@ function URTable(_ref) {
       _react2.default.createElement(
         'tbody',
         null,
-        tabledata.map(function (tdata, idx) {
-          return _react2.default.createElement(
-            'tr',
-            { key: idx, style: { opacity: tdata.meta.filteredTransparency } },
-            columndefs.map(function (col, idx) {
-              return _react2.default.createElement(
-                'td',
-                { key: idx },
-                m_ExecuteRenderer(tdata[col.data], col, idx)
-              );
-            })
+        _tabledata.map(function (tdata, idx) {
+          return (
+            /* Net.Create Special Handling: Show filter transparency */
+            _react2.default.createElement(
+              'tr',
+              { key: idx, style: { opacity: tdata.meta.filteredTransparency } },
+              _columndefs.map(function (coldef, idx) {
+                return _react2.default.createElement(
+                  'td',
+                  { key: idx },
+                  m_ExecuteRenderer(coldef.data, tdata, coldef)
+                );
+              })
+            )
           );
         })
       )
@@ -29896,6 +23145,7 @@ FILTER.ACTION.FILTER = 'FILTERING'; // FIX: Remove this after we decide to remov
 FILTER.ACTION.REDUCE = 'REMOVE';
 FILTER.ACTION.FOCUS = 'FOCUS';
 // Types of filters definable in template files.
+// See also `nc-ui.js` for field types
 FILTER.TYPES = {};
 FILTER.TYPES.STRING = 'string';
 FILTER.TYPES.NUMBER = 'number';
@@ -29904,6 +23154,8 @@ FILTER.TYPES.NODE = 'node'; // edge source / target
 FILTER.TYPES.DATE = 'date';
 FILTER.TYPES.HDATE = 'hdate'; // custom historical date
 FILTER.TYPES.MARKDOWN = 'markdown';
+FILTER.TYPES.TIMESTAMP = 'timestamp';
+FILTER.TYPES.INFOORIGIN = 'infoOrigin';
 FILTER.TYPES.HIDDEN = 'hidden';
 // Special Edge Keys mapped to node objects
 // Used by m_IsEdgeMatchedByFilter to find node labels
@@ -29987,6 +23239,7 @@ function FilterGroup(_ref) {
         case FILTER.TYPES.MARKDOWN:
         case FILTER.TYPES.NODE:
         case FILTER.TYPES.DATE: // generic dates (not hdate) are treated like strings
+        case FILTER.TYPES.INFOORIGIN:
         case FILTER.TYPES.STRING:
           return React.createElement(StringFilter, {
             key: filter.id,
@@ -30008,6 +23261,7 @@ function FilterGroup(_ref) {
             filter: filter,
             filterAction: filterAction
           });
+        case FILTER.TYPES.TIMESTAMP: // UI uses HDate to set date, but parser uses custom timestamp
         case FILTER.TYPES.HDATE:
           return React.createElement(HDateFilter, {
             key: filter.id,
@@ -31684,7 +24938,6 @@ function m_RenderEdges(data) {
   var VDATA = data;
 
   var TEMPLATE = UDATA.AppState('TEMPLATE');
-  var edgeSizeMax = TEMPLATE.edgeSizeMax;
 
   /*/ ISSUES
       * How do we handle direction?
@@ -31698,14 +24951,17 @@ function m_RenderEdges(data) {
 
   // Synthesize duplicate edges into a single edge.
   var edgeMap = new Map(); // key = {source}{target}
+  var cumulativeSize = new Map(); // key = {source}{target}
   var edgeColorWeightMap = new Map(); // key = {source}{target}, value = colorMap[[color, weightTotal]]
   VDATA.edges.forEach(function (e) {
     var edgeKey = m_GetEdgeKey(e); // single key for both directions
-    var currEdge = edgeMap.get(edgeKey);
     var eWeight = Number(e.weight) || DEFAULT_SIZE; // weight defaults to 1, force Number
 
     // 1. Set Size
-    e.size = eWeight + (currEdge ? currEdge.size : 0); // cumulative size
+    e.size = eWeight;
+    //     Calculate cumulative size
+    var sum = (cumulativeSize.get(edgeKey) || 0) + e.size;
+    cumulativeSize.set(edgeKey, sum);
 
     // 2. Update Color Weight Map
     if (colorsAreDefined) {
@@ -31716,19 +24972,16 @@ function m_RenderEdges(data) {
       edgeColorWeightMap.set(edgeKey, colorWeightMap);
     }
 
-    // 3. Limit to Max Edge Size
-    if (edgeSizeMax > 0) e.size = Math.min(edgeSizeMax, e.size);
-
-    // 4. Save value
+    // 3. Save value
     edgeMap.set(edgeKey, e);
   });
 
-  // 5. Set Color
+  // 4. Set Color and Cumulative Size
   VDATA.edges.forEach(function (e) {
+    e.size = cumulativeSize.get(m_GetEdgeKey(e));
     e.color = m_GetWeightiestColor(e, edgeColorWeightMap);
   });
 
-  VDATA.edges = [].concat(_toConsumableArray(edgeMap.values()));
   UDATA.SetAppState('VDATA', VDATA);
 }
 
@@ -31901,6 +25154,7 @@ MOD.Hook('INITIALIZE', function () {
   /** FILTER_DEFINE is called by StringFilter when user has updated filter.
    */
   UDATA.HandleMessage('FILTER_DEFINE', function (data) {
+    if (DBG) console.log(PR + 'FILTER_DEFINE', data);
     m_FilterDefine(data);
     UNISYS.Log('define filter', JSON.stringify(data));
   });
@@ -31909,6 +25163,7 @@ MOD.Hook('INITIALIZE', function () {
   /** FILTER_CLEAR is called by FiltersPanel when user clicks "Clear Filters" button
    */
   UDATA.HandleMessage('FILTER_CLEAR', function () {
+    if (DBG) console.log(PR + 'FILTER_CLEAR');
     m_ClearFilters();
     UNISYS.Log('clear filters');
   });
@@ -31917,6 +25172,7 @@ MOD.Hook('INITIALIZE', function () {
   /** FILTERS_UPDATE is called by FiltersPanel switches between filters and highlights
    */
   UDATA.HandleMessage('FILTERS_UPDATE', function (data) {
+    if (DBG) console.log(PR + 'FILTERS_UPDATE', data);
     var FILTERDEFS = UDATA.AppState('FILTERDEFS');
     FILTERDEFS.filterAction = data.filterAction;
     // if the Focus panel is being selected, grab update the selection so that
@@ -31939,12 +25195,14 @@ MOD.Hook('INITIALIZE', function () {
   /** Listen for NCDATA updates so we know to trigger change?
    */
   UDATA.OnAppStateChange('NCDATA', function (data) {
+    if (DBG) console.log(PR + 'OnAppStateChange: NCDATA', data);
     m_UpdateFilters();
   });
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /** Listen for TEMPLATE updates so we know to trigger change?
    */
   UDATA.OnAppStateChange('TEMPLATE', function (data) {
+    if (DBG) console.log(PR + 'OnAppStateChange: TEMPLATE', data);
     // this is critical -- graph will not draw if this is
     // not called from nc-logic.LOADASSETS
     m_ImportFilters();
@@ -31955,6 +25213,7 @@ MOD.Hook('INITIALIZE', function () {
       Listen for SELECTION changes for setting Focus
    */
   UDATA.OnAppStateChange('SELECTION', function (data) {
+    if (DBG) console.log(PR + 'OnAppStateChange: SELECTION', data);
     // Only if Focus is active
     var FILTERDEFS = UDATA.AppState('FILTERDEFS');
     if (FILTERDEFS.filterAction === FILTER.ACTION.FOCUS) {
@@ -32044,25 +25303,17 @@ function m_ImportPrompts(prompts) {
       switch (prompt.type) {
         case FILTER.TYPES.MARKDOWN:
         case FILTER.TYPES.STRING:
-          operator = FILTER.OPERATORS.NO_OP.key; // default to no_op
-          break;
         case FILTER.TYPES.NUMBER:
-          operator = FILTER.OPERATORS.NO_OP.key; // default to no_op
-          break;
         case FILTER.TYPES.SELECT:
-          operator = FILTER.OPERATORS.NO_OP.key; // default to no_op
-          break;
         case FILTER.TYPES.NODE:
-          operator = FILTER.OPERATORS.NO_OP.key; // default to no_op
-          break;
         case FILTER.TYPES.DATE:
-          operator = FILTER.OPERATORS.NO_OP.key; // default to no_op
-          break;
         case FILTER.TYPES.HDATE:
-          operator = FILTER.OPERATORS.NO_OP.key; // default to no_op
+        case FILTER.TYPES.TIMESTAMP:
+        case FILTER.TYPES.INFOORIGIN:
+          operator = FILTER.OPERATORS.NO_OP.key;
           break;
         case FILTER.TYPES.HIDDEN:
-          break;
+          break; // hidden filters are not added
         default:
           // edge template item "edgeIsLockedMessage" will trigger this message
           // filters will not be created for entries with no `type` defined.
@@ -32300,7 +25551,7 @@ function m_OperatorToString(operator) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function clean(str) {
   return NCLOGIC.EscapeRegexChars(String(str).trim());
-};
+}
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
  *  Match strings, allowing use of `&&` and `||`
@@ -32453,6 +25704,30 @@ function m_MatchHDate(operator, filterVal, objVal) {
   }
   return matches;
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * This uses the HDate Filter UI to construct a search string
+ * But then converts the HDate filter definition to a timestamp
+ * And then does a simple numeric comparison
+ * @param {number} operator filter operator
+ * @param {hdate} filterVal hdate
+ * @param {number} objVal timestamp
+ * @returns
+ */
+function m_MatchTimestamp(operator, filterVal, objVal) {
+  var hdateValue = _hdate2.default.Parse(filterVal); // deconstruct the HDate filter into a timestamp
+  if (hdateValue.length < 1) return false;
+
+  var knownValues = hdateValue[0].start.knownValues;
+
+  // When filtering, use only as much precision as the HDate filter requests
+  // if a value is missing, assume it is 0
+  var filterTimestamp = new Date(knownValues.year !== undefined ? knownValues.year : 0, knownValues.month !== undefined ? knownValues.month - 1 : 0, knownValues.day !== undefined ? knownValues.day : 1, knownValues.hour !== undefined ? knownValues.hour : 0, knownValues.minute !== undefined ? knownValues.minute : 0, knownValues.second !== undefined ? knownValues.second : 0);
+  var objValDate = new Date(objVal);
+  var objValTimestamp = new Date(knownValues.year !== undefined ? objValDate.getFullYear() : 0, knownValues.month !== undefined ? objValDate.getMonth() : 0, knownValues.day !== undefined ? objValDate.getDate() : 1, knownValues.hour !== undefined ? objValDate.getHours() : 0, knownValues.minute !== undefined ? objValDate.getMinutes() : 0, knownValues.second !== undefined ? objValDate.getSeconds() : 0);
+
+  return m_MatchNumber(operator, filterTimestamp.getTime(), objValTimestamp.getTime());
+}
 
 /// NODE FILTERS //////////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32535,7 +25810,8 @@ function m_IsNodeMatchedByFilter(node, filter) {
     return false; // nothing to filter
   }
 
-  var nodeValue = node[filter.key];
+  var nodeValue = ['created', 'updated'].includes(filter.key) ? node.meta[filter.key] // timestamps are stored in loki meta object
+  : node[filter.key];
 
   switch (filter.operator) {
     case FILTER.OPERATORS.CONTAINS.key:
@@ -32548,6 +25824,7 @@ function m_IsNodeMatchedByFilter(node, filter) {
       return nodeValue !== undefined && nodeValue !== '';
     default:
       if (nodeValue === undefined) return false; // no value to match
+      if (filter.type === FILTER.TYPES.TIMESTAMP) return m_MatchTimestamp(filter.operator, filter.value, nodeValue);
       if (filter.type === FILTER.TYPES.HDATE) return m_MatchHDate(filter.operator, filter.value, nodeValue);
       // else assume it's a number
       return m_MatchNumber(filter.operator, filter.value, nodeValue);
@@ -32662,12 +25939,13 @@ function m_IsEdgeMatchedByFilter(edge, filter) {
 
   var edgeValue = void 0;
   if (filter.type === FILTER.TYPES.NODE) {
-    // edges fields that poitn to nodes require special handling because `source` and `target`
+    // edges fields that point to nodes require special handling because `source` and `target`
     // point to node objects, not simple strings.
     if (filter.key === 'source') edgeValue = edge.sourceLabel;
     if (filter.key === 'target') edgeValue = edge.targetLabel;
   } else {
-    edgeValue = edge[filter.key];
+    edgeValue = ['created', 'updated'].includes(filter.key) ? edge.meta[filter.key] // timestamps are stored in loki meta object
+    : edge[filter.key];
   }
 
   switch (filter.operator) {
@@ -32681,6 +25959,7 @@ function m_IsEdgeMatchedByFilter(edge, filter) {
       return edgeValue !== undefined && edgeValue !== '';
     default:
       if (edgeValue === undefined) return false; // no value to match
+      if (filter.type === FILTER.TYPES.TIMESTAMP) return m_MatchTimestamp(filter.operator, filter.value, edgeValue);
       if (filter.type === FILTER.TYPES.HDATE) return m_MatchHDate(filter.operator, filter.value, edgeValue);
       // else assume it's a number
       return m_MatchNumber(filter.operator, filter.value, edgeValue);
@@ -32881,8 +26160,8 @@ var m_NodefileCheckHeaders = function () {
 
             TEMPLATE = UDATA.AppState('TEMPLATE');
             NODEKEYS = Object.values(TEMPLATE.nodeDefs).filter(function (k) {
-              return !k.hidden;
-            }) // Ignore hidden keys
+              return !k.hidden || ENUM.BUILTIN_FIELDS_NODE.includes(k);
+            }) // Ignore hidden keys but keep built-in fields, even if hidden
             .map(function (k) {
               return k.exportLabel;
             });
@@ -32992,8 +26271,8 @@ var m_EdgefileCheckHeaders = function () {
 
             TEMPLATE = UDATA.AppState('TEMPLATE');
             EDGEKEYS = Object.values(TEMPLATE.edgeDefs).filter(function (k) {
-              return !k.hidden;
-            }) // Ignore hidden keys
+              return !k.hidden || ENUM.BUILTIN_FIELDS_EDGE.includes(k);
+            }) // Ignore hidden keys but keep built-in fields, even if hidden
             .map(function (k) {
               return k.exportLabel;
             });
@@ -33149,6 +26428,7 @@ var DATASTORE = require('system/datastore');
 var TOML = require('@iarna/toml');
 var clone = require('rfdc')();
 var UTILS = require('./nc-utils');
+var ENUM = require('system/util/enum');
 
 /// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33227,6 +26507,8 @@ function m_flattenKeys(keys, prefix) {
  *  @returns - array of node values, e.g. [1,'Tacitus','Person',...]
  */
 function m_renderNodeValues(node, keys) {
+  var TEMPLATE = UDATA.AppState('TEMPLATE');
+
   var RESULT = [];
   keys.forEach(function (key) {
     // If the key is an object, recurse
@@ -33254,6 +26536,12 @@ function m_renderNodeValues(node, keys) {
     // -- DATE
     if (['created', 'updated'].includes(key)) {
       RESULT.push(m_formatDate(node.meta[key]));
+      return;
+    }
+    // -- Special processing for custom fields
+    var nodeDef = TEMPLATE.nodeDefs[key];
+    if (nodeDef.type === 'infoOrigin') {
+      if (node[key]) RESULT.push('"' + m_encode(node[key]) + '"');else RESULT.push('"' + UTILS.DeriveInfoOriginString(node.createdBy, node.meta.created) + '"');
       return;
     }
     // -- Normal processing -- wrap in quotes
@@ -33293,6 +26581,8 @@ function m_GenerateNodesArray(nodes, nodekeys) {
  *  @returns - array of edge values, e.g. [1,'is enemy of',2,...]
  */
 function m_renderEdgeValues(edge, keys) {
+  var TEMPLATE = UDATA.AppState('TEMPLATE');
+
   var RESULT = [];
   keys.forEach(function (key) {
     // If the key is an object, recurse
@@ -33301,7 +26591,7 @@ function m_renderEdgeValues(edge, keys) {
       // DEPRECATED -- 'attribute' handler.
       var subKeys = Object.keys(key); // can have multiple subKeys
       subKeys.forEach(function (k) {
-        RESULT.push(m_renderNodeValues(edge[k], key[k]));
+        RESULT.push(m_renderEdgeValues(edge[k], key[k]));
       });
     }
     // Special Data Handling
@@ -33326,6 +26616,12 @@ function m_renderEdgeValues(edge, keys) {
     // -- DATE
     if (['created', 'updated'].includes(key)) {
       RESULT.push(m_formatDate(edge.meta[key]));
+      return;
+    }
+    // -- Special processing for custom fields
+    var edgeDefs = TEMPLATE.edgeDefs[key];
+    if (edgeDefs.type === 'infoOrigin') {
+      if (edge[key]) RESULT.push('"' + m_encode(edge[key]) + '"');else RESULT.push('"' + UTILS.DeriveInfoOriginString(edge.createdBy, edge.meta.created) + '"');
       return;
     }
     // -- normal processing -- wrap in quotes
@@ -33371,9 +26667,11 @@ MOD.ExportNodes = function () {
   /// 1. Export Nodes
   /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   /// Define Node KEYS to export
-  /// Use nodekeys from TEMPLATE, but skip hidden fields
+  /// Use nodekeys from TEMPLATE
+  /// Skip hidden fields that are not built-in fields
+  /// Built-in fields are ALWAYS exported
   var nodekeys = Object.keys(TEMPLATE.nodeDefs).filter(function (k) {
-    return TEMPLATE.nodeDefs[k].hidden ? false : k;
+    return TEMPLATE.nodeDefs[k].hidden && !ENUM.BUILTIN_FIELDS_NODE.includes(k) ? false : k;
   });
 
   /// 2. Expand to CSV
@@ -33442,10 +26740,11 @@ MOD.ExportEdges = function () {
   // const edgesArr = m_GenerateEdgesArray(edges, EDGEKEYS);
 
   // New Template method
-  // Use edgekeys from TEMPLATE, but skip hidden fields
+  // Use edgekeys from TEMPLATE
+  // Skip hidden fields that are not built-in fields
   // const edgekeys = Object.keys(TEMPLATE.edgeDefs);
   var edgekeys = Object.keys(TEMPLATE.edgeDefs).filter(function (k) {
-    return TEMPLATE.edgeDefs[k].hidden ? false : k;
+    return TEMPLATE.edgeDefs[k].hidden && !ENUM.BUILTIN_FIELDS_EDGE.includes(k) ? false : k;
   });
 
   // const edgesArr = m_GenerateEdgesArray(edges, edgekeys);
@@ -33561,7 +26860,7 @@ MOD.ResetEdgeImportData = function () {
   var isValid = true;
   var messageJsx = '';
   var nodes = lines.map(function (l) {
-    if (l === "") return undefined; // skip blank lines
+    if (l === '') return undefined; // skip blank lines
     var node = { meta: {} };
     var subcategories = new Map();
     var importFields = l.split(REGEXMatchCommasNotInQuotes); // ?=" needed to match commas in strings
@@ -33617,7 +26916,6 @@ MOD.ResetEdgeImportData = function () {
     // subcategories.forEach((val, key) => {
     //   node[key] = val
     // });
-
 
     // Add meta data if missing
     if (isNaN(node.meta.created)) node.meta.created = new Date().getTime();
@@ -33807,7 +27105,7 @@ MOD.NodefileValidate = function () {
   var isValid = true;
   var messageJsx = '';
   var edges = lines.map(function (l) {
-    if (l === "") return undefined; // skip blank lines
+    if (l === '') return undefined; // skip blank lines
     var edge = { meta: {} };
     var subcategories = new Map();
     var importFields = l.split(REGEXMatchCommasNotInQuotes); // ?=" needed to match commas in strings
@@ -33872,7 +27170,7 @@ MOD.NodefileValidate = function () {
     return edge;
   }).filter(function (e) {
     return e !== undefined;
-  });;
+  });
   return { isValid: isValid, messageJsx: messageJsx, edges: edges };
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34091,6 +27389,153 @@ MOD.Import = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _c
 /// EXPORT CLASS DEFINITION ///////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module.exports = MOD;
+});
+
+require.register("view/netcreate/lock-mgr.js", function(exports, require, module) {
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+/*//////////////////////////////// ABOUT \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*\
+
+  lock-mgr
+
+  lock-mgr maintains the LOCKMGR app state, which is used to track the
+  status of locks on nodes, edges, and comments.
+
+  When a lock is requested or released, LOCKMGR state is updated.
+  Any components that are subscribed to the state update will be notified.
+
+  Calls
+  - RequestLockNode
+  - RequestUnlockNode
+  - RequestLockEdge
+  - RequestUnlockEdge
+
+  How it works
+  - A component requests a lock, e.g. NCNode.LockNode
+    which calls LOCKMGR.RequestLockNode
+  - lock-mgr makes to request to the server
+  - server passes the call to server-database.GetEditStatus
+  - server-database returns the new value
+  - server sends EDIT_PERMISSIONS_UPDATE to all clients
+  - EDIT_PERMISSIONS_UPDATE tells lock-mgr to update the LOCKMGR state
+
+  Used by:
+  - NCNode
+  - NCEdge
+
+
+\*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
+
+var UNISYS = require('unisys/client');
+
+var _require = require('system/util/enum'),
+    EDITORTYPE = _require.EDITORTYPE;
+
+/// CONSTANTS & DECLARATIONS //////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+var DBG = false;
+var PR = 'lock-mgr: ';
+
+/// MODULE INITIALIZATION /////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+var MOD = UNISYS.NewModule(module.id);
+var UDATA = UNISYS.NewDataLink(MOD);
+
+/// UTILITIES /////////////////////////////////////////////////////////////////
+
+/// LIFECYCLE HANDLERS ////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*/ lifecycle INITIALIZE handler
+/*/
+MOD.Hook('INITIALIZE', function () {
+  m_Init();
+  UDATA.HandleMessage('EDIT_PERMISSIONS_UPDATE', m_UpdateLockState);
+  UDATA.HandleMessage('COMMENT_UPDATE_PERMISSIONS', m_UpdateLockState);
+}); // end UNISYS_INIT
+
+/// PRIVATE METHODS ///////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function m_Init() {
+  var LOCKSTATE = {
+    templateBeingEdited: false,
+    importActive: false,
+    nodeOrEdgeBeingEdited: false,
+    // commentBeingEditedByMe: false, // NOT IMPLEMENTED
+    lockedNodes: [],
+    lockedEdges: [],
+    lockedComments: []
+  };
+  UDATA.SetAppState('LOCKSTATE', LOCKSTATE);
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ *
+ * @param {object} data
+ * @param {boolean} data.templateBeingEdited
+ * @param {boolean} data.importActive
+ * @param {boolean} data.nodeOrEdgeBeingEdited
+//  * @param {boolean} data.commentBeingEditedByMe // NOT IMPLEMENTED
+ * @param {Array} data.lockedNodes
+ * @param {Array} data.lockedEdges
+ * @param {Array} data.lockedComments
+ */
+function m_UpdateLockState(data) {
+  var LOCKSTATE = UDATA.AppState('LOCKSTATE');
+  UDATA.SetAppState('LOCKSTATE', _extends({}, LOCKSTATE, data));
+}
+
+/// PUBLIC METHODS ////////////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RequestLockNode(nodeId, cb) {
+  UDATA.Call('SRV_DBLOCKNODE', { nodeID: nodeId }).then(function (data) {
+    if (typeof cb === 'function') cb(data.locked);
+  });
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RequestUnlockNode(nodeId, cb) {
+  UDATA.Call('SRV_DBUNLOCKNODE', { nodeID: nodeId }).then(function (data) {
+    if (typeof cb === 'function') cb(data.locked);
+  });
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RequestLockEdge(edgeId, cb) {
+  UDATA.Call('SRV_DBLOCKEDGE', { edgeID: edgeId }).then(function (data) {
+    if (typeof cb === 'function') cb(data.locked);
+  });
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RequestUnlockEdge(edgeId, cb) {
+  UDATA.Call('SRV_DBUNLOCKEDGE', { edgeID: edgeId }).then(function (data) {
+    if (typeof cb === 'function') cb(data.locked);
+  });
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RequestEditLock(editorType, cb) {
+  if (cb) UDATA.NetCall('SRV_REQ_EDIT_LOCK', { editor: editorType }).then(function (data) {
+    if (typeof cb === 'function') cb(data);
+  });else UDATA.NetSignal('SRV_REQ_EDIT_LOCK', { editor: editorType });
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RequestEditUnlock(editorType, cb) {
+  if (cb) UDATA.NetCall('SRV_RELEASE_EDIT_LOCK', { editor: editorType }).then(function (data) {
+    if (typeof cb === 'function') cb(data.locked);
+  });else UDATA.NetSignal('SRV_RELEASE_EDIT_LOCK', { editor: editorType });
+}
+
+/// EXPORT REACT COMPONENT ////////////////////////////////////////////////////
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+module.exports = {
+  RequestLockNode: RequestLockNode,
+  RequestUnlockNode: RequestUnlockNode,
+  RequestLockEdge: RequestLockEdge,
+  RequestUnlockEdge: RequestUnlockEdge,
+  RequestEditLock: RequestEditLock,
+  RequestEditUnlock: RequestEditUnlock
+};
 });
 
 require.register("view/netcreate/nc-logic.js", function(exports, require, module) {
@@ -34636,7 +28081,11 @@ MOD.Hook('INITIALIZE', function () {
 
     return DATASTORE.PromiseNewNodeID().then(function (newNodeID) {
       var node = {
-        id: newNodeID, label: data.label, provenance: provenance, createdBy: createdBy, updatedBy: updatedBy
+        id: newNodeID,
+        label: data.label,
+        provenance: provenance,
+        createdBy: createdBy,
+        updatedBy: updatedBy
       };
       return UDATA.LocalCall('DB_UPDATE', { node: node }).then(function () {
         NCDATA.nodes.push(node);
@@ -34766,6 +28215,11 @@ MOD.Hook('INITIALIZE', function () {
     var createdBy = MOD.GetCurrentUserId();
     var updatedBy = createdBy;
 
+    // weight -- weight is a built in property, so always record it even it is not displayed
+    TEMPLATE = UDATA.AppState('TEMPLATE');
+    var DEFAULT_EDGE_WEIGHT = 1; // default to 1 in case `weight` is not defined in the template
+    var weight = TEMPLATE.edgeDefs['weight'] && TEMPLATE.edgeDefs['weight'].defaultValue ? TEMPLATE.edgeDefs['weight'].defaultValue : DEFAULT_EDGE_WEIGHT;
+
     // call server to retrieve an unused edge ID
     return DATASTORE.PromiseNewEdgeID().then(function (newEdgeID) {
       // Add it to local state for now
@@ -34775,6 +28229,7 @@ MOD.Hook('INITIALIZE', function () {
         target: undefined,
         attributes: {},
         provenance: provenance,
+        weight: weight,
         createdBy: createdBy,
         updatedBy: updatedBy
       };
@@ -35050,15 +28505,19 @@ function m_UpdateColorMap() {
   // someone ever chooses to use the same label twice, but ...
   try {
     var nodeColorMap = {};
-    TEMPLATE.nodeDefs.type.options.forEach(function (o) {
-      nodeColorMap[o.label] = o.color;
-    });
+    if (TEMPLATE.nodeDefs.type && TEMPLATE.nodeDefs.type.options) {
+      TEMPLATE.nodeDefs.type.options.forEach(function (o) {
+        nodeColorMap[o.label] = o.color;
+      });
+    }
 
     var edgeColorMap = {};
     var defaultEdgeColor = TEMPLATE.edgeDefs.color || '#999'; //for backwards compatability
-    TEMPLATE.edgeDefs.type.options.forEach(function (o) {
-      edgeColorMap[o.label] = o.color || defaultEdgeColor;
-    });
+    if (TEMPLATE.edgeDefs.type && TEMPLATE.edgeDefs.type.options) {
+      TEMPLATE.edgeDefs.type.options.forEach(function (o) {
+        edgeColorMap[o.label] = o.color || defaultEdgeColor;
+      });
+    }
 
     UDATA.SetAppState('COLORMAP', { nodeColorMap: nodeColorMap, edgeColorMap: edgeColorMap });
   } catch (error) {
@@ -35101,6 +28560,9 @@ function m_FindMatchingNodeByProp() {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Return array of nodes with labels that partially match str
  */
+MOD.FindMatchingNodesByLabel = function (label) {
+  return m_FindMatchingNodesByLabel(label);
+};
 function m_FindMatchingNodesByLabel() {
   var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
@@ -35224,6 +28686,7 @@ MOD.EscapeRegexChars = u_EscapeRegexChars; // Expose for filter-mgr.js
  *        attributes.Citations = citation
  *        attributes.Notes => notes
  *  3. Remove the old `attributes` key
+ *  4. Clean built-in fields
  */
 function m_MigrateData(data) {
   data.nodes.forEach(function (node) {
@@ -35236,6 +28699,10 @@ function m_MigrateData(data) {
       // clear it
       Reflect.deleteProperty(node, 'attributes');
     }
+    // clean built-in fields
+    // NOTE: This just cleans up the data, but does not SAVE the fix!
+    node.meta = node.meta || {};
+    node.meta.revision = parseInt(node.meta.revision) || 1;
   });
   data.edges.forEach(function (edge) {
     edge.id = parseInt(edge.id);
@@ -35252,6 +28719,10 @@ function m_MigrateData(data) {
       // clear it
       Reflect.deleteProperty(edge, 'attributes');
     }
+    // clean built-in fields
+    // NOTE: This just cleans up the data, but does not SAVE the fix!
+    edge.meta = edge.meta || {};
+    edge.meta.revision = parseInt(edge.meta.revision) || 1;
   });
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35468,10 +28939,40 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   * NCNode
   * NCEdge
 
+  Supported Field Types
+  - number
+  - string
+  - markdown
+  - hdate
+  - select
+  - infoOrigin
+
+
+  Custom Fields Handling
+
+    The `infoOrigin` field requires special handling.
+
+    Ideally, when a node is created, we would process any special fields and
+    derive and save any derived info.  But
+    a) we don't want to have server-database handle any custom fields -- that
+       it should just blindly save data.
+    b) when nc-logic creates a new field via `NODE_CREATE`, again, only built-in
+       fields are created and stored.  Custom fields are created by the UI as
+       needed when they are rendered.
+    This means that the `infoOrigin` field remains blank until the user
+    decides to change the data.
+
+    To handle this, then we need to make sure `infoOrigin` appears to have data
+    whenever it is viewed.  This requires:
+    - nc-ui renders a non-built-in field, e.g. an `attribute` field
+    - nc-ui renders a `provenance` field
+    - importexport-mgr exports node or edge data
+
 \*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ * //////////////////////////////////////*/
 
 var React = require('react');
 var UNISYS = require('unisys/client');
+var UTILS = require('./nc-utils');
 var MD = require('markdown-it')();
 var MDEMOJI = require('markdown-it-emoji');
 MD.use(MDEMOJI);
@@ -35501,7 +29002,7 @@ function DateFormatted() {
   var dateTime = time + ' on ' + date;
   return dateTime;
 }
-
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** Converts a markdown string to HTML
  *  And does extra HACK processing as needed:
  *  -- Supports emojis
@@ -35516,7 +29017,6 @@ function Markdownify() {
   var hackedHtmlString = htmlString.replace(/<a href/g, '<a target="_blank" href');
   return MDPARSE(hackedHtmlString);
 }
-
 /// INPUT FORM CHANGE HANDLERS ////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /** This processes the form data before passing it on to the parent handler.
@@ -35639,7 +29139,9 @@ function RenderTabSelectors(TABS, state, onclick) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function RenderAttributesTabView(state, defs) {
   var attributes = state.attributes,
-      degrees = state.degrees;
+      degrees = state.degrees,
+      weight = state.weight,
+      size = state.size;
 
   var items = [];
   Object.keys(attributes).forEach(function (k) {
@@ -35651,6 +29153,9 @@ function RenderAttributesTabView(state, defs) {
         break;
       case 'hdate':
         items.push(RenderDateValue(k, attributes[k], defs[k].format, defs[k].allowFormatSelection));
+        break;
+      case 'infoOrigin':
+        items.push(RenderInfoOriginValue(k, attributes[k], state, defs));
         break;
       case 'string':
       default:
@@ -35665,6 +29170,12 @@ function RenderAttributesTabView(state, defs) {
     items.push(RenderLabel('degrees', defs['degrees'].displayLabel));
     items.push(RenderStringValue('degrees', degrees));
   }
+  // weight hack -- `weight` is a built-in field, but is displayed in attributes
+  if (defs['weight'] && !defs['weight'].hidden) {
+    // only if defined, e.g. for nodeDefs
+    items.push(RenderLabel('weight', defs['weight'].displayLabel));
+    items.push(RenderStringValue('weight', weight + ' (' + size + ')'));
+  }
 
   return React.createElement(
     'div',
@@ -35675,7 +29186,8 @@ function RenderAttributesTabView(state, defs) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function RenderAttributesTabEdit(state, defs, onchange) {
   var attributes = state.attributes,
-      degrees = state.degrees;
+      degrees = state.degrees,
+      weight = state.weight;
 
   var items = [];
   Object.keys(attributes).forEach(function (k) {
@@ -35693,6 +29205,9 @@ function RenderAttributesTabEdit(state, defs, onchange) {
       case 'string':
         items.push(RenderStringInput(k, value, onchange, helpText));
         break;
+      case 'infoOrigin':
+        items.push(RenderInfoOriginInput(k, value, onchange, helpText, state));
+        break;
       case 'number':
         items.push(m_RenderNumberInput(k, value, onchange, helpText));
         break;
@@ -35709,6 +29224,12 @@ function RenderAttributesTabEdit(state, defs, onchange) {
     // only if defined, e.g. for nodeDefs
     items.push(RenderLabel('degrees', defs['degrees'].displayLabel));
     items.push(RenderStringValue('degrees', degrees));
+  }
+  // weight hack -- `weight` is a built-in field, but is displayed in attributes
+  if (defs['weight'] && !defs['weight'].hidden) {
+    // only if defined, e.g. for nodeDefs
+    items.push(RenderLabel('weight', defs['weight'].displayLabel));
+    items.push(m_RenderNumberInput('weight', weight, onchange, defs['weight'].help));
   }
 
   return React.createElement(
@@ -35731,6 +29252,9 @@ function RenderProvenanceItemsView(state, defs) {
         break;
       case 'hdate':
         items.push(RenderDateValue(k, provenance[k], defs[k].format, defs[k].allowFormatSelection));
+        break;
+      case 'infoOrigin':
+        items.push(RenderInfoOriginValue(k, provenance[k], state, defs));
         break;
       case 'string':
       case 'number':
@@ -35762,6 +29286,10 @@ function RenderProvenanceItemsEdit(state, defs, onchange) {
       case 'string':
         items.push(RenderStringInput(k, value, onchange, helpText));
         break;
+      case 'infoOrigin':
+        items.push(RenderInfoOriginInput(k, value, onchange, helpText, state));
+        break;
+      case 'weight':
       case 'number':
         items.push(m_RenderNumberInput(k, value, onchange, helpText));
         break;
@@ -35783,7 +29311,6 @@ function RenderProvenanceTabView(state, defs) {
       updated = state.updated,
       updatedBy = state.updatedBy,
       revision = state.revision;
-  // FIXME: These will be dynamically generated with the new Provenance template
 
   return React.createElement(
     'div',
@@ -35799,12 +29326,12 @@ function RenderProvenanceTabView(state, defs) {
       { className: 'category' },
       'HISTORY'
     ),
-    RenderLabel('createdlabel', defs.created.displayLabel),
-    RenderStringValue('createdlabel', RenderProvenanceByline(createdBy, created)),
-    RenderLabel('updatedlabel', defs.updated.displayLabel),
-    RenderStringValue('updatedlabel', RenderProvenanceByline(updatedBy, updated)),
-    RenderLabel('revisionlabel', defs.revision.displayLabel),
-    RenderStringValue('revisionlabel', revision)
+    !defs.created.hidden && RenderLabel('createdlabel', defs.created.displayLabel),
+    !defs.created.hidden && RenderProvenanceByline(created, createdBy, defs.createdBy),
+    !defs.updated.hidden && RenderLabel('updatedlabel', defs.updated.displayLabel),
+    !defs.updated.hidden && RenderProvenanceByline(updated, updatedBy, defs.updatedBy),
+    !defs.revision.hidden && RenderLabel('revisionlabel', defs.revision.displayLabel),
+    !defs.revision.hidden && RenderStringValue('revisionlabel', revision)
   );
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35816,7 +29343,6 @@ function RenderProvenanceTabEdit(state, defs, onchange) {
       updated = state.updated,
       updatedBy = state.updatedBy,
       revision = state.revision;
-  // FIXME: These will be dynamically generated with the new Provenance template
 
   return React.createElement(
     'div',
@@ -35832,18 +29358,26 @@ function RenderProvenanceTabEdit(state, defs, onchange) {
       { className: 'category' },
       'HISTORY'
     ),
-    RenderLabel('createdlabel', defs.created.displayLabel),
-    RenderStringValue('createdlabel', RenderProvenanceByline(createdBy, created)),
-    RenderLabel('updatedlabel', defs.updated.displayLabel),
-    RenderStringValue('updatedlabel', RenderProvenanceByline(updatedBy, updated)),
-    RenderLabel('revisionlabel', defs.revision.displayLabel),
-    RenderStringValue('revisionlabel', revision)
+    !defs.created.hidden && RenderLabel('createdlabel', defs.created.displayLabel),
+    !defs.created.hidden && RenderProvenanceByline(created, createdBy, defs.createdBy),
+    !defs.updated.hidden && RenderLabel('updatedlabel', defs.updated.displayLabel),
+    !defs.updated.hidden && RenderProvenanceByline(updated, updatedBy, defs.updatedBy),
+    !defs.revision.hidden && RenderLabel('revisionlabel', defs.revision.displayLabel),
+    !defs.revision.hidden && RenderStringValue('revisionlabel', revision)
   );
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function RenderProvenanceByline(author, date) {
-  var by = author ? '' + author : '(not recorded)';
-  return by + ', ' + date; // leave author blank for older templates
+function RenderProvenanceByline(date, author, defAuthor) {
+  var result = '';
+  if (defAuthor && defAuthor.hidden) result = date;else {
+    var by = author ? '' + author : '(not recorded)'; // leave author blank for older templates
+    result = by + ', ' + date;
+  }
+  return React.createElement(
+    'div',
+    { className: 'viewvalue' },
+    result
+  );
 }
 
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -35868,6 +29402,15 @@ function RenderMarkdownValue(key) {
   );
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+function RenderInfoOriginValue(key, value, state) {
+  var newValue = value === undefined || value === '' ? UTILS.DeriveInfoOriginString(state.createdBy, state.created) : value;
+  return React.createElement(
+    'div',
+    { id: key, key: key + 'value', className: 'viewvalue' },
+    newValue
+  );
+}
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function RenderStringValue(key, value) {
   return React.createElement(
     'div',
@@ -35877,9 +29420,14 @@ function RenderStringValue(key, value) {
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function RenderDateValue(key, value, dateFormat, allowFormatSelection) {
-  return React.createElement(_URDateField2.default, { id: key, key: key + 'value', value: value, dateFormat: dateFormat,
+  return React.createElement(_URDateField2.default, {
+    id: key,
+    key: key + 'value',
+    value: value,
+    dateFormat: dateFormat,
     allowFormatSelection: allowFormatSelection,
-    readOnly: true });
+    readOnly: true
+  });
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
@@ -35935,6 +29483,16 @@ function RenderMarkdownInput(key, value, cb, helpText) {
       onCancel: m_UICancelInsertImageURL
     })
   );
+}
+
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/**
+ * Injects `Created by <createdBy> on <created>` if nothing is defined
+ * Otherwise it's treated as a string field
+ */
+function RenderInfoOriginInput(key, value, cb, helpText, state, onFocus, onBlur) {
+  var newValue = value === undefined || value === '' ? UTILS.DeriveInfoOriginString(state.createdBy, state.created) : value;
+  return RenderStringInput(key, newValue, cb, helpText, onFocus, onBlur);
 }
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /**
@@ -36062,7 +29620,10 @@ function RenderOptionsInput(key, value, defs, cb, helpText) {
  *  @returns
  */
 function RenderDateInput(key, value, dateFormat, allowFormatSelection, cb, helpText) {
-  return React.createElement(_URDateField2.default, { id: key, key: key + 'value', value: value,
+  return React.createElement(_URDateField2.default, {
+    id: key,
+    key: key + 'value',
+    value: value,
     dateFormat: dateFormat,
     allowFormatSelection: allowFormatSelection,
     onChange: function onChange(event) {
@@ -36174,13 +29735,24 @@ function RecalculateAllEdgeSizes(data) {
     e.size = size.get(key) || 1;
   });
 }
+/// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/** API METHOD
+ *  Generates the "InfoOrigin" string:
+ *     "Created by <createdBy> on <creeated>"
+ *  @param {string} author
+ *  @param {date} ms
+ */
+function DeriveInfoOriginString(author, ms) {
+  return "Created by " + author + " on " + new Date(ms).toLocaleString();
+}
 
 /// MODULE EXPORTS ///////////////////////////////////////////////////////////
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 module.exports = {
   GenerateUUID: GenerateUUID,
   RecalculateAllNodeDegrees: RecalculateAllNodeDegrees,
-  RecalculateAllEdgeSizes: RecalculateAllEdgeSizes
+  RecalculateAllEdgeSizes: RecalculateAllEdgeSizes,
+  DeriveInfoOriginString: DeriveInfoOriginString
 };
 });
 
@@ -36326,6 +29898,7 @@ function m_UpdateNodes(nodes) {
 /// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function m_UpdateEdges(edges) {
   var TEMPLATE = UDATA.AppState('TEMPLATE');
+  var edgeSizeMax = TEMPLATE.edgeSizeMax;
   var HILITE = UDATA.AppState('HILITE');
   var userHighlightNodeId = HILITE.userHighlightNodeId;
 
@@ -36340,7 +29913,7 @@ function m_UpdateEdges(edges) {
     targetId === userHighlightNodeId // or target
     ) {
         // leave size alone, max size checking is in edge-mgr
-        e.width = e.size;
+        e.width = edgeSizeMax > 0 ? Math.min(edgeSizeMax, e.size) : e.size;
         e.opacity = e.filteredTransparency;
       } else {
       e.width = TEMPLATE.edgeSizeDefault; // mouse over a node, so just show thin line
@@ -37236,7 +30809,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -37276,7 +30849,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -37316,7 +30889,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -37356,7 +30929,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -37396,7 +30969,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -37851,7 +31424,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -37931,7 +31504,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',
@@ -38011,7 +31584,7 @@ MOD.TEMPLATE = {
               type: 'boolean',
               format: 'checkbox',
               description: 'Show in Provenance tab',
-              default: false
+              default: true
             },
             'hidden': {
               type: 'boolean',

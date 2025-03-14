@@ -133,7 +133,7 @@ exportLabel = "Created"
 help = "Date and time node was created"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.createdBy]
 displayLabel = "Created By"
@@ -141,7 +141,7 @@ help = "Author who created the node"
 exportLabel = "Created By"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.updated]
 displayLabel = "Updated"
@@ -149,7 +149,7 @@ exportLabel = "Updated"
 help = "Date and time node was last modified"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.updatedBy]
 displayLabel = "Updated By"
@@ -157,7 +157,7 @@ exportLabel = "Updated By"
 help = "Author who updated the node"
 includeInGraphTooltip = true
 isProvenance = true
-hidden = false
+hidden = true
 
 [nodeDefs.revision]
 displayLabel = "Revision"
@@ -227,7 +227,7 @@ exportLabel = "Created"
 includeInGraphTooltip = true
 help = "Date and time edge was created"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.createdBy]
 displayLabel = "Created By"
@@ -235,7 +235,7 @@ exportLabel = "Created By"
 includeInGraphTooltip = true
 help = "Author who created the edge"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.updated]
 displayLabel = "Updated"
@@ -243,7 +243,7 @@ exportLabel = "Updated"
 includeInGraphTooltip = true
 help = "Date and time edge was last modified"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.updatedBy]
 displayLabel = "Updated By"
@@ -251,7 +251,7 @@ exportLabel = "Updated By"
 includeInGraphTooltip = true
 help = "Author who updated the nodedgee"
 isProvenance = true
-hidden = false
+hidden = true
 
 [edgeDefs.revision]
 displayLabel = "Revision"
