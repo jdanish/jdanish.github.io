@@ -2,7 +2,7 @@
 
 - last: Danish
   first: Joshua
-  role: Lab Director, Professor
+  role: Lab Director, Professor, Barbara B. Jacobs Chair in Education and Technology
   status: Current Lab Member
   url: https://www.joshuadanish.com
   affiliation: Indiana University Bloomington
@@ -20,6 +20,16 @@
   interests: social and emotional engagaement, embodied learning, playful inquiry
   pronouns: She/Her
 
+- last: Desai
+  first: Aman
+  role: Graduate Researcher
+  status: Current Lab Member
+  affiliation: Indiana University Bloomington
+  interests: science education, collaboration, inquiry-based learning
+  pic: /assets/img/people/adesai.jpg
+  pronouns: He/Him
+  url: https://www.linkedin.com/in/amandesai251/
+  
 - last: Tu
   first: Xintian
   role: Graduate Researcher
