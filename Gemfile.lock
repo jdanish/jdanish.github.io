@@ -71,6 +71,7 @@ PLATFORMS
   universal-darwin-20
   universal-darwin-22
   universal-darwin-23
+  universal-darwin-24
 
 DEPENDENCIES
   jekyll-sitemap
