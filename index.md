@@ -4,8 +4,8 @@ permalink: /
 visibility: All
 ---
 
-## Professor and Department Head
-## Curriculum and Instruction, University of Illinois
+## Professor and Department Head, Curriculum and Instruction
+## University of Illinois
 
 The overarching theme in my program of research is an examination of how people learn through activity. Learning through activity involves interacting with other people, physical objects, and ideas. Physical objects can range from actual flowers and drawings that label their parts to computer simulations. Similarly, ideas include individual beliefs and preferences, the rules that groups such as classrooms follow, and historically developed concepts that span generations. My research examines how individuals coordinate their actions and ideas within these complex settings, and how this can lead to learning.
 
