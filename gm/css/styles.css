@@ -216,20 +216,46 @@ code { color: #cfe7ff; }
   }
 }
 
+/* ---------- GM Tables ---------- */
+
 .gm-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 10px 0;
-  font-size: 12px;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 12px;
 }
 
 .gm-table th,
 .gm-table td {
-  padding: 6px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
 }
 
 .gm-table th {
-  background: rgba(255,255,255,0.03);
+    background: rgba(255,255,255,0.05);
+    font-weight: 700;
+}
+
+.gm-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.gm-table tbody tr:hover {
+    background: rgba(124,196,255,0.12);
+}
+
+.gm-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Optional: keep buttons compact inside tables */
+.gm-table .btn {
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.gm-table tbody tr:has(.jump-link) {
+    cursor: pointer;
 }
