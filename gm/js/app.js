@@ -59,7 +59,7 @@ function setTabButtonLabel(tab) {
 
 function buildViewerSrc(tab, page) {
   const file = BOOKS[tab].file;
-  return `${VIEWER_DIR}?file=../../${encodeURI(file)}#page=${page}&zoom=page-width`;
+  return `${VIEWER_DIR}?file=../../${encodeURI(file)}#page=${page}&zoom=125`;
 }
 
 function createViewer(tab) {
@@ -86,7 +86,7 @@ function createViewer(tab) {
     resizeTimer: null,
     bridgeAttached: false,
     bridgePollTimer: null,
-    desiredScale: "page-width",
+    desiredScale: "1.25",
     suppressScaleRestore: false,
     patchApplied: false,
     observedPage: getPageFor(tab)
@@ -96,7 +96,7 @@ function createViewer(tab) {
     const viewer = viewers[tab];
     viewer.ready = true;
     viewer.bridgeAttached = false;
-    viewer.desiredScale = viewer.desiredScale || "page-width";
+    viewer.desiredScale = viewer.desiredScale || "1.25";
     attachViewerBridge(tab);
     syncPageIntoViewer(tab, getPageFor(tab));
   });
@@ -248,7 +248,7 @@ function attachViewerBridge(tab) {
   }
 
   viewer.bridgeAttached = true;
-  viewer.desiredScale = app.pdfViewer.currentScaleValue || viewer.desiredScale || "page-width";
+  viewer.desiredScale = app.pdfViewer.currentScaleValue || viewer.desiredScale || "1.25";
 
   // PDF.js added this preference specifically so internal destination links can keep the current zoom.
   if ("ignoreDestinationZoom" in app.pdfLinkService) {
@@ -351,7 +351,7 @@ function syncPageIntoViewer(tab, page) {
       app.page = page;
     }
     attachViewerBridge(tab);
-    setViewerScale(tab, app, viewers[tab].desiredScale || app.pdfViewer?.currentScaleValue || "page-width");
+    setViewerScale(tab, app, viewers[tab].desiredScale || app.pdfViewer?.currentScaleValue || "1.25");
     viewerFrameEl.querySelector(`#viewer-${tab}`)?.scrollIntoView({ block: "nearest" });
   } catch {
     // Ignore cross-origin or timing issues until the viewer is fully ready.
