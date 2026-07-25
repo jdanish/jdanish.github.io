@@ -502,9 +502,13 @@ function makeResultButton(result) {
       return;
     }
     if (result.tab) {
-      setTabAndPage(result.tab, result.page || 1);
+      const page = result.page || 1;
+      setTabAndPage(result.tab, page);
       if (result.kind === "pdf") {
-        jumpInCurrentViewer(result.tab, result.page || 1);
+        jumpInCurrentViewer(result.tab, page);
+        window.setTimeout(() => {
+          void highlightPdfSearchResult(result.tab, result.searchQuery || result.title || "", page);
+        }, 0);
       }
     }
   });
@@ -705,6 +709,7 @@ async function searchPdfPages(query, skipKeys = new Set()) {
         snippet: makeSnippet(text, query),
         tab,
         page: pageNum,
+        searchQuery: query,
         score: 10 + (hay.startsWith(lower) ? 3 : 0),
         sortPage: pageNum,
         sourceOrder: 1
@@ -887,6 +892,47 @@ function jumpInCurrentViewer(tab, page) {
   }
 
   setViewerSrc(tab, page, isActive);
+}
+
+async function highlightPdfSearchResult(tab, query, page) {
+  const searchQuery = normalizeWhitespace(query);
+  if (!searchQuery) return;
+
+  try {
+    const app = await waitForViewerApp(tab);
+    if (!app?.findController || !app?.eventBus) return;
+
+    if (Number.isFinite(page) && Number(app.page || app.pdfViewer?.currentPageNumber) !== Number(page)) {
+      try {
+        app.page = page;
+      } catch {
+        // Ignore if the viewer is still settling.
+      }
+    }
+
+    await new Promise(resolve => window.setTimeout(resolve, 120));
+
+    const findState = {
+      query: searchQuery,
+      phraseSearch: true,
+      caseSensitive: false,
+      entireWord: false,
+      highlightAll: true,
+      findPrevious: false
+    };
+
+    if (typeof app.findController.executeCommand === "function") {
+      app.findController.executeCommand("find", findState);
+      return;
+    }
+
+    app.eventBus.dispatch("find", {
+      type: "find",
+      ...findState
+    });
+  } catch {
+    // If highlighting fails, the page jump still succeeded.
+  }
 }
 
 function setTabAndPage(tab, page) {
