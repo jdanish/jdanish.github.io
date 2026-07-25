@@ -32,6 +32,7 @@ window.SIDEBAR_SECTIONS = [
                data-page="96">
               Shaken
             </a>
+
           </div>
         `
       },

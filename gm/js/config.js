@@ -1,6 +1,7 @@
 // Edit these PDFs and page shortcuts first.
 window.BOOKS = {
   swade: {
+    order: 1,
     title: "SWADE",
     file: "pdfs/swade.pdf",
     defaultPage: 3,
@@ -13,6 +14,7 @@ window.BOOKS = {
     ]
   },
   sfc: {
+    order: 2,
     title: "SFC",
     file: "pdfs/sfc.pdf",
     defaultPage: 1,
@@ -24,6 +26,7 @@ window.BOOKS = {
     ]
   },
   starbreaker_core: {
+    order: 3,
     title: "Starbreaker Core",
     file: "pdfs/starbreaker_core.pdf",
     defaultPage: 2,
@@ -36,6 +39,7 @@ window.BOOKS = {
     ]
   },
   starbreaker_star_marines: {
+    order: 4,
     title: "Starbreaker Star Marines",
     file: "pdfs/starbreaker_star_marines.pdf",
     defaultPage: 2,
@@ -45,6 +49,7 @@ window.BOOKS = {
     ]
   },
   combat_survival_guide: {
+    order: 5,
     title: "Combat Survival Guide v11",
     file: "pdfs/combat_survival_guide.pdf",
     defaultPage: 1,

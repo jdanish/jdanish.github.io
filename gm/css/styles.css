@@ -175,14 +175,30 @@ a.btn:hover {
 
 .search-group {
   margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  overflow: hidden;
 }
 
-.search-group-title {
-  margin: 0 0 8px;
-  color: var(--muted);
+.search-group > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 12px;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 700;
+}
+
+.search-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.search-group-body {
+  padding: 10px 12px 12px;
 }
 
 .search-result-item {

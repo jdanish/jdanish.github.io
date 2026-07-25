@@ -18,6 +18,19 @@ const BOOKS = window.BOOKS || {};
 const SIDEBAR_SECTIONS = window.SIDEBAR_SECTIONS || [];
 const bookKeys = Object.keys(BOOKS);
 
+function getBookOrder(tab) {
+  const order = Number(BOOKS[tab]?.order);
+  return Number.isFinite(order) ? order : 999;
+}
+
+function getOrderedBookKeys() {
+  return Object.keys(BOOKS).sort((a, b) => {
+    const orderDiff = getBookOrder(a) - getBookOrder(b);
+    if (orderDiff !== 0) return orderDiff;
+    return (BOOKS[a]?.title || a).localeCompare(BOOKS[b]?.title || b);
+  });
+}
+
 const state = loadState();
 let currentTab = state.activeTab && BOOKS[state.activeTab] ? state.activeTab : bookKeys[0];
 let resizeRefreshTimer = null;
@@ -308,7 +321,8 @@ function buildSidebar() {
 }
 
 function buildTabs() {
-  tabsEl.innerHTML = Object.keys(BOOKS).map(tabKey => `<button type="button" data-tab="${tabKey}"></button>`).join("");
+  const orderedTabs = getOrderedBookKeys();
+  tabsEl.innerHTML = orderedTabs.map(tabKey => `<button type="button" data-tab="${tabKey}"></button>`).join("");
   tabsEl.querySelectorAll("button").forEach(button => {
     button.addEventListener("click", () => {
       const tab = button.dataset.tab;
@@ -367,6 +381,25 @@ function getViewerApp(tab) {
   } catch {
     return null;
   }
+}
+
+function waitForViewerApp(tab, timeoutMs = 15000) {
+  const start = performance.now();
+  return new Promise((resolve, reject) => {
+    const tick = () => {
+      const app = getViewerApp(tab);
+      if (app?.pdfViewer && app?.pdfLinkService && app?.eventBus && app.pdfDocument) {
+        resolve(app);
+        return;
+      }
+      if (performance.now() - start >= timeoutMs) {
+        reject(new Error(`Timed out waiting for PDF viewer: ${tab}`));
+        return;
+      }
+      window.setTimeout(tick, 100);
+    };
+    tick();
+  });
 }
 
 function isViewerInteractive(tab, app) {
@@ -504,24 +537,46 @@ function renderSearchResults(query, results, statusText = "") {
 
   const grouped = new Map();
   for (const result of results) {
-    const group = result.group || "Other";
-    if (!grouped.has(group)) grouped.set(group, []);
-    grouped.get(group).push(result);
+    const groupKey = result.groupKey || result.group || "other";
+    if (!grouped.has(groupKey)) {
+      grouped.set(groupKey, {
+        title: result.groupTitle || result.group || "Other",
+        order: Number.isFinite(result.groupOrder) ? result.groupOrder : 999,
+        results: []
+      });
+    }
+    grouped.get(groupKey).results.push(result);
   }
 
-  const groupOrder = ["Sidebar notes", "Book pages", "PDF text", "Other"];
-  for (const groupName of groupOrder) {
-    const groupResults = grouped.get(groupName);
-    if (!groupResults || !groupResults.length) continue;
-    const group = document.createElement("div");
+  const orderedGroups = Array.from(grouped.entries())
+    .sort((a, b) => {
+      const orderDiff = (a[1].order || 999) - (b[1].order || 999);
+      if (orderDiff !== 0) return orderDiff;
+      return a[1].title.localeCompare(b[1].title);
+    });
+
+  for (const [, groupData] of orderedGroups) {
+    const group = document.createElement("details");
     group.className = "search-group";
+    group.open = true;
 
-    const title = document.createElement("div");
-    title.className = "search-group-title";
-    title.textContent = groupName;
-    group.appendChild(title);
+    const summary = document.createElement("summary");
+    summary.textContent = `${groupData.title} (${groupData.results.length})`;
+    group.appendChild(summary);
 
-    groupResults.forEach(result => group.appendChild(makeResultButton(result)));
+    const body = document.createElement("div");
+    body.className = "search-group-body";
+
+    const sortedResults = groupData.results.slice().sort((a, b) => {
+      const pageDiff = (Number(a.sortPage) || 0) - (Number(b.sortPage) || 0);
+      if (pageDiff !== 0) return pageDiff;
+      const sourceDiff = (Number(a.sourceOrder) || 0) - (Number(b.sourceOrder) || 0);
+      if (sourceDiff !== 0) return sourceDiff;
+      return (a.title || "").localeCompare(b.title || "");
+    });
+
+    sortedResults.forEach(result => body.appendChild(makeResultButton(result)));
+    group.appendChild(body);
     searchResultsEl.appendChild(group);
   }
 }
@@ -553,13 +608,17 @@ function searchSidebar(query) {
       + (hay.startsWith(lower) ? 10 : 0);
     results.push({
       kind: "sidebar",
-      group: "Sidebar notes",
+      groupKey: "sidebar",
+      groupTitle: "Sidebar notes",
+      groupOrder: -1000,
       title: entry.blockTitle || entry.sectionTitle,
       meta: entry.sectionTitle,
       snippet: makeSnippet(entry.text, query),
       sectionKey: entry.sectionKey,
       blockKey: entry.blockKey,
-      score
+      score,
+      sortPage: 0,
+      sourceOrder: 0
     });
   }
   return results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
@@ -571,6 +630,7 @@ function searchBookShortcuts(query) {
   for (const [tab, book] of Object.entries(BOOKS)) {
     const bookTitle = book.title || tab;
     const titleMatch = bookTitle.toLowerCase().includes(lower);
+    const bookOrder = getBookOrder(tab);
     for (const page of Array.isArray(book.pages) ? book.pages : []) {
       const pageLabel = String(page.label || "");
       const labelMatch = pageLabel.toLowerCase().includes(lower);
@@ -578,36 +638,21 @@ function searchBookShortcuts(query) {
       const score = (labelMatch ? 50 : 0) + (titleMatch ? 15 : 0);
       results.push({
         kind: "shortcut",
-        group: "Book pages",
+        groupKey: tab,
+        groupTitle: bookTitle,
+        groupOrder: bookOrder,
         title: `${bookTitle} · ${pageLabel}`,
-        meta: `p. ${page.page}`,
+        meta: `Page shortcut · p. ${page.page}`,
         snippet: titleMatch && !labelMatch ? bookTitle : pageLabel,
         tab,
         page: page.page,
-        score
+        score,
+        sortPage: Number(page.page) || 0,
+        sourceOrder: 0
       });
     }
   }
   return results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
-}
-
-function waitForViewerApp(tab, timeoutMs = 15000) {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-    const tick = () => {
-      const app = getViewerApp(tab);
-      if (app?.pdfDocument) {
-        resolve(app);
-        return;
-      }
-      if (Date.now() - start > timeoutMs) {
-        reject(new Error(`Timed out waiting for ${tab}`));
-        return;
-      }
-      window.setTimeout(tick, 100);
-    };
-    tick();
-  });
 }
 
 async function ensureBookTextIndex(tab) {
@@ -643,6 +688,7 @@ async function searchPdfPages(query, skipKeys = new Set()) {
 
   for (const [tab, book] of Object.entries(BOOKS)) {
     const pages = await ensureBookTextIndex(tab).catch(() => []);
+    const bookOrder = getBookOrder(tab);
     pages.forEach((text, index) => {
       const pageNum = index + 1;
       const hay = String(text || "").toLowerCase();
@@ -651,13 +697,17 @@ async function searchPdfPages(query, skipKeys = new Set()) {
       if (skipKeys.has(key)) return;
       results.push({
         kind: "pdf",
-        group: "PDF text",
+        groupKey: tab,
+        groupTitle: book.title || tab,
+        groupOrder: bookOrder,
         title: `${book.title} · p. ${pageNum}`,
-        meta: book.title,
+        meta: `PDF text · p. ${pageNum}`,
         snippet: makeSnippet(text, query),
         tab,
         page: pageNum,
-        score: 10 + (hay.startsWith(lower) ? 3 : 0)
+        score: 10 + (hay.startsWith(lower) ? 3 : 0),
+        sortPage: pageNum,
+        sourceOrder: 1
       });
     });
   }
@@ -683,10 +733,19 @@ async function runSearch(query) {
   if (requestId !== searchRequestId) return;
 
   const merged = [...sidebarResults, ...shortcutResults, ...pdfResults]
-    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+    .sort((a, b) => {
+      const orderDiff = (Number(a.groupOrder) || 999) - (Number(b.groupOrder) || 999);
+      if (orderDiff !== 0) return orderDiff;
+      const pageDiff = (Number(a.sortPage) || 0) - (Number(b.sortPage) || 0);
+      if (pageDiff !== 0) return pageDiff;
+      const scoreDiff = (Number(b.score) || 0) - (Number(a.score) || 0);
+      if (scoreDiff !== 0) return scoreDiff;
+      return (a.title || "").localeCompare(b.title || "");
+    })
     .slice(0, SEARCH_INDEX_LIMIT);
 
-  renderSearchResults(trimmed, merged, pdfResults.length ? "" : "PDF text index unavailable");
+  const pdfStatus = pdfResults.length ? "" : (pdfTextIndex.size ? "No PDF text matches" : "Indexing PDF text…");
+  renderSearchResults(trimmed, merged, pdfStatus);
 }
 
 function scheduleSearch(query) {
