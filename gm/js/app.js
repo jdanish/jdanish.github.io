@@ -1,7 +1,8 @@
-const STORAGE_KEY = "gm_screen_pdf_state_official_shell_v2";
+const STORAGE_KEY = "gm_screen_pdf_state_official_shell_v3";
 const VIEWER_DIR = "pdfjs/web/viewer.html";
 const PDFJS_READY_TIMEOUT_MS = 15000;
 const VIEWER_READY_POLL_MS = 50;
+const DEFAULT_SCALE = 1.25;
 
 const sidebarContentEl = document.getElementById("sidebarContent");
 const tabsEl = document.getElementById("tabs");
@@ -28,21 +29,60 @@ function saveState() {
 
 function ensureStateShape() {
   if (!state.pages) state.pages = {};
+  if (!state.scales) state.scales = {};
   if (!state.activeTab) state.activeTab = currentTab;
   for (const tab of Object.keys(BOOKS)) {
     if (!Number.isFinite(state.pages[tab])) {
       state.pages[tab] = BOOKS[tab].defaultPage || 1;
     }
+    const storedScale = normalizeScaleValue(state.scales[tab]);
+    if (storedScale === null) {
+      const defaultScale = normalizeScaleValue(BOOKS[tab].defaultScale);
+      if (defaultScale !== null) {
+        state.scales[tab] = defaultScale;
+      }
+    }
   }
+}
+
+function normalizeScaleValue(scale) {
+  if (scale === null || scale === undefined || scale === "") return null;
+  if (typeof scale === "number" && Number.isFinite(scale)) return scale;
+  if (typeof scale === "string") {
+    const trimmed = scale.trim();
+    if (!trimmed) return null;
+    const numeric = Number(trimmed);
+    if (Number.isFinite(numeric)) return numeric;
+    return trimmed;
+  }
+  return null;
 }
 
 function getPageFor(tab) {
   return Number(state.pages?.[tab]) || BOOKS[tab].defaultPage || 1;
 }
 
+function getScaleFor(tab) {
+  const saved = normalizeScaleValue(state.scales?.[tab]);
+  if (saved !== null) return saved;
+  const bookDefault = normalizeScaleValue(BOOKS[tab].defaultScale);
+  if (bookDefault !== null) return bookDefault;
+  return DEFAULT_SCALE;
+}
+
 function setPageFor(tab, page) {
   if (!state.pages) state.pages = {};
   state.pages[tab] = page;
+  saveState();
+}
+
+function setScaleFor(tab, scale) {
+  const normalized = normalizeScaleValue(scale);
+  if (normalized === null) return;
+  if (!state.scales) state.scales = {};
+  state.scales[tab] = normalized;
+  const viewer = viewers[tab];
+  if (viewer) viewer.desiredScale = normalized;
   saveState();
 }
 
@@ -59,7 +99,8 @@ function setTabButtonLabel(tab) {
 
 function buildViewerSrc(tab, page) {
   const file = BOOKS[tab].file;
-  return `${VIEWER_DIR}?file=../../${encodeURI(file)}#page=${page}&zoom=125`;
+  // Keep the initial URL simple; scale is applied once the viewer is ready.
+  return `${VIEWER_DIR}?file=../../${encodeURI(file)}#page=${page}`;
 }
 
 function createViewer(tab) {
@@ -86,7 +127,8 @@ function createViewer(tab) {
     resizeTimer: null,
     bridgeAttached: false,
     bridgePollTimer: null,
-    desiredScale: "1.25",
+    pageSyncTimer: null,
+    desiredScale: getScaleFor(tab),
     suppressScaleRestore: false,
     patchApplied: false,
     observedPage: getPageFor(tab)
@@ -96,7 +138,7 @@ function createViewer(tab) {
     const viewer = viewers[tab];
     viewer.ready = true;
     viewer.bridgeAttached = false;
-    viewer.desiredScale = viewer.desiredScale || "1.25";
+    viewer.desiredScale = getScaleFor(tab);
     attachViewerBridge(tab);
     syncPageIntoViewer(tab, getPageFor(tab));
   });
@@ -106,14 +148,19 @@ function createViewer(tab) {
 
 function buildSidebar() {
   sidebarContentEl.innerHTML = SIDEBAR_SECTIONS.map(section => {
-    const nestedBlocks = (section.blocks || []).map(block => `
-      <div class="nested-block">
-        <div class="nested-title">${block.title}</div>
-        <div class="nested-content">
-          ${block.html || ""}
+    const nestedBlocks = (section.blocks || []).map(block => {
+      const linksHtml = (block.links || []).map(link => `
+        <a class="btn jump-link" href="#" data-tab="${link.tab}" data-page="${link.page}">${link.label}</a>
+      `).join("");
+
+      return `
+        <div class="nested-block">
+          <div class="nested-title">${block.title}</div>
+          <div class="nested-text">${block.text || ""}</div>
+          ${linksHtml ? `<div class="stack">${linksHtml}</div>` : ""}
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
 
     return `
       <details open>
@@ -126,17 +173,12 @@ function buildSidebar() {
     `;
   }).join("");
 
-  attachSidebarLinkHandlers();
-}
-
-function attachSidebarLinkHandlers() {
-  sidebarContentEl.onclick = (event) => {
-    const link = event.target.closest(".jump-link");
-    if (!link) return;
-
-    event.preventDefault();
-    setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
-  };
+  sidebarContentEl.querySelectorAll(".jump-link").forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
+    });
+  });
 }
 
 function buildTabs() {
@@ -204,24 +246,36 @@ function getViewerApp(tab) {
   }
 }
 
-function setViewerScale(tab, app, scaleValue) {
+function setViewerScale(tab, app, scaleValue, options = {}) {
   const viewer = viewers[tab];
-  if (!viewer || !app?.pdfViewer || !scaleValue) return;
-  viewer.desiredScale = scaleValue;
+  if (!viewer || !app?.pdfViewer || scaleValue === null || scaleValue === undefined) return;
+  const normalized = normalizeScaleValue(scaleValue);
+  if (normalized === null) return;
+  viewer.desiredScale = normalized;
+  if (options.persist !== false) {
+    setScaleFor(tab, normalized);
+  }
   try {
-    if (app.pdfViewer.currentScaleValue !== scaleValue) {
-      app.pdfViewer.currentScaleValue = scaleValue;
+    if (app.pdfViewer.currentScaleValue !== normalized) {
+      app.pdfViewer.currentScaleValue = normalized;
     }
   } catch {
     // Ignore layout timing issues.
   }
 }
 
-function updateTabStateFromViewer(tab, pageNumber) {
+function updateTabStateFromViewer(tab, pageNumber, scaleValue) {
   const viewer = viewers[tab];
   const resolvedPage = Number(pageNumber) || 1;
   state.pages[tab] = resolvedPage;
   viewer.observedPage = resolvedPage;
+
+  const normalizedScale = normalizeScaleValue(scaleValue);
+  if (normalizedScale !== null) {
+    state.scales[tab] = normalizedScale;
+    viewer.desiredScale = normalizedScale;
+  }
+
   saveState();
 
   if (tab === currentTab) {
@@ -248,9 +302,8 @@ function attachViewerBridge(tab) {
   }
 
   viewer.bridgeAttached = true;
-  viewer.desiredScale = app.pdfViewer.currentScaleValue || viewer.desiredScale || "1.25";
+  viewer.desiredScale = getScaleFor(tab);
 
-  // PDF.js added this preference specifically so internal destination links can keep the current zoom.
   if ("ignoreDestinationZoom" in app.pdfLinkService) {
     app.pdfLinkService.ignoreDestinationZoom = true;
   }
@@ -266,7 +319,7 @@ function attachViewerBridge(tab) {
     const restoreScaleAfterNavigation = () => {
       if (!viewer.desiredScale || !app.pdfViewer) return;
       if (app.pdfViewer.currentScaleValue === viewer.desiredScale) return;
-      window.setTimeout(() => setViewerScale(tab, app, viewer.desiredScale), 0);
+      window.setTimeout(() => setViewerScale(tab, app, viewer.desiredScale, { persist: false }), 0);
     };
 
     if (originalGoToDestination) {
@@ -301,10 +354,12 @@ function attachViewerBridge(tab) {
   }
 
   const readCurrentPage = () => Number(app.page || app.pdfViewer?.currentPageNumber || viewer.observedPage || getPageFor(tab)) || 1;
+  const readCurrentScale = () => normalizeScaleValue(app.pdfViewer?.currentScaleValue || viewer.desiredScale || getScaleFor(tab));
 
   const syncFromViewer = () => {
     const pageNumber = readCurrentPage();
-    updateTabStateFromViewer(tab, pageNumber);
+    const scaleValue = readCurrentScale();
+    updateTabStateFromViewer(tab, pageNumber, scaleValue);
   };
 
   const pageChangeHandler = () => {
@@ -313,11 +368,11 @@ function attachViewerBridge(tab) {
 
   const scaleChangeHandler = event => {
     if (viewer.suppressScaleRestore) return;
-    const newScale = event?.scale || app.pdfViewer?.currentScaleValue;
-    if (newScale) {
+    const newScale = normalizeScaleValue(event?.scale || app.pdfViewer?.currentScaleValue);
+    if (newScale !== null) {
       viewer.desiredScale = newScale;
+      setScaleFor(tab, newScale);
     }
-    // A scale change can happen during destination jumps; keep the tab label in sync too.
     syncFromViewer();
   };
 
@@ -332,13 +387,13 @@ function attachViewerBridge(tab) {
       if (tab !== currentTab) return;
       if (!viewer.ready) return;
       const pageNumber = readCurrentPage();
-      if (pageNumber && pageNumber !== viewer.observedPage) {
-        updateTabStateFromViewer(tab, pageNumber);
+      const scaleValue = readCurrentScale();
+      if (pageNumber && (pageNumber !== viewer.observedPage || scaleValue !== viewer.desiredScale)) {
+        updateTabStateFromViewer(tab, pageNumber, scaleValue);
       }
     }, 400);
   }
 
-  // Sync the initial tab/page state once the viewer is live.
   syncFromViewer();
 }
 
@@ -351,7 +406,8 @@ function syncPageIntoViewer(tab, page) {
       app.page = page;
     }
     attachViewerBridge(tab);
-    setViewerScale(tab, app, viewers[tab].desiredScale || app.pdfViewer?.currentScaleValue || "1.25");
+    const desiredScale = getScaleFor(tab);
+    setViewerScale(tab, app, desiredScale, { persist: false });
     viewerFrameEl.querySelector(`#viewer-${tab}`)?.scrollIntoView({ block: "nearest" });
   } catch {
     // Ignore cross-origin or timing issues until the viewer is fully ready.
@@ -417,16 +473,10 @@ function refreshAllVisibleViewers() {
       // ignore
     }
 
-    // Re-read the current page from the active viewer so the tab button stays accurate.
-    if (tab === currentTab) {
-      const pageNumber = Number(app.page || app.pdfViewer?.currentPageNumber || getPageFor(tab)) || 1;
-      updateTabStateFromViewer(tab, pageNumber);
-      syncPageIntoViewer(tab, pageNumber);
-    } else {
-      const pageNumber = Number(app.page || app.pdfViewer?.currentPageNumber || viewer.observedPage || getPageFor(tab)) || 1;
-      if (pageNumber !== viewer.observedPage) {
-        updateTabStateFromViewer(tab, pageNumber);
-      }
+    const pageNumber = Number(app.page || app.pdfViewer?.currentPageNumber || viewer.observedPage || getPageFor(tab)) || 1;
+    const scaleValue = normalizeScaleValue(app.pdfViewer?.currentScaleValue || viewer.desiredScale || getScaleFor(tab));
+    if (pageNumber !== viewer.observedPage || scaleValue !== viewer.desiredScale) {
+      updateTabStateFromViewer(tab, pageNumber, scaleValue);
     }
   }
 }

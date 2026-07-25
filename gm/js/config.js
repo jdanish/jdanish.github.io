@@ -4,6 +4,7 @@ window.BOOKS = {
     title: "SWADE",
     file: "pdfs/swade.pdf",
     defaultPage: 3,
+    defaultScale: 1.25,
     pages: [
       { label: "TOC", page: 5 },
       { label: "Index", page: 208 },
@@ -15,6 +16,7 @@ window.BOOKS = {
     title: "SFC",
     file: "pdfs/sfc.pdf",
     defaultPage: 1,
+    defaultScale: 1.25,
     pages: [
       { label: "TOC", page: 4 },
       { label: "Index", page: 304 },
@@ -26,6 +28,7 @@ window.BOOKS = {
     title: "Starbreaker Core",
     file: "pdfs/starbreaker_core.pdf",
     defaultPage: 2,
+    defaultScale: 1.25,
     pages: [
       { label: "TOC", page: 3 },
       { label: "Species", page: 32 },
@@ -36,7 +39,8 @@ window.BOOKS = {
   starbreaker_star_marines: {
     title: "Starbreaker Star Marines",
     file: "pdfs/starbreaker_star_marines.pdf",
-    defaultPage: 2,
+    defaultPage: 2,    
+    defaultScale: 1.25,
     pages: [
       { label: "TOC", page: 3 }
     ]
@@ -45,6 +49,7 @@ window.BOOKS = {
     title: "Combat Survival Guide v11",
     file: "pdfs/combat_survival_guide.pdf",
     defaultPage: 1,
+    defaultScale: 1,
     pages: [
     ]
   }

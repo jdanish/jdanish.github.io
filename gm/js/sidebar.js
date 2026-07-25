@@ -14,6 +14,18 @@ window.SIDEBAR_SECTIONS = [
                data-page="93">
               Combat
             </a>
+            <a class="btn jump-link"
+               href="#"
+               data-tab="swade"
+               data-page="95">
+              Attack
+            </a>
+             <a class="btn jump-link"
+               href="#"
+               data-tab="swade"
+               data-page="98">
+              Soak
+            </a>
           </div>
         `
       },
