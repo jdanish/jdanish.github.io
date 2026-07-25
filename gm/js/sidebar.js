@@ -26,6 +26,12 @@ window.SIDEBAR_SECTIONS = [
                data-page="98">
               Soak
             </a>
+            <a class="btn jump-link"
+               href="#"
+               data-tab="swade"
+               data-page="96">
+              Shaken
+            </a>
           </div>
         `
       },
