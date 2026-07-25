@@ -138,7 +138,8 @@
     GM.storage.saveState();
 
     if (tab === GM.app.currentTab) {
-      GM.ui.setViewerTitle(`${window.BOOKS[tab].title} · Page ${resolvedPage}`);
+      const displayPage = GM.storage.getDisplayPageFor(window.BOOKS, tab, resolvedPage);
+      GM.ui.setViewerTitle(`${window.BOOKS[tab].title} · Page ${displayPage}`);
       GM.ui.updateActivePageButton(tab);
     }
 
@@ -338,12 +339,12 @@
     GM.storage.state.activeTab = tab;
     GM.storage.setPageFor(tab, page);
 
-    GM.ui.setViewerTitle(`${window.BOOKS[tab].title} · Page ${page}`);
+    GM.ui.setViewerTitle(`${window.BOOKS[tab].title} · Page ${GM.storage.getDisplayPageFor(window.BOOKS, tab, page)}`);
     GM.ui.buildPageButtons(tab);
     GM.ui.updateTabButtonLabels(GM.app.currentTab);
     GM.ui.updateActivePageButton(tab);
     GM.ui.showOnlyActiveViewer(tab);
-    history.replaceState(null, '', `#${tab}:${page}`);
+    history.replaceState(null, '', `#${tab}:${GM.storage.getDisplayPageFor(window.BOOKS, tab, page)}`);
     jumpInCurrentViewer(tab, page);
     refreshActiveViewer();
   }
@@ -353,7 +354,8 @@
     if (!hash) return null;
     const [tab, pageString] = hash.split(':');
     if (!window.BOOKS?.[tab]) return null;
-    return { tab, page: Number(pageString) || GM.storage.getPageFor(window.BOOKS, tab) };
+    const displayPage = Number(pageString) || GM.storage.getDisplayPageFor(window.BOOKS, tab, GM.storage.getPageFor(window.BOOKS, tab));
+    return { tab, page: GM.storage.getPdfPageForDisplay(window.BOOKS, tab, displayPage) };
   }
 
   function refreshActiveViewer() {

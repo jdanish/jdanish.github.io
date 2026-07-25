@@ -21,25 +21,30 @@
     viewerTitleEl.textContent = text || '';
   }
 
+  function getDisplayPage(tab) {
+    return GM.storage.getDisplayPageFor(window.BOOKS, tab, GM.storage.getPageFor(window.BOOKS, tab));
+  }
+
   function setTabButtonLabel(tab, currentTab) {
     const button = tabsEl.querySelector(`button[data-tab="${tab}"]`);
-    if (!button) return;
-    button.textContent = `${window.BOOKS[tab].title} · p. ${GM.storage.getPageFor(window.BOOKS, tab)}`;
+    if (!button || !window.BOOKS?.[tab]) return;
+    button.textContent = `${window.BOOKS[tab].title} · p. ${getDisplayPage(tab)}`;
     button.classList.toggle('active', tab === currentTab);
   }
 
   function updateTabButtonLabels(currentTab) {
     tabsEl.querySelectorAll('button').forEach(button => {
       const tab = button.dataset.tab;
-      button.textContent = `${window.BOOKS[tab].title} · p. ${GM.storage.getPageFor(window.BOOKS, tab)}`;
+      if (!window.BOOKS?.[tab]) return;
+      button.textContent = `${window.BOOKS[tab].title} · p. ${getDisplayPage(tab)}`;
       button.classList.toggle('active', tab === currentTab);
     });
   }
 
   function updateActivePageButton(currentTab) {
-    const activePage = GM.storage.getPageFor(window.BOOKS, currentTab);
+    const activeDisplayPage = GM.storage.getDisplayPageFor(window.BOOKS, currentTab, GM.storage.getPageFor(window.BOOKS, currentTab));
     pageLinksEl.querySelectorAll('button').forEach(button => {
-      button.classList.toggle('active', Number(button.dataset.page) === activePage);
+      button.classList.toggle('active', Number(button.dataset.page) === activeDisplayPage);
     });
   }
 
@@ -153,8 +158,11 @@
         const target = event.target.closest('[data-tab][data-page]');
         if (!target || !sidebarContentEl.contains(target)) return;
         event.preventDefault();
+        const tab = target.dataset.tab;
+        const displayPage = Number(target.dataset.page) || 1;
+        const pdfPage = GM.storage.getPdfPageForDisplay(window.BOOKS, tab, displayPage);
         if (window.GM?.pdfviewer) {
-          window.GM.pdfviewer.setTabAndPage(target.dataset.tab, Number(target.dataset.page) || 1);
+          window.GM.pdfviewer.setTabAndPage(tab, pdfPage);
         }
       });
 
@@ -163,8 +171,11 @@
         if (!target || !sidebarContentEl.contains(target)) return;
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
+        const tab = target.dataset.tab;
+        const displayPage = Number(target.dataset.page) || 1;
+        const pdfPage = GM.storage.getPdfPageForDisplay(window.BOOKS, tab, displayPage);
         if (window.GM?.pdfviewer) {
-          window.GM.pdfviewer.setTabAndPage(target.dataset.tab, Number(target.dataset.page) || 1);
+          window.GM.pdfviewer.setTabAndPage(tab, pdfPage);
         }
       });
 
@@ -194,7 +205,8 @@
     pageLinksEl.querySelectorAll('button').forEach(button => {
       button.addEventListener('click', () => {
         if (window.GM?.pdfviewer) {
-          window.GM.pdfviewer.setTabAndPage(tab, Number(button.dataset.page));
+          const pdfPage = GM.storage.getPdfPageForDisplay(window.BOOKS, tab, Number(button.dataset.page));
+          window.GM.pdfviewer.setTabAndPage(tab, pdfPage);
         }
       });
     });

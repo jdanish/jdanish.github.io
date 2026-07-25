@@ -33,6 +33,21 @@
     });
   }
 
+  function getPageOffset(books, tab) {
+    const offset = Number(books?.[tab]?.pageOffset);
+    return Number.isFinite(offset) ? offset : 0;
+  }
+
+  function getDisplayPageFor(books, tab, pdfPage) {
+    const page = Number(pdfPage) || books?.[tab]?.defaultPage || 1;
+    return Math.max(1, page + getPageOffset(books, tab));
+  }
+
+  function getPdfPageForDisplay(books, tab, displayPage) {
+    const page = Number(displayPage) || books?.[tab]?.defaultPage || 1;
+    return Math.max(1, page - getPageOffset(books, tab));
+  }
+
   function ensureStateShape(books, currentTab) {
     if (!state.pages) state.pages = {};
     if (!state.scales) state.scales = {};
@@ -104,6 +119,9 @@
     ensureStateShape,
     getBookOrder,
     getOrderedBookKeys,
+    getPageOffset,
+    getDisplayPageFor,
+    getPdfPageForDisplay,
     getPageFor,
     getScaleFor,
     setPageFor,

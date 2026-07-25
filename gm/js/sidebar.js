@@ -52,8 +52,8 @@ window.SIDEBAR_SECTIONS = [
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="PsyFocus" data-tab="starbreaker_core" data-page="121">
-                    <td>PsyFocus Loadout</td>
+                  <tr class="link-row" tabindex="0" role="button" aria-label="PsyFocus" data-tab="starbreaker_core" data-page="120">
+                    <td>PsyFocus Loadout & Advanced</td>
                     <td>15/30/60</td>
                     <td>2</td>
                     <td>2d6</td>
@@ -61,7 +61,7 @@ window.SIDEBAR_SECTIONS = [
                     <td>100</td>
                     <td></td>
                   </tr>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="Open Gatling Laser" data-tab="sfc" data-page="56">
+                  <tr class="link-row" tabindex="0" role="button" aria-label="Open Gatling Laser" data-tab="sfc" data-page="54">
                     <td>Gatling Laser</td>
                     <td>50/100/200</td>
                     <td>4</td>

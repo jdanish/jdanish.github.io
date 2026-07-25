@@ -92,18 +92,21 @@
         const labelMatch = pageLabel.toLowerCase().includes(lower);
         if (!titleMatch && !labelMatch) continue;
         const score = (labelMatch ? 50 : 0) + (titleMatch ? 15 : 0);
+        const displayPage = Number(page.page) || 1;
+        const pdfPage = GM.storage.getPdfPageForDisplay(window.BOOKS, tab, displayPage);
         results.push({
           kind: 'shortcut',
           groupKey: tab,
           groupTitle: bookTitle,
           groupOrder: bookOrder,
-          title: `${bookTitle} · ${pageLabel}`,
-          meta: `Page shortcut · p. ${page.page}`,
+          title: `${bookTitle} · p. ${displayPage}`,
+          meta: `Page shortcut · p. ${displayPage}`,
           snippet: titleMatch && !labelMatch ? bookTitle : pageLabel,
           tab,
-          page: page.page,
+          page: displayPage,
+          pdfPage,
           score,
-          sortPage: Number(page.page) || 0,
+          sortPage: displayPage,
           sourceOrder: 0,
         });
       }
@@ -155,19 +158,21 @@
         if (!hay.includes(lower)) return;
         const key = `${tab}:${pageNum}`;
         if (skipKeys.has(key)) return;
+        const displayPage = GM.storage.getDisplayPageFor(window.BOOKS, tab, pageNum);
         results.push({
           kind: 'pdf',
           groupKey: tab,
           groupTitle: book.title || tab,
           groupOrder: bookOrder,
-          title: `${book.title} · p. ${pageNum}`,
-          meta: `PDF text · p. ${pageNum}`,
+          title: `${book.title} · p. ${displayPage}`,
+          meta: `PDF text · p. ${displayPage}`,
           snippet: makeSnippet(text, query),
           tab,
-          page: pageNum,
+          page: displayPage,
+          pdfPage: pageNum,
           searchQuery: query,
           score: 10 + (hay.startsWith(lower) ? 3 : 0),
-          sortPage: pageNum,
+          sortPage: displayPage,
           sourceOrder: 1,
         });
       });
@@ -206,12 +211,12 @@
         return;
       }
       if (result.tab) {
-        const page = result.page || 1;
-        GM.pdfviewer.setTabAndPage(result.tab, page);
+        const pdfPage = Number(result.pdfPage || result.page || 1);
+        GM.pdfviewer.setTabAndPage(result.tab, pdfPage);
         if (result.kind === 'pdf') {
-          GM.pdfviewer.jumpInCurrentViewer(result.tab, page);
+          GM.pdfviewer.jumpInCurrentViewer(result.tab, pdfPage);
           window.setTimeout(() => {
-            void GM.pdfviewer.highlightPdfSearchResult(result.tab, result.searchQuery || result.title || '', page);
+            void GM.pdfviewer.highlightPdfSearchResult(result.tab, result.searchQuery || result.title || '', pdfPage);
           }, 0);
         }
       }
