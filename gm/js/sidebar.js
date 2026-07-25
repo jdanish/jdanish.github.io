@@ -1,23 +1,55 @@
 // Edit this structure to add/remove collapsible sections and nested note blocks.
 window.SIDEBAR_SECTIONS = [
   {
-    title: "Session Control",
+    title: "General",
+    intro: "",
     blocks: [
       {
         title: "Combat Reference",
-        links: [
-          { label: "Combat", tab: "swade", page: 93 }       
-         ]
+        html: `
+          <div class="stack">
+            <a class="btn jump-link"
+               href="#"
+               data-tab="swade"
+               data-page="93">
+              Combat
+            </a>
+          </div>
+        `
       },
+
       {
         title: "Other Rules",
-        links: [
-          { label: "Bennies", tab: "swade", page: 91 }        ]
-      },
+        html: `
+          <div class="stack">
+            <a class="btn jump-link"
+               href="#"
+               data-tab="swade"
+               data-page="91">
+              Bennies
+            </a>
+          </div>
+        `
+      }
+    ]
+  }
+    ,
+{
+    title: "Current Session",
+    intro: "",
+    blocks: [
       {
         title: "Jean Grayson",
-        links: [
-          { label: "Psy Commando Profession", tab: "starbreaker_star_marines", page: 34 }        ]
+        html: `
+          <div class="stack">
+            <a class="btn jump-link"
+               href="#"
+               data-tab="starbreaker_star_marines"
+               data-page="34">
+              Psy Commando Profession
+            </a>
+          </div>
+        `
       }
     ]
   }

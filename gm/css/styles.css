@@ -215,3 +215,21 @@ code { color: #cfe7ff; }
     min-height: 70vh;
   }
 }
+
+.gm-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 12px;
+}
+
+.gm-table th,
+.gm-table td {
+  padding: 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.gm-table th {
+  background: rgba(255,255,255,0.03);
+}

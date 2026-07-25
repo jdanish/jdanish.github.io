@@ -106,19 +106,14 @@ function createViewer(tab) {
 
 function buildSidebar() {
   sidebarContentEl.innerHTML = SIDEBAR_SECTIONS.map(section => {
-    const nestedBlocks = (section.blocks || []).map(block => {
-      const linksHtml = (block.links || []).map(link => `
-        <a class="btn jump-link" href="#" data-tab="${link.tab}" data-page="${link.page}">${link.label}</a>
-      `).join("");
-
-      return `
-        <div class="nested-block">
-          <div class="nested-title">${block.title}</div>
-          <div class="nested-text">${block.text || ""}</div>
-          ${linksHtml ? `<div class="stack">${linksHtml}</div>` : ""}
+    const nestedBlocks = (section.blocks || []).map(block => `
+      <div class="nested-block">
+        <div class="nested-title">${block.title}</div>
+        <div class="nested-content">
+          ${block.html || ""}
         </div>
-      `;
-    }).join("");
+      </div>
+    `).join("");
 
     return `
       <details open>
@@ -131,12 +126,17 @@ function buildSidebar() {
     `;
   }).join("");
 
-  sidebarContentEl.querySelectorAll(".jump-link").forEach(link => {
-    link.addEventListener("click", event => {
-      event.preventDefault();
-      setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
-    });
-  });
+  attachSidebarLinkHandlers();
+}
+
+function attachSidebarLinkHandlers() {
+  sidebarContentEl.onclick = (event) => {
+    const link = event.target.closest(".jump-link");
+    if (!link) return;
+
+    event.preventDefault();
+    setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
+  };
 }
 
 function buildTabs() {
