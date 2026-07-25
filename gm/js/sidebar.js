@@ -33,7 +33,7 @@ window.SIDEBAR_SECTIONS = [
         title: "Jean Grayson",
         html: `
           <div class="stack">
-            <a class="btn jump-link" href="#" data-tab="starbreaker_star_marines" data-page="33">Psy Commando Profession</a>
+            Profession: <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="33">Psy Commando</a>
           </div>
 
           <details class="subsection" open data-persist-key="jean-grayson-weapons">
@@ -61,7 +61,7 @@ window.SIDEBAR_SECTIONS = [
                     <td>100</td>
                     <td></td>
                   </tr>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="Open Gatling Laser" data-tab="sfc" data-page="54">
+                  <tr class="link-row" tabindex="0" role="button" aria-label="Open Gatling Laser" data-tab="sfc" data-page="54" data-highlight="Gatling Laser">
                     <td>Gatling Laser</td>
                     <td>50/100/200</td>
                     <td>4</td>
@@ -78,7 +78,16 @@ window.SIDEBAR_SECTIONS = [
           <details class="subsection" data-persist-key="jean-grayson-armor">
             <summary>Armor</summary>
             <div class="subsection-body">
-              <p class="nested-text">No armor listed yet.</p>
+            <ul>
+ 
+
+             <li> <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="42">Star Marine Armor (+6*)</a></li>
+              <ul>
+              <li>Targeting system</li>
+              <li>Ignore 2 point penalties</li>
+              <li>Life support (20 days)</li></ul>
+             <li>Magnetic boots</li>
+</ul>
             </div>
           </details>
 
