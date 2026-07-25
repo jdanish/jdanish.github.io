@@ -40,5 +40,13 @@ window.BOOKS = {
     pages: [
       { label: "TOC", page: 3 }
     ]
+  },
+  combat_survival_guide: {
+    title: "Combat Survival Guide v11",
+    file: "pdfs/combat_survival_guide.pdf",
+    defaultPage: 1,
+    pages: [
+    ]
   }
+
 };
