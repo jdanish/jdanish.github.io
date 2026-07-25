@@ -68,6 +68,25 @@
     }
   }
 
+  function wirePersistedDetails(root) {
+    root.querySelectorAll('details[data-persist-key]').forEach(details => {
+      const key = details.dataset.persistKey;
+      if (GM.storage.state.openSections[key] === false) {
+        details.open = false;
+      } else if (GM.storage.state.openSections[key] === true) {
+        details.open = true;
+      }
+
+      if (details.dataset.persistBound === 'true') return;
+
+      details.addEventListener('toggle', () => {
+        GM.storage.state.openSections[key] = details.open;
+        GM.storage.saveState();
+      });
+      details.dataset.persistBound = 'true';
+    });
+  }
+
   function buildSidebar() {
     sidebarContentEl.replaceChildren(searchResultsEl);
     searchResultsEl.hidden = true;
@@ -78,6 +97,7 @@
     (window.SIDEBAR_SECTIONS || []).forEach((section, sectionIndex) => {
       const sectionKey = GM.utils.slugify(section.id || section.title || `section-${sectionIndex}`) || `section-${sectionIndex}`;
       const details = document.createElement('details');
+      details.dataset.persistKey = sectionKey;
       details.open = GM.storage.state.openSections[sectionKey] !== false;
       details.dataset.sectionKey = sectionKey;
 
@@ -124,21 +144,32 @@
       details.appendChild(body);
       sidebarSectionEls.set(sectionKey, details);
       sidebarContentEl.appendChild(details);
+    });
 
-      details.addEventListener('toggle', () => {
-        GM.storage.state.openSections[sectionKey] = details.open;
-        GM.storage.saveState();
+    wirePersistedDetails(sidebarContentEl);
+
+    if (!sidebarContentEl.dataset.eventsAttached) {
+      sidebarContentEl.addEventListener('click', event => {
+        const target = event.target.closest('[data-tab][data-page]');
+        if (!target || !sidebarContentEl.contains(target)) return;
+        event.preventDefault();
+        if (window.GM?.pdfviewer) {
+          window.GM.pdfviewer.setTabAndPage(target.dataset.tab, Number(target.dataset.page) || 1);
+        }
       });
-    });
 
-    sidebarContentEl.addEventListener('click', event => {
-      const link = event.target.closest('.jump-link');
-      if (!link || !sidebarContentEl.contains(link)) return;
-      event.preventDefault();
-      if (window.GM?.pdfviewer) {
-        window.GM.pdfviewer.setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
-      }
-    });
+      sidebarContentEl.addEventListener('keydown', event => {
+        const target = event.target.closest('[data-tab][data-page]');
+        if (!target || !sidebarContentEl.contains(target)) return;
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        if (window.GM?.pdfviewer) {
+          window.GM.pdfviewer.setTabAndPage(target.dataset.tab, Number(target.dataset.page) || 1);
+        }
+      });
+
+      sidebarContentEl.dataset.eventsAttached = 'true';
+    }
   }
 
   function buildTabs(currentTab) {
@@ -175,7 +206,7 @@
   }
 
   function initializeResizer() {
-    if (!sidebarResizerEl) return;
+    if (!sidebarResizerEl || sidebarResizerEl.dataset.bound === 'true') return;
 
     const onDragMove = event => {
       if (!activeDrag) return;
@@ -206,6 +237,8 @@
       window.addEventListener('pointermove', onDragMove);
       window.addEventListener('pointerup', stopDrag);
     });
+
+    sidebarResizerEl.dataset.bound = 'true';
   }
 
   function bindSearchControls(onSearch, onClear) {
