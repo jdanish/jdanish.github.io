@@ -8,10 +8,10 @@ window.SIDEBAR_SECTIONS = [
         title: "Combat Reference",
         html: `
           <div class="stack">
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="93">Combat</a>
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="95">Attack</a>
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="98">Soak</a>
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="96">Shaken</a>
+            <a class="btn jump-link" href="#" data-tab="swade" data-page="90">Combat</a>
+            <a class="btn jump-link" href="#" data-tab="swade" data-page="92">Attack</a>
+            <a class="btn jump-link" href="#" data-tab="swade" data-page="93">Shaken</a>
+            <a class="btn jump-link" href="#" data-tab="swade" data-page="95">Soak</a>
           </div>
         `
       },
@@ -19,7 +19,7 @@ window.SIDEBAR_SECTIONS = [
         title: "Other Rules",
         html: `
           <div class="stack">
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="91">Bennies</a>
+            <a class="btn jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>
           </div>
         `
       }
@@ -33,7 +33,7 @@ window.SIDEBAR_SECTIONS = [
         title: "Jean Grayson",
         html: `
           <div class="stack">
-            <a class="btn jump-link" href="#" data-tab="starbreaker_star_marines" data-page="34">Psy Commando Profession</a>
+            <a class="btn jump-link" href="#" data-tab="starbreaker_star_marines" data-page="33">Psy Commando Profession</a>
           </div>
 
           <details class="subsection" open data-persist-key="jean-grayson-weapons">
