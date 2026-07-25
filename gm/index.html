@@ -3,23 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Game Master Screen</title>
+  <title>SWADE & StarBreaker Reference</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
       <header class="panel-header">
-        <h1>Game Master Screen</h1>
-        <p>Collapsible sections on the left. Tabs on the right open the local PDF.js viewer for each book.</p>
+        <h1>Quick Reference</h1>
+        <div class="sidebar-tools">
+          <input id="sidebarSearch" type="search" placeholder="Search notes, books, pages" autocomplete="off" />
+          <button id="clearSidebarSearch" type="button">Clear</button>
+        </div>
       </header>
       <div class="sidebar-content" id="sidebarContent"></div>
     </aside>
 
+    <div class="sidebar-resizer" id="sidebarResizer" aria-hidden="true"></div>
+
     <main class="main">
       <header class="panel-header">
-        <h1>Rulebook Viewer</h1>
-        <p>Each tab keeps its own PDF.js viewer instance loaded in a persistent iframe.</p>
+        <h1>Rulebooks</h1>
       </header>
 
       <div class="tabs" id="tabs"></div>

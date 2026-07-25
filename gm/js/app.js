@@ -1,9 +1,14 @@
-const STORAGE_KEY = "gm_screen_pdf_state_official_shell_v4";
+const STORAGE_KEY = "gm_screen_pdf_state_official_shell_v5";
 const VIEWER_DIR = "pdfjs/web/viewer.html";
 const DEFAULT_SCALE = 1.25;
 const ACTIVE_RESIZE_REFRESH_MS = 100;
+const SEARCH_DEBOUNCE_MS = 150;
+const SEARCH_INDEX_LIMIT = 120;
 
 const sidebarContentEl = document.getElementById("sidebarContent");
+const sidebarSearchEl = document.getElementById("sidebarSearch");
+const clearSidebarSearchEl = document.getElementById("clearSidebarSearch");
+const sidebarResizerEl = document.getElementById("sidebarResizer");
 const tabsEl = document.getElementById("tabs");
 const pageLinksEl = document.getElementById("pageLinks");
 const viewerTitleEl = document.getElementById("viewerTitle");
@@ -11,13 +16,25 @@ const viewerFrameEl = document.getElementById("viewerFrame");
 
 const BOOKS = window.BOOKS || {};
 const SIDEBAR_SECTIONS = window.SIDEBAR_SECTIONS || [];
+const bookKeys = Object.keys(BOOKS);
 
 const state = loadState();
-const bookKeys = Object.keys(BOOKS);
 let currentTab = state.activeTab && BOOKS[state.activeTab] ? state.activeTab : bookKeys[0];
+let resizeRefreshTimer = null;
+let searchDebounceTimer = null;
+let searchRequestId = 0;
+let activeDrag = null;
 
 const viewers = {};
-let resizeRefreshTimer = null;
+const sidebarSectionEls = new Map();
+const sidebarBlockEls = new Map();
+const searchResultsEl = document.createElement("div");
+searchResultsEl.className = "search-results";
+searchResultsEl.hidden = true;
+
+const sidebarIndex = buildSidebarIndex();
+const pdfTextIndex = new Map();
+const pdfIndexPromises = new Map();
 
 function loadState() {
   try {
@@ -33,11 +50,21 @@ function saveState() {
 
 function escapeHtml(value) {
   return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function normalizeWhitespace(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function stripHtml(value) {
+  const temp = document.createElement("div");
+  temp.innerHTML = String(value || "");
+  return normalizeWhitespace(temp.textContent || temp.innerText || "");
 }
 
 function normalizeScaleValue(scale) {
@@ -53,9 +80,19 @@ function normalizeScaleValue(scale) {
   return null;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function slugify(value) {
+  return normalizeWhitespace(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
 function ensureStateShape() {
   if (!state.pages) state.pages = {};
   if (!state.scales) state.scales = {};
+  if (!state.openSections) state.openSections = {};
+  if (!Number.isFinite(state.sidebarWidth)) state.sidebarWidth = 340;
   if (!state.activeTab) state.activeTab = currentTab;
 
   for (const tab of Object.keys(BOOKS)) {
@@ -98,6 +135,15 @@ function setScaleFor(tab, scale) {
   const viewer = viewers[tab];
   if (viewer) viewer.desiredScale = normalized;
   saveState();
+}
+
+function setSidebarWidth(width, persist = true) {
+  const safeWidth = clamp(Math.round(width), 280, Math.max(280, window.innerWidth - 360));
+  document.documentElement.style.setProperty("--sidebar-width", `${safeWidth}px`);
+  if (persist) {
+    state.sidebarWidth = safeWidth;
+    saveState();
+  }
 }
 
 function tabButtonLabel(tab) {
@@ -145,7 +191,8 @@ function createViewer(tab) {
     desiredScale: getScaleFor(tab),
     suppressScaleRestore: false,
     patchApplied: false,
-    observedPage: getPageFor(tab)
+    observedPage: getPageFor(tab),
+    lastKnownPage: getPageFor(tab)
   };
 
   iframe.addEventListener("load", () => {
@@ -162,57 +209,98 @@ function createViewer(tab) {
   return viewers[tab];
 }
 
+function buildSidebarIndex() {
+  const entries = [];
+  SIDEBAR_SECTIONS.forEach((section, sectionIndex) => {
+    const sectionKey = slugify(section.id || section.title || `section-${sectionIndex}`) || `section-${sectionIndex}`;
+    (section.blocks || []).forEach((block, blockIndex) => {
+      const blockKey = slugify(block.id || block.title || `block-${blockIndex}`) || `block-${blockIndex}`;
+      const plainText = normalizeWhitespace([
+        section.title,
+        section.intro,
+        block.title,
+        block.text,
+        stripHtml(block.html)
+      ].filter(Boolean).join(" "));
+      entries.push({
+        sectionKey,
+        blockKey,
+        sectionTitle: section.title || "",
+        blockTitle: block.title || "",
+        text: plainText,
+        sectionIndex,
+        blockIndex
+      });
+    });
+  });
+  return entries;
+}
+
 function buildSidebar() {
-  sidebarContentEl.replaceChildren();
+  sidebarContentEl.replaceChildren(searchResultsEl);
+  searchResultsEl.hidden = true;
+  searchResultsEl.replaceChildren();
+  sidebarSectionEls.clear();
+  sidebarBlockEls.clear();
 
-  for (const section of SIDEBAR_SECTIONS) {
-    const details = document.createElement('details');
-    details.open = true;
+  SIDEBAR_SECTIONS.forEach((section, sectionIndex) => {
+    const sectionKey = slugify(section.id || section.title || `section-${sectionIndex}`) || `section-${sectionIndex}`;
+    const details = document.createElement("details");
+    details.open = state.openSections[sectionKey] !== false;
+    details.dataset.sectionKey = sectionKey;
 
-    const summary = document.createElement('summary');
-    summary.textContent = section.title || '';
+    const summary = document.createElement("summary");
+    summary.textContent = section.title || "";
     details.appendChild(summary);
 
-    const body = document.createElement('div');
-    body.className = 'section-body';
+    const body = document.createElement("div");
+    body.className = "section-body";
 
     if (section.intro) {
-      const intro = document.createElement('p');
+      const intro = document.createElement("p");
       intro.textContent = section.intro;
       body.appendChild(intro);
     }
 
-    for (const block of (section.blocks || [])) {
-      const nested = document.createElement('div');
-      nested.className = 'nested-block';
+    (section.blocks || []).forEach((block, blockIndex) => {
+      const blockKey = slugify(block.id || block.title || `block-${blockIndex}`) || `block-${blockIndex}`;
+      const nested = document.createElement("div");
+      nested.className = "nested-block";
+      nested.dataset.sectionKey = sectionKey;
+      nested.dataset.blockKey = blockKey;
 
-      const title = document.createElement('div');
-      title.className = 'nested-title';
-      title.textContent = block.title || '';
+      const title = document.createElement("div");
+      title.className = "nested-title";
+      title.textContent = block.title || "";
       nested.appendChild(title);
 
-      const bodyWrap = document.createElement('div');
-      bodyWrap.className = 'nested-body';
-
-      if (typeof block.html === 'string' && block.html.trim()) {
+      const bodyWrap = document.createElement("div");
+      bodyWrap.className = "nested-body";
+      if (typeof block.html === "string" && block.html.trim()) {
         bodyWrap.innerHTML = block.html;
-      } else if (typeof block.text === 'string' && block.text.trim()) {
-        const text = document.createElement('div');
-        text.className = 'nested-text';
+      } else if (typeof block.text === "string" && block.text.trim()) {
+        const text = document.createElement("div");
+        text.className = "nested-text";
         text.textContent = block.text;
         bodyWrap.appendChild(text);
       }
-
       nested.appendChild(bodyWrap);
       body.appendChild(nested);
-    }
+      sidebarBlockEls.set(`${sectionKey}:${blockKey}`, nested);
+    });
 
     details.appendChild(body);
+    sidebarSectionEls.set(sectionKey, details);
     sidebarContentEl.appendChild(details);
-  }
 
-  sidebarContentEl.querySelectorAll('.jump-link').forEach(link => {
-    link.addEventListener('click', event => {
+    details.addEventListener("toggle", () => {
+      state.openSections[sectionKey] = details.open;
+      saveState();
+    });
+  });
+
+  sidebarContentEl.querySelectorAll(".jump-link").forEach(link => {
+    link.addEventListener("click", event => {
       event.preventDefault();
       setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
     });
@@ -220,16 +308,13 @@ function buildSidebar() {
 }
 
 function buildTabs() {
-
   tabsEl.innerHTML = Object.keys(BOOKS).map(tabKey => `<button type="button" data-tab="${tabKey}"></button>`).join("");
-
   tabsEl.querySelectorAll("button").forEach(button => {
     button.addEventListener("click", () => {
       const tab = button.dataset.tab;
       setTabAndPage(tab, getPageFor(tab));
     });
   });
-
   updateTabButtonLabels();
 }
 
@@ -237,11 +322,9 @@ function buildPageButtons(tab) {
   const book = BOOKS[tab];
   const pages = Array.isArray(book.pages) ? book.pages : [];
   pageLinksEl.innerHTML = pages.map(entry => `<button type="button" data-page="${entry.page}">${entry.label}</button>`).join("");
-
   pageLinksEl.querySelectorAll("button").forEach(button => {
     button.addEventListener("click", () => setTabAndPage(tab, Number(button.dataset.page)));
   });
-
   updateActivePageButton();
 }
 
@@ -319,6 +402,7 @@ function updateTabStateFromViewer(tab, pageNumber, scaleValue) {
   const resolvedPage = Number(pageNumber) || 1;
   state.pages[tab] = resolvedPage;
   viewer.observedPage = resolvedPage;
+  viewer.lastKnownPage = resolvedPage;
 
   const normalizedScale = normalizeScaleValue(scaleValue);
   if (normalizedScale !== null) {
@@ -334,6 +418,282 @@ function updateTabStateFromViewer(tab, pageNumber, scaleValue) {
   }
 
   setTabButtonLabel(tab);
+}
+
+function openSidebarBlock(sectionKey, blockKey) {
+  const sectionEl = sidebarSectionEls.get(sectionKey);
+  const blockEl = sidebarBlockEls.get(`${sectionKey}:${blockKey}`);
+  if (sectionEl) {
+    sectionEl.open = true;
+    state.openSections[sectionKey] = true;
+    saveState();
+  }
+  if (blockEl) {
+    blockEl.classList.add("flash-highlight");
+    blockEl.scrollIntoView({ block: "center", behavior: "smooth" });
+    window.setTimeout(() => blockEl.classList.remove("flash-highlight"), 1400);
+  } else if (sectionEl) {
+    sectionEl.classList.add("flash-highlight");
+    sectionEl.scrollIntoView({ block: "center", behavior: "smooth" });
+    window.setTimeout(() => sectionEl.classList.remove("flash-highlight"), 1400);
+  }
+}
+
+function makeResultButton(result) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "search-result-item";
+
+  const title = document.createElement("div");
+  title.className = "search-result-title";
+  title.textContent = result.title;
+  button.appendChild(title);
+
+  if (result.meta) {
+    const meta = document.createElement("div");
+    meta.className = "search-result-meta";
+    meta.textContent = result.meta;
+    button.appendChild(meta);
+  }
+
+  if (result.snippet) {
+    const snippet = document.createElement("div");
+    snippet.className = "search-result-snippet";
+    snippet.textContent = result.snippet;
+    button.appendChild(snippet);
+  }
+
+  button.addEventListener("click", () => {
+    if (result.kind === "sidebar") {
+      openSidebarBlock(result.sectionKey, result.blockKey);
+      return;
+    }
+    if (result.tab) {
+      setTabAndPage(result.tab, result.page || 1);
+      if (result.kind === "pdf") {
+        jumpInCurrentViewer(result.tab, result.page || 1);
+      }
+    }
+  });
+
+  return button;
+}
+
+function renderSearchResults(query, results, statusText = "") {
+  searchResultsEl.replaceChildren();
+
+  if (!query) {
+    searchResultsEl.hidden = true;
+    return;
+  }
+
+  searchResultsEl.hidden = false;
+
+  const header = document.createElement("div");
+  header.className = "search-results-header";
+  header.innerHTML = `<span>${results.length} result${results.length === 1 ? "" : "s"} for “${escapeHtml(query)}”</span><span>${escapeHtml(statusText || "")}</span>`;
+  searchResultsEl.appendChild(header);
+
+  if (!results.length) {
+    const empty = document.createElement("div");
+    empty.className = "search-empty";
+    empty.textContent = "No matches found.";
+    searchResultsEl.appendChild(empty);
+    return;
+  }
+
+  const grouped = new Map();
+  for (const result of results) {
+    const group = result.group || "Other";
+    if (!grouped.has(group)) grouped.set(group, []);
+    grouped.get(group).push(result);
+  }
+
+  const groupOrder = ["Sidebar notes", "Book pages", "PDF text", "Other"];
+  for (const groupName of groupOrder) {
+    const groupResults = grouped.get(groupName);
+    if (!groupResults || !groupResults.length) continue;
+    const group = document.createElement("div");
+    group.className = "search-group";
+
+    const title = document.createElement("div");
+    title.className = "search-group-title";
+    title.textContent = groupName;
+    group.appendChild(title);
+
+    groupResults.forEach(result => group.appendChild(makeResultButton(result)));
+    searchResultsEl.appendChild(group);
+  }
+}
+
+function makeSnippet(text, query, maxLen = 140) {
+  const plain = normalizeWhitespace(text);
+  if (!plain) return "";
+  const lower = plain.toLowerCase();
+  const needle = query.toLowerCase();
+  const idx = lower.indexOf(needle);
+  if (idx === -1) {
+    return plain.length > maxLen ? `${plain.slice(0, maxLen - 1)}…` : plain;
+  }
+  const start = clamp(idx - 40, 0, Math.max(0, plain.length - maxLen));
+  const end = clamp(start + maxLen, 0, plain.length);
+  const prefix = start > 0 ? "…" : "";
+  const suffix = end < plain.length ? "…" : "";
+  return `${prefix}${plain.slice(start, end)}${suffix}`;
+}
+
+function searchSidebar(query) {
+  const lower = query.toLowerCase();
+  const results = [];
+  for (const entry of sidebarIndex) {
+    const hay = entry.text.toLowerCase();
+    if (!hay.includes(lower)) continue;
+    const score = (entry.blockTitle.toLowerCase().includes(lower) ? 40 : 0)
+      + (entry.sectionTitle.toLowerCase().includes(lower) ? 20 : 0)
+      + (hay.startsWith(lower) ? 10 : 0);
+    results.push({
+      kind: "sidebar",
+      group: "Sidebar notes",
+      title: entry.blockTitle || entry.sectionTitle,
+      meta: entry.sectionTitle,
+      snippet: makeSnippet(entry.text, query),
+      sectionKey: entry.sectionKey,
+      blockKey: entry.blockKey,
+      score
+    });
+  }
+  return results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
+}
+
+function searchBookShortcuts(query) {
+  const lower = query.toLowerCase();
+  const results = [];
+  for (const [tab, book] of Object.entries(BOOKS)) {
+    const bookTitle = book.title || tab;
+    const titleMatch = bookTitle.toLowerCase().includes(lower);
+    for (const page of Array.isArray(book.pages) ? book.pages : []) {
+      const pageLabel = String(page.label || "");
+      const labelMatch = pageLabel.toLowerCase().includes(lower);
+      if (!titleMatch && !labelMatch) continue;
+      const score = (labelMatch ? 50 : 0) + (titleMatch ? 15 : 0);
+      results.push({
+        kind: "shortcut",
+        group: "Book pages",
+        title: `${bookTitle} · ${pageLabel}`,
+        meta: `p. ${page.page}`,
+        snippet: titleMatch && !labelMatch ? bookTitle : pageLabel,
+        tab,
+        page: page.page,
+        score
+      });
+    }
+  }
+  return results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
+}
+
+function waitForViewerApp(tab, timeoutMs = 15000) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const tick = () => {
+      const app = getViewerApp(tab);
+      if (app?.pdfDocument) {
+        resolve(app);
+        return;
+      }
+      if (Date.now() - start > timeoutMs) {
+        reject(new Error(`Timed out waiting for ${tab}`));
+        return;
+      }
+      window.setTimeout(tick, 100);
+    };
+    tick();
+  });
+}
+
+async function ensureBookTextIndex(tab) {
+  if (pdfTextIndex.has(tab)) return pdfTextIndex.get(tab);
+  if (pdfIndexPromises.has(tab)) return pdfIndexPromises.get(tab);
+
+  const promise = (async () => {
+    const app = await waitForViewerApp(tab);
+    const pdfDocument = app.pdfDocument;
+    const pages = [];
+    for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum += 1) {
+      const page = await pdfDocument.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      const text = textContent.items.map(item => item.str).join(" ");
+      pages.push(text);
+    }
+    pdfTextIndex.set(tab, pages);
+    return pages;
+  })();
+
+  pdfIndexPromises.set(tab, promise);
+  try {
+    return await promise;
+  } finally {
+    pdfIndexPromises.delete(tab);
+  }
+}
+
+async function searchPdfPages(query, skipKeys = new Set()) {
+  if (query.length < 2) return [];
+  const lower = query.toLowerCase();
+  const results = [];
+
+  for (const [tab, book] of Object.entries(BOOKS)) {
+    const pages = await ensureBookTextIndex(tab).catch(() => []);
+    pages.forEach((text, index) => {
+      const pageNum = index + 1;
+      const hay = String(text || "").toLowerCase();
+      if (!hay.includes(lower)) return;
+      const key = `${tab}:${pageNum}`;
+      if (skipKeys.has(key)) return;
+      results.push({
+        kind: "pdf",
+        group: "PDF text",
+        title: `${book.title} · p. ${pageNum}`,
+        meta: book.title,
+        snippet: makeSnippet(text, query),
+        tab,
+        page: pageNum,
+        score: 10 + (hay.startsWith(lower) ? 3 : 0)
+      });
+    });
+  }
+
+  return results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
+}
+
+async function runSearch(query) {
+  const requestId = ++searchRequestId;
+  const trimmed = normalizeWhitespace(query);
+  if (!trimmed) {
+    renderSearchResults("", []);
+    return;
+  }
+
+  const sidebarResults = searchSidebar(trimmed).slice(0, SEARCH_INDEX_LIMIT);
+  const shortcutResults = searchBookShortcuts(trimmed).slice(0, SEARCH_INDEX_LIMIT);
+  const initialResults = [...sidebarResults, ...shortcutResults].sort((a, b) => b.score - a.score || a.title.localeCompare(b.title)).slice(0, SEARCH_INDEX_LIMIT);
+  renderSearchResults(trimmed, initialResults, "Scanning PDFs…");
+
+  const shortcutPageKeys = new Set(shortcutResults.map(item => `${item.tab}:${item.page}`));
+  const pdfResults = await searchPdfPages(trimmed, shortcutPageKeys).catch(() => []);
+  if (requestId !== searchRequestId) return;
+
+  const merged = [...sidebarResults, ...shortcutResults, ...pdfResults]
+    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+    .slice(0, SEARCH_INDEX_LIMIT);
+
+  renderSearchResults(trimmed, merged, pdfResults.length ? "" : "PDF text index unavailable");
+}
+
+function scheduleSearch(query) {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = window.setTimeout(() => {
+    void runSearch(query);
+  }, SEARCH_DEBOUNCE_MS);
 }
 
 function attachViewerBridge(tab) {
@@ -510,10 +870,62 @@ function refreshActiveViewer() {
   }
 }
 
+function applySidebarWidthFromState() {
+  setSidebarWidth(state.sidebarWidth || 340, false);
+}
+
+function initializeResizer() {
+  if (!sidebarResizerEl) return;
+
+  const startDrag = event => {
+    event.preventDefault();
+    activeDrag = { startX: event.clientX, startWidth: sidebarContentEl.closest('.sidebar').getBoundingClientRect().width };
+    document.body.classList.add('resizing');
+    window.addEventListener('pointermove', onDragMove);
+    window.addEventListener('pointerup', stopDrag);
+  };
+
+  const onDragMove = event => {
+    if (!activeDrag) return;
+    const appRect = document.querySelector('.app').getBoundingClientRect();
+    const desired = event.clientX - appRect.left;
+    setSidebarWidth(desired, true);
+    clearTimeout(resizeRefreshTimer);
+    resizeRefreshTimer = window.setTimeout(refreshActiveViewer, ACTIVE_RESIZE_REFRESH_MS);
+  };
+
+  const stopDrag = () => {
+    activeDrag = null;
+    document.body.classList.remove('resizing');
+    window.removeEventListener('pointermove', onDragMove);
+    window.removeEventListener('pointerup', stopDrag);
+    refreshActiveViewer();
+  };
+
+  sidebarResizerEl.addEventListener('pointerdown', startDrag);
+}
+
+async function warmPdfIndexes() {
+  for (const tab of bookKeys) {
+    void ensureBookTextIndex(tab).catch(() => null);
+  }
+}
+
 function initialize() {
   ensureStateShape();
+  applySidebarWidthFromState();
   buildSidebar();
   buildTabs();
+  initializeResizer();
+
+  if (sidebarSearchEl) {
+    sidebarSearchEl.addEventListener('input', () => scheduleSearch(sidebarSearchEl.value || ""));
+    clearSidebarSearchEl.addEventListener('click', () => {
+      sidebarSearchEl.value = "";
+      scheduleSearch("");
+      sidebarSearchEl.focus();
+    });
+  }
 
   for (const tab of Object.keys(BOOKS)) {
     createViewer(tab);
@@ -526,6 +938,8 @@ function initialize() {
   } else {
     setTabAndPage(currentTab, getPageFor(currentTab));
   }
+
+  void warmPdfIndexes();
 }
 
 window.addEventListener("hashchange", () => {
@@ -537,7 +951,11 @@ window.addEventListener("hashchange", () => {
 window.addEventListener("beforeunload", saveState);
 window.addEventListener("resize", () => {
   clearTimeout(resizeRefreshTimer);
-  resizeRefreshTimer = window.setTimeout(refreshActiveViewer, ACTIVE_RESIZE_REFRESH_MS);
+  resizeRefreshTimer = window.setTimeout(() => {
+    const width = state.sidebarWidth || 340;
+    setSidebarWidth(width, false);
+    refreshActiveViewer();
+  }, ACTIVE_RESIZE_REFRESH_MS);
 });
 
 initialize();
