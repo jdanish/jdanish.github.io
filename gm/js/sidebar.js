@@ -13,6 +13,11 @@ window.SIDEBAR_SECTIONS = [
         title: "Other Rules",
         links: [
           { label: "Bennies", tab: "swade", page: 91 }        ]
+      },
+      {
+        title: "Jean Grayson",
+        links: [
+          { label: "Psy Commando Profession", tab: "starbreaker_star_marines", page: 34 }        ]
       }
     ]
   }
