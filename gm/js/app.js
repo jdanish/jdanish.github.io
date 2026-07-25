@@ -1,8 +1,7 @@
-const STORAGE_KEY = "gm_screen_pdf_state_official_shell_v3";
+const STORAGE_KEY = "gm_screen_pdf_state_official_shell_v4";
 const VIEWER_DIR = "pdfjs/web/viewer.html";
-const PDFJS_READY_TIMEOUT_MS = 15000;
-const VIEWER_READY_POLL_MS = 50;
 const DEFAULT_SCALE = 1.25;
+const ACTIVE_RESIZE_REFRESH_MS = 100;
 
 const sidebarContentEl = document.getElementById("sidebarContent");
 const tabsEl = document.getElementById("tabs");
@@ -10,10 +9,15 @@ const pageLinksEl = document.getElementById("pageLinks");
 const viewerTitleEl = document.getElementById("viewerTitle");
 const viewerFrameEl = document.getElementById("viewerFrame");
 
+const BOOKS = window.BOOKS || {};
+const SIDEBAR_SECTIONS = window.SIDEBAR_SECTIONS || [];
+
 const state = loadState();
-let currentTab = state.activeTab && BOOKS[state.activeTab] ? state.activeTab : Object.keys(BOOKS)[0];
+const bookKeys = Object.keys(BOOKS);
+let currentTab = state.activeTab && BOOKS[state.activeTab] ? state.activeTab : bookKeys[0];
 
 const viewers = {};
+let resizeRefreshTimer = null;
 
 function loadState() {
   try {
@@ -27,22 +31,13 @@ function saveState() {
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function ensureStateShape() {
-  if (!state.pages) state.pages = {};
-  if (!state.scales) state.scales = {};
-  if (!state.activeTab) state.activeTab = currentTab;
-  for (const tab of Object.keys(BOOKS)) {
-    if (!Number.isFinite(state.pages[tab])) {
-      state.pages[tab] = BOOKS[tab].defaultPage || 1;
-    }
-    const storedScale = normalizeScaleValue(state.scales[tab]);
-    if (storedScale === null) {
-      const defaultScale = normalizeScaleValue(BOOKS[tab].defaultScale);
-      if (defaultScale !== null) {
-        state.scales[tab] = defaultScale;
-      }
-    }
-  }
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function normalizeScaleValue(scale) {
@@ -56,6 +51,25 @@ function normalizeScaleValue(scale) {
     return trimmed;
   }
   return null;
+}
+
+function ensureStateShape() {
+  if (!state.pages) state.pages = {};
+  if (!state.scales) state.scales = {};
+  if (!state.activeTab) state.activeTab = currentTab;
+
+  for (const tab of Object.keys(BOOKS)) {
+    if (!Number.isFinite(state.pages[tab])) {
+      state.pages[tab] = BOOKS[tab].defaultPage || 1;
+    }
+    const storedScale = normalizeScaleValue(state.scales[tab]);
+    if (storedScale === null) {
+      const defaultScale = normalizeScaleValue(BOOKS[tab].defaultScale);
+      if (defaultScale !== null) {
+        state.scales[tab] = defaultScale;
+      }
+    }
+  }
 }
 
 function getPageFor(tab) {
@@ -97,10 +111,10 @@ function setTabButtonLabel(tab) {
   button.classList.toggle("active", tab === currentTab);
 }
 
-function buildViewerSrc(tab, page) {
+function buildViewerSrc(tab, page, includePage = true) {
   const file = BOOKS[tab].file;
-  // Keep the initial URL simple; scale is applied once the viewer is ready.
-  return `${VIEWER_DIR}?file=../../${encodeURI(file)}#page=${page}`;
+  const pageFragment = includePage ? `#page=${page}` : "";
+  return `${VIEWER_DIR}?file=../../${encodeURI(file)}${pageFragment}`;
 }
 
 function createViewer(tab) {
@@ -140,41 +154,65 @@ function createViewer(tab) {
     viewer.bridgeAttached = false;
     viewer.desiredScale = getScaleFor(tab);
     attachViewerBridge(tab);
-    syncPageIntoViewer(tab, getPageFor(tab));
+    if (tab === currentTab) {
+      syncPageIntoViewer(tab, getPageFor(tab));
+    }
   });
 
   return viewers[tab];
 }
 
 function buildSidebar() {
-  sidebarContentEl.innerHTML = SIDEBAR_SECTIONS.map(section => {
-    const nestedBlocks = (section.blocks || []).map(block => {
-      const linksHtml = (block.links || []).map(link => `
-        <a class="btn jump-link" href="#" data-tab="${link.tab}" data-page="${link.page}">${link.label}</a>
-      `).join("");
+  sidebarContentEl.replaceChildren();
 
-      return `
-        <div class="nested-block">
-          <div class="nested-title">${block.title}</div>
-          <div class="nested-text">${block.text || ""}</div>
-          ${linksHtml ? `<div class="stack">${linksHtml}</div>` : ""}
-        </div>
-      `;
-    }).join("");
+  for (const section of SIDEBAR_SECTIONS) {
+    const details = document.createElement('details');
+    details.open = true;
 
-    return `
-      <details open>
-        <summary>${section.title}</summary>
-        <div class="section-body">
-          ${section.intro ? `<p>${section.intro}</p>` : ""}
-          ${nestedBlocks}
-        </div>
-      </details>
-    `;
-  }).join("");
+    const summary = document.createElement('summary');
+    summary.textContent = section.title || '';
+    details.appendChild(summary);
 
-  sidebarContentEl.querySelectorAll(".jump-link").forEach(link => {
-    link.addEventListener("click", event => {
+    const body = document.createElement('div');
+    body.className = 'section-body';
+
+    if (section.intro) {
+      const intro = document.createElement('p');
+      intro.textContent = section.intro;
+      body.appendChild(intro);
+    }
+
+    for (const block of (section.blocks || [])) {
+      const nested = document.createElement('div');
+      nested.className = 'nested-block';
+
+      const title = document.createElement('div');
+      title.className = 'nested-title';
+      title.textContent = block.title || '';
+      nested.appendChild(title);
+
+      const bodyWrap = document.createElement('div');
+      bodyWrap.className = 'nested-body';
+
+      if (typeof block.html === 'string' && block.html.trim()) {
+        bodyWrap.innerHTML = block.html;
+      } else if (typeof block.text === 'string' && block.text.trim()) {
+        const text = document.createElement('div');
+        text.className = 'nested-text';
+        text.textContent = block.text;
+        bodyWrap.appendChild(text);
+      }
+
+      nested.appendChild(bodyWrap);
+      body.appendChild(nested);
+    }
+
+    details.appendChild(body);
+    sidebarContentEl.appendChild(details);
+  }
+
+  sidebarContentEl.querySelectorAll('.jump-link').forEach(link => {
+    link.addEventListener('click', event => {
       event.preventDefault();
       setTabAndPage(link.dataset.tab, Number(link.dataset.page) || 1);
     });
@@ -182,6 +220,7 @@ function buildSidebar() {
 }
 
 function buildTabs() {
+
   tabsEl.innerHTML = Object.keys(BOOKS).map(tabKey => `<button type="button" data-tab="${tabKey}"></button>`).join("");
 
   tabsEl.querySelectorAll("button").forEach(button => {
@@ -196,7 +235,8 @@ function buildTabs() {
 
 function buildPageButtons(tab) {
   const book = BOOKS[tab];
-  pageLinksEl.innerHTML = book.pages.map(entry => `<button type="button" data-page="${entry.page}">${entry.label}</button>`).join("");
+  const pages = Array.isArray(book.pages) ? book.pages : [];
+  pageLinksEl.innerHTML = pages.map(entry => `<button type="button" data-page="${entry.page}">${entry.label}</button>`).join("");
 
   pageLinksEl.querySelectorAll("button").forEach(button => {
     button.addEventListener("click", () => setTabAndPage(tab, Number(button.dataset.page)));
@@ -226,9 +266,9 @@ function showOnlyActiveViewer(tab) {
   });
 }
 
-function setViewerSrc(tab, page) {
+function setViewerSrc(tab, page, includePage = true) {
   const viewer = createViewer(tab);
-  const desiredSrc = buildViewerSrc(tab, page);
+  const desiredSrc = buildViewerSrc(tab, page, includePage);
   if (viewer.lastSrc !== desiredSrc) {
     viewer.ready = false;
     viewer.iframe.src = desiredSrc;
@@ -246,6 +286,15 @@ function getViewerApp(tab) {
   }
 }
 
+function isViewerInteractive(tab, app) {
+  const viewer = viewers[tab];
+  if (!viewer || !app?.pdfViewer) return false;
+  if (!document.body.contains(viewer.wrapper)) return false;
+  if (viewer.wrapper.offsetParent === null) return false;
+  if (!Number.isFinite(app.pdfViewer.pagesCount) || app.pdfViewer.pagesCount < 1) return false;
+  return true;
+}
+
 function setViewerScale(tab, app, scaleValue, options = {}) {
   const viewer = viewers[tab];
   if (!viewer || !app?.pdfViewer || scaleValue === null || scaleValue === undefined) return;
@@ -255,6 +304,7 @@ function setViewerScale(tab, app, scaleValue, options = {}) {
   if (options.persist !== false) {
     setScaleFor(tab, normalized);
   }
+  if (!isViewerInteractive(tab, app)) return;
   try {
     if (app.pdfViewer.currentScaleValue !== normalized) {
       app.pdfViewer.currentScaleValue = normalized;
@@ -296,7 +346,7 @@ function attachViewerBridge(tab) {
       viewer.bridgePollTimer = window.setTimeout(() => {
         viewer.bridgePollTimer = null;
         attachViewerBridge(tab);
-      }, VIEWER_READY_POLL_MS);
+      }, 50);
     }
     return;
   }
@@ -316,12 +366,6 @@ function attachViewerBridge(tab) {
       ? app.pdfLinkService.navigateTo.bind(app.pdfLinkService)
       : null;
 
-    const restoreScaleAfterNavigation = () => {
-      if (!viewer.desiredScale || !app.pdfViewer) return;
-      if (app.pdfViewer.currentScaleValue === viewer.desiredScale) return;
-      window.setTimeout(() => setViewerScale(tab, app, viewer.desiredScale, { persist: false }), 0);
-    };
-
     if (originalGoToDestination) {
       app.pdfLinkService.goToDestination = async function patchedGoToDestination(dest) {
         viewer.suppressScaleRestore = true;
@@ -330,7 +374,7 @@ function attachViewerBridge(tab) {
           await Promise.resolve(result);
         } finally {
           viewer.suppressScaleRestore = false;
-          restoreScaleAfterNavigation();
+          window.setTimeout(syncFromViewer, 0);
         }
         return result;
       };
@@ -344,7 +388,7 @@ function attachViewerBridge(tab) {
           await Promise.resolve(result);
         } finally {
           viewer.suppressScaleRestore = false;
-          restoreScaleAfterNavigation();
+          window.setTimeout(syncFromViewer, 0);
         }
         return result;
       };
@@ -363,7 +407,7 @@ function attachViewerBridge(tab) {
   };
 
   const pageChangeHandler = () => {
-    syncFromViewer();
+    window.setTimeout(syncFromViewer, 0);
   };
 
   const scaleChangeHandler = event => {
@@ -373,7 +417,7 @@ function attachViewerBridge(tab) {
       viewer.desiredScale = newScale;
       setScaleFor(tab, newScale);
     }
-    syncFromViewer();
+    window.setTimeout(syncFromViewer, 0);
   };
 
   if (typeof app.eventBus.addEventListener === "function") {
@@ -399,7 +443,7 @@ function attachViewerBridge(tab) {
 
 function syncPageIntoViewer(tab, page) {
   const app = getViewerApp(tab);
-  if (!app) return;
+  if (!app || !isViewerInteractive(tab, app)) return;
 
   try {
     if (Number(app.page) !== Number(page)) {
@@ -408,7 +452,6 @@ function syncPageIntoViewer(tab, page) {
     attachViewerBridge(tab);
     const desiredScale = getScaleFor(tab);
     setViewerScale(tab, app, desiredScale, { persist: false });
-    viewerFrameEl.querySelector(`#viewer-${tab}`)?.scrollIntoView({ block: "nearest" });
   } catch {
     // Ignore cross-origin or timing issues until the viewer is fully ready.
   }
@@ -424,7 +467,7 @@ function jumpInCurrentViewer(tab, page) {
     return;
   }
 
-  setViewerSrc(tab, page);
+  setViewerSrc(tab, page, isActive);
 }
 
 function setTabAndPage(tab, page) {
@@ -442,6 +485,7 @@ function setTabAndPage(tab, page) {
   showOnlyActiveViewer(tab);
   history.replaceState(null, "", `#${tab}:${page}`);
   jumpInCurrentViewer(tab, page);
+  refreshActiveViewer();
 }
 
 function parseHash() {
@@ -452,32 +496,17 @@ function parseHash() {
   return { tab, page: Number(pageString) || getPageFor(tab) };
 }
 
-function refreshAllVisibleViewers() {
-  for (const [tab, viewer] of Object.entries(viewers)) {
-    if (!viewer.ready) continue;
-    const app = getViewerApp(tab);
-    if (!app) continue;
+function refreshActiveViewer() {
+  const tab = currentTab;
+  const viewer = viewers[tab];
+  if (!viewer?.ready) return;
+  const app = getViewerApp(tab);
+  if (!app || !isViewerInteractive(tab, app)) return;
 
-    try {
-      viewer.resizeTimer = window.setTimeout(() => {
-        try {
-          if (app.pdfViewer?.currentScaleValue) {
-            app.pdfViewer.currentScaleValue = app.pdfViewer.currentScaleValue;
-          }
-          app.pdfViewer?.update();
-        } catch {
-          // ignore
-        }
-      }, 0);
-    } catch {
-      // ignore
-    }
-
-    const pageNumber = Number(app.page || app.pdfViewer?.currentPageNumber || viewer.observedPage || getPageFor(tab)) || 1;
-    const scaleValue = normalizeScaleValue(app.pdfViewer?.currentScaleValue || viewer.desiredScale || getScaleFor(tab));
-    if (pageNumber !== viewer.observedPage || scaleValue !== viewer.desiredScale) {
-      updateTabStateFromViewer(tab, pageNumber, scaleValue);
-    }
+  const pageNumber = Number(app.page || app.pdfViewer?.currentPageNumber || viewer.observedPage || getPageFor(tab)) || 1;
+  const scaleValue = normalizeScaleValue(app.pdfViewer?.currentScaleValue || viewer.desiredScale || getScaleFor(tab));
+  if (pageNumber !== viewer.observedPage || scaleValue !== viewer.desiredScale) {
+    updateTabStateFromViewer(tab, pageNumber, scaleValue);
   }
 }
 
@@ -488,7 +517,7 @@ function initialize() {
 
   for (const tab of Object.keys(BOOKS)) {
     createViewer(tab);
-    setViewerSrc(tab, getPageFor(tab));
+    setViewerSrc(tab, getPageFor(tab), tab === currentTab);
   }
 
   const fromHash = parseHash();
@@ -507,8 +536,8 @@ window.addEventListener("hashchange", () => {
 
 window.addEventListener("beforeunload", saveState);
 window.addEventListener("resize", () => {
-  clearTimeout(window.__gmResizeTimer);
-  window.__gmResizeTimer = setTimeout(refreshAllVisibleViewers, 100);
+  clearTimeout(resizeRefreshTimer);
+  resizeRefreshTimer = window.setTimeout(refreshActiveViewer, ACTIVE_RESIZE_REFRESH_MS);
 });
 
 initialize();

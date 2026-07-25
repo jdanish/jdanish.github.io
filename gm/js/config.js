@@ -21,7 +21,6 @@ window.BOOKS = {
       { label: "TOC", page: 4 },
       { label: "Index", page: 304 },
       { label: "Weapons", page: 52 }
-
     ]
   },
   starbreaker_core: {
@@ -39,7 +38,7 @@ window.BOOKS = {
   starbreaker_star_marines: {
     title: "Starbreaker Star Marines",
     file: "pdfs/starbreaker_star_marines.pdf",
-    defaultPage: 2,    
+    defaultPage: 2,
     defaultScale: 1.25,
     pages: [
       { label: "TOC", page: 3 }
@@ -53,5 +52,4 @@ window.BOOKS = {
     pages: [
     ]
   }
-
 };
