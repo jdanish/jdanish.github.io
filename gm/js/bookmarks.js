@@ -1,12 +1,13 @@
 (function () {
   window.GM = window.GM || {};
 
-  const STORAGE_KEY = 'gmScreenBookmarks_v3';
+  const STORAGE_KEY = 'gmScreenBookmarks_v4';
   const LONG_PRESS_MS = 500;
 
   let state = loadState();
   let boundContainer = null;
   let longPressTimer = null;
+  let dragBookmarkId = null;
   let suppressClickBookmarkId = null;
 
   function loadState() {
@@ -27,7 +28,9 @@
     }
   }
 
-  function getBooks() { return window.BOOKS || {}; }
+  function getBooks() {
+    return window.BOOKS || {};
+  }
 
   function getCurrentTab() {
     return window.GM.pdfviewer?.getActiveTab?.() || Object.keys(getBooks())[0] || null;
@@ -57,8 +60,13 @@
     return `bm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  function normalizeName(name) { return String(name || '').trim(); }
-  function normalizeHighlight(text) { return String(text || '').replace(/\s+/g, ' ').trim(); }
+  function normalizeName(name) {
+    return String(name || '').trim();
+  }
+
+  function normalizeHighlight(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim();
+  }
 
   function truncate(text, max = 120) {
     const clean = normalizeName(text);
@@ -142,6 +150,26 @@
     return true;
   }
 
+  function reorderBookmarks(tab, orderedIds) {
+    const activeTab = tab || getCurrentTab();
+    if (!activeTab) return;
+
+    const list = getTabBookmarks(activeTab);
+    const byId = new Map(list.map((bm) => [bm.id, bm]));
+    const next = [];
+
+    orderedIds.forEach((id) => {
+      const bm = byId.get(id);
+      if (bm) next.push(bm);
+      byId.delete(id);
+    });
+
+    for (const bm of byId.values()) next.push(bm);
+
+    state[activeTab] = next;
+    saveState();
+  }
+
   function bookmarkToAnchor(bookmark, label) {
     const attrs = [
       `class="linkicon jump-link"`,
@@ -179,37 +207,23 @@
     longPressTimer = null;
   }
 
-  function setActionsVisible(item, visible) {
-    if (!item) return;
-    const actions = item.querySelector('.bookmark-actions');
-    if (!actions) return;
-    actions.hidden = !visible;
-    item.classList.toggle('show-actions', visible);
-  }
-
   function hideAllActionMenus(pageLinksEl) {
-    pageLinksEl.querySelectorAll('.bookmark-item').forEach((item) => setActionsVisible(item, false));
+    pageLinksEl.querySelectorAll('.bookmark-item.show-actions').forEach((item) => {
+      item.classList.remove('show-actions');
+    });
   }
 
-  function revealActionsForItem(pageLinksEl, item) {
+  function showActionsForItem(pageLinksEl, item) {
     hideAllActionMenus(pageLinksEl);
     if (!item) return;
-    setActionsVisible(item, true);
+    item.classList.add('show-actions');
     suppressClickBookmarkId = item.dataset.bookmarkId || null;
+  }
 
-    const clear = () => {
-      setActionsVisible(item, false);
-      if (suppressClickBookmarkId === item.dataset.bookmarkId) suppressClickBookmarkId = null;
-      document.removeEventListener('pointerdown', onDocPointerDown, true);
-    };
-
-    function onDocPointerDown(evt) {
-      if (!pageLinksEl.contains(evt.target)) {
-        clear();
-      }
-    }
-
-    document.addEventListener('pointerdown', onDocPointerDown, true);
+  function hideActionsForItem(item) {
+    if (!item) return;
+    if (suppressClickBookmarkId === item.dataset.bookmarkId) suppressClickBookmarkId = null;
+    item.classList.remove('show-actions');
   }
 
   function render(tab, pageLinksEl) {
@@ -234,21 +248,21 @@
       const item = document.createElement('span');
       item.className = 'bookmark-item';
       item.dataset.bookmarkId = bm.id;
+      item.dataset.tab = activeTab;
 
       const link = document.createElement('button');
       link.type = 'button';
       link.className = 'bookmark-link';
-      link.draggable = true;
       link.textContent = bm.name;
       link.title = bm.highlight ? `Highlight: ${bm.highlight}` : bm.name;
       link.dataset.action = 'bookmark-jump';
       link.dataset.page = String(bm.page);
       link.dataset.tab = activeTab;
       if (bm.highlight) link.dataset.highlight = bm.highlight;
+      link.draggable = true;
 
       const actions = document.createElement('span');
       actions.className = 'bookmark-actions';
-      actions.hidden = true;
 
       const copy = document.createElement('button');
       copy.type = 'button';
@@ -274,19 +288,17 @@
       item.appendChild(actions);
       wrap.appendChild(item);
 
-      item.addEventListener('mouseenter', () => setActionsVisible(item, true));
-      item.addEventListener('mouseleave', () => {
-        if (!item.classList.contains('show-actions')) {
-          setActionsVisible(item, false);
-        }
+      item.addEventListener('mouseenter', () => {
+        showActionsForItem(pageLinksEl, item);
       });
-      item.addEventListener('focusin', () => setActionsVisible(item, true));
-      item.addEventListener('focusout', () => {
-        window.setTimeout(() => {
-          if (!item.matches(':hover') && !item.contains(document.activeElement)) {
-            setActionsVisible(item, false);
-          }
-        }, 0);
+      item.addEventListener('mouseleave', () => {
+        hideActionsForItem(item);
+      });
+      item.addEventListener('focusin', () => {
+        showActionsForItem(pageLinksEl, item);
+      });
+      item.addEventListener('focusout', (event) => {
+        if (!item.contains(event.relatedTarget)) hideActionsForItem(item);
       });
     });
 
@@ -310,13 +322,63 @@
         clearLongPressState();
         const item = target.closest('.bookmark-item');
         longPressTimer = window.setTimeout(() => {
-          revealActionsForItem(pageLinksEl, item);
+          showActionsForItem(pageLinksEl, item);
+          longPressTimer = null;
         }, LONG_PRESS_MS);
       });
 
       pageLinksEl.addEventListener('pointerup', clearLongPressState);
       pageLinksEl.addEventListener('pointercancel', clearLongPressState);
       pageLinksEl.addEventListener('pointerleave', clearLongPressState);
+
+      pageLinksEl.addEventListener('dragstart', (event) => {
+        const link = event.target.closest('.bookmark-link');
+        if (!link) return;
+
+        const item = link.closest('.bookmark-item');
+        if (!item) return;
+
+        dragBookmarkId = item.dataset.bookmarkId;
+        item.classList.add('dragging');
+
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', dragBookmarkId);
+      });
+
+      pageLinksEl.addEventListener('dragover', (event) => {
+        const targetItem = event.target.closest('.bookmark-item');
+        if (!targetItem) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+      });
+
+      pageLinksEl.addEventListener('drop', (event) => {
+        const targetItem = event.target.closest('.bookmark-item');
+        if (!targetItem || !dragBookmarkId) return;
+        event.preventDefault();
+
+        const currentTab = getCurrentTab();
+        const list = getTabBookmarks(currentTab);
+        const fromIndex = list.findIndex((bm) => bm.id === dragBookmarkId);
+        const toIndex = list.findIndex((bm) => bm.id === targetItem.dataset.bookmarkId);
+
+        if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+        const [moved] = list.splice(fromIndex, 1);
+        list.splice(toIndex, 0, moved);
+        state[currentTab] = list;
+        saveState();
+
+        dragBookmarkId = null;
+        pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => el.classList.remove('dragging'));
+
+        window.GM.ui?.buildPageButtons?.(currentTab);
+      });
+
+      pageLinksEl.addEventListener('dragend', () => {
+        dragBookmarkId = null;
+        pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => el.classList.remove('dragging'));
+      });
 
       pageLinksEl.addEventListener('click', async (event) => {
         const target = event.target.closest('[data-action]');
@@ -341,8 +403,7 @@
           const item = target.closest('.bookmark-item');
           if (item?.classList.contains('show-actions') && suppressClickBookmarkId === item.dataset.bookmarkId) {
             event.preventDefault();
-            suppressClickBookmarkId = null;
-            setActionsVisible(item, false);
+            hideActionsForItem(item);
             return;
           }
 
@@ -400,6 +461,7 @@
     addBookmark,
     removeBookmark,
     getTabBookmarks,
+    reorderBookmarks,
     bookmarkToAnchor,
   };
 })();
