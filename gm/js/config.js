@@ -12,7 +12,7 @@ window.BOOKS = {
       { label: "Index", page: 205 },
       { label: "Edges", page: 58 },
       { label: "Gear", page: 67 },
-      { label: "Weapons", page: 72 }
+      { label: "Weapons", page: 71 }
     ]
   },
   sfc: {
@@ -50,7 +50,12 @@ window.BOOKS = {
     defaultPage: 2,
     defaultScale: 1.25,
     pages: [
-      { label: "TOC", page: 2 }
+      { label: "TOC", page: 2 },
+      { label: "Professions", page: 21 },
+      { label: "Edges", page: 39 },
+      { label: "Gear", page: 41 }
+
+
     ]
   },
   combat_survival_guide: {

@@ -1,65 +1,43 @@
-(function (GM) {
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
+
+(function () {
+  window.GM = window.GM || {};
+
+  function slugify(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&[a-z]+;/gi, " ")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
   }
 
-  function normalizeWhitespace(value) {
-    return String(value || '').replace(/\s+/g, ' ').trim();
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function stripHtml(value) {
-    const temp = document.createElement('div');
-    temp.innerHTML = String(value || '');
-    return normalizeWhitespace(temp.textContent || temp.innerText || '');
-  }
-
-  function normalizeScaleValue(scale) {
-    if (scale === null || scale === undefined || scale === '' || scale === true || scale === false) return null;
-    if (typeof scale === 'number' && Number.isFinite(scale)) return scale;
-    if (typeof scale === 'string') {
-      const trimmed = scale.trim();
-      if (!trimmed) return null;
-      if (/^\d+(\.\d+)?%$/.test(trimmed)) return Number.parseFloat(trimmed) / 100;
-      const numeric = Number(trimmed);
-      if (Number.isFinite(numeric)) return numeric;
-      return trimmed;
-    }
-    return null;
-  }
-
-  function clamp(value, min, max) {
-    return Math.min(max, Math.max(min, value));
-  }
-
-  function slugify(value) {
-    return normalizeWhitespace(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = String(value || "");
+    return (wrapper.textContent || wrapper.innerText || "").replace(/\s+/g, " ").trim();
   }
 
   function debounce(fn, delay) {
     let timer = null;
-    return function (...args) {
+    return (...args) => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => fn.apply(this, args), delay);
+      timer = window.setTimeout(() => fn(...args), delay);
     };
   }
 
-  function sleep(ms) {
-    return new Promise(resolve => window.setTimeout(resolve, ms));
-  }
-
-  GM.utils = {
-    escapeHtml,
-    normalizeWhitespace,
-    stripHtml,
-    normalizeScaleValue,
-    clamp,
+  window.GM.utils = {
     slugify,
+    escapeHtml,
+    stripHtml,
     debounce,
-    sleep,
   };
-})(window.GM = window.GM || {});
+})();
