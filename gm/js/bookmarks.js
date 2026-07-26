@@ -7,7 +7,6 @@
   let state = loadState();
   let boundContainer = null;
   let longPressTimer = null;
-  let longPressItem = null;
   let suppressClickBookmarkId = null;
 
   function loadState() {
@@ -180,20 +179,26 @@
     longPressTimer = null;
   }
 
+  function setActionsVisible(item, visible) {
+    if (!item) return;
+    const actions = item.querySelector('.bookmark-actions');
+    if (!actions) return;
+    actions.hidden = !visible;
+    item.classList.toggle('show-actions', visible);
+  }
+
   function hideAllActionMenus(pageLinksEl) {
-    pageLinksEl.querySelectorAll('.bookmark-item.show-actions').forEach((item) => {
-      item.classList.remove('show-actions');
-    });
+    pageLinksEl.querySelectorAll('.bookmark-item').forEach((item) => setActionsVisible(item, false));
   }
 
   function revealActionsForItem(pageLinksEl, item) {
     hideAllActionMenus(pageLinksEl);
     if (!item) return;
-    item.classList.add('show-actions');
+    setActionsVisible(item, true);
     suppressClickBookmarkId = item.dataset.bookmarkId || null;
 
     const clear = () => {
-      item.classList.remove('show-actions');
+      setActionsVisible(item, false);
       if (suppressClickBookmarkId === item.dataset.bookmarkId) suppressClickBookmarkId = null;
       document.removeEventListener('pointerdown', onDocPointerDown, true);
     };
@@ -233,12 +238,17 @@
       const link = document.createElement('button');
       link.type = 'button';
       link.className = 'bookmark-link';
+      link.draggable = true;
       link.textContent = bm.name;
       link.title = bm.highlight ? `Highlight: ${bm.highlight}` : bm.name;
       link.dataset.action = 'bookmark-jump';
       link.dataset.page = String(bm.page);
       link.dataset.tab = activeTab;
       if (bm.highlight) link.dataset.highlight = bm.highlight;
+
+      const actions = document.createElement('span');
+      actions.className = 'bookmark-actions';
+      actions.hidden = true;
 
       const copy = document.createElement('button');
       copy.type = 'button';
@@ -258,10 +268,26 @@
       remove.dataset.action = 'bookmark-remove';
       remove.dataset.bookmarkId = bm.id;
 
+      actions.appendChild(copy);
+      actions.appendChild(remove);
       item.appendChild(link);
-      item.appendChild(copy);
-      item.appendChild(remove);
+      item.appendChild(actions);
       wrap.appendChild(item);
+
+      item.addEventListener('mouseenter', () => setActionsVisible(item, true));
+      item.addEventListener('mouseleave', () => {
+        if (!item.classList.contains('show-actions')) {
+          setActionsVisible(item, false);
+        }
+      });
+      item.addEventListener('focusin', () => setActionsVisible(item, true));
+      item.addEventListener('focusout', () => {
+        window.setTimeout(() => {
+          if (!item.matches(':hover') && !item.contains(document.activeElement)) {
+            setActionsVisible(item, false);
+          }
+        }, 0);
+      });
     });
 
     const addBtn = document.createElement('button');
@@ -316,7 +342,7 @@
           if (item?.classList.contains('show-actions') && suppressClickBookmarkId === item.dataset.bookmarkId) {
             event.preventDefault();
             suppressClickBookmarkId = null;
-            item.classList.remove('show-actions');
+            setActionsVisible(item, false);
             return;
           }
 

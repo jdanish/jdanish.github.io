@@ -464,53 +464,6 @@ code { color: #cfe7ff; }
   margin-top: 0.45rem;
 }
 
-.bookmark-ui {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-left: 10px;
-}
-.bookmark-add,
-.bookmark-link,
-.bookmark-remove {
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  color: var(--text);
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 1;
-  padding: 6px 9px;
-  cursor: pointer;
-}
-.bookmark-add {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-.bookmark-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.bookmark-link { white-space: nowrap; }
-.bookmark-remove {
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  font-size: 16px;
-  font-weight: 700;
-  opacity: 0.85;
-}
-.bookmark-divider {
-  margin-left: 4px;
-  margin-right: 4px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
 /* Inline link style with larger right-pointing arrow. */
 a.linkicon {
   display: inline-flex;
@@ -527,6 +480,7 @@ a.linkicon {
   cursor: pointer;
   transition: color 0.15s ease;
 }
+
 a.linkicon::after {
   content: '\276F';
   display: inline-block;
@@ -535,23 +489,25 @@ a.linkicon::after {
   color: var(--accent-strong);
   transition: transform 0.15s ease, color 0.15s ease;
 }
+
 a.linkicon:hover {
   color: var(--text);
   text-decoration: underline;
 }
+
 a.linkicon:hover::after {
   transform: translateX(2px);
   color: var(--text);
 }
 
-
-/* bookmark styles begin */
+/* Bookmark strip */
 .bookmark-ui {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
   margin-left: 8px;
+  min-width: 0;
 }
 
 .bookmark-divider {
@@ -559,32 +515,72 @@ a.linkicon:hover::after {
   font-size: 12px;
   user-select: none;
   margin: 0 4px 0 2px;
+  align-self: center;
 }
 
 .bookmark-item {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  position: relative;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
-.bookmark-add,
-.bookmark-link,
-.bookmark-copy,
-.bookmark-remove {
+.bookmark-link {
   border: 1px solid var(--line);
   background: var(--panel-2);
   color: var(--text);
   border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
   line-height: 1;
-  cursor: pointer;
+  cursor: grab;
+  white-space: nowrap;
+  user-select: none;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
 }
 
-.bookmark-add:hover,
-.bookmark-link:hover,
+.bookmark-link:hover {
+  background: #2a3141;
+  border-color: #46506a;
+}
+
+.bookmark-item.dragging .bookmark-link {
+  opacity: 0.45;
+  cursor: grabbing;
+}
+
+.bookmark-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.bookmark-actions[hidden] {
+  display: none !important;
+}
+
+.bookmark-copy,
+.bookmark-remove {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  flex: 0 0 auto;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
 .bookmark-copy:hover,
-.bookmark-remove:hover {
+.bookmark-remove:hover,
+.bookmark-add:hover {
   transform: translateY(-1px);
   background: #2a3141;
   border-color: #46506a;
@@ -594,45 +590,13 @@ a.linkicon:hover::after {
   width: 28px;
   height: 28px;
   padding: 0;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
   font-size: 18px;
   font-weight: 700;
+  line-height: 1;
+  flex: 0 0 auto;
 }
-
-.bookmark-link {
-  white-space: nowrap;
-  padding: 6px 10px;
-  font-size: 12px;
-  max-width: 18rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bookmark-copy,
-.bookmark-remove {
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  font-size: 14px;
-  font-weight: 700;
-  opacity: 0;
-  pointer-events: none;
-  max-width: 0;
-  overflow: hidden;
-}
-
-.bookmark-item:hover .bookmark-copy,
-.bookmark-item:hover .bookmark-remove,
-.bookmark-item.show-actions .bookmark-copy,
-.bookmark-item.show-actions .bookmark-remove,
-.bookmark-item:focus-within .bookmark-copy,
-.bookmark-item:focus-within .bookmark-remove {
-  opacity: 1;
-  pointer-events: auto;
-  max-width: 2rem;
-}
-
-.bookmark-item.show-actions .bookmark-link {
-  box-shadow: 0 0 0 1px var(--accent-strong);
-}
-/* bookmark styles end */
-
