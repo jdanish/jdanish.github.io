@@ -139,6 +139,8 @@ a.btn:hover {
 .sidebar-content {
   padding: 12px;
   overflow: auto;
+  overflow-y: auto;
+  padding-bottom: 3rem;
   min-height: 0;
 }
 
@@ -422,20 +424,20 @@ code { color: #cfe7ff; }
 .subsection:hover > summary::before { color: var(--text); }
 .subsection[open] > summary::before { transform: rotate(90deg); }
 
+.subsection > :not(summary) {
+  display: block;
+  overflow: visible;
+  max-height: none;
+  opacity: 1;
+  transition: opacity 0.18s ease, padding 0.18s ease;
+}
+
 .subsection .subsection-body {
   padding: 10px;
 }
 
-.subsection > :not(summary) {
-  display: block;
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 0.18s ease, opacity 0.18s ease, padding 0.18s ease;
-}
-
 .subsection[open] > :not(summary) {
-  max-height: 2000px;
+  max-height: 3000px;
   opacity: 1;
 }
 
