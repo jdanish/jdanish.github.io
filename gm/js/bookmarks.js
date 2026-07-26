@@ -1,7 +1,15 @@
+/* js/bookmarks.js
+   Per-book bookmarks stored in localStorage.
+   - + adds a bookmark for the current tab/page
+   - × removes an individual bookmark
+   - selected text becomes the bookmark title and future highlight
+   - bookmarks persist until site data is cleared
+*/
+
 (function () {
   window.GM = window.GM || {};
 
-  const STORAGE_KEY = 'gmScreenBookmarks_v2';
+  const STORAGE_KEY = "gmScreenBookmarks_v2";
 
   let state = loadState();
   let boundContainer = null;
@@ -10,7 +18,7 @@
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const parsed = raw ? JSON.parse(raw) : {};
-      return parsed && typeof parsed === 'object' ? parsed : {};
+      return parsed && typeof parsed === "object" ? parsed : {};
     } catch {
       return {};
     }
@@ -20,12 +28,17 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (err) {
-      console.error('Failed to save bookmarks', err);
+      console.error("Failed to save bookmarks", err);
     }
   }
 
   function getBooks() {
     return window.BOOKS || {};
+  }
+
+  function getTabBookmarks(tab) {
+    if (!state[tab]) state[tab] = [];
+    return state[tab];
   }
 
   function getCurrentTab() {
@@ -36,10 +49,6 @@
     const activeTab = tab || getCurrentTab();
     if (!activeTab) return 1;
 
-    if (window.GM.pdfviewer?.getCurrentDisplayPage) {
-      return Number(window.GM.pdfviewer.getCurrentDisplayPage(activeTab)) || 1;
-    }
-
     if (window.GM.pdfviewer?.getDisplayPage) {
       return Number(window.GM.pdfviewer.getDisplayPage(activeTab)) || 1;
     }
@@ -48,49 +57,63 @@
     return Number(stored) || 1;
   }
 
-  function getTabBookmarks(tab) {
-    if (!state[tab]) state[tab] = [];
-    return state[tab];
-  }
-
   function makeId() {
     return `bm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  function normalizeName(name) {
-    return String(name || '').trim();
+  function normalizeText(text) {
+    return String(text || "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
-  function getSuggestedName(tab, displayPage, pageLinksEl) {
-    const pages = Array.from(pageLinksEl?.querySelectorAll('.page-link') || []);
-    const match = pages.find((btn) => Number(btn.dataset.page) === Number(displayPage));
-    if (match?.textContent) return match.textContent.trim();
+  function truncate(text, max = 120) {
+    const clean = normalizeText(text);
+    if (clean.length <= max) return clean;
+    return `${clean.slice(0, max - 1)}…`;
+  }
 
-    const book = getBooks()[tab];
-    if (book) {
-      const configured = (book.pages || []).find((entry) => Number(entry.page) === Number(displayPage));
-      if (configured?.label) return configured.label;
+  function getActiveViewerSelectionText() {
+    const iframe = document.querySelector(".viewer.active iframe.pdf-frame");
+    const win = iframe?.contentWindow;
+    if (!win) return "";
+
+    try {
+      const sel = win.getSelection?.();
+      const text = normalizeText(sel?.toString?.());
+      return text;
+    } catch {
+      return "";
     }
-
-    return `Page ${displayPage}`;
   }
 
-  function addBookmark(tab, page, name) {
+  function inferBookmarkName(currentPage, selectionText) {
+    const selection = normalizeText(selectionText);
+    if (selection) return truncate(selection, 80);
+    return `Page ${currentPage}`;
+  }
+
+  function addBookmark(tab, page, name, highlight) {
     const activeTab = tab || getCurrentTab();
     if (!activeTab) return null;
 
-    const bookmarkName = normalizeName(name);
+    const bookmarkName = normalizeText(name);
     if (!bookmarkName) return null;
 
     const displayPage = Number(page) || 1;
     const list = getTabBookmarks(activeTab);
+    const cleanHighlight = normalizeText(highlight);
 
-    const existingIndex = list.findIndex((bm) => bm.name.toLowerCase() === bookmarkName.toLowerCase());
+    // Update by name (case-insensitive) if it already exists.
+    const existingIndex = list.findIndex(
+      (bm) => bm.name.toLowerCase() === bookmarkName.toLowerCase()
+    );
 
     const bookmark = {
       id: existingIndex >= 0 ? list[existingIndex].id : makeId(),
       name: bookmarkName,
       page: displayPage,
+      highlight: cleanHighlight || "",
     };
 
     if (existingIndex >= 0) {
@@ -123,105 +146,123 @@
 
     boundContainer = pageLinksEl;
 
-    const existing = pageLinksEl.querySelector('.bookmark-ui');
+    // Remove old bookmark UI, keep the page buttons already built by ui.js.
+    const existing = pageLinksEl.querySelector(".bookmark-ui");
     if (existing) existing.remove();
 
     const bookmarks = getTabBookmarks(activeTab);
 
-    const wrap = document.createElement('span');
-    wrap.className = 'bookmark-ui';
+    const wrap = document.createElement("span");
+    wrap.className = "bookmark-ui";
 
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.className = 'bookmark-add';
-    addBtn.title = 'Add bookmark';
-    addBtn.setAttribute('aria-label', 'Add bookmark');
-    addBtn.textContent = '+';
-    addBtn.dataset.action = 'bookmark-add';
+    const separator = document.createElement("span");
+    separator.className = "bookmark-separator";
+    separator.textContent = "|";
+    wrap.appendChild(separator);
+
+    bookmarks.forEach((bm) => {
+      const item = document.createElement("span");
+      item.className = "bookmark-item";
+
+      const link = document.createElement("button");
+      link.type = "button";
+      link.className = "bookmark-link";
+      link.textContent = bm.name;
+      link.title = bm.highlight ? `Highlight: ${bm.highlight}` : bm.name;
+      link.dataset.action = "bookmark-jump";
+      link.dataset.page = String(bm.page);
+      link.dataset.tab = activeTab;
+      if (bm.highlight) {
+        link.dataset.highlight = bm.highlight;
+      }
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "bookmark-remove";
+      remove.title = `Remove ${bm.name}`;
+      remove.setAttribute("aria-label", `Remove bookmark ${bm.name}`);
+      remove.textContent = "×";
+      remove.dataset.action = "bookmark-remove";
+      remove.dataset.bookmarkId = bm.id;
+
+      item.appendChild(link);
+      item.appendChild(remove);
+      wrap.appendChild(item);
+    });
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "bookmark-add";
+    addBtn.title = "Add bookmark";
+    addBtn.setAttribute("aria-label", "Add bookmark");
+    addBtn.textContent = "+";
+    addBtn.dataset.action = "bookmark-add";
     wrap.appendChild(addBtn);
-
-    if (bookmarks.length) {
-      const divider = document.createElement('span');
-      divider.className = 'bookmark-divider';
-      divider.textContent = '|';
-      wrap.appendChild(divider);
-
-      bookmarks.forEach((bm) => {
-        const item = document.createElement('span');
-        item.className = 'bookmark-item';
-
-        const link = document.createElement('button');
-        link.type = 'button';
-        link.className = 'bookmark-link';
-        link.textContent = bm.name;
-        link.dataset.action = 'bookmark-jump';
-        link.dataset.page = String(bm.page);
-        link.dataset.tab = activeTab;
-
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'bookmark-remove';
-        remove.title = `Remove ${bm.name}`;
-        remove.setAttribute('aria-label', `Remove bookmark ${bm.name}`);
-        remove.textContent = '×';
-        remove.dataset.action = 'bookmark-remove';
-        remove.dataset.bookmarkId = bm.id;
-
-        item.appendChild(link);
-        item.appendChild(remove);
-        wrap.appendChild(item);
-      });
-    }
 
     pageLinksEl.appendChild(wrap);
 
-    if (pageLinksEl.dataset.bookmarkEventsAttached !== 'true') {
-      pageLinksEl.addEventListener('click', async (event) => {
-        const target = event.target.closest('[data-action]');
+    if (pageLinksEl.dataset.bookmarkEventsAttached !== "true") {
+      pageLinksEl.addEventListener("click", async (event) => {
+        const target = event.target.closest("[data-action]");
         if (!target || !pageLinksEl.contains(target)) return;
 
         const action = target.dataset.action;
         const currentTab = getCurrentTab();
 
-        if (action === 'bookmark-add') {
+        if (action === "bookmark-add") {
           event.preventDefault();
 
           const currentPage = getCurrentDisplayPage(currentTab);
-          const defaultName = getSuggestedName(currentTab, currentPage, pageLinksEl);
-          const name = window.prompt('Bookmark name', defaultName);
+          const selectedText = getActiveViewerSelectionText();
+          const defaultName = inferBookmarkName(currentPage, selectedText);
+          const name = window.prompt("Bookmark name", defaultName);
 
           if (!name) return;
 
-          addBookmark(currentTab, currentPage, name);
-          window.GM.ui?.buildPageButtons?.(currentTab);
+          addBookmark(currentTab, currentPage, name, selectedText);
+
+          if (window.GM.ui?.buildPageButtons) {
+            window.GM.ui.buildPageButtons(currentTab);
+          } else {
+            render(currentTab, pageLinksEl);
+          }
           return;
         }
 
-        if (action === 'bookmark-jump') {
+        if (action === "bookmark-jump") {
           event.preventDefault();
 
           const tab = target.dataset.tab || currentTab;
           const page = Number(target.dataset.page) || 1;
+          const highlightText = target.dataset.highlight || "";
 
-          await window.GM.pdfviewer?.setTabAndPage?.(tab, page);
+          await window.GM.pdfviewer?.setTabAndPage?.(tab, page, {
+            highlightText,
+          });
           return;
         }
 
-        if (action === 'bookmark-remove') {
+        if (action === "bookmark-remove") {
           event.preventDefault();
 
           const bookmarkId = target.dataset.bookmarkId;
-          const tab = currentTab;
-          const bmName = target.closest('.bookmark-item')?.querySelector('.bookmark-link')?.textContent?.trim() || 'this bookmark';
+          const bmName =
+            target.closest(".bookmark-item")?.querySelector(".bookmark-link")?.textContent?.trim() ||
+            "this bookmark";
 
           if (!window.confirm(`Remove bookmark “${bmName}”?`)) return;
 
-          removeBookmark(tab, bookmarkId);
-          window.GM.ui?.buildPageButtons?.(tab);
+          removeBookmark(currentTab, bookmarkId);
+
+          if (window.GM.ui?.buildPageButtons) {
+            window.GM.ui.buildPageButtons(currentTab);
+          } else {
+            render(currentTab, pageLinksEl);
+          }
         }
       });
 
-      pageLinksEl.dataset.bookmarkEventsAttached = 'true';
+      pageLinksEl.dataset.bookmarkEventsAttached = "true";
     }
   }
 
