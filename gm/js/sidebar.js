@@ -227,18 +227,12 @@ window.SIDEBAR_SECTIONS = [
                 </li>
 
                 <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="163" data-highlight="Invisibility">Invisibility</a>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="163" data-highlight="Invisibility">Invisibility (self only)</a>
                   <ul>
                     <li><u>Power Points:</u> 1</li>
                     <li><u>Range:</u> Smarts</li>
                     <li><u>Duration:</u> 5</li>
                     <li><u>Description:</u> The target and carried items become nearly invisible. Attacks and Notice rolls relying on sight suffer −4 (−6 with a raise).</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Additional Recipients (+3):</strong> Affect additional targets for 3 Power Points each.</li>
-                      </ul>
-                    </li>
                   </ul>
                 </li>
 
