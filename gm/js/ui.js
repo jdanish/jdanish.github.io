@@ -15,7 +15,7 @@
   }
 
   function getState() {
-    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460 };
+    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarNotes: '' };
   }
 
   function getCurrentTab() {
@@ -24,9 +24,7 @@
 
   function getDisplayPage(tab) {
     const live = window.GM.pdfviewer?.getCurrentDisplayPage?.(tab);
-    if (Number.isFinite(Number(live))) {
-      return Number(live);
-    }
+    if (Number.isFinite(Number(live))) return Number(live);
 
     const book = getBooks()[tab];
     if (!book) return 1;
@@ -55,6 +53,9 @@
   }
 
   function getSidebarElementByKeys(sectionKey, blockKey) {
+    if ((sectionKey === 'sidebar-notes' || blockKey === 'sidebar-notes') && dom.sidebarNotesPanelEl) {
+      return dom.sidebarNotesPanelEl;
+    }
     if (blockKey && blockEls.has(blockKey)) return blockEls.get(blockKey);
     if (sectionKey && sectionEls.has(sectionKey)) return sectionEls.get(sectionKey);
     return null;
@@ -82,23 +83,34 @@
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     flashElement(el);
-  }
 
-  function ensureResultContainer() {
-    if (!dom.sidebarContentEl) return;
-    if (document.getElementById('searchResults')) return;
-
-    const container = document.createElement('div');
-    container.id = 'searchResults';
-    container.className = 'search-results';
-    container.hidden = true;
-    dom.sidebarContentEl.insertBefore(container, dom.sidebarContentEl.firstChild);
+    if (dom.sidebarNotesEl && el.contains(dom.sidebarNotesEl)) {
+      window.setTimeout(() => dom.sidebarNotesEl?.focus?.(), 50);
+    }
   }
 
   function normalizePersistKey(section, sectionIndex) {
     return section.id
       ? window.GM.utils.slugify(section.id)
       : `${sectionIndex}-${window.GM.utils.slugify(section.title || 'section')}`;
+  }
+
+  function syncPersistedNestedDetails() {
+    if (!dom.sidebarContentEl) return;
+
+    dom.sidebarContentEl.querySelectorAll('details[data-persist-key], details.subsection').forEach((details) => {
+      if (details.dataset.persistBound === 'true') return;
+      const key = details.dataset.persistKey || details.dataset.sectionKey || details.dataset.blockKey || window.GM.utils.slugify(details.querySelector(':scope > summary')?.textContent || 'details');
+      const persisted = getState().openSections?.[key];
+      if (typeof persisted === 'boolean') details.open = persisted;
+
+      details.addEventListener('toggle', () => {
+        getState().openSections[key] = details.open;
+        window.GM.storage?.saveState?.();
+      });
+
+      details.dataset.persistBound = 'true';
+    });
   }
 
   function renderSidebar() {
@@ -108,8 +120,6 @@
     blockEls.clear();
 
     const frag = document.createDocumentFragment();
-    ensureResultContainer();
-
     const sections = Array.isArray(window.SIDEBAR_SECTIONS) ? window.SIDEBAR_SECTIONS : [];
 
     sections.forEach((section, sectionIndex) => {
@@ -167,67 +177,16 @@
       });
     });
 
-    dom.sidebarContentEl.replaceChildren(document.getElementById('searchResults'), ...frag.childNodes);
+    dom.sidebarContentEl.replaceChildren(...frag.childNodes);
 
-    // Note: replaceChildren above moves the searchResults node first and then all rendered sections.
-    // Event delegation is attached once.
     installSidebarDelegation();
     syncPersistedNestedDetails();
-
+    setupSidebarNotes();
     window.GM.search?.setupSearch?.({
       sidebarContentEl: dom.sidebarContentEl,
       searchInputEl: dom.sidebarSearchEl,
       clearButtonEl: dom.clearSidebarSearchEl,
     });
-  }
-
-  function syncPersistedNestedDetails() {
-    if (!dom.sidebarContentEl) return;
-
-    dom.sidebarContentEl.querySelectorAll('details[data-persist-key], details.subsection').forEach((details) => {
-      if (details.dataset.persistBound === 'true') return;
-      const key = details.dataset.persistKey || details.dataset.sectionKey || details.dataset.blockKey || window.GM.utils.slugify(details.querySelector(':scope > summary')?.textContent || 'details');
-      const persisted = getState().openSections?.[key];
-      if (typeof persisted === 'boolean') {
-        details.open = persisted;
-      }
-
-      details.addEventListener('toggle', () => {
-        getState().openSections[key] = details.open;
-        window.GM.storage?.saveState?.();
-      });
-
-      details.dataset.persistBound = 'true';
-    });
-  }
-
-  function installSidebarDelegation() {
-    if (!dom.sidebarContentEl || dom.sidebarContentEl.dataset.eventsAttached === 'true') return;
-
-    dom.sidebarContentEl.addEventListener('click', async (event) => {
-      const target = event.target.closest('[data-tab][data-page]');
-      if (!target || !dom.sidebarContentEl.contains(target)) return;
-
-      event.preventDefault();
-      const tab = target.dataset.tab;
-      const page = Number(target.dataset.page) || 1;
-      const highlightText = target.dataset.highlight || '';
-      await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
-    });
-
-    dom.sidebarContentEl.addEventListener('keydown', async (event) => {
-      const target = event.target.closest('[data-tab][data-page]');
-      if (!target || !dom.sidebarContentEl.contains(target)) return;
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-
-      event.preventDefault();
-      const tab = target.dataset.tab;
-      const page = Number(target.dataset.page) || 1;
-      const highlightText = target.dataset.highlight || '';
-      await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
-    });
-
-    dom.sidebarContentEl.dataset.eventsAttached = 'true';
   }
 
   function buildTabs() {
@@ -283,24 +242,18 @@
 
     document.documentElement.style.setProperty('--sidebar-width', `${width}px`);
     const sidebarEl = document.querySelector('.sidebar');
-    if (sidebarEl) {
-      sidebarEl.style.flexBasis = `${width}px`;
-    }
+    if (sidebarEl) sidebarEl.style.flexBasis = `${width}px`;
   }
 
   function setupResizer() {
     if (!dom.sidebarResizerEl || dom.sidebarResizerEl.dataset.resizerBound === 'true') return;
 
-    const state = getState();
     const uiConfig = getUIConfig();
+    const state = getState();
     const min = Number(uiConfig.sidebarWidth?.min || 300);
     const max = Number(uiConfig.sidebarWidth?.max || 700);
 
-    const drag = {
-      active: false,
-      startX: 0,
-      startWidth: 0,
-    };
+    const drag = { active: false, startX: 0, startWidth: 0 };
 
     const onMove = (event) => {
       if (!drag.active) return;
@@ -337,6 +290,33 @@
     dom.sidebarResizerEl.dataset.resizerBound = 'true';
   }
 
+  function syncNotesToState() {
+    if (!dom.sidebarNotesEl) return;
+    const text = String(getState().sidebarNotes || '');
+    if (dom.sidebarNotesEl.value !== text) dom.sidebarNotesEl.value = text;
+  }
+
+  function setupSidebarNotes() {
+    if (!dom.sidebarNotesEl) return;
+    if (dom.sidebarNotesEl.dataset.notesBound === 'true') {
+      syncNotesToState();
+      return;
+    }
+
+    syncNotesToState();
+
+    dom.sidebarNotesEl.addEventListener('input', () => {
+      getState().sidebarNotes = dom.sidebarNotesEl.value;
+      window.GM.storage?.saveState?.();
+      const currentQuery = dom.sidebarSearchEl?.value || '';
+      if (currentQuery.trim().length >= 2) {
+        window.GM.search?.performSearch?.(currentQuery).catch?.(console.error);
+      }
+    });
+
+    dom.sidebarNotesEl.dataset.notesBound = 'true';
+  }
+
   function init() {
     dom = {
       sidebarContentEl: document.getElementById('sidebarContent'),
@@ -346,6 +326,8 @@
       sidebarSearchEl: document.getElementById('sidebarSearch'),
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
+      sidebarNotesPanelEl: document.getElementById('sidebarNotesPanel'),
+      sidebarNotesEl: document.getElementById('sidebarNotes'),
     };
 
     buildTabs();
@@ -371,5 +353,43 @@
     revealSidebarElement,
     getSidebarElementByKeys,
     getDisplayPage,
+    syncNotesToState,
   };
 })();
+function installSidebarDelegation(sidebarContentEl) {
+  if (!sidebarContentEl || sidebarContentEl.dataset.eventsAttached === "true") return;
+
+  sidebarContentEl.addEventListener("click", async (event) => {
+    const target = event.target.closest("[data-tab][data-page]");
+    if (!target || !sidebarContentEl.contains(target)) return;
+
+    event.preventDefault();
+
+    const tab = target.dataset.tab;
+    const displayPage = Number(target.dataset.page) || 1;
+    const highlightText = target.dataset.highlight || "";
+
+    await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, {
+      highlightText,
+    });
+  });
+
+  sidebarContentEl.addEventListener("keydown", async (event) => {
+    const target = event.target.closest("[data-tab][data-page]");
+    if (!target || !sidebarContentEl.contains(target)) return;
+
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+
+    const tab = target.dataset.tab;
+    const displayPage = Number(target.dataset.page) || 1;
+    const highlightText = target.dataset.highlight || "";
+
+    await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, {
+      highlightText,
+    });
+  });
+
+  sidebarContentEl.dataset.eventsAttached = "true";
+}
