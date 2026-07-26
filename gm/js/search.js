@@ -91,6 +91,10 @@
     return source.slice(start, end).replace(/\s+/g, ' ').trim();
   }
 
+  function getSidebarNotesText() {
+    return String(window.GM.storage?.state?.sidebarNotes || '').trim();
+  }
+
   function buildSidebarIndex() {
     searchState.sidebarIndex = [];
 
@@ -157,6 +161,22 @@
         score: idx,
       });
     });
+
+    const notes = getSidebarNotesText();
+    if (q.length >= 2 && notes && notes.toLowerCase().includes(q)) {
+      results.push({
+        type: 'sidebar-notes',
+        sectionKey: 'sidebar-notes',
+        blockKey: 'sidebar-notes',
+        sectionIndex: 9999,
+        blockIndex: 9999,
+        sectionTitle: 'Sidebar Notes',
+        blockTitle: 'Editable Notes',
+        searchText: notes.toLowerCase(),
+        snippet: extractSnippet(notes, q),
+        score: notes.toLowerCase().indexOf(q),
+      });
+    }
 
     results.sort((a, b) => {
       const secA = a.sectionKey;
@@ -327,7 +347,7 @@
         const item = document.createElement('button');
         item.type = 'button';
         item.className = 'btn search-result-item';
-        item.dataset.searchHit = 'sidebar';
+        item.dataset.searchHit = hit.type || 'sidebar';
         item.dataset.sectionKey = hit.sectionKey;
         item.dataset.blockKey = hit.blockKey;
 
@@ -461,7 +481,7 @@
         if (!result || !searchState.dom.sidebarContentEl.contains(result)) return;
 
         const hitType = result.dataset.searchHit;
-        if (hitType === 'sidebar') {
+        if (hitType === 'sidebar' || hitType === 'sidebar-notes') {
           const target = window.GM.ui?.getSidebarElementByKeys?.(result.dataset.sectionKey, result.dataset.blockKey);
           if (target) {
             window.GM.ui?.revealSidebarElement?.(target);

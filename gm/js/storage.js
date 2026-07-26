@@ -10,6 +10,7 @@
       openSections: {},
       sidebarWidth: null,
       activeTab: null,
+      sidebarNotes: '',
     };
   }
 
@@ -21,6 +22,7 @@
       state.pages = state.pages || {};
       state.scales = state.scales || {};
       state.openSections = state.openSections || {};
+      if (typeof state.sidebarNotes !== 'string') state.sidebarNotes = '';
       return state;
     } catch (err) {
       console.error('Failed to load state', err);

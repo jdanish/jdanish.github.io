@@ -89,6 +89,37 @@
     }
   }
 
+  function installSidebarDelegation() {
+    if (!dom.sidebarContentEl || dom.sidebarContentEl.dataset.sidebarDelegationBound === 'true') return;
+
+    const activate = async (target) => {
+      const tab = target.dataset.tab;
+      const displayPage = Number(target.dataset.page) || 1;
+      const highlightText = target.dataset.highlight || '';
+      if (!tab) return;
+      await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, { highlightText });
+    };
+
+    dom.sidebarContentEl.addEventListener('click', async (event) => {
+      const target = event.target.closest('[data-tab][data-page]');
+      if (!target || !dom.sidebarContentEl.contains(target)) return;
+
+      event.preventDefault();
+      await activate(target);
+    });
+
+    dom.sidebarContentEl.addEventListener('keydown', async (event) => {
+      const target = event.target.closest('[data-tab][data-page]');
+      if (!target || !dom.sidebarContentEl.contains(target)) return;
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+
+      event.preventDefault();
+      await activate(target);
+    });
+
+    dom.sidebarContentEl.dataset.sidebarDelegationBound = 'true';
+  }
+
   function normalizePersistKey(section, sectionIndex) {
     return section.id
       ? window.GM.utils.slugify(section.id)
@@ -356,40 +387,3 @@
     syncNotesToState,
   };
 })();
-function installSidebarDelegation(sidebarContentEl) {
-  if (!sidebarContentEl || sidebarContentEl.dataset.eventsAttached === "true") return;
-
-  sidebarContentEl.addEventListener("click", async (event) => {
-    const target = event.target.closest("[data-tab][data-page]");
-    if (!target || !sidebarContentEl.contains(target)) return;
-
-    event.preventDefault();
-
-    const tab = target.dataset.tab;
-    const displayPage = Number(target.dataset.page) || 1;
-    const highlightText = target.dataset.highlight || "";
-
-    await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, {
-      highlightText,
-    });
-  });
-
-  sidebarContentEl.addEventListener("keydown", async (event) => {
-    const target = event.target.closest("[data-tab][data-page]");
-    if (!target || !sidebarContentEl.contains(target)) return;
-
-    if (event.key !== "Enter" && event.key !== " ") return;
-
-    event.preventDefault();
-
-    const tab = target.dataset.tab;
-    const displayPage = Number(target.dataset.page) || 1;
-    const highlightText = target.dataset.highlight || "";
-
-    await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, {
-      highlightText,
-    });
-  });
-
-  sidebarContentEl.dataset.eventsAttached = "true";
-}

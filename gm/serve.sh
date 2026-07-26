@@ -1,4 +1,2 @@
-#!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
+#!/bin/sh
 python3 -m http.server 8000

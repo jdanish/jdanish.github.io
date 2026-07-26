@@ -1,47 +1,32 @@
-# Game Master Screen
+# GM Screen (stable build)
 
-This project uses the official PDF.js viewer locally, without a CDN.
+This package keeps your campaign data separate from the application code.
 
-## What to add
+## Edit these files
+- `data/config.js`
+- `data/sidebar.js`
 
-Put your four PDFs here:
+## Copy these application files over your existing install
+- `index.html`
+- `css/styles.css`
+- `js/app.js`
+- `js/ui.js`
+- `js/bookmarks.js`
+- `js/search.js`
+- `js/pdfviewer.js`
+- `js/storage.js`
+- `js/utils.js`
 
-- `pdfs/swade.pdf`
-- `pdfs/sfc.pdf`
-- `pdfs/starbreaker_core.pdf`
-- `pdfs/starbreaker_star_marines.pdf`
+## Notes
+- Bookmarks are saved in `localStorage`.
+- The notes panel at the bottom of the sidebar is also saved in `localStorage`.
+- Keep your `pdfjs/` and `pdfs/` folders alongside this project.
 
-Then add the PDF.js distribution files under `pdfjs/`.
-
-### Recommended PDF.js download
-
-Download `pdfjs-6.1.200-dist.zip` from the PDF.js SourceForge mirror, then unzip it into the `pdfjs/` folder so that this path exists:
-
-- `pdfjs/web/viewer.html`
-
-The PDF.js project recommends serving the files from a local web server rather than opening them with `file://`.
-
-## Run on macOS
-
-From this folder:
-
-```bash
-./serve.sh
-```
-
-Or:
+## Local test server
+Run this from the project root on macOS:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then open:
-
-`http://localhost:8000`
-
-## Editing
-
-Edit these two files most often:
-
-- `js/config.js` for PDFs and page shortcuts
-- `js/sidebar.js` for collapsible notes and link blocks
+Then open `http://localhost:8000`.
