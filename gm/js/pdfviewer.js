@@ -1,11 +1,6 @@
-
-/* js/pdfviewer.js
-   Uses the official PDF.js viewer in one persistent iframe per book.
-   Supports:
-   - manual page offsets (display page -> PDF page)
-   - stored page/scale per book
-   - click-to-highlight search terms
-   - compatibility aliases for older app.js code
+/* pdfviewer.js
+   Persistent official PDF.js viewer instances, one per book.
+   Uses pdfjs/web/viewer.html in an iframe, one viewer per tab.
 */
 
 (function () {
@@ -25,7 +20,7 @@
         pages: {},
         scales: {},
         openSections: {},
-        sidebarWidth: 460,
+        sidebarWidth: 340,
       },
       saveState() {},
     };
@@ -39,7 +34,7 @@
     storage.state.scales = storage.state.scales || {};
     storage.state.openSections = storage.state.openSections || {};
     if (!Number.isFinite(storage.state.sidebarWidth)) {
-      storage.state.sidebarWidth = 460;
+      storage.state.sidebarWidth = 340;
     }
     return storage.state;
   }
@@ -59,11 +54,13 @@
   function getBookOrderMap() {
     const books = getBooks();
     const map = new Map();
+
     Object.keys(books).forEach((tab, idx) => {
       const book = books[tab];
       const order = Number.isFinite(book.order) ? Number(book.order) : idx;
       map.set(tab, order);
     });
+
     return map;
   }
 
@@ -101,7 +98,7 @@
     const book = getBook(tab);
     const stored = state.scales?.[tab];
 
-    if (stored !== undefined && stored !== null && stored !== "") {
+    if (stored !== undefined && stored !== null && stored !== '') {
       return stored;
     }
 
@@ -113,9 +110,9 @@
   }
 
   function normalizeScaleValue(scaleValue, fallback = 1.25) {
-    if (typeof scaleValue === "number" && Number.isFinite(scaleValue)) return scaleValue;
+    if (typeof scaleValue === 'number' && Number.isFinite(scaleValue)) return scaleValue;
 
-    if (typeof scaleValue === "string") {
+    if (typeof scaleValue === 'string') {
       const trimmed = scaleValue.trim();
       if (!trimmed) return fallback;
 
@@ -141,15 +138,15 @@
 
   function serializeZoomValue(scaleValue) {
     if (scaleValue === undefined || scaleValue === null || scaleValue === false || scaleValue === true) {
-      return "";
+      return '';
     }
 
-    if (typeof scaleValue === "number" && Number.isFinite(scaleValue)) {
+    if (typeof scaleValue === 'number' && Number.isFinite(scaleValue)) {
       return String(Math.round(scaleValue * 100));
     }
 
     const str = String(scaleValue).trim();
-    if (!str) return "";
+    if (!str) return '';
 
     if (/^\d+(\.\d+)?$/.test(str)) {
       return String(Math.round(Number(str) * 100));
@@ -159,15 +156,19 @@
   }
 
   function getViewerFrame() {
-    return document.getElementById("viewerFrame");
+    return document.getElementById('viewerFrame');
   }
 
   function buildViewerSrc(book, displayPage, scaleValue) {
     const pdfPage = toPdfPage(book, displayPage);
     const zoom = serializeZoomValue(scaleValue);
+
+    // The viewer.html file lives in pdfjs/web/, so this path resolves from there.
     const filePath = `../../${book.file}`;
 
-    return `pdfjs/web/viewer.html?file=${encodeURIComponent(filePath)}#page=${pdfPage}${zoom ? `&zoom=${encodeURIComponent(zoom)}` : ""}`;
+    return `pdfjs/web/viewer.html?file=${encodeURIComponent(filePath)}#page=${pdfPage}${
+      zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
+    }`;
   }
 
   function createViewer(tab) {
@@ -179,14 +180,14 @@
     }
 
     const frame = getViewerFrame();
-    if (!frame) throw new Error("Viewer frame not found");
+    if (!frame) throw new Error('Viewer frame not found');
 
-    const wrapper = document.createElement("section");
-    wrapper.className = "viewer";
+    const wrapper = document.createElement('section');
+    wrapper.className = 'viewer';
     wrapper.dataset.tab = tab;
 
-    const iframe = document.createElement("iframe");
-    iframe.className = "pdf-frame";
+    const iframe = document.createElement('iframe');
+    iframe.className = 'pdf-frame';
     iframe.title = book.title;
 
     wrapper.appendChild(iframe);
@@ -208,7 +209,7 @@
 
   function showViewer(tab) {
     viewerState.viewers.forEach((viewer, key) => {
-      viewer.wrapper.classList.toggle("active", key === tab);
+      viewer.wrapper.classList.toggle('active', key === tab);
     });
 
     viewerState.activeTab = tab;
@@ -216,6 +217,39 @@
 
   function getActiveTab() {
     return viewerState.activeTab;
+  }
+
+  function getCurrentViewer(tab) {
+    const activeTab = tab || viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
+    if (!activeTab) return null;
+    return viewerState.viewers.get(activeTab) || null;
+  }
+
+  function getCurrentDisplayPage(tab) {
+    const viewer = getCurrentViewer(tab);
+    const book = viewer?.book || getBook(tab);
+    if (!book) return 1;
+
+    const app = viewer?.app;
+    const pdfPage = Number(
+      app?.page ||
+      app?.pdfViewer?.currentPageNumber ||
+      getState().pages?.[tab || viewerState.activeTab || ''] ||
+      book.defaultPage ||
+      1
+    );
+
+    return toDisplayPage(book, pdfPage);
+  }
+
+  function syncCurrentPage(tab, pdfPage) {
+    const book = getBook(tab);
+    if (!book) return;
+
+    const displayPage = toDisplayPage(book, Number(pdfPage) || 1);
+    setStoredPage(tab, displayPage);
+    window.GM.ui?.setViewerTitle?.(tab, displayPage);
+    window.GM.ui?.updateTabButtonLabels?.();
   }
 
   async function waitForViewerApp(iframe, timeoutMs = 20000) {
@@ -250,16 +284,22 @@
     const bus = app.eventBus;
     if (!bus) return;
 
-    bus.on("pagechange", (evt) => {
-      const pdfPage = Number(evt?.pageNumber || app.page || 1);
-      const displayPage = toDisplayPage(book, pdfPage);
-      setStoredPage(tab, displayPage);
+    const updatePageFromEvent = (evt) => {
+      const pdfPage = Number(
+        evt?.pageNumber ||
+        evt?.location?.pageNumber ||
+        app.page ||
+        app?.pdfViewer?.currentPageNumber ||
+        1
+      );
+      syncCurrentPage(tab, pdfPage);
+    };
 
-      window.GM.ui?.setViewerTitle?.(tab, displayPage);
-      window.GM.ui?.updateTabButtonLabels?.();
-    });
+    bus.on('pagechanging', updatePageFromEvent);
+    bus.on('pagechange', updatePageFromEvent);
+    bus.on('updateviewarea', updatePageFromEvent);
 
-    bus.on("scalechange", () => {
+    bus.on('scalechange', () => {
       const currentScale = app?.pdfViewer?.currentScaleValue;
       setStoredScale(tab, currentScale);
       window.GM.ui?.updateTabButtonLabels?.();
@@ -270,6 +310,7 @@
 
   async function ensureViewerLoaded(tab) {
     const viewer = createViewer(tab);
+
     if (viewer.app) return viewer.app;
     if (viewer.readyPromise) return viewer.readyPromise;
 
@@ -297,6 +338,61 @@
     return viewer.readyPromise;
   }
 
+  async function waitForPageRender(app, pdfPage, timeoutMs = 1500) {
+    return new Promise((resolve) => {
+      let done = false;
+
+      const finish = () => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        if (app?.eventBus?.off) {
+          app.eventBus.off('pagerendered', onRendered);
+        }
+        resolve();
+      };
+
+      const onRendered = (evt) => {
+        if (Number(evt?.pageNumber) === Number(pdfPage)) {
+          finish();
+        }
+      };
+
+      if (app?.eventBus?.on) {
+        app.eventBus.on('pagerendered', onRendered);
+      }
+
+      const timer = setTimeout(finish, timeoutMs);
+    });
+  }
+
+  async function highlightTextInActiveViewer(tab, query, displayPage) {
+    const cleaned = String(query || '').trim();
+    if (!cleaned) return;
+
+    const viewer = createViewer(tab);
+    const app = await ensureViewerLoaded(tab);
+    if (!app?.eventBus) return;
+
+    const book = viewer.book;
+    const pdfPage = toPdfPage(book, displayPage ?? getDisplayPage(tab));
+
+    await waitForPageRender(app, pdfPage);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    app.eventBus.dispatch('find', {
+      source: app,
+      type: '',
+      query: cleaned,
+      caseSensitive: false,
+      entireWord: false,
+      phraseSearch: true,
+      highlightAll: true,
+      findPrevious: false,
+      matchDiacritics: false,
+    });
+  }
+
   async function setPageInActiveViewer(tab, displayPage, options = {}) {
     const viewer = createViewer(tab);
     const app = await ensureViewerLoaded(tab);
@@ -317,67 +413,9 @@
     }
 
     const currentDisplayPage = toDisplayPage(book, app.page || pdfPage);
-    setStoredPage(tab, currentDisplayPage);
-
-    window.GM.ui?.setViewerTitle?.(tab, currentDisplayPage);
-    window.GM.ui?.updateTabButtonLabels?.();
+    syncCurrentPage(tab, currentDisplayPage);
 
     return app;
-  }
-
-  async function waitForPageRender(app, pdfPage, timeoutMs = 1500) {
-    return new Promise((resolve) => {
-      let done = false;
-
-      const finish = () => {
-        if (done) return;
-        done = true;
-        clearTimeout(timer);
-        if (app?.eventBus?.off) {
-          app.eventBus.off("pagerendered", onRendered);
-        }
-        resolve();
-      };
-
-      const onRendered = (evt) => {
-        if (Number(evt?.pageNumber) === Number(pdfPage)) {
-          finish();
-        }
-      };
-
-      if (app?.eventBus?.on) {
-        app.eventBus.on("pagerendered", onRendered);
-      }
-
-      const timer = setTimeout(finish, timeoutMs);
-    });
-  }
-
-  async function highlightTextInActiveViewer(tab, query, displayPage) {
-    const cleaned = String(query || "").trim();
-    if (!cleaned) return;
-
-    const viewer = createViewer(tab);
-    const app = await ensureViewerLoaded(tab);
-    if (!app?.eventBus) return;
-
-    const book = viewer.book;
-    const pdfPage = toPdfPage(book, displayPage ?? getDisplayPage(tab));
-
-    await waitForPageRender(app, pdfPage);
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    app.eventBus.dispatch("find", {
-      source: app,
-      type: "",
-      query: cleaned,
-      caseSensitive: false,
-      entireWord: false,
-      phraseSearch: true,
-      highlightAll: true,
-      findPrevious: false,
-      matchDiacritics: false,
-    });
   }
 
   async function setTabAndPage(tab, displayPage, options = {}) {
@@ -434,9 +472,11 @@
       await setTabAndPage(active, getDisplayPage(active));
     }
 
-    tabs.filter((tab) => tab !== active).forEach((tab) => {
-      ensureViewerLoaded(tab).catch((err) => console.error(err));
-    });
+    tabs
+      .filter((tab) => tab !== active)
+      .forEach((tab) => {
+        ensureViewerLoaded(tab).catch((err) => console.error(err));
+      });
   }
 
   async function init() {
@@ -461,6 +501,7 @@
     getActiveTab,
     refreshActiveTitle,
     refreshActiveViewer,
+    getCurrentDisplayPage,
     highlightText: (query) => {
       const tab = viewerState.activeTab;
       if (!tab) return Promise.resolve();
@@ -468,12 +509,11 @@
     },
     toPdfPage,
     toDisplayPage,
-    preloadSearchIndexes: (...args) => window.GM.search?.preloadSearchIndexes?.(...args),
-    searchBooks: (...args) => window.GM.search?.searchBooks?.(...args),
+    getBookOrder,
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
       init().catch((err) => console.error(err));
     }, { once: true });
   } else {
