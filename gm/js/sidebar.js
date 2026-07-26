@@ -111,10 +111,6 @@ window.SIDEBAR_SECTIONS = [
             </div>
           </details>
 
-         <div class="stack">
-            Vehicle: <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="52">Light Tacticle Vehicle</a>
-          </div>
-
           <details class="subsection" data-persist-key="jean-grayson-armor">
             <summary>Armor</summary>
             <div class="subsection-body">
