@@ -75,6 +75,20 @@ window.SIDEBAR_SECTIONS = [
             </div>
           </details>
 
+          <details class="subsection" data-persist-key="jean-grayson-armor">
+            <summary>Armor</summary>
+            <div class="subsection-body">
+            <ul>
+              <li> <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="42">Star Marine Armor (+6*)</a></li>
+                <ul>
+                <li>Targeting system</li>
+                <li>Ignore 2 point penalties</li>
+                <li>Life support (20 days)</li></ul>
+              <li>Magnetic boots</li>
+              </ul>
+            </div>
+          </details>
+
           <details class="subsection" data-persist-key="jean-grayson-edges">
             <summary>Edges</summary>
             <div class="subsection-body">
@@ -117,34 +131,180 @@ window.SIDEBAR_SECTIONS = [
             </div>
           </details>
 
-          <details class="subsection" data-persist-key="jean-grayson-armor">
-            <summary>Armor</summary>
-            <div class="subsection-body">
-            <ul>
- 
-
-             <li> <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="42">Star Marine Armor (+6*)</a></li>
-              <ul>
-              <li>Targeting system</li>
-              <li>Ignore 2 point penalties</li>
-              <li>Life support (20 days)</li></ul>
-             <li>Magnetic boots</li>
-</ul>
-            </div>
-          </details>
-
           <details class="subsection" data-persist-key="jean-grayson-powers">
             <summary>Powers</summary>
             <div class="subsection-body">
-              <p class="nested-text">Add powers, abilities, or psychic notes here.</p>
-            </div>
-          </details>
+                <ul class="note-list">
 
-          <details class="subsection" data-persist-key="jean-grayson-gear">
-            <summary>Gear</summary>
-            <div class="subsection-body">
-              <p class="nested-text">Add gear, upgrades, or equipment notes here.</p>
-            </div>
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="153" data-highlight="arcane protection">Arcane Protection</a>
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> Success with arcane protection means hostile powers suffer a −2 penalty (−4 with a raise) to affect this character. If the hostile power fails due to this penalty, it still activates and expends its Power Points. Harmful powers that do affect the target deal 2 less damage (4 less with a raise). Arcane Protection stacks with Arcane Resistance.</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Additional Recipients (+1):</strong> Affect one additional target per Power Point spent.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="155" data-highlight="bolt">Bolt</a>
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts ×2</li>
+                    <li><u>Duration:</u> Instant</li>
+                    <li><u>Description:</u> Bolt sends damaging bursts of energy toward one or more foes. It ignores Range penalties but is affected by Cover, Illumination, and all other usual penalties. Damage is 2d6 (3d6 with a raise).</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Damage (+2):</strong> Damage becomes 3d6 (4d6 with a raise).</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="155" data-highlight="Boost/Lower Trait">Boost/Lower Trait</a> (boost only, self only)
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> Increases one of the caster's Traits. Additional castings don't stack on the same Trait, but may affect different Traits.</li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="163" data-highlight="Invisibility">Invisibility</a>
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> The target and carried items become nearly invisible. Attacks and Notice rolls relying on sight suffer −4 (−6 with a raise).</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Additional Recipients (+3):</strong> Affect additional targets for 3 Power Points each.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="167" data-highlight="Smite">Smite</a> (self only)
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> Enhances one weapon or one full load of ammunition. Damage increases by +2 (+4 with a raise).</li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="167" data-highlight="Sound/Silence">Sound / Silence</a>
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts ×5 (Sound); Smarts (Silence)</li>
+                    <li><u>Duration:</u> Instant (Sound); 5 (Silence)</li>
+                    <li><u>Description:</u> Sound creates convincing noises or voices. Silence suppresses sound within a Large Blast Template, reducing Notice rolls by 4. With a raise, all sound inside the template is completely muted.</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Mobile (+1):</strong> Move the area of effect each round.</li>
+                        <li><strong>Targeted (+0):</strong> Affect individual targets instead of an area.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="169" data-highlight="Wall Walker">Wall Walker</a> (self only)
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> Walk on vertical or horizontal surfaces. Success allows movement at half Pace; a raise allows full Pace and running. Gain +4 to Athletics rolls made to cling to a surface.</li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="153" data-highlight="Barrier">Barrier</a>
+                  <ul>
+                    <li><u>Power Points:</u> 2</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> Creates a straight wall 5" long and 1" tall. The barrier has Hardness 10 (12 with a raise) and disappears when destroyed or when the power ends.</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Damage (+1):</strong> Touching the barrier causes 2d4 damage.</li>
+                        <li><strong>Hardened (+1):</strong> Hardness becomes 12 (14 with a raise).</li>
+                        <li><strong>Shaped (+2):</strong> Form the barrier into a circle, square, or other simple shape.</li>
+                        <li><strong>Size (+1):</strong> Double the barrier's length and height.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="155" data-highlight="Blast">Blast</a>
+                  <ul>
+                    <li><u>Power Points:</u> 3</li>
+                    <li><u>Range:</u> Smarts ×2</li>
+                    <li><u>Duration:</u> Instant</li>
+                    <li><u>Description:</u> Launches an explosive burst affecting a Medium Blast Template. Targets suffer 2d6 damage (3d6 with a raise).</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Area Effect (+0/+1):</strong> Use a Small Blast Template for no additional cost or a Large Blast Template for +1 Power Point.</li>
+                        <li><strong>Damage (+2):</strong> Damage becomes 3d6 (4d6 with a raise).</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="169" data-highlight="Telekinesis">Telekinesis</a>
+                  <ul>
+                    <li><u>Power Points:</u> 5</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 5</li>
+                    <li><u>Description:</u> Move objects or creatures using arcane force with Strength d10 (d12 with a raise). Unwilling targets resist with Spirit.</li>
+                    <li>
+                      <u>Uses:</u>
+                      <ul>
+                        <li><strong>Bash:</strong> Slam the target into a surface for Str+d6 damage.</li>
+                        <li><strong>Change Targets:</strong> Release one target and acquire another.</li>
+                        <li><strong>Manipulate:</strong> Operate tools or wield weapons using the caster's arcane skill.</li>
+                        <li><strong>Move:</strong> Move the target up to the caster's Smarts each round as a limited free action.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="163" data-highlight="Mind Link">Mind Link</a>
+                  <ul>
+                    <li><u>Power Points:</u> 1</li>
+                    <li><u>Range:</u> Smarts</li>
+                    <li><u>Duration:</u> 30 minutes</li>
+                    <li><u>Description:</u> Creates a telepathic connection between willing individuals within one mile (five miles with a raise). If one linked character suffers a Wound, the others must make a Smarts roll or become Shaken. With a raise, communication is nearly instantaneous.</li>
+                    <li>
+                      <u>Modifiers:</u>
+                      <ul>
+                        <li><strong>Additional Recipients (+1):</strong> Affect one additional willing target per additional Power Point.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+
+              </ul>
+
+          </div>
           </details>
         `
       }
