@@ -70,10 +70,50 @@ window.SIDEBAR_SECTIONS = [
                     <td>80</td>
                     <td>Cauterize, Heavy Weapon, No Recoil, Overcharge, Snapfire</td>
                   </tr>
+                  <tr class="link-row" tabindex="0" role="button" aria-label="Blackout Grenades" data-tab="starbreaker_core" data-page="91">
+                    <td>Blackout Grenades</td>
+                    <td>5/10/20</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>LBT Blast, 5 grenades</td>
+                 </tr>
+                 <tr class="link-row" tabindex="0" role="button" aria-label="Flechette Grenades" data-tab="starbreaker_core" data-page="91">
+                    <td>Flechette Grenades</td>
+                    <td>5/10/20</td>
+                    <td>4</td>
+                    <td>3d4</td>
+                    <td></td>
+                    <td></td>
+                    <td>MBT Blast, 5 grenades</td>
+                </tr>
+                 <tr class="link-row" tabindex="0" role="button" aria-label="Gravity Grenades" data-tab="starbreaker_core" data-page="91">
+                    <td>Gravity Grenades</td>
+                    <td>5/10/20</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>MBT Blast, 5 grenades</td>
+                  </tr>
+                  <tr class="link-row" tabindex="0" role="button" aria-label="Web Grenades" data-tab="starbreaker_core" data-page="91">
+                    <td>Web Grenades</td>
+                    <td>5/10/20</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>MBT Blast, 5 grenades</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </details>
+
+         <div class="stack">
+            Vehicle: <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="52">Light Tacticle Vehicle</a>
+          </div>
 
           <details class="subsection" data-persist-key="jean-grayson-armor">
             <summary>Armor</summary>
@@ -311,7 +351,7 @@ window.SIDEBAR_SECTIONS = [
                 </li>
               </ul>
 
-              
+
           </div>
           </details>
         `
