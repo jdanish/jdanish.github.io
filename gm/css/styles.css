@@ -356,6 +356,14 @@ details[open] > summary::before {
   gap: 8px;
 }
 
+.pages .page-link {
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+
 /* Inline PDF reference links */
 
 a.linkicon {

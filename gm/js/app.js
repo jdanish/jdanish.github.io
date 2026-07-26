@@ -1,87 +1,87 @@
 (function () {
   window.GM = window.GM || {};
+  const GM = window.GM;
+  GM.app = GM.app || {};
 
-  const STORAGE_KEY = "gm_screen_state_v4";
-
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      return {
-        pages: parsed.pages || {},
-        scales: parsed.scales || {},
-        openSections: parsed.openSections || {},
-        sidebarWidth: Number.isFinite(parsed.sidebarWidth) ? parsed.sidebarWidth : 340,
-      };
-    } catch {
-      return {
-        pages: {},
-        scales: {},
-        openSections: {},
-        sidebarWidth: 340,
-      };
-    }
+  function getBooks() {
+    return window.BOOKS || {};
   }
 
-  const state = loadState();
-
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (err) {
-      console.error('Failed to save state', err);
-    }
+  function getInitialTab() {
+    const books = getBooks();
+    const orderedTabs = GM.storage.getOrderedBookKeys(books);
+    const fromState = GM.storage.state.activeTab;
+    if (fromState && books[fromState]) return fromState;
+    return orderedTabs[0] || Object.keys(books)[0] || null;
   }
 
-  window.GM.storage = {
-    state,
-    saveState,
-  };
-
-  function debounce(fn, delay) {
-    let timer = null;
-    return function (...args) {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => fn.apply(this, args), delay);
-    };
+  function refreshActiveViewer() {
+    return GM.pdfviewer?.refreshActiveViewer?.() || null;
   }
 
-  async function init() {
-    // Ensure the UI can apply persisted widths immediately.
-    window.GM.ui?.applySidebarWidthFromState?.();
+  function onHashChange() {
+    const fromHash = GM.pdfviewer?.parseHash?.();
+    if (!fromHash) return;
+    GM.app.currentTab = fromHash.tab;
+    void GM.pdfviewer?.setTabAndPage?.(fromHash.tab, fromHash.page);
+  }
 
-    // Initialize the PDF viewer and warm its indexes.
-    if (window.GM.pdfviewer?.init) {
-      await window.GM.pdfviewer.init();
-    }
+  function onResize() {
+    window.clearTimeout(GM.app.resizeTimer);
+    GM.app.resizeTimer = window.setTimeout(() => {
+      GM.ui?.applySidebarWidthFromState?.();
+      void refreshActiveViewer();
+    }, GM.constants.ACTIVE_RESIZE_REFRESH_MS || 100);
+  }
 
-    if (window.GM.pdfviewer?.preloadSearchIndexes) {
-      window.GM.pdfviewer.preloadSearchIndexes().catch(console.error);
-    }
+  async function initialize() {
+    if (GM.app.initialized) return;
 
-    // Keep sidebar width and the active viewer responsive.
-    window.addEventListener(
-      'resize',
-      debounce(() => {
-        window.GM.ui?.applySidebarWidthFromState?.();
-        window.GM.pdfviewer?.refreshActiveViewer?.().catch?.(console.error);
-      }, 150)
+    const books = getBooks();
+    const initialTab = getInitialTab();
+    GM.storage.ensureStateShape(books, initialTab || undefined);
+    GM.app.currentTab = initialTab;
+
+    GM.ui.applySidebarWidthFromState();
+    GM.ui.buildSidebar();
+    GM.ui.buildTabs(initialTab);
+    GM.ui.initializeResizer();
+    GM.ui.bindSearchControls(
+      query => GM.search.scheduleSearch(query),
+      () => GM.search.scheduleSearch('')
     );
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        window.GM.pdfviewer?.refreshActiveViewer?.().catch?.(console.error);
-      }
-    });
+    if (GM.pdfviewer?.initialize) {
+      await GM.pdfviewer.initialize();
+    }
 
-    window.addEventListener('beforeunload', saveState);
+    const fromHash = GM.pdfviewer?.parseHash?.();
+    if (fromHash) {
+      GM.app.currentTab = fromHash.tab;
+      await GM.pdfviewer.setTabAndPage(fromHash.tab, fromHash.page);
+    } else {
+      await GM.pdfviewer.setTabAndPage(
+        initialTab,
+        GM.storage.getPageFor(books, initialTab)
+      );
+    }
+
+    if (GM.search?.warmPdfIndexes) {
+      void GM.search.warmPdfIndexes();
+    }
+
+    window.addEventListener('hashchange', onHashChange);
+    window.addEventListener('beforeunload', GM.storage.saveState);
+    window.addEventListener('resize', onResize);
+
+    GM.app.initialized = true;
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      init().catch(console.error);
+      initialize().catch(err => console.error(err));
     }, { once: true });
   } else {
-    init().catch(console.error);
+    initialize().catch(err => console.error(err));
   }
 })();

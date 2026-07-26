@@ -1,7 +1,4 @@
 (function (GM) {
-  const { escapeHtml, normalizeWhitespace, stripHtml } = GM.utils;
-  const { SEARCH_DEBOUNCE_MS, SEARCH_INDEX_LIMIT } = GM.constants;
-
   const sidebarIndex = buildSidebarIndex();
   const pdfTextIndex = new Map();
   const pdfIndexPromises = new Map();
@@ -9,6 +6,11 @@
   const indexFailedTabs = new Set();
   let searchDebounceTimer = null;
   let searchRequestId = 0;
+  let pdfjsPromise = null;
+  let pdfjsLib = null;
+
+  const { escapeHtml, normalizeWhitespace, stripHtml, clamp } = GM.utils;
+  const { SEARCH_DEBOUNCE_MS, SEARCH_INDEX_LIMIT } = GM.constants;
 
   function buildSidebarIndex() {
     const entries = [];
@@ -37,6 +39,14 @@
     return entries;
   }
 
+  function getBooks() {
+    return window.BOOKS || {};
+  }
+
+  function getBookOrder(tab) {
+    return GM.storage.getBookOrder(getBooks(), tab);
+  }
+
   function makeSnippet(text, query, maxLen = 140) {
     const plain = normalizeWhitespace(text);
     if (!plain) return '';
@@ -46,8 +56,8 @@
     if (idx === -1) {
       return plain.length > maxLen ? `${plain.slice(0, maxLen - 1)}…` : plain;
     }
-    const start = GM.utils.clamp(idx - 40, 0, Math.max(0, plain.length - maxLen));
-    const end = GM.utils.clamp(start + maxLen, 0, plain.length);
+    const start = clamp(idx - 40, 0, Math.max(0, plain.length - maxLen));
+    const end = clamp(start + maxLen, 0, plain.length);
     const prefix = start > 0 ? '…' : '';
     const suffix = end < plain.length ? '…' : '';
     return `${prefix}${plain.slice(start, end)}${suffix}`;
@@ -83,30 +93,27 @@
   function searchBookShortcuts(query) {
     const lower = query.toLowerCase();
     const results = [];
-    for (const [tab, book] of Object.entries(window.BOOKS || {})) {
+    for (const [tab, book] of Object.entries(getBooks())) {
       const bookTitle = book.title || tab;
       const titleMatch = bookTitle.toLowerCase().includes(lower);
-      const bookOrder = GM.storage.getBookOrder(window.BOOKS, tab);
+      const bookOrder = getBookOrder(tab);
       for (const page of Array.isArray(book.pages) ? book.pages : []) {
         const pageLabel = String(page.label || '');
         const labelMatch = pageLabel.toLowerCase().includes(lower);
         if (!titleMatch && !labelMatch) continue;
         const score = (labelMatch ? 50 : 0) + (titleMatch ? 15 : 0);
-        const displayPage = Number(page.page) || 1;
-        const pdfPage = GM.storage.getPdfPageForDisplay(window.BOOKS, tab, displayPage);
         results.push({
           kind: 'shortcut',
           groupKey: tab,
           groupTitle: bookTitle,
           groupOrder: bookOrder,
-          title: `${bookTitle} · p. ${displayPage}`,
-          meta: `Page shortcut · p. ${displayPage}`,
+          title: `${bookTitle} · ${pageLabel}`,
+          meta: `Page shortcut · p. ${page.page}`,
           snippet: titleMatch && !labelMatch ? bookTitle : pageLabel,
           tab,
-          page: displayPage,
-          pdfPage,
+          page: Number(page.page) || 1,
           score,
-          sortPage: displayPage,
+          sortPage: Number(page.page) || 0,
           sourceOrder: 0,
         });
       }
@@ -114,18 +121,56 @@
     return results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title));
   }
 
+  function getPdfJsPath() {
+    const current = document.currentScript?.src;
+    const base = current ? new URL('.', current) : new URL('./', window.location.href);
+    return new URL('../pdfjs/build/pdf.mjs', base).href;
+  }
+
+  async function loadPdfJsModule() {
+    if (pdfjsLib) return pdfjsLib;
+    if (pdfjsPromise) return pdfjsPromise;
+
+    pdfjsPromise = import(getPdfJsPath())
+      .then((mod) => {
+        if (mod?.GlobalWorkerOptions) {
+          const workerSrc = new URL('../pdfjs/build/pdf.worker.mjs', window.location.href).href;
+          mod.GlobalWorkerOptions.workerSrc = workerSrc;
+        }
+        pdfjsLib = mod;
+        return mod;
+      })
+      .catch((err) => {
+        console.error('PDF text indexing disabled:', err);
+        pdfjsLib = null;
+        return null;
+      });
+
+    return pdfjsPromise;
+  }
+
   async function ensureBookTextIndex(tab) {
     if (pdfTextIndex.has(tab)) return pdfTextIndex.get(tab);
     if (pdfIndexPromises.has(tab)) return pdfIndexPromises.get(tab);
 
     const promise = (async () => {
-      const app = await GM.pdfviewer.waitForViewerApp(tab);
-      const pdfDocument = app.pdfDocument;
+      const books = getBooks();
+      const book = books[tab];
+      if (!book) return [];
+
+      const lib = await loadPdfJsModule();
+      if (!lib) {
+        indexFailedTabs.add(tab);
+        return [];
+      }
+
+      const fileUrl = new URL(book.file, document.baseURI).href;
+      const pdfDocument = await lib.getDocument({ url: fileUrl }).promise;
       const pages = [];
       for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum += 1) {
         const page = await pdfDocument.getPage(pageNum);
         const textContent = await page.getTextContent();
-        const text = textContent.items.map(item => item.str).join(' ');
+        const text = (textContent.items || []).map(item => item.str || '').join(' ');
         pages.push(text);
       }
       pdfTextIndex.set(tab, pages);
@@ -149,16 +194,16 @@
     const lower = query.toLowerCase();
     const results = [];
 
-    for (const [tab, book] of Object.entries(window.BOOKS || {})) {
+    for (const [tab, book] of Object.entries(getBooks())) {
       const pages = await ensureBookTextIndex(tab).catch(() => []);
-      const bookOrder = GM.storage.getBookOrder(window.BOOKS, tab);
+      const bookOrder = getBookOrder(tab);
       pages.forEach((text, index) => {
-        const pageNum = index + 1;
+        const pdfPage = index + 1;
+        const displayPage = Number(book.pageOffset || 0) + pdfPage;
         const hay = String(text || '').toLowerCase();
         if (!hay.includes(lower)) return;
-        const key = `${tab}:${pageNum}`;
+        const key = `${tab}:${displayPage}`;
         if (skipKeys.has(key)) return;
-        const displayPage = GM.storage.getDisplayPageFor(window.BOOKS, tab, pageNum);
         results.push({
           kind: 'pdf',
           groupKey: tab,
@@ -169,7 +214,8 @@
           snippet: makeSnippet(text, query),
           tab,
           page: displayPage,
-          pdfPage: pageNum,
+          pdfPage,
+          displayPage,
           searchQuery: query,
           score: 10 + (hay.startsWith(lower) ? 3 : 0),
           sortPage: displayPage,
@@ -184,7 +230,7 @@
   function makeResultButton(result) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'search-result-item';
+    button.className = 'btn search-result-item';
 
     const title = document.createElement('div');
     title.className = 'search-result-title';
@@ -207,18 +253,13 @@
 
     button.addEventListener('click', () => {
       if (result.kind === 'sidebar') {
-        GM.pdfviewer.openSidebarBlock(result.sectionKey, result.blockKey);
+        GM.ui.openSidebarBlock(result.sectionKey, result.blockKey);
         return;
       }
       if (result.tab) {
-        const pdfPage = Number(result.pdfPage || result.page || 1);
-        GM.pdfviewer.setTabAndPage(result.tab, pdfPage);
-        if (result.kind === 'pdf') {
-          GM.pdfviewer.jumpInCurrentViewer(result.tab, pdfPage);
-          window.setTimeout(() => {
-            void GM.pdfviewer.highlightPdfSearchResult(result.tab, result.searchQuery || result.title || '', pdfPage);
-          }, 0);
-        }
+        const page = result.displayPage || result.page || 1;
+        const highlightText = result.kind === 'pdf' ? (result.searchQuery || result.title || '') : '';
+        void GM.pdfviewer.setTabAndPage(result.tab, page, { highlightText });
       }
     });
 
@@ -305,7 +346,9 @@
 
     const sidebarResults = searchSidebar(trimmed).slice(0, SEARCH_INDEX_LIMIT);
     const shortcutResults = searchBookShortcuts(trimmed).slice(0, SEARCH_INDEX_LIMIT);
-    const initialResults = [...sidebarResults, ...shortcutResults].sort((a, b) => b.score - a.score || a.title.localeCompare(b.title)).slice(0, SEARCH_INDEX_LIMIT);
+    const initialResults = [...sidebarResults, ...shortcutResults]
+      .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+      .slice(0, SEARCH_INDEX_LIMIT);
     renderSearchResults(trimmed, initialResults, 'Scanning PDFs…');
 
     const shortcutPageKeys = new Set(shortcutResults.map(item => `${item.tab}:${item.page}`));
@@ -326,7 +369,7 @@
 
     const pdfStatus = pdfResults.length
       ? ''
-      : (indexReadyTabs.size > 0 ? 'No PDF text matches' : (indexFailedTabs.size === Object.keys(window.BOOKS || {}).length ? 'PDF text index unavailable' : 'Indexing PDF text…'));
+      : (indexReadyTabs.size > 0 ? 'No PDF text matches' : (indexFailedTabs.size === Object.keys(getBooks()).length ? 'PDF text index unavailable' : 'Indexing PDF text…'));
     renderSearchResults(trimmed, merged, pdfStatus);
   }
 
@@ -338,9 +381,13 @@
   }
 
   async function warmPdfIndexes() {
-    for (const tab of GM.storage.getOrderedBookKeys(window.BOOKS || {})) {
+    for (const tab of GM.storage.getOrderedBookKeys(getBooks())) {
       void ensureBookTextIndex(tab).catch(() => null);
     }
+  }
+
+  function preloadSearchIndexes() {
+    return warmPdfIndexes();
   }
 
   GM.search = {
@@ -359,5 +406,6 @@
     runSearch,
     scheduleSearch,
     warmPdfIndexes,
+    preloadSearchIndexes,
   };
 })(window.GM = window.GM || {});

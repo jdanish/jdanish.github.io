@@ -1,23 +1,42 @@
 (function (GM) {
-  const { normalizeScaleValue, clamp } = GM.utils;
-
-  const STORAGE_KEY = 'gm_screen_pdf_state_versioned_v1';
-  const DEFAULT_SCALE = 1.25;
+  const STORAGE_KEY = 'gm_screen_pdf_state_modular_v3';
   const ACTIVE_RESIZE_REFRESH_MS = 100;
-  const SEARCH_DEBOUNCE_MS = 150;
+  const SEARCH_DEBOUNCE_MS = 160;
   const SEARCH_INDEX_LIMIT = 120;
-  const state = loadState();
+  const DEFAULT_SCALE = 1.25;
 
   function loadState() {
     try {
-      return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}') || {};
+      const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY) || '{}';
+      const parsed = JSON.parse(raw) || {};
+      return parsed;
     } catch {
       return {};
     }
   }
 
+  const state = loadState();
+
   function saveState() {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+      console.error('Failed to save state', err);
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  function sidebarWidthConfig() {
+    const cfg = window.UI_CONFIG?.sidebarWidth || {};
+    return {
+      default: Number.isFinite(cfg.default) ? Number(cfg.default) : 340,
+      min: Number.isFinite(cfg.min) ? Number(cfg.min) : 280,
+      max: Number.isFinite(cfg.max) ? Number(cfg.max) : 700,
+    };
   }
 
   function getBookOrder(books, tab) {
@@ -33,50 +52,35 @@
     });
   }
 
-  function getPageOffset(books, tab) {
-    const offset = Number(books?.[tab]?.pageOffset);
-    return Number.isFinite(offset) ? offset : 0;
-  }
-
-  function getDisplayPageFor(books, tab, pdfPage) {
-    const page = Number(pdfPage) || books?.[tab]?.defaultPage || 1;
-    return Math.max(1, page + getPageOffset(books, tab));
-  }
-
-  function getPdfPageForDisplay(books, tab, displayPage) {
-    const page = Number(displayPage) || books?.[tab]?.defaultPage || 1;
-    return Math.max(1, page - getPageOffset(books, tab));
-  }
-
   function ensureStateShape(books, currentTab) {
     if (!state.pages) state.pages = {};
     if (!state.scales) state.scales = {};
     if (!state.openSections) state.openSections = {};
-    if (!Number.isFinite(state.sidebarWidth)) state.sidebarWidth = 340;
-    if (!state.activeTab) state.activeTab = currentTab;
+
+    const cfg = sidebarWidthConfig();
+    if (!Number.isFinite(state.sidebarWidth)) state.sidebarWidth = cfg.default;
+    if (!state.activeTab && currentTab) state.activeTab = currentTab;
 
     for (const tab of Object.keys(books || {})) {
       if (!Number.isFinite(state.pages[tab])) {
-        state.pages[tab] = books[tab].defaultPage || 1;
+        state.pages[tab] = Number(books[tab].defaultPage) || 1;
       }
-      const storedScale = normalizeScaleValue(state.scales[tab]);
-      if (storedScale === null) {
-        const defaultScale = normalizeScaleValue(books[tab].defaultScale);
-        if (defaultScale !== null) {
-          state.scales[tab] = defaultScale;
-        }
+      const savedScale = GM.utils.normalizeScaleValue(state.scales[tab]);
+      if (savedScale === null) {
+        const defaultScale = GM.utils.normalizeScaleValue(books[tab].defaultScale);
+        if (defaultScale !== null) state.scales[tab] = defaultScale;
       }
     }
   }
 
   function getPageFor(books, tab) {
-    return Number(state.pages?.[tab]) || books?.[tab]?.defaultPage || 1;
+    return Number(state.pages?.[tab]) || Number(books?.[tab]?.defaultPage) || 1;
   }
 
   function getScaleFor(books, tab) {
-    const saved = normalizeScaleValue(state.scales?.[tab]);
+    const saved = GM.utils.normalizeScaleValue(state.scales?.[tab]);
     if (saved !== null) return saved;
-    const bookDefault = normalizeScaleValue(books?.[tab]?.defaultScale);
+    const bookDefault = GM.utils.normalizeScaleValue(books?.[tab]?.defaultScale);
     if (bookDefault !== null) return bookDefault;
     return DEFAULT_SCALE;
   }
@@ -88,20 +92,27 @@
   }
 
   function setScaleFor(tab, scale) {
-    const normalized = normalizeScaleValue(scale);
+    const normalized = GM.utils.normalizeScaleValue(scale);
     if (normalized === null) return;
     if (!state.scales) state.scales = {};
     state.scales[tab] = normalized;
     saveState();
   }
 
+  function getSidebarWidth() {
+    return Number(state.sidebarWidth) || sidebarWidthConfig().default;
+  }
+
   function setSidebarWidth(width, persist = true) {
-    const safeWidth = clamp(Math.round(width), 280, Math.max(280, window.innerWidth - 360));
+    const cfg = sidebarWidthConfig();
+    const viewportMax = Math.max(cfg.min, window.innerWidth - 360);
+    const safeWidth = GM.utils.clamp(Math.round(width), cfg.min, Math.min(cfg.max, viewportMax));
     document.documentElement.style.setProperty('--sidebar-width', `${safeWidth}px`);
     if (persist) {
       state.sidebarWidth = safeWidth;
       saveState();
     }
+    return safeWidth;
   }
 
   GM.constants = {
@@ -119,13 +130,11 @@
     ensureStateShape,
     getBookOrder,
     getOrderedBookKeys,
-    getPageOffset,
-    getDisplayPageFor,
-    getPdfPageForDisplay,
     getPageFor,
     getScaleFor,
     setPageFor,
     setScaleFor,
+    getSidebarWidth,
     setSidebarWidth,
   };
 })(window.GM = window.GM || {});
