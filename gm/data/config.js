@@ -12,7 +12,9 @@ window.BOOKS = {
       { label: "Index", page: 205 },
       { label: "Edges", page: 58 },
       { label: "Gear", page: 67 },
-      { label: "Weapons", page: 71 }
+      { label: "Weapons", page: 71 },
+      { label: "Setting Rules", page: 135 }
+
     ]
   },
   sfc: {
@@ -39,7 +41,9 @@ window.BOOKS = {
       { label: "TOC", page: 2 },
       { label: "Species", page: 31 },
       { label: "Edges", page: 79 },
-      { label: "Gear", page: 85 }
+      { label: "Gear", page: 85 },
+      { label: "Setting Rules", page: 105 }
+
     ]
   },
   starbreaker_star_marines: {
