@@ -1,4 +1,3 @@
-
 :root {
   --bg: #0f1115;
   --panel: #171b22;
@@ -45,6 +44,7 @@ body.resizing { cursor: col-resize; user-select: none; }
 .sidebar {
   flex: 0 0 var(--sidebar-width);
   min-width: 280px;
+  min-height: 0;
   max-width: 760px;
   display: flex;
   flex-direction: column;
@@ -69,6 +69,7 @@ body.resizing { cursor: col-resize; user-select: none; }
 
 .main {
   flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -133,11 +134,19 @@ a.btn:hover {
   border-color: #46506a;
 }
 
-.sidebar-content {
-  padding: 12px;
-  padding-bottom: 4rem;
-  overflow: auto;
+.sidebar-body {
+  flex: 1 1 auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px;
+  padding-bottom: 1rem;
+  overflow: auto;
 }
 
 .search-results {
@@ -335,12 +344,18 @@ iframe.pdf-frame {
   background: #fff;
 }
 
+
+
+code { color: #cfe7ff; }
+
 .sidebar-notes {
+  flex: 0 0 auto;
   border-top: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.02);
   margin-top: auto;
 }
-.sidebar-notes > .sidebar-notes-header {
+
+.sidebar-notes summary.sidebar-notes-header {
   padding: 12px 14px;
   font-size: 12px;
   font-weight: 700;
@@ -352,32 +367,38 @@ iframe.pdf-frame {
   justify-content: space-between;
   gap: 12px;
 }
-.sidebar-notes > .sidebar-notes-header .sidebar-notes-title {
+
+.sidebar-notes summary.sidebar-notes-header::before {
+  content: '\203A';
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  width: 1em;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 0.18s ease, color 0.18s ease;
 }
-.sidebar-notes > .sidebar-notes-header .sidebar-notes-meta {
+
+.sidebar-notes[open] > summary.sidebar-notes-header::before {
+  transform: rotate(90deg);
+}
+
+.sidebar-notes-meta {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   font-size: 11px;
   font-weight: 600;
   color: var(--muted);
-  flex: 0 0 auto;
   white-space: nowrap;
 }
-.sidebar-notes > .sidebar-notes-header .sidebar-notes-status[data-saving='true'] {
-  color: var(--accent-strong);
-}
+
 .sidebar-notes-body {
-  padding: 10px 12px 12px;
   border-top: 1px solid var(--line);
+  padding: 10px 12px 12px;
 }
-.sidebar-notes textarea,
-.sidebar-notes-textarea {
+
+.sidebar-notes textarea {
   width: 100%;
-  min-height: 92px;
+  min-height: 120px;
   resize: vertical;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -387,15 +408,12 @@ iframe.pdf-frame {
   font: inherit;
   line-height: 1.4;
   outline: none;
-  box-sizing: border-box;
 }
-.sidebar-notes textarea:focus,
-.sidebar-notes-textarea:focus {
+
+.sidebar-notes textarea:focus {
   border-color: rgba(124, 196, 255, 0.5);
   box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.12);
 }
-
-code { color: #cfe7ff; }
 
 @media (max-width: 980px) {
   body { overflow: auto; }
@@ -487,10 +505,61 @@ code { color: #cfe7ff; }
   padding-left: 1.1rem;
   padding-bottom: 1.25rem;
 }
-.note-list > li { margin-bottom: 0.8rem; }
-.note-list > li > ul { margin-top: 0.45rem; }
+.note-list > li {
+  margin-bottom: 0.8rem;
+}
+.note-list > li > ul {
+  margin-top: 0.45rem;
+}
 
-/* inline link buttons */
+.bookmark-ui {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-left: 10px;
+}
+.bookmark-add,
+.bookmark-link,
+.bookmark-remove {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  padding: 6px 9px;
+  cursor: pointer;
+}
+.bookmark-add {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.bookmark-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.bookmark-link { white-space: nowrap; }
+.bookmark-remove {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+.bookmark-divider {
+  margin-left: 4px;
+  margin-right: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Inline link style with larger right-pointing arrow. */
 a.linkicon {
   display: inline-flex;
   align-items: center;
@@ -523,103 +592,95 @@ a.linkicon:hover::after {
   color: var(--text);
 }
 
-/* bookmarks */
+
+/* bookmark styles begin */
 .bookmark-ui {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
   margin-left: 8px;
-  min-width: 0;
 }
+
 .bookmark-divider {
   color: var(--muted);
   font-size: 12px;
   user-select: none;
   margin: 0 4px 0 2px;
-  align-self: center;
 }
+
 .bookmark-item {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
-  min-width: 0;
+  gap: 3px;
+  position: relative;
 }
-.bookmark-link {
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
-  line-height: 1;
-  cursor: grab;
-  white-space: nowrap;
-  user-select: none;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
-}
-.bookmark-link:hover {
-  background: #2a3141;
-  border-color: #46506a;
-}
-.bookmark-item.dragging .bookmark-link {
-  opacity: 0.45;
-  cursor: grabbing;
-}
+
+.bookmark-add,
+.bookmark-link,
 .bookmark-copy,
 .bookmark-remove {
-  display: none;
-  width: 22px;
-  height: 22px;
-  padding: 0;
   border: 1px solid var(--line);
   background: var(--panel-2);
   color: var(--text);
   border-radius: 999px;
-  cursor: pointer;
-  font-size: 12px;
   line-height: 1;
-  flex: 0 0 auto;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
 }
-.bookmark-item:hover .bookmark-copy,
-.bookmark-item:hover .bookmark-remove,
-.bookmark-item.show-actions .bookmark-copy,
-.bookmark-item.show-actions .bookmark-remove,
-.bookmark-item:focus-within .bookmark-copy,
-.bookmark-item:focus-within .bookmark-remove {
-  display: inline-flex;
-}
+
+.bookmark-add:hover,
+.bookmark-link:hover,
 .bookmark-copy:hover,
 .bookmark-remove:hover {
   transform: translateY(-1px);
   background: #2a3141;
   border-color: #46506a;
 }
+
 .bookmark-add {
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  color: var(--text);
-  border-radius: 999px;
-  cursor: pointer;
   font-size: 18px;
   font-weight: 700;
-  line-height: 1;
-  flex: 0 0 auto;
-}
-.bookmark-add:hover {
-  background: #2a3141;
-  border-color: #46506a;
 }
 
-.page-links-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 0;
+.bookmark-link {
+  white-space: nowrap;
+  padding: 6px 10px;
+  font-size: 12px;
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.bookmark-copy,
+.bookmark-remove {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  max-width: 0;
+  overflow: hidden;
+}
+
+.bookmark-item:hover .bookmark-copy,
+.bookmark-item:hover .bookmark-remove,
+.bookmark-item.show-actions .bookmark-copy,
+.bookmark-item.show-actions .bookmark-remove,
+.bookmark-item:focus-within .bookmark-copy,
+.bookmark-item:focus-within .bookmark-remove {
+  opacity: 1;
+  pointer-events: auto;
+  max-width: 2rem;
+}
+
+.bookmark-item.show-actions .bookmark-link {
+  box-shadow: 0 0 0 1px var(--accent-strong);
+}
+/* bookmark styles end */
+

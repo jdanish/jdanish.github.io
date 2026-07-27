@@ -1,137 +1,135 @@
 (function () {
   window.GM = window.GM || {};
 
+  const STORAGE_KEY = 'gm_screen_state_v5';
+  const NOTES_KEY = 'sidebar-notes';
+
   const dom = {
     panelEl: null,
     textEl: null,
-    countEl: null,
     statusEl: null,
+    countEl: null,
     bound: false,
     saveTimer: null,
-    touchTimer: null,
   };
 
-  function getState() {
-    const fallback = {
+  function defaultState() {
+    return {
       pages: {},
       scales: {},
       openSections: {},
       sidebarWidth: 460,
+      activeTab: null,
       sidebarNotes: '',
     };
+  }
 
+  function getState() {
+    const fallback = defaultState();
     return window.GM.storage?.state || fallback;
   }
 
-  function saveState() {
+  function setOpenState(isOpen) {
+    const state = getState();
+    state.openSections = state.openSections || {};
+    state.openSections[NOTES_KEY] = !!isOpen;
     window.GM.storage?.saveState?.();
   }
 
-  function setStatus(text, isSaving = false) {
-    if (!dom.statusEl) return;
-    dom.statusEl.textContent = text;
-    dom.statusEl.dataset.saving = isSaving ? 'true' : 'false';
-  }
-
-  function updateCount() {
-    if (!dom.countEl || !dom.textEl) return;
-    const count = dom.textEl.value.length;
-    dom.countEl.textContent = `${count.toLocaleString()} chars`;
-  }
-
-  function queueSave() {
-    window.clearTimeout(dom.saveTimer);
-    setStatus('Saving…', true);
-
-    dom.saveTimer = window.setTimeout(() => {
-      saveState();
-      setStatus('Saved', false);
-    }, 250);
-  }
-
-  function syncFromState() {
-    const current = String(getState().sidebarNotes || '');
-    if (dom.textEl && dom.textEl.value !== current) {
-      dom.textEl.value = current;
-    }
-    updateCount();
-    setStatus('Saved', false);
+  function getOpenState() {
+    const state = getState();
+    return state.openSections?.[NOTES_KEY];
   }
 
   function ensurePanel() {
     if (dom.panelEl && document.contains(dom.panelEl)) return dom.panelEl;
 
-    const sidebar = document.querySelector('.sidebar');
-    if (!sidebar) return null;
+    const host = document.querySelector('.sidebar-body') || document.querySelector('.sidebar');
+    if (!host) return null;
 
     let panel = document.getElementById('sidebarNotesPanel');
     if (!panel) {
       panel = document.createElement('details');
       panel.id = 'sidebarNotesPanel';
       panel.className = 'sidebar-notes';
-      panel.dataset.persistKey = 'sidebar-notes';
-
-      const persisted = getState().openSections?.['sidebar-notes'];
-      panel.open = typeof persisted === 'boolean' ? persisted : true;
-
       panel.innerHTML = `
         <summary class="sidebar-notes-header">
-          <span class="sidebar-notes-title">Notes</span>
+          <span>Notes</span>
           <span class="sidebar-notes-meta">
-            <span class="sidebar-notes-count" id="sidebarNotesCount">0 chars</span>
-            <span class="sidebar-notes-status" id="sidebarNotesStatus">Saved</span>
+            <span id="sidebarNotesCount">0 chars</span>
+            <span id="sidebarNotesStatus">Saved</span>
           </span>
         </summary>
         <div class="sidebar-notes-body">
           <textarea id="sidebarNotes" placeholder="Write session notes here..."></textarea>
         </div>
       `;
-
-      sidebar.appendChild(panel);
-
-      panel.addEventListener('toggle', () => {
-        getState().openSections['sidebar-notes'] = panel.open;
-        saveState();
-      });
+      host.appendChild(panel);
     }
 
     dom.panelEl = panel;
     return panel;
   }
 
-  function bindEvents() {
-    if (dom.bound || !dom.textEl) return;
+  function updateMeta() {
+    const text = String(getState().sidebarNotes || '');
+    if (dom.countEl) dom.countEl.textContent = `${text.length} chars`;
+  }
 
-    dom.textEl.addEventListener('input', () => {
-      getState().sidebarNotes = dom.textEl.value;
-      updateCount();
-      queueSave();
-    });
+  function setStatus(text) {
+    if (dom.statusEl) dom.statusEl.textContent = text;
+  }
 
-    dom.textEl.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        dom.textEl.blur();
-      }
-    });
-
-    dom.textEl.addEventListener('focus', () => {
-      updateCount();
-    });
-
-    dom.bound = true;
+  function scheduleSave() {
+    if (dom.saveTimer) window.clearTimeout(dom.saveTimer);
+    setStatus('Saving…');
+    dom.saveTimer = window.setTimeout(() => {
+      window.GM.storage?.saveState?.();
+      setStatus('Saved');
+    }, 250);
   }
 
   function render() {
     const panel = ensurePanel();
     if (!panel) return null;
 
-    dom.countEl = panel.querySelector('#sidebarNotesCount');
-    dom.statusEl = panel.querySelector('#sidebarNotesStatus');
+    if (!panel.dataset.notesRendered) {
+      const persisted = getOpenState();
+      if (typeof persisted === 'boolean') panel.open = persisted;
+      else panel.open = true;
+
+      panel.dataset.notesRendered = 'true';
+    }
+
     dom.textEl = panel.querySelector('textarea');
+    dom.statusEl = panel.querySelector('#sidebarNotesStatus');
+    dom.countEl = panel.querySelector('#sidebarNotesCount');
+
     if (!dom.textEl) return panel;
 
-    bindEvents();
-    syncFromState();
+    const current = String(getState().sidebarNotes || '');
+    if (dom.textEl.value !== current) dom.textEl.value = current;
+    updateMeta();
+    setStatus('Saved');
+
+    if (!dom.bound) {
+      dom.textEl.addEventListener('input', () => {
+        getState().sidebarNotes = dom.textEl.value;
+        updateMeta();
+        scheduleSave();
+      });
+
+      dom.textEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') dom.textEl.blur();
+      });
+
+      panel.addEventListener('toggle', () => {
+        setOpenState(panel.open);
+      });
+
+      dom.bound = true;
+    }
+
     return panel;
   }
 
@@ -153,12 +151,11 @@
 
   function setText(value) {
     getState().sidebarNotes = String(value || '');
+    window.GM.storage?.saveState?.();
     if (dom.textEl && dom.textEl.value !== getState().sidebarNotes) {
       dom.textEl.value = getState().sidebarNotes;
     }
-    updateCount();
-    setStatus('Saving…', true);
-    queueSave();
+    updateMeta();
   }
 
   window.GM.notes = {

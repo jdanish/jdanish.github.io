@@ -19,7 +19,7 @@ This package keeps your campaign data separate from the application code.
 
 ## Notes
 - Bookmarks are saved in `localStorage`.
-- The notes panel at the bottom of the sidebar is saved in `localStorage`.
+- The notes panel is its own module (`js/notes.js`) and is saved in `localStorage`.
 - Keep your `pdfjs/` and `pdfs/` folders alongside this project.
 - The viewer header no longer shows a duplicate page title; the book tabs already provide that context.
 
