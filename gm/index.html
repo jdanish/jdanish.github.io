@@ -13,8 +13,14 @@
       <header class="panel-header">
         <h1>Quick Reference</h1>
         <div class="sidebar-tools">
-          <input id="sidebarSearch" type="search" placeholder="Search notes, books, pages" autocomplete="off" />
-          <button id="clearSidebarSearch" type="button">Clear</button>
+          <div class="sidebar-search-row">
+            <input id="sidebarSearch" type="search" placeholder="Search notes, books, pages" autocomplete="off" />
+            <button id="clearSidebarSearch" type="button">Clear</button>
+          </div>
+          <label class="sidebar-search-toggle">
+            <input id="searchIncludeHiddenBooks" type="checkbox" />
+            Include hidden books
+          </label>
         </div>
       </header>
       <div class="sidebar-body" id="sidebarBody">

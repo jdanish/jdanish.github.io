@@ -123,7 +123,7 @@
     return `Page ${displayPage}`;
   }
 
-  function addBookmark(tab, page, name, highlight, options = {}) {
+  function addBookmark(tab, page, name, highlight) {
     const activeTab = tab || getCurrentTab();
     if (!activeTab) return null;
 
@@ -133,11 +133,8 @@
     const displayPage = Number(page) || 1;
     const list = getTabBookmarks(activeTab);
     const cleanHighlight = normalizeText(highlight);
-    const forceNew = Boolean(options?.forceNew);
 
-    const existingIndex = forceNew
-      ? -1
-      : list.findIndex((bm) => bm.name.toLowerCase() === bookmarkName.toLowerCase());
+    const existingIndex = list.findIndex((bm) => bm.name.toLowerCase() === bookmarkName.toLowerCase());
     const bookmark = {
       id: existingIndex >= 0 ? list[existingIndex].id : makeId(),
       name: bookmarkName,
@@ -236,19 +233,14 @@
     const pageLinksEl = state.boundContainer || document.querySelector('.page-links');
     const selectedText = normalizeText(context?.text);
     const defaultName = getSuggestedName(tab, displayPage, pageLinksEl, selectedText);
+    const name = window.prompt('Bookmark name', defaultName);
+    if (!name) return null;
 
-    openBookmarkEditor(tab, {
-      id: null,
-      tab,
-      page: displayPage,
-      name: defaultName,
-      highlight: selectedText,
-    }, {
-      mode: 'create',
-      point,
-    });
-
-    return null;
+    const bookmark = addBookmark(tab, displayPage, name, selectedText);
+    if (bookmark) {
+      refreshBookmarkBar(tab);
+    }
+    return bookmark;
   }
 
   function refreshBookmarkBar(tab) {
@@ -332,36 +324,19 @@
       };
     }
 
-    function populate(tab, bookmark, options = {}) {
+    function populate(tab, bookmark) {
       editorState.tab = tab;
-      editorState.bookmarkId = bookmark?.id || null;
-      const isNew = options?.mode === 'create' || !editorState.bookmarkId;
-      const suggestedName = normalizeText(bookmark?.name) || 'New Bookmark';
-      nameInput.value = bookmark?.name || suggestedName;
-      pageInput.value = Number(bookmark?.page) || 1;
-      highlightInput.value = bookmark?.highlight || '';
+      editorState.bookmarkId = bookmark.id;
+      nameInput.value = bookmark.name || '';
+      pageInput.value = Number(bookmark.page) || 1;
+      highlightInput.value = bookmark.highlight || '';
       backdrop.hidden = false;
-      backdrop.dataset.mode = isNew ? 'create' : 'edit';
-      const titleEl = backdrop.querySelector('.bookmark-editor-title');
-      const saveBtn = backdrop.querySelector('[data-action="save"]');
-      const deleteBtn = backdrop.querySelector('[data-action="delete"]');
-      if (titleEl) titleEl.textContent = isNew ? 'New Bookmark' : 'Edit Bookmark';
-      if (saveBtn) saveBtn.textContent = isNew ? 'Create' : 'Save';
-      if (deleteBtn) deleteBtn.hidden = isNew;
 
       const rect = card.getBoundingClientRect();
-      const point = options?.point || null;
-      if (point && Number.isFinite(point.x) && Number.isFinite(point.y)) {
-        const x = Math.min(Math.max(8, point.x), window.innerWidth - rect.width - 8);
-        const y = Math.min(Math.max(8, point.y), window.innerHeight - rect.height - 8);
-        card.style.left = `${x}px`;
-        card.style.top = `${y}px`;
-      } else {
-        const centerLeft = Math.max(12, (window.innerWidth - rect.width) / 2);
-        const centerTop = Math.max(12, (window.innerHeight - rect.height) / 2);
-        card.style.left = `${centerLeft}px`;
-        card.style.top = `${centerTop}px`;
-      }
+      const centerLeft = Math.max(12, (window.innerWidth - rect.width) / 2);
+      const centerTop = Math.max(12, (window.innerHeight - rect.height) / 2);
+      card.style.left = `${centerLeft}px`;
+      card.style.top = `${centerTop}px`;
       card.style.transform = 'none';
 
       window.setTimeout(() => nameInput.focus(), 0);
@@ -369,12 +344,10 @@
     }
 
     function onSave() {
-      if (!editorState.tab) return;
+      if (!editorState.tab || !editorState.bookmarkId) return;
       const values = readValues();
-      const createdOrUpdated = editorState.bookmarkId
-        ? updateBookmark(editorState.tab, editorState.bookmarkId, values)
-        : addBookmark(editorState.tab, values.page, values.name, values.highlight, { forceNew: true });
-      if (createdOrUpdated) {
+      const updated = updateBookmark(editorState.tab, editorState.bookmarkId, values);
+      if (updated) {
         refreshBookmarkBar(editorState.tab);
       }
       closeEditor();
@@ -477,10 +450,9 @@
     return backdrop;
   }
 
-  function openBookmarkEditor(tab, bookmark, options = {}) {
+  function openBookmarkEditor(tab, bookmark) {
     const editor = ensureEditor();
-    const resolvedTab = tab || bookmark?.tab || getCurrentTab();
-    editor.openBookmarkEditor(resolvedTab, bookmark || { id: null, tab: resolvedTab }, options);
+    editor.openBookmarkEditor(tab || bookmark.tab || getCurrentTab(), bookmark);
     return editor;
   }
 
@@ -563,15 +535,10 @@
         const currentPage = getCurrentDisplayPage(currentTab);
         const selectedText = getActiveViewerSelectionText();
         const defaultName = getSuggestedName(currentTab, currentPage, pageLinksEl, selectedText);
-        openBookmarkEditor(currentTab, {
-          id: null,
-          tab: currentTab,
-          page: currentPage,
-          name: defaultName,
-          highlight: selectedText,
-        }, {
-          mode: 'create',
-        });
+        const name = window.prompt('Bookmark name', defaultName);
+        if (!name) return;
+        addBookmark(currentTab, currentPage, name, selectedText);
+        refreshBookmarkBar(currentTab);
         return;
       }
 

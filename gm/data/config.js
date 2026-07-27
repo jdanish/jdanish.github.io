@@ -7,6 +7,7 @@ window.BOOKS = {
     pageOffset: -3,
     defaultPage: 3,
     defaultScale: 1.25,
+    defaultVisible: true,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Index", page: 205 },
@@ -24,6 +25,7 @@ window.BOOKS = {
     pageOffset: -2,
     defaultPage: 1,
     defaultScale: 1.25,
+    defaultVisible: true,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Index", page: 302 },
@@ -37,6 +39,7 @@ window.BOOKS = {
     pageOffset: -1,
     defaultPage: 2,
     defaultScale: 1.25,
+    defaultVisible: true,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Species", page: 31 },
@@ -53,6 +56,7 @@ window.BOOKS = {
     pageOffset: -1,
     defaultPage: 2,
     defaultScale: 1.25,
+    defaultVisible: true,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Professions", page: 21 },
@@ -69,6 +73,7 @@ window.BOOKS = {
     pageOffset: 0,
     defaultPage: 1,
     defaultScale: 1,
+    defaultVisible: false,
     pages: [
     ]
   }

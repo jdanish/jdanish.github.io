@@ -162,11 +162,23 @@ body.resizing { cursor: col-resize; user-select: none; }
 }
 
 .sidebar-tools {
-  display: flex;
+  display: grid;
   gap: 8px;
   margin-top: 10px;
 }
-.sidebar-tools input {
+.sidebar-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.sidebar-search-row #clearSidebarSearch {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+.sidebar-tools input[type="search"] {
   flex: 1 1 auto;
   min-width: 0;
   border: 1px solid var(--line);
@@ -176,13 +188,29 @@ body.resizing { cursor: col-resize; user-select: none; }
   padding: 9px 11px;
   font-size: 13px;
 }
-.sidebar-tools input::placeholder { color: #8d96a8; }
-.sidebar-tools input:focus {
+.sidebar-tools input[type="search"]::placeholder { color: #8d96a8; }
+.sidebar-tools input[type="search"]:focus {
   outline: none;
   border-color: rgba(124, 196, 255, 0.5);
   box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.12);
 }
-
+.sidebar-search-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  margin-top: 2px;
+  width: fit-content;
+}
+.sidebar-search-toggle input {
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: #7cc4ff;
+}
 .sidebar-tools button,
 button:not(.bookmark-edit),
 a.btn {

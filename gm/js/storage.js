@@ -12,6 +12,7 @@
       activeTab: null,
       sidebarNotes: '',
       bookVisibility: {},
+      searchIncludeHiddenBooks: false,
     };
   }
 
@@ -25,6 +26,7 @@
       state.openSections = state.openSections || {};
       if (typeof state.sidebarNotes !== 'string') state.sidebarNotes = '';
       if (!state.bookVisibility || typeof state.bookVisibility !== 'object') state.bookVisibility = {};
+      if (typeof state.searchIncludeHiddenBooks !== 'boolean') state.searchIncludeHiddenBooks = false;
       return state;
     } catch (err) {
       console.error('Failed to load state', err);

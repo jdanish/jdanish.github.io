@@ -14,6 +14,7 @@
     dom: {
       sidebarContentEl: null,
       searchInputEl: null,
+      searchHiddenBooksEl: null,
       clearButtonEl: null,
       resultsEl: null,
     },
@@ -39,6 +40,18 @@
 
   function getBookOrder(tab) {
     return getBookOrderMap().get(tab) ?? 9999;
+  }
+
+  function getSearchIncludeHiddenBooks() {
+    const state = window.GM.storage?.state || {};
+    return Boolean(state.searchIncludeHiddenBooks);
+  }
+
+  function setSearchIncludeHiddenBooks(value) {
+    const state = window.GM.storage?.state;
+    if (!state) return;
+    state.searchIncludeHiddenBooks = Boolean(value);
+    window.GM.storage?.saveState?.();
   }
 
   function getScriptBaseUrl() {
@@ -247,7 +260,8 @@
     const q = String(query || '').trim().toLowerCase();
     if (q.length < 2) return [];
 
-    const tabs = Object.keys(getBooks());
+    const includeHiddenBooks = getSearchIncludeHiddenBooks();
+    const tabs = Object.keys(getBooks()).filter((tab) => includeHiddenBooks || window.GM.ui?.isBookVisible?.(tab) !== false);
     const results = [];
 
     for (const tab of tabs) {
@@ -439,9 +453,10 @@
     renderResults(q, sidebarHits, pdfHits);
   }
 
-  function setupSearch({ sidebarContentEl, searchInputEl, clearButtonEl }) {
+  function setupSearch({ sidebarContentEl, searchInputEl, searchHiddenBooksEl, clearButtonEl }) {
     searchState.dom.sidebarContentEl = sidebarContentEl || searchState.dom.sidebarContentEl;
     searchState.dom.searchInputEl = searchInputEl || searchState.dom.searchInputEl;
+    searchState.dom.searchHiddenBooksEl = searchHiddenBooksEl || searchState.dom.searchHiddenBooksEl;
     searchState.dom.clearButtonEl = clearButtonEl || searchState.dom.clearButtonEl;
 
     if (!searchState.dom.sidebarContentEl) return;
@@ -464,6 +479,19 @@
         }
       });
       input.dataset.searchBound = 'true';
+    }
+
+    if (searchState.dom.searchHiddenBooksEl) {
+      searchState.dom.searchHiddenBooksEl.checked = getSearchIncludeHiddenBooks();
+      if (searchState.dom.searchHiddenBooksEl.dataset.searchBound !== 'true') {
+        searchState.dom.searchHiddenBooksEl.addEventListener('change', async () => {
+          setSearchIncludeHiddenBooks(searchState.dom.searchHiddenBooksEl.checked);
+          if (input && String(input.value || '').trim().length >= 2) {
+            await performSearch(input.value);
+          }
+        });
+        searchState.dom.searchHiddenBooksEl.dataset.searchBound = 'true';
+      }
     }
 
     if (clear && clear.dataset.searchBound !== 'true') {
@@ -505,6 +533,8 @@
   window.GM.search = {
     init,
     setupSearch,
+    getSearchIncludeHiddenBooks,
+    setSearchIncludeHiddenBooks,
     preloadSearchIndexes,
     searchBooks,
     performSearch,

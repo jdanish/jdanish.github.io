@@ -15,7 +15,7 @@
   }
 
   function getState() {
-    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarNotes: '', bookVisibility: {} };
+    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarNotes: '', bookVisibility: {}, searchIncludeHiddenBooks: false };
   }
 
   function getBookEntries() {
@@ -30,8 +30,16 @@
   function isBookVisible(tab) {
     if (!tab) return false;
     const visibility = getState().bookVisibility || {};
-    if (!Object.prototype.hasOwnProperty.call(visibility, tab)) return true;
-    return visibility[tab] !== false;
+    if (Object.prototype.hasOwnProperty.call(visibility, tab)) {
+      return visibility[tab] !== false;
+    }
+
+    const book = getBooks()[tab];
+    if (book && typeof book.defaultVisible === 'boolean') {
+      return Boolean(book.defaultVisible);
+    }
+
+    return true;
   }
 
   function setBookVisible(tab, visible) {
@@ -270,6 +278,7 @@
     window.GM.search?.setupSearch?.({
       sidebarContentEl: dom.sidebarContentEl,
       searchInputEl: dom.sidebarSearchEl,
+      searchHiddenBooksEl: dom.searchIncludeHiddenBooksEl,
       clearButtonEl: dom.clearSidebarSearchEl,
     });
   }
@@ -452,6 +461,7 @@
       pageLinksEl: document.getElementById('pageLinks'),
       viewerTitleEl: document.getElementById('viewerTitle'),
       sidebarSearchEl: document.getElementById('sidebarSearch'),
+      searchIncludeHiddenBooksEl: document.getElementById('searchIncludeHiddenBooks'),
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
       bookVisibilityButtonEl: document.getElementById('bookVisibilityButton'),
