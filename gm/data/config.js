@@ -66,8 +66,44 @@ window.BOOKS = {
 
     ]
   },
-  combat_survival_guide: {
+  fantasy: {
     order: 5,
+    title: "SWADE Fantasy Companion",
+    file: "pdfs/fantasy.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    pages: [
+    { label: "TOC", page: 2 },
+    { label: "Ancestries", page: 6 },
+    { label: "Gear", page: 47 }
+    ]
+  },
+  chase_ref: {
+    order: 6,
+    title: "Chase Reference",
+    file: "pdfs/chase_ref.pdf",
+    pageOffset: 0,
+    defaultPage: 1,
+    defaultScale: 1,
+    defaultVisible: false,
+    pages: [
+    ]
+  },
+  combat_ref: {
+    order: 7,
+    title: "Combat Reference",
+    file: "pdfs/combat_ref.pdf",
+    pageOffset: 0,
+    defaultPage: 1,
+    defaultScale: 1,
+    defaultVisible: false,
+    pages: [
+    ]
+  },
+  combat_survival_guide: {
+    order: 8,
     title: "Combat Survival Guide v11",
     file: "pdfs/combat_survival_guide.pdf",
     pageOffset: 0,
