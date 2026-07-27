@@ -564,6 +564,40 @@
       }
     });
 
+    function clearDragClasses() {
+      pageLinksEl.querySelectorAll('.bookmark-item.dragging, .bookmark-item.drag-over').forEach((el) => {
+        el.classList.remove('dragging', 'drag-over');
+      });
+    }
+
+    function syncBookmarkOrderFromDom() {
+      const current = getTabBookmarks(currentTab);
+      const byId = new Map(current.map((bm) => [bm.id, bm]));
+      const orderedIds = Array.from(pageLinksEl.querySelectorAll('.bookmark-item'))
+        .map((el) => el.dataset.bookmarkId)
+        .filter(Boolean);
+      const ordered = orderedIds.map((id) => byId.get(id)).filter(Boolean);
+      if (ordered.length !== current.length) return;
+      data[currentTab] = ordered;
+      saveState();
+    }
+
+    function moveDraggedItem(targetItem, clientX) {
+      if (!state.dragBookmarkId || !targetItem) return;
+      const draggedItem = pageLinksEl.querySelector(`.bookmark-item[data-bookmark-id="${CSS.escape(state.dragBookmarkId)}"]`);
+      if (!draggedItem || draggedItem === targetItem) return;
+
+      const rect = targetItem.getBoundingClientRect();
+      const before = clientX < rect.left + rect.width / 2;
+      const parent = targetItem.parentElement;
+      if (!parent) return;
+
+      targetItem.classList.add('drag-over');
+      draggedItem.classList.add('dragging');
+      if (before) parent.insertBefore(draggedItem, targetItem);
+      else parent.insertBefore(draggedItem, targetItem.nextSibling);
+    }
+
     pageLinksEl.addEventListener('dragstart', (event) => {
       const link = event.target.closest('.bookmark-link');
       if (!link) return;
@@ -572,41 +606,32 @@
       if (!item) return;
 
       state.dragBookmarkId = item.dataset.bookmarkId;
+      clearDragClasses();
       item.classList.add('dragging');
 
       event.dataTransfer.effectAllowed = 'move';
       event.dataTransfer.setData('text/plain', state.dragBookmarkId);
+      event.dataTransfer.setDragImage(item, 16, 16);
     });
 
     pageLinksEl.addEventListener('dragover', (event) => {
       const targetItem = event.target.closest('.bookmark-item');
-      if (!targetItem) return;
+      if (!targetItem || !state.dragBookmarkId) return;
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
+      moveDraggedItem(targetItem, event.clientX);
     });
 
     pageLinksEl.addEventListener('drop', (event) => {
-      const targetItem = event.target.closest('.bookmark-item');
-      if (!targetItem || !state.dragBookmarkId) return;
+      if (!state.dragBookmarkId) return;
       event.preventDefault();
-
-      const list = getTabBookmarks(currentTab);
-      const fromIndex = list.findIndex((bm) => bm.id === state.dragBookmarkId);
-      const toIndex = list.findIndex((bm) => bm.id === targetItem.dataset.bookmarkId);
-      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
-
-      const [moved] = list.splice(fromIndex, 1);
-      list.splice(toIndex, 0, moved);
-      saveState();
-
+      syncBookmarkOrderFromDom();
       refreshBookmarkBar(currentTab);
     });
 
     pageLinksEl.addEventListener('dragend', () => {
       state.dragBookmarkId = null;
-      pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => {
-        el.classList.remove('dragging');
-      });
+      clearDragClasses();
     });
 
     // touch support for edit button remains button-based; drag is desktop-first.
