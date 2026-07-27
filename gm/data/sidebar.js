@@ -7,7 +7,7 @@ window.SIDEBAR_SECTIONS = [
       {
         html: `
         
-        <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Summary</a>
+        <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Summary</a> (<a class="linkicon jump-link" href="#" data-tab="combat_ref" data-page="1">reference</a>) 
           <ul>
             <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92" data-highlight="Attacks">Attack</a>
             </li>
@@ -79,7 +79,7 @@ window.SIDEBAR_SECTIONS = [
           <div class="stack">
             <a class="linkicon" href="https://immaterialplane.com/apps/swdr/" target="dice">Dice Roller App</a>
             <a class="linkicon jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>
-            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="112" data-highlight="Chases &amp; Vehicles">Chases &amp; Vehicles</a>
+            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="112" data-highlight="Chases &amp; Vehicles in SWADE">Chases &amp; Vehicles</a> (<a class="linkicon jump-link" href="#" data-tab="chase_ref" data-page="1">Chase Reference</a>)
             <a class="linkicon jump-link" href="#" data-tab="swade" data-page="91" data-highlight="JOKERS">Jokers</a>
           </div>
           <div class="stack">

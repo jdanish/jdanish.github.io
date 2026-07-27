@@ -377,16 +377,17 @@
     }
 
     function onCopy() {
-      if (!editorState.tab || !editorState.bookmarkId) return;
+      if (!editorState.tab) return;
       const values = readValues();
+      const fallbackName = values.name || `Page ${values.page}`;
       const bookmark = {
-        id: editorState.bookmarkId,
+        id: editorState.bookmarkId || makeId(),
         tab: editorState.tab,
         page: values.page,
-        name: values.name,
+        name: fallbackName,
         highlight: values.highlight,
       };
-      copyBookmarkHtml(bookmark, values.name || bookmark.name);
+      copyBookmarkHtml(bookmark, fallbackName);
     }
 
     backdrop.addEventListener('click', (event) => {
