@@ -422,6 +422,8 @@
     const book = getBook(tab);
     if (!book) return null;
 
+    window.GM.ui?.ensureBookVisible?.(tab);
+
     const resolvedDisplayPage = Number(displayPage || getDisplayPage(tab) || book.defaultPage || 1);
     setStoredPage(tab, resolvedDisplayPage);
 

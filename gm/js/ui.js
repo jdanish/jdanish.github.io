@@ -15,7 +15,51 @@
   }
 
   function getState() {
-    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarNotes: '' };
+    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarNotes: '', bookVisibility: {} };
+  }
+
+  function getBookEntries() {
+    return Object.entries(getBooks()).sort((a, b) => {
+      const orderA = Number(a[1]?.order ?? 0);
+      const orderB = Number(b[1]?.order ?? 0);
+      if (orderA !== orderB) return orderA - orderB;
+      return String(a[1]?.title || a[0]).localeCompare(String(b[1]?.title || b[0]));
+    });
+  }
+
+  function isBookVisible(tab) {
+    if (!tab) return false;
+    const visibility = getState().bookVisibility || {};
+    if (!Object.prototype.hasOwnProperty.call(visibility, tab)) return true;
+    return visibility[tab] !== false;
+  }
+
+  function setBookVisible(tab, visible) {
+    if (!tab) return false;
+    const state = getState();
+    if (!state.bookVisibility || typeof state.bookVisibility !== 'object') state.bookVisibility = {};
+    const next = Boolean(visible);
+    const current = isBookVisible(tab);
+    state.bookVisibility[tab] = next;
+    if (current !== next) {
+      window.GM.storage?.saveState?.();
+      return true;
+    }
+    return false;
+  }
+
+  function getVisibleBookEntries() {
+    return getBookEntries().filter(([tab]) => isBookVisible(tab));
+  }
+
+  function ensureBookVisible(tab) {
+    const changed = setBookVisible(tab, true);
+    if (changed) {
+      buildTabs();
+      updateTabButtonLabels();
+    }
+    syncBookVisibilityPopup();
+    return changed;
   }
 
   function getCurrentTab() {
@@ -49,6 +93,17 @@
 
       button.textContent = `${book.title} · p. ${getDisplayPage(tab)}`;
       button.classList.toggle('active', tab === getCurrentTab());
+    });
+  }
+
+
+  function syncBookVisibilityPopup() {
+    const root = document.getElementById('gmPopupRoot');
+    if (!root || root.hidden) return;
+    const panel = root.querySelector('.book-visibility-panel');
+    if (!panel) return;
+    panel.querySelectorAll('input[type="checkbox"][data-tab]').forEach((input) => {
+      input.checked = isBookVisible(input.dataset.tab);
     });
   }
 
@@ -219,11 +274,80 @@
     });
   }
 
+  function renderBookVisibilityPopup() {
+    const wrap = document.createElement('div');
+    wrap.className = 'book-visibility-panel';
+
+    const intro = document.createElement('p');
+    intro.className = 'book-visibility-intro';
+    intro.textContent = 'Checked books appear as tabs. Unchecked books stay available for links, search results, and bookmarks.';
+    wrap.appendChild(intro);
+
+    const list = document.createElement('div');
+    list.className = 'book-visibility-list';
+
+    getBookEntries().forEach(([tab, book]) => {
+      const label = document.createElement('label');
+      label.className = 'book-visibility-item';
+      label.dataset.tab = tab;
+
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = isBookVisible(tab);
+      input.dataset.tab = tab;
+
+      const title = document.createElement('span');
+      title.textContent = book?.title || tab;
+
+      const meta = document.createElement('small');
+      meta.textContent = `p. ${getDisplayPage(tab)}`;
+
+      input.addEventListener('change', () => {
+        setBookVisible(tab, input.checked);
+        buildTabs();
+        updateTabButtonLabels();
+      });
+
+      label.appendChild(input);
+      label.appendChild(title);
+      label.appendChild(meta);
+      list.appendChild(label);
+    });
+
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function toggleBookVisibilityPopup() {
+    const root = document.getElementById('gmPopupRoot');
+    if (root && !root.hidden && root.querySelector('.book-visibility-panel')) {
+      window.GM.popup?.hide?.();
+      return;
+    }
+
+    window.GM.popup?.show?.({
+      title: 'Rulebooks',
+      content: renderBookVisibilityPopup(),
+      className: 'book-visibility-popup',
+      width: 380,
+      rootClass: 'book-visibility-root',
+    });
+  }
+
   function buildTabs() {
     if (!dom.tabsEl) return;
 
     dom.tabsEl.replaceChildren();
-    Object.keys(getBooks()).forEach((tab) => {
+    const visible = getVisibleBookEntries();
+    if (!visible.length) {
+      const empty = document.createElement('span');
+      empty.className = 'tabs-empty';
+      empty.textContent = 'No books selected';
+      dom.tabsEl.appendChild(empty);
+      return;
+    }
+
+    visible.forEach(([tab]) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.dataset.tab = tab;
@@ -330,12 +454,18 @@
       sidebarSearchEl: document.getElementById('sidebarSearch'),
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
+      bookVisibilityButtonEl: document.getElementById('bookVisibilityButton'),
     };
 
     buildTabs();
     renderSidebar();
     applySidebarWidthFromState();
     setupResizer();
+
+    if (dom.bookVisibilityButtonEl && dom.bookVisibilityButtonEl.dataset.bound !== 'true') {
+      dom.bookVisibilityButtonEl.addEventListener('click', toggleBookVisibilityPopup);
+      dom.bookVisibilityButtonEl.dataset.bound = 'true';
+    }
 
     const initialTab = getCurrentTab();
     if (initialTab) {
@@ -355,5 +485,10 @@
     revealSidebarElement,
     getSidebarElementByKeys,
     getDisplayPage,
+    isBookVisible,
+    setBookVisible,
+    ensureBookVisible,
+    toggleBookVisibilityPopup,
+    syncBookVisibilityPopup,
   };
 })();
