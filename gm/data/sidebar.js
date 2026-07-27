@@ -9,7 +9,7 @@ window.SIDEBAR_SECTIONS = [
         
         <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Summary</a>
           <ul>
-            <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92">Attack</a>
+            <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92" data-highlight="Attacks">Attack</a>
             </li>
             <ul>
               <li>
@@ -77,7 +77,25 @@ window.SIDEBAR_SECTIONS = [
       {
         html: `
           <div class="stack">
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>
+            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>
+            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="112" data-highlight="Chases &amp; Vehicles">Chases &amp; Vehicles</a>
+            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="91" data-highlight="JOKERS">Jokers</a>
+          </div>
+          <div class="stack">
+            <ul>
+              <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="146" data-highlight="Powers">Powers</a>
+              </li>
+              <ul>
+                <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="149" data-highlight="Trappings">Trappings</a>
+                </li>
+                <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="150" data-highlight="Activation">Activation</a>
+                </li>
+                <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="151" data-highlight="Power Modifiers">Power Modifiers</a>
+                </li>
+                 <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="150" data-highlight="Recharging">Recharging</a>: 5 Power Points per hour spent resting
+                </li>
+              </ul>
+            </ul>
           </div>
         `
       }

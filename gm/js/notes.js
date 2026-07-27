@@ -54,14 +54,14 @@
       panel.className = 'sidebar-notes';
       panel.innerHTML = `
         <summary class="sidebar-notes-header">
-          <span>Notes</span>
+          <span class="sidebar-notes-title">Notes</span>
           <span class="sidebar-notes-meta">
             <span id="sidebarNotesCount">0 chars</span>
             <span id="sidebarNotesStatus">Saved</span>
           </span>
         </summary>
         <div class="sidebar-notes-body">
-          <textarea id="sidebarNotes" placeholder="Write session notes here..."></textarea>
+          <textarea id="sidebarNotes" class="sidebar-notes-textarea" placeholder="Write session notes here..."></textarea>
         </div>
       `;
       host.appendChild(panel);

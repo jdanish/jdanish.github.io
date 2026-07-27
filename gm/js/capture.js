@@ -7,6 +7,7 @@
     touchTimer: null,
     touchPoint: null,
     lastContext: null,
+    cachedSelection: null,
     observer: null,
   };
 
@@ -36,6 +37,17 @@
       .replace(/'/g, '&#39;');
   }
 
+  function captureSelectionSnapshot(ctx) {
+    if (!ctx?.text) return;
+    state.cachedSelection = {
+      tab: ctx.tab,
+      text: ctx.text,
+      rect: ctx.rect ? { ...ctx.rect } : null,
+      displayPage: ctx.displayPage,
+      book: ctx.book,
+    };
+  }
+
   function getViewerFrame() {
     return document.getElementById('viewerFrame');
   }
@@ -52,6 +64,10 @@
     const doc = win?.document;
     if (!win || !doc) return null;
 
+    const tab = getActiveTab();
+    const book = tab ? getBooks()[tab] : null;
+    const displayPage = Number(window.GM.pdfviewer?.getCurrentDisplayPage?.(tab) || window.GM.pdfviewer?.getDisplayPage?.(tab) || book?.defaultPage || 1);
+
     let selection = null;
     try {
       selection = win.getSelection?.() || doc.getSelection?.() || null;
@@ -59,9 +75,7 @@
       selection = null;
     }
 
-    const text = normalizeText(selection?.toString?.());
-    if (!text) return null;
-
+    const liveText = normalizeText(selection?.toString?.());
     let rect = null;
     try {
       if (selection?.rangeCount) {
@@ -71,20 +85,36 @@
       rect = null;
     }
 
-    const tab = getActiveTab();
-    const book = tab ? getBooks()[tab] : null;
-    const displayPage = Number(window.GM.pdfviewer?.getCurrentDisplayPage?.(tab) || window.GM.pdfviewer?.getDisplayPage?.(tab) || book?.defaultPage || 1);
+    if (liveText) {
+      const ctx = {
+        iframe: activeFrame,
+        win,
+        doc,
+        tab,
+        book,
+        displayPage,
+        text: liveText,
+        rect,
+      };
+      captureSelectionSnapshot(ctx);
+      return ctx;
+    }
 
-    return {
-      iframe: activeFrame,
-      win,
-      doc,
-      tab,
-      book,
-      displayPage,
-      text,
-      rect,
-    };
+    const cached = state.cachedSelection;
+    if (cached && cached.tab === tab && cached.text) {
+      return {
+        iframe: activeFrame,
+        win,
+        doc,
+        tab,
+        book,
+        displayPage,
+        text: cached.text,
+        rect: cached.rect || null,
+      };
+    }
+
+    return null;
   }
 
   function copyText(text) {
@@ -234,17 +264,30 @@
     state.boundIframes.add(iframe);
 
     const bindDoc = () => {
-      const doc = iframe.contentWindow?.document;
-      if (!doc || state.boundDocs.has(doc)) return;
+      const win = iframe.contentWindow;
+      const doc = win?.document;
+      if (!win || !doc || state.boundDocs.has(doc)) return;
       state.boundDocs.add(doc);
 
-      doc.addEventListener('contextmenu', (event) => {
+      const handleContextMenu = (event) => {
         const ctx = getSelectionContext(iframe);
         if (!ctx) return;
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation?.();
         const { x, y } = selectionPointFromContext(ctx, event.clientX, event.clientY);
         showMenuForSelection(ctx, x, y);
-      });
+      };
+
+      const handleSelectionChange = () => {
+        const ctx = getSelectionContext(iframe);
+        if (ctx) captureSelectionSnapshot(ctx);
+      };
+
+      win.addEventListener('contextmenu', handleContextMenu, true);
+      doc.addEventListener('contextmenu', handleContextMenu, true);
+      doc.addEventListener('selectionchange', handleSelectionChange, true);
+      doc.addEventListener('mouseup', handleSelectionChange, true);
 
       doc.addEventListener('pointerdown', (event) => {
         if (event.pointerType !== 'touch') return;

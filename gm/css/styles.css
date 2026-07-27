@@ -13,6 +13,7 @@
 }
 
 * { box-sizing: border-box; }
+
 html, body {
   height: 100%;
   margin: 0;
@@ -20,6 +21,7 @@ html, body {
   background: linear-gradient(180deg, #0c0f14 0%, #111521 100%);
   color: var(--text);
 }
+
 body { overflow: hidden; }
 body.resizing { cursor: col-resize; user-select: none; }
 
@@ -44,10 +46,10 @@ body.resizing { cursor: col-resize; user-select: none; }
 .sidebar {
   flex: 0 0 var(--sidebar-width);
   min-width: 280px;
-  min-height: 0;
   max-width: 760px;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .sidebar-resizer {
@@ -69,7 +71,6 @@ body.resizing { cursor: col-resize; user-select: none; }
 
 .main {
   flex: 1 1 auto;
-  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -77,7 +78,7 @@ body.resizing { cursor: col-resize; user-select: none; }
 .panel-header {
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel);
 }
 .panel-header h1 {
   margin: 0;
@@ -112,8 +113,9 @@ body.resizing { cursor: col-resize; user-select: none; }
   border-color: rgba(124, 196, 255, 0.5);
   box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.12);
 }
+
 .sidebar-tools button,
-button,
+button:not(.bookmark-edit),
 a.btn {
   appearance: none;
   border: 1px solid var(--line);
@@ -127,7 +129,7 @@ a.btn {
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
 }
 .sidebar-tools button:hover,
-button:hover,
+button:not(.bookmark-edit):hover,
 a.btn:hover {
   transform: translateY(-1px);
   background: #2a3141;
@@ -139,14 +141,21 @@ a.btn:hover {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sidebar-content {
-  flex: 1 1 auto;
-  min-height: 0;
   padding: 12px;
-  padding-bottom: 1rem;
-  overflow: auto;
+  padding-bottom: 12px;
+  min-height: 0;
+  flex: 0 0 auto;
+  display: grid;
+  gap: 10px;
+  align-content: start;
 }
 
 .search-results {
@@ -224,12 +233,10 @@ details {
   overflow: hidden;
   margin-bottom: 10px;
 }
-
 details.flash-highlight,
 .nested-block.flash-highlight {
   box-shadow: 0 0 0 1px var(--accent-strong), 0 0 0 3px rgba(124, 196, 255, 0.12);
 }
-
 summary {
   cursor: pointer;
   list-style: none;
@@ -268,7 +275,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 
 .nested-block {
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel);
   border-radius: 10px;
   padding: 10px;
   margin-top: 10px;
@@ -288,7 +295,7 @@ details[open] > summary::before { transform: rotate(90deg); }
 .tabs {
   padding: 12px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel);
   overflow: auto;
   flex: 0 0 auto;
 }
@@ -344,18 +351,17 @@ iframe.pdf-frame {
   background: #fff;
 }
 
-
-
-code { color: #cfe7ff; }
-
 .sidebar-notes {
-  flex: 0 0 auto;
   border-top: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel);
+  flex: 0 0 auto;
   margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.18);
 }
-
-.sidebar-notes summary.sidebar-notes-header {
+.sidebar-notes-header {
   padding: 12px 14px;
   font-size: 12px;
   font-weight: 700;
@@ -364,11 +370,26 @@ code { color: #cfe7ff; }
   user-select: none;
   display: flex;
   align-items: center;
+  gap: 8px;
   justify-content: space-between;
-  gap: 12px;
 }
-
-.sidebar-notes summary.sidebar-notes-header::before {
+.sidebar-notes-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.sidebar-notes-meta {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  text-align: right;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.sidebar-notes-header::before {
   content: '\203A';
   display: inline-flex;
   width: 1em;
@@ -376,29 +397,17 @@ code { color: #cfe7ff; }
   color: var(--muted);
   transition: transform 0.18s ease, color 0.18s ease;
 }
-
-.sidebar-notes[open] > summary.sidebar-notes-header::before {
+.sidebar-notes[open] .sidebar-notes-header::before {
   transform: rotate(90deg);
 }
-
-.sidebar-notes-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .sidebar-notes-body {
-  border-top: 1px solid var(--line);
   padding: 10px 12px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
 }
-
-.sidebar-notes textarea {
+.sidebar-notes-textarea {
   width: 100%;
-  min-height: 120px;
+  min-height: 92px;
   resize: vertical;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -408,14 +417,15 @@ code { color: #cfe7ff; }
   font: inherit;
   line-height: 1.4;
   outline: none;
+  box-sizing: border-box;
 }
-
-.sidebar-notes textarea:focus {
+.sidebar-notes-textarea:focus {
   border-color: rgba(124, 196, 255, 0.5);
   box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.12);
 }
 
 @media (max-width: 980px) {
+
   body { overflow: auto; }
   .app { flex-direction: column; height: auto; min-height: 100vh; }
   .sidebar { flex: 0 0 auto; max-width: none; }
@@ -427,7 +437,7 @@ code { color: #cfe7ff; }
   margin-top: 10px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel);
   overflow: hidden;
 }
 .subsection > summary {
@@ -435,7 +445,7 @@ code { color: #cfe7ff; }
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -476,7 +486,7 @@ code { color: #cfe7ff; }
 }
 .sidebar-table th { color: var(--text); font-weight: 700; }
 .sidebar-table td { color: var(--muted); }
-.sidebar-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+.sidebar-table tbody tr:nth-child(even) { background: var(--panel); }
 .sidebar-table tbody tr[data-tab] {
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease;
@@ -505,61 +515,46 @@ code { color: #cfe7ff; }
   padding-left: 1.1rem;
   padding-bottom: 1.25rem;
 }
-.note-list > li {
-  margin-bottom: 0.8rem;
-}
-.note-list > li > ul {
-  margin-top: 0.45rem;
-}
+.note-list > li { margin-bottom: 0.8rem; }
+.note-list > li > ul { margin-top: 0.45rem; }
 
-
-/* Inline link style with a stronger pill treatment. */
+/* Stronger linkicon pill style */
 a.linkicon {
   display: inline-flex;
   align-items: center;
-  gap: 0.4em;
-  padding: 3px 9px;
+  gap: 0.35em;
+  padding: 2px 8px;
   margin: 0;
-  border: 1px solid rgba(124, 196, 255, 0.22);
-  background: rgba(124, 196, 255, 0.10);
+  border: 1px solid rgba(124, 196, 255, 0.18);
   border-radius: 999px;
+  background: rgba(124, 196, 255, 0.08);
   color: #d9ecff;
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.3;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
-a.linkicon::after {
-  content: '❯';
-  display: inline-block;
+a.linkicon::before {
+  content: "↗";
   color: #7cc4ff;
-  font-size: 1.05em;
-  line-height: 1;
-  transition: transform 0.15s ease, color 0.15s ease;
+  margin-right: .35em;
 }
-
 a.linkicon:hover {
-  transform: translateY(-1px);
+  color: var(--text);
   background: rgba(124, 196, 255, 0.18);
   border-color: rgba(124, 196, 255, 0.45);
-  color: #ffffff;
-  text-decoration: none;
-  box-shadow: 0 0 0 1px rgba(124, 196, 255, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 6px rgba(124, 196, 255, 0.18);
 }
-
-a.linkicon:hover::after {
-  transform: translateX(2px);
-  color: #ffffff;
+a.linkicon:hover::before {
+  color: var(--text);
 }
 
 /* Bookmark strip */
 .bookmark-ui {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
   margin-left: 8px;
   min-width: 0;
@@ -576,7 +571,7 @@ a.linkicon:hover::after {
 .bookmark-item {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   flex: 0 0 auto;
   min-width: 0;
 }
@@ -594,223 +589,332 @@ a.linkicon:hover::after {
   user-select: none;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
 }
-
 .bookmark-link:hover {
   background: #2a3141;
   border-color: #46506a;
 }
-
 .bookmark-item.dragging .bookmark-link {
   opacity: 0.45;
   cursor: grabbing;
-}
-
-.bookmark-edit,
-.bookmark-add {
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  color: var(--text);
-  border-radius: 999px;
-  cursor: pointer;
-  line-height: 1;
-  flex: 0 0 auto;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
-}
-
-.bookmark-edit:hover,
-.bookmark-add:hover {
-  transform: translateY(-1px);
-  background: #2a3141;
-  border-color: #46506a;
 }
 
 .bookmark-edit {
   width: 24px;
   height: 24px;
   padding: 0;
-  font-size: 13px;
-  font-weight: 700;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  flex: 0 0 auto;
+  opacity: 0.92;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+}
+.bookmark-edit:hover {
+  transform: translateY(-1px);
+  background: #2a3141;
+  border-color: #46506a;
+  opacity: 1;
 }
 
 .bookmark-add {
   width: 28px;
   height: 28px;
   padding: 0;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
   font-size: 18px;
   font-weight: 700;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.bookmark-add:hover {
+  background: #2a3141;
+  border-color: #46506a;
 }
 
-/* Shared popup */
-.gm-popup-root {
+.bookmark-editor-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10000;
-  pointer-events: none;
+  z-index: 2000;
+  background: rgba(3, 6, 12, 0.66);
+  display: block;
+}
+.bookmark-editor-backdrop[hidden] {
+  display: none !important;
 }
 
-.gm-popup {
+.bookmark-editor-card {
   position: absolute;
-  pointer-events: auto;
-  min-width: 240px;
-  max-width: min(420px, calc(100vw - 24px));
+  left: 50%;
+  top: 50%;
+  width: min(520px, calc(100vw - 24px));
+  transform: translate(-50%, -50%);
+  background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(23, 27, 34, 0.98);
-  box-shadow: var(--shadow);
+  border-radius: 14px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
   overflow: hidden;
 }
 
-.gm-popup-header {
+.bookmark-editor-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.03);
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: move;
+  user-select: none;
 }
-
-.gm-popup-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
+.bookmark-editor-title {
+  font-weight: 800;
+  font-size: 14px;
 }
-
-.gm-popup-close {
-  width: 24px;
-  height: 24px;
-  padding: 0;
+.bookmark-editor-close {
+  width: 28px;
+  height: 28px;
   border: 1px solid var(--line);
-  border-radius: 999px;
   background: var(--panel-2);
   color: var(--text);
+  border-radius: 999px;
   cursor: pointer;
   line-height: 1;
+  padding: 0;
   font-size: 16px;
 }
 
-.gm-popup-close:hover {
-  background: #2a3141;
-  border-color: #46506a;
-}
-
-.gm-popup-body {
-  padding: 12px;
-}
-
-.capture-menu-content {
+.bookmark-editor-body {
+  padding: 12px 14px;
   display: grid;
   gap: 10px;
 }
-
-.capture-menu-preview {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.4;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--line);
-}
-
-.capture-menu-actions {
-  display: grid;
-  gap: 8px;
-}
-
-.capture-menu-actions button {
-  appearance: none;
-  border: 1px solid var(--line);
-  background: var(--panel-2);
-  color: var(--text);
-  border-radius: 10px;
-  padding: 9px 11px;
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
-}
-
-.capture-menu-actions button:hover {
-  transform: translateY(-1px);
-  background: #2a3141;
-  border-color: #46506a;
-}
-
-.bookmark-editor {
-  display: grid;
-  gap: 10px;
-}
-
 .bookmark-editor-field {
   display: grid;
-  gap: 5px;
+  gap: 6px;
 }
-
-.bookmark-editor-field > span {
-  font-size: 11px;
-  font-weight: 700;
+.bookmark-editor-field span {
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  font-weight: 700;
 }
-
-.bookmark-editor input,
-.bookmark-editor textarea {
+.bookmark-editor-field input,
+.bookmark-editor-field textarea {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #0f131b;
   color: var(--text);
-  padding: 9px 11px;
+  padding: 10px 11px;
   font: inherit;
   line-height: 1.4;
   outline: none;
-}
-
-.bookmark-editor textarea {
   resize: vertical;
-  min-height: 84px;
 }
-
-.bookmark-editor input:focus,
-.bookmark-editor textarea:focus {
+.bookmark-editor-field input:focus,
+.bookmark-editor-field textarea:focus {
   border-color: rgba(124, 196, 255, 0.5);
   box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.12);
 }
 
-.bookmark-editor-info {
-  font-size: 12px;
-  color: var(--muted);
-}
-
 .bookmark-editor-actions {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+.bookmark-editor-actions button {
+  flex: 0 0 auto;
+}
+.bookmark-editor-actions button.primary {
+  background: rgba(124, 196, 255, 0.18);
+  border-color: rgba(124, 196, 255, 0.45);
+}
+.bookmark-editor-actions button.danger {
+  background: rgba(255, 92, 92, 0.12);
+  border-color: rgba(255, 92, 92, 0.28);
 }
 
-.bookmark-editor-actions button {
-  appearance: none;
+/* popup overlay used by the capture menu and other floating dialogs */
+.gm-popup-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1900;
+  pointer-events: none;
+}
+.gm-popup-root[hidden] { display: none !important; }
+.gm-popup {
+  position: fixed;
+  min-width: 230px;
+  max-width: min(360px, calc(100vw - 24px));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  pointer-events: auto;
+}
+.gm-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+}
+.gm-popup-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text);
+}
+.gm-popup-close {
+  width: 28px;
+  height: 28px;
   border: 1px solid var(--line);
   background: var(--panel-2);
   color: var(--text);
-  border-radius: 10px;
-  padding: 9px 11px;
-  font-size: 13px;
+  border-radius: 999px;
   cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  line-height: 1;
+  padding: 0;
+  font-size: 16px;
+}
+.gm-popup-body {
+  padding: 10px;
+}
+.gm-popup-body:empty {
+  display: none;
+}
+.gm-popup.dragging {
+  cursor: grabbing;
 }
 
-.bookmark-editor-actions button:hover {
-  transform: translateY(-1px);
-  background: #2a3141;
-  border-color: #46506a;
+/* capture menu */
+.capture-menu {
+  position: fixed;
+  z-index: 1900;
+  min-width: 230px;
+  max-width: 320px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+}
+.capture-menu[hidden] { display: none !important; }
+.capture-menu-content,
+.capture-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.capture-menu-preview {
+  padding: 2px 2px 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+.capture-menu-actions { padding-top: 2px; }
+.capture-menu button {
+  width: 100%;
+  display: block;
+  text-align: left;
+  margin: 0;
+}
+.capture-menu-close {
+  float: right;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  margin-left: 8px;
 }
 
-.bookmark-editor-actions button[data-action="delete"] {
-  color: #ffb6b6;
+/* notes */
+.sidebar-notes {
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  flex: 0 0 auto;
+  margin-top: auto;
+}
+.sidebar-notes-header {
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+.sidebar-notes-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.sidebar-notes-meta {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  text-align: right;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.sidebar-notes-header::before {
+  content: '\203A';
+  display: inline-flex;
+  width: 1em;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+.sidebar-notes[open] .sidebar-notes-header::before {
+  transform: rotate(90deg);
+}
+.sidebar-notes-body {
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+.sidebar-notes-textarea {
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0f131b;
+  color: var(--text);
+  padding: 10px 11px;
+  font: inherit;
+  line-height: 1.4;
+  outline: none;
+  box-sizing: border-box;
+}
+.sidebar-notes-textarea:focus {
+  border-color: rgba(124, 196, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(124, 196, 255, 0.12);
 }
 
-.capture-menu-popup .gm-popup-body {
-  padding-top: 10px;
+@media (max-width: 980px) {
+  body { overflow: auto; }
+  .app { flex-direction: column; height: auto; min-height: 100vh; }
+  .sidebar { flex: 0 0 auto; max-width: none; }
+  .sidebar-resizer { display: none; }
+  .main { min-height: 70vh; }
 }

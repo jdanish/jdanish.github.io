@@ -1,10 +1,23 @@
 (function () {
   window.GM = window.GM || {};
 
-  const STORAGE_KEY = 'gmScreenBookmarks_v4';
-  let state = loadState();
-  let boundContainer = null;
-  let dragBookmarkId = null;
+  const STORAGE_KEY = 'gmScreenBookmarks_v8';
+  const LONG_PRESS_MS = 500;
+
+  const state = {
+    editorEl: null,
+    editorCardEl: null,
+    editorBackdropEl: null,
+    editorTab: null,
+    editorBookmarkId: null,
+    editorDrag: null,
+    boundContainer: null,
+    dragBookmarkId: null,
+    touchTimer: null,
+    touchPoint: null,
+  };
+
+  let data = loadState();
 
   function loadState() {
     try {
@@ -18,16 +31,21 @@
 
   function saveState() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (err) {
       console.error('Failed to save bookmarks', err);
     }
   }
 
-  function getBooks() { return window.BOOKS || {}; }
+  function getBooks() {
+    return window.BOOKS || {};
+  }
 
   function getCurrentTab() {
-    return window.GM.pdfviewer?.getActiveTab?.() || window.GM.storage?.state?.activeTab || Object.keys(getBooks())[0] || null;
+    return window.GM.pdfviewer?.getActiveTab?.()
+      || window.GM.storage?.state?.activeTab
+      || Object.keys(getBooks())[0]
+      || null;
   }
 
   function getCurrentDisplayPage(tab) {
@@ -46,20 +64,20 @@
   }
 
   function getTabBookmarks(tab) {
-    if (!state[tab]) state[tab] = [];
-    return state[tab];
+    if (!data[tab]) data[tab] = [];
+    return data[tab];
+  }
+
+  function getBookmark(tab, bookmarkId) {
+    return getTabBookmarks(tab).find((bm) => bm.id === bookmarkId) || null;
   }
 
   function makeId() {
     return `bm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  function normalizeName(name) { return String(name || '').trim(); }
-  function normalizeHighlight(text) { return String(text || '').replace(/\s+/g, ' ').trim(); }
-
-  function truncate(text, max = 120) {
-    const clean = normalizeName(text);
-    return clean.length <= max ? clean : `${clean.slice(0, max - 1)}…`;
+  function normalizeText(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim();
   }
 
   function escapeHtml(text) {
@@ -67,7 +85,13 @@
       .replace(/&/g, '&amp;')
       .replace(/"/g, '&quot;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/>/g, '&gt;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function truncate(text, max = 120) {
+    const clean = normalizeText(text);
+    return clean.length <= max ? clean : `${clean.slice(0, max - 1)}…`;
   }
 
   function getActiveViewerSelectionText() {
@@ -76,19 +100,19 @@
     if (!win) return '';
     try {
       const sel = win.getSelection?.();
-      return normalizeHighlight(sel?.toString?.());
+      return normalizeText(sel?.toString?.());
     } catch {
       return '';
     }
   }
 
   function getSuggestedName(tab, displayPage, pageLinksEl, selectionText) {
-    const selection = normalizeHighlight(selectionText);
+    const selection = normalizeText(selectionText);
     if (selection) return truncate(selection, 80);
 
     const pages = Array.from(pageLinksEl?.querySelectorAll('.page-link') || []);
     const match = pages.find((btn) => Number(btn.dataset.page) === Number(displayPage));
-    if (match?.textContent) return match.textContent.trim();
+    if (match?.textContent) return normalizeText(match.textContent);
 
     const book = getBooks()[tab];
     if (book) {
@@ -103,12 +127,12 @@
     const activeTab = tab || getCurrentTab();
     if (!activeTab) return null;
 
-    const bookmarkName = normalizeName(name);
+    const bookmarkName = normalizeText(name);
     if (!bookmarkName) return null;
 
     const displayPage = Number(page) || 1;
     const list = getTabBookmarks(activeTab);
-    const cleanHighlight = normalizeHighlight(highlight);
+    const cleanHighlight = normalizeText(highlight);
 
     const existingIndex = list.findIndex((bm) => bm.name.toLowerCase() === bookmarkName.toLowerCase());
     const bookmark = {
@@ -126,6 +150,28 @@
     return bookmark;
   }
 
+  function updateBookmark(tab, bookmarkId, patch) {
+    const activeTab = tab || getCurrentTab();
+    const list = getTabBookmarks(activeTab);
+    const idx = list.findIndex((bm) => bm.id === bookmarkId);
+    if (idx < 0) return null;
+
+    const current = list[idx];
+    const updated = {
+      ...current,
+      ...patch,
+      id: current.id,
+      tab: current.tab || activeTab,
+      page: Number(patch?.page ?? current.page) || current.page,
+      name: normalizeText(patch?.name ?? current.name) || current.name,
+      highlight: normalizeText(patch?.highlight ?? current.highlight),
+    };
+
+    list[idx] = updated;
+    saveState();
+    return updated;
+  }
+
   function removeBookmark(tab, bookmarkId) {
     const activeTab = tab || getCurrentTab();
     if (!activeTab) return false;
@@ -134,30 +180,9 @@
     const next = list.filter((bm) => bm.id !== bookmarkId);
     if (next.length === list.length) return false;
 
-    state[activeTab] = next;
+    data[activeTab] = next;
     saveState();
     return true;
-  }
-
-  function updateBookmark(tab, bookmarkId, updates = {}) {
-    const activeTab = tab || getCurrentTab();
-    if (!activeTab) return null;
-
-    const list = getTabBookmarks(activeTab);
-    const idx = list.findIndex((bm) => bm.id === bookmarkId);
-    if (idx < 0) return null;
-
-    const current = list[idx];
-    const next = {
-      ...current,
-      ...updates,
-      name: updates.name !== undefined ? normalizeName(updates.name) : current.name,
-      highlight: updates.highlight !== undefined ? normalizeHighlight(updates.highlight) : current.highlight,
-    };
-
-    list[idx] = next;
-    saveState();
-    return next;
   }
 
   function bookmarkToAnchor(bookmark, label) {
@@ -168,8 +193,9 @@
       `data-page="${escapeHtml(String(bookmark.page))}"`,
     ];
 
-    if (bookmark.highlight) {
-      attrs.push(`data-highlight="${escapeHtml(bookmark.highlight)}"`);
+    const highlight = normalizeText(bookmark.highlight);
+    if (highlight) {
+      attrs.push(`data-highlight="${escapeHtml(highlight)}"`);
     }
 
     return `<a ${attrs.join(' ')}>${escapeHtml(label || bookmark.name)}</a>`;
@@ -187,6 +213,7 @@
     ta.value = value;
     ta.style.position = 'fixed';
     ta.style.left = '-9999px';
+    ta.style.top = '0';
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
@@ -198,133 +225,252 @@
     return copyText(bookmarkToAnchor(bookmark, label));
   }
 
-  function refreshPageButtons(tab) {
-    window.GM.ui?.buildPageButtons?.(tab || getCurrentTab());
-  }
-
-  function openEditorById(bookmarkId, options = {}) {
-    const tab = options.tab || getCurrentTab();
+  function createBookmarkFromContext(context, point = {}) {
+    const tab = context?.tab || getCurrentTab();
     if (!tab) return null;
 
-    const bookmark = getTabBookmarks(tab).find((bm) => bm.id === bookmarkId);
-    if (!bookmark) return null;
+    const displayPage = Number(context?.displayPage) || getCurrentDisplayPage(tab);
+    const pageLinksEl = state.boundContainer || document.querySelector('.page-links');
+    const selectedText = normalizeText(context?.text);
+    const defaultName = getSuggestedName(tab, displayPage, pageLinksEl, selectedText);
+    const name = window.prompt('Bookmark name', defaultName);
+    if (!name) return null;
 
-    const popup = window.GM.popup;
-    if (!popup) return null;
+    const bookmark = addBookmark(tab, displayPage, name, selectedText);
+    if (bookmark) {
+      refreshBookmarkBar(tab);
+    }
+    return bookmark;
+  }
 
-    const panel = document.createElement('form');
-    panel.className = 'bookmark-editor';
-    panel.innerHTML = `
-      <label class="bookmark-editor-field">
-        <span>Name</span>
-        <input type="text" name="name" value="${escapeHtml(bookmark.name)}" autocomplete="off" />
-      </label>
-      <label class="bookmark-editor-field">
-        <span>Highlight text</span>
-        <textarea name="highlight" rows="3" placeholder="Optional highlighted text">${escapeHtml(bookmark.highlight || '')}</textarea>
-      </label>
-      <div class="bookmark-editor-info">Page ${escapeHtml(String(bookmark.page))}</div>
-      <div class="bookmark-editor-actions">
-        <button type="button" data-action="copy">Copy Sidebar Link</button>
-        <button type="button" data-action="delete">Delete</button>
-        <button type="submit" data-action="save">Save</button>
+  function refreshBookmarkBar(tab) {
+    const activeTab = tab || getCurrentTab();
+    if (window.GM.ui?.buildPageButtons) {
+      window.GM.ui.buildPageButtons(activeTab);
+      return;
+    }
+    if (state.boundContainer) {
+      render(activeTab, state.boundContainer);
+    }
+  }
+
+  function clearTouchTimer() {
+    if (state.touchTimer) window.clearTimeout(state.touchTimer);
+    state.touchTimer = null;
+    state.touchPoint = null;
+  }
+
+  function ensureEditor() {
+    if (state.editorEl && document.contains(state.editorEl)) return state.editorEl;
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'bookmark-editor-backdrop';
+    backdrop.hidden = true;
+    backdrop.innerHTML = `
+      <div class="bookmark-editor-card" role="dialog" aria-modal="true" aria-label="Edit bookmark">
+        <div class="bookmark-editor-header">
+          <div class="bookmark-editor-title">Edit Bookmark</div>
+          <button type="button" class="bookmark-editor-close" data-action="close" aria-label="Close">×</button>
+        </div>
+        <div class="bookmark-editor-body">
+          <label class="bookmark-editor-field">
+            <span>Name</span>
+            <input type="text" data-field="name" autocomplete="off" />
+          </label>
+          <label class="bookmark-editor-field">
+            <span>Page</span>
+            <input type="number" data-field="page" min="1" step="1" />
+          </label>
+          <label class="bookmark-editor-field">
+            <span>Highlight text</span>
+            <textarea data-field="highlight" rows="4"></textarea>
+          </label>
+        </div>
+        <div class="bookmark-editor-actions">
+          <button type="button" data-action="copy">Copy Sidebar Link</button>
+          <button type="button" data-action="delete" class="danger">Delete</button>
+          <button type="button" data-action="save" class="primary">Save</button>
+          <button type="button" data-action="close">Close</button>
+        </div>
       </div>
     `;
 
-    const nameInput = panel.querySelector('input[name="name"]');
-    const highlightInput = panel.querySelector('textarea[name="highlight"]');
-    const copyBtn = panel.querySelector('[data-action="copy"]');
-    const deleteBtn = panel.querySelector('[data-action="delete"]');
+    document.body.appendChild(backdrop);
 
-    const doCopy = async () => {
-      const draft = {
-        tab,
-        page: bookmark.page,
-        highlight: normalizeHighlight(highlightInput.value),
-        name: normalizeName(nameInput.value) || bookmark.name,
-      };
-      await copyBookmarkHtml(draft, draft.name);
-      copyBtn.textContent = '✓';
-      window.setTimeout(() => { copyBtn.textContent = 'Copy Sidebar Link'; }, 900);
+    const card = backdrop.querySelector('.bookmark-editor-card');
+    const header = backdrop.querySelector('.bookmark-editor-header');
+    const nameInput = backdrop.querySelector('[data-field="name"]');
+    const pageInput = backdrop.querySelector('[data-field="page"]');
+    const highlightInput = backdrop.querySelector('[data-field="highlight"]');
+
+    const editorState = {
+      tab: null,
+      bookmarkId: null,
+      drag: null,
     };
 
-    copyBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      doCopy().catch(console.error);
-    });
+    function closeEditor() {
+      backdrop.hidden = true;
+      editorState.tab = null;
+      editorState.bookmarkId = null;
+      editorState.drag = null;
+    }
 
-    deleteBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      const currentName = normalizeName(nameInput.value) || bookmark.name;
-      if (!window.confirm(`Delete bookmark “${currentName}”?`)) return;
-      removeBookmark(tab, bookmarkId);
-      popup.hide();
-      refreshPageButtons(tab);
-      window.setTimeout(() => refreshPageButtons(tab), 0);
-    });
+    function readValues() {
+      return {
+        name: normalizeText(nameInput.value),
+        page: Math.max(1, Number(pageInput.value) || 1),
+        highlight: normalizeText(highlightInput.value),
+      };
+    }
 
-    panel.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const updated = updateBookmark(tab, bookmarkId, {
-        name: nameInput.value,
-        highlight: highlightInput.value,
-      });
+    function populate(tab, bookmark) {
+      editorState.tab = tab;
+      editorState.bookmarkId = bookmark.id;
+      nameInput.value = bookmark.name || '';
+      pageInput.value = Number(bookmark.page) || 1;
+      highlightInput.value = bookmark.highlight || '';
+      backdrop.hidden = false;
+
+      const rect = card.getBoundingClientRect();
+      const centerLeft = Math.max(12, (window.innerWidth - rect.width) / 2);
+      const centerTop = Math.max(12, (window.innerHeight - rect.height) / 2);
+      card.style.left = `${centerLeft}px`;
+      card.style.top = `${centerTop}px`;
+      card.style.transform = 'none';
+
+      window.setTimeout(() => nameInput.focus(), 0);
+      nameInput.select?.();
+    }
+
+    function onSave() {
+      if (!editorState.tab || !editorState.bookmarkId) return;
+      const values = readValues();
+      const updated = updateBookmark(editorState.tab, editorState.bookmarkId, values);
       if (updated) {
-        popup.hide();
-        refreshPageButtons(tab);
-        window.setTimeout(() => refreshPageButtons(tab), 0);
+        refreshBookmarkBar(editorState.tab);
       }
+      closeEditor();
+    }
+
+    function onDelete() {
+      if (!editorState.tab || !editorState.bookmarkId) return;
+      const bookmark = getBookmark(editorState.tab, editorState.bookmarkId);
+      if (!bookmark) return;
+      if (!window.confirm(`Remove bookmark “${bookmark.name}”?`)) return;
+      removeBookmark(editorState.tab, editorState.bookmarkId);
+      refreshBookmarkBar(editorState.tab);
+      closeEditor();
+    }
+
+    function onCopy() {
+      if (!editorState.tab || !editorState.bookmarkId) return;
+      const values = readValues();
+      const bookmark = {
+        id: editorState.bookmarkId,
+        tab: editorState.tab,
+        page: values.page,
+        name: values.name,
+        highlight: values.highlight,
+      };
+      copyBookmarkHtml(bookmark, values.name || bookmark.name);
+    }
+
+    backdrop.addEventListener('click', (event) => {
+      if (event.target === backdrop) closeEditor();
     });
 
-    popup.show({
-      title: 'Edit Bookmark',
-      anchor: options.anchor || null,
-      x: Number.isFinite(options.x) ? options.x : null,
-      y: Number.isFinite(options.y) ? options.y : null,
-      content: panel,
-      className: 'bookmark-editor-popup',
-      width: 340,
-      autofocusSelector: 'input[name="name"]',
+    backdrop.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeEditor();
     });
 
-    window.setTimeout(() => {
-      nameInput?.focus?.();
-      nameInput?.select?.();
-    }, 0);
+    backdrop.querySelectorAll('[data-action]').forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        const action = event.currentTarget.dataset.action;
+        if (action === 'close') closeEditor();
+        else if (action === 'save') onSave();
+        else if (action === 'delete') onDelete();
+        else if (action === 'copy') onCopy();
+      });
+    });
 
-    return bookmark;
+    // draggable header
+    let dragArmed = false;
+    let dragMoved = false;
+
+    function stopDrag() {
+      dragArmed = false;
+      dragMoved = false;
+      editorState.drag = null;
+      card.style.cursor = '';
+    }
+
+    header.addEventListener('mousedown', (event) => {
+      if (event.button !== 0) return;
+      const rect = card.getBoundingClientRect();
+      editorState.drag = {
+        offsetX: event.clientX - rect.left,
+        offsetY: event.clientY - rect.top,
+        startX: event.clientX,
+        startY: event.clientY,
+      };
+      dragArmed = true;
+      dragMoved = false;
+      card.style.transform = 'none';
+      card.style.cursor = 'grabbing';
+      event.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (event) => {
+      if (!dragArmed || !editorState.drag) return;
+      const dx = Math.abs(event.clientX - editorState.drag.startX);
+      const dy = Math.abs(event.clientY - editorState.drag.startY);
+      if (!dragMoved && dx < 3 && dy < 3) return;
+      dragMoved = true;
+      const x = Math.min(Math.max(8, event.clientX - editorState.drag.offsetX), window.innerWidth - 40);
+      const y = Math.min(Math.max(8, event.clientY - editorState.drag.offsetY), window.innerHeight - 40);
+      card.style.left = `${x}px`;
+      card.style.top = `${y}px`;
+      event.preventDefault();
+    });
+
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('mouseleave', stopDrag);
+
+    state.editorEl = backdrop;
+    state.editorBackdropEl = backdrop;
+    state.editorCardEl = card;
+    state.editorTab = editorState.tab;
+    state.editorBookmarkId = editorState.bookmarkId;
+
+    backdrop.openBookmarkEditor = populate;
+    backdrop.closeBookmarkEditor = closeEditor;
+    backdrop.readBookmarkEditor = readValues;
+
+    return backdrop;
   }
 
-  function createBookmarkFromContext(ctx, options = {}) {
-    if (!ctx) return null;
-    const tab = ctx.tab || getCurrentTab();
-    if (!tab) return null;
+  function openBookmarkEditor(tab, bookmark) {
+    const editor = ensureEditor();
+    editor.openBookmarkEditor(tab || bookmark.tab || getCurrentTab(), bookmark);
+    return editor;
+  }
 
-    const currentPage = Number(ctx.displayPage) || getCurrentDisplayPage(tab);
-    const name = getSuggestedName(tab, currentPage, window.GM.ui?.getPageLinksEl?.(), ctx.text);
-    const bookmark = addBookmark(tab, currentPage, name, ctx.text);
-    if (bookmark) {
-      openEditorById(bookmark.id, {
-        tab,
-        anchor: options.anchor || null,
-        x: Number.isFinite(options.x) ? options.x : null,
-        y: Number.isFinite(options.y) ? options.y : null,
-      });
-      refreshPageButtons(tab);
-    }
-    return bookmark;
+  function hideEditor() {
+    if (state.editorEl) state.editorEl.hidden = true;
   }
 
   function render(tab, pageLinksEl) {
     const activeTab = tab || getCurrentTab();
     if (!pageLinksEl || !activeTab) return;
 
-    boundContainer = pageLinksEl;
+    state.boundContainer = pageLinksEl;
 
     const existing = pageLinksEl.querySelector('.bookmark-ui');
     if (existing) existing.remove();
 
     const bookmarks = getTabBookmarks(activeTab);
+
     const wrap = document.createElement('span');
     wrap.className = 'bookmark-ui';
 
@@ -347,12 +493,13 @@
       link.dataset.action = 'bookmark-jump';
       link.dataset.page = String(bm.page);
       link.dataset.tab = activeTab;
+      if (bm.highlight) link.dataset.highlight = bm.highlight;
       link.draggable = true;
 
       const edit = document.createElement('button');
       edit.type = 'button';
       edit.className = 'bookmark-edit';
-      edit.title = 'Edit bookmark';
+      edit.title = `Edit ${bm.name}`;
       edit.setAttribute('aria-label', `Edit bookmark ${bm.name}`);
       edit.textContent = '✎';
       edit.dataset.action = 'bookmark-edit';
@@ -374,100 +521,107 @@
 
     pageLinksEl.appendChild(wrap);
 
-    if (pageLinksEl.dataset.bookmarkEventsAttached !== 'true') {
-      pageLinksEl.addEventListener('click', async (event) => {
-        const target = event.target.closest('[data-action]');
-        if (!target || !pageLinksEl.contains(target)) return;
+    if (pageLinksEl.dataset.bookmarkEventsAttached === 'true') return;
 
-        const action = target.dataset.action;
-        const currentTab = getCurrentTab();
+    pageLinksEl.addEventListener('click', async (event) => {
+      const target = event.target.closest('[data-action]');
+      if (!target || !pageLinksEl.contains(target)) return;
 
-        if (action === 'bookmark-add') {
-          event.preventDefault();
-          const currentPage = getCurrentDisplayPage(currentTab);
-          const selectedText = getActiveViewerSelectionText();
-          const defaultName = getSuggestedName(currentTab, currentPage, pageLinksEl, selectedText);
-          const bookmark = addBookmark(currentTab, currentPage, defaultName, selectedText);
-          if (bookmark) {
-            openEditorById(bookmark.id, { tab: currentTab, anchor: target });
-            refreshPageButtons(currentTab);
-          }
-          return;
-        }
+      const action = target.dataset.action;
+      const currentTab = getCurrentTab();
 
-        if (action === 'bookmark-jump') {
-          event.preventDefault();
-          const tab = target.dataset.tab || currentTab;
-          const page = Number(target.dataset.page) || 1;
-          const highlightText = target.dataset.highlight || '';
-          await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
-          return;
-        }
-
-        if (action === 'bookmark-edit') {
-          event.preventDefault();
-          const bookmarkId = target.dataset.bookmarkId;
-          openEditorById(bookmarkId, { tab: currentTab, anchor: target });
-          return;
-        }
-      });
-
-      pageLinksEl.addEventListener('dragstart', (event) => {
-        const link = event.target.closest('.bookmark-link');
-        if (!link || !pageLinksEl.contains(link)) return;
-        const item = link.closest('.bookmark-item');
-        if (!item) return;
-
-        dragBookmarkId = item.dataset.bookmarkId;
-        item.classList.add('dragging');
-        event.dataTransfer.effectAllowed = 'move';
-        event.dataTransfer.setData('text/plain', dragBookmarkId);
-      });
-
-      pageLinksEl.addEventListener('dragover', (event) => {
-        const item = event.target.closest('.bookmark-item');
-        if (!item || !dragBookmarkId) return;
+      if (action === 'bookmark-add') {
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-      });
+        const currentPage = getCurrentDisplayPage(currentTab);
+        const selectedText = getActiveViewerSelectionText();
+        const defaultName = getSuggestedName(currentTab, currentPage, pageLinksEl, selectedText);
+        const name = window.prompt('Bookmark name', defaultName);
+        if (!name) return;
+        addBookmark(currentTab, currentPage, name, selectedText);
+        refreshBookmarkBar(currentTab);
+        return;
+      }
 
-      pageLinksEl.addEventListener('drop', (event) => {
-        const targetItem = event.target.closest('.bookmark-item');
-        if (!targetItem || !dragBookmarkId) return;
+      if (action === 'bookmark-jump') {
         event.preventDefault();
 
-        const tab = getCurrentTab();
-        const list = getTabBookmarks(tab);
-        const fromIndex = list.findIndex((bm) => bm.id === dragBookmarkId);
-        const toIndex = list.findIndex((bm) => bm.id === targetItem.dataset.bookmarkId);
-        if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+        const tab = target.dataset.tab || currentTab;
+        const page = Number(target.dataset.page) || 1;
+        const bookmarkId = target.closest('.bookmark-item')?.dataset.bookmarkId;
+        const bookmark = getBookmark(tab, bookmarkId);
+        const highlightText = bookmark?.highlight || target.dataset.highlight || '';
 
-        const [moved] = list.splice(fromIndex, 1);
-        list.splice(toIndex, 0, moved);
-        state[tab] = list;
-        saveState();
-        dragBookmarkId = null;
-        pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => el.classList.remove('dragging'));
-        window.GM.ui?.buildPageButtons?.(tab);
+        await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
+        return;
+      }
+
+      if (action === 'bookmark-edit') {
+        event.preventDefault();
+        const bookmarkId = target.dataset.bookmarkId;
+        const bookmark = getBookmark(currentTab, bookmarkId);
+        if (!bookmark) return;
+        openBookmarkEditor(currentTab, bookmark);
+      }
+    });
+
+    pageLinksEl.addEventListener('dragstart', (event) => {
+      const link = event.target.closest('.bookmark-link');
+      if (!link) return;
+
+      const item = link.closest('.bookmark-item');
+      if (!item) return;
+
+      state.dragBookmarkId = item.dataset.bookmarkId;
+      item.classList.add('dragging');
+
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', state.dragBookmarkId);
+    });
+
+    pageLinksEl.addEventListener('dragover', (event) => {
+      const targetItem = event.target.closest('.bookmark-item');
+      if (!targetItem) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+    });
+
+    pageLinksEl.addEventListener('drop', (event) => {
+      const targetItem = event.target.closest('.bookmark-item');
+      if (!targetItem || !state.dragBookmarkId) return;
+      event.preventDefault();
+
+      const list = getTabBookmarks(currentTab);
+      const fromIndex = list.findIndex((bm) => bm.id === state.dragBookmarkId);
+      const toIndex = list.findIndex((bm) => bm.id === targetItem.dataset.bookmarkId);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+      const [moved] = list.splice(fromIndex, 1);
+      list.splice(toIndex, 0, moved);
+      saveState();
+
+      refreshBookmarkBar(currentTab);
+    });
+
+    pageLinksEl.addEventListener('dragend', () => {
+      state.dragBookmarkId = null;
+      pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => {
+        el.classList.remove('dragging');
       });
+    });
 
-      pageLinksEl.addEventListener('dragend', () => {
-        dragBookmarkId = null;
-        pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => el.classList.remove('dragging'));
-      });
-
-      pageLinksEl.dataset.bookmarkEventsAttached = 'true';
-    }
+    // touch support for edit button remains button-based; drag is desktop-first.
+    pageLinksEl.dataset.bookmarkEventsAttached = 'true';
   }
 
   function refresh() {
     const tab = getCurrentTab();
-    if (!boundContainer || !tab) return;
-    render(tab, boundContainer);
+    if (!state.boundContainer || !tab) return;
+    render(tab, state.boundContainer);
   }
 
   function init() {
-    state = loadState();
+    data = loadState();
+    ensureEditor();
   }
 
   window.GM.bookmarks = {
@@ -479,7 +633,9 @@
     updateBookmark,
     getTabBookmarks,
     bookmarkToAnchor,
+    copyBookmarkHtml,
     createBookmarkFromContext,
-    openEditorById,
+    openBookmarkEditor,
+    hideEditor,
   };
 })();

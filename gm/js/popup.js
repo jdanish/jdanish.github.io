@@ -224,8 +224,8 @@
 
     state.current = {
       anchor: options.anchor || null,
-      left: null,
-      top: null,
+      left: Number.isFinite(Number(options.x)) ? Number(options.x) : null,
+      top: Number.isFinite(Number(options.y)) ? Number(options.y) : null,
       onClose: typeof options.onClose === 'function' ? options.onClose : null,
     };
 
@@ -246,10 +246,12 @@
     state.panelEl.classList.remove('dragging');
 
     window.setTimeout(() => {
-      const centered = getCenteredPosition();
-      state.current.left = centered.left;
-      state.current.top = centered.top;
-      applyPosition(centered.left, centered.top);
+      const positioned = (Number.isFinite(state.current.left) && Number.isFinite(state.current.top))
+        ? { left: state.current.left, top: state.current.top }
+        : getCenteredPosition();
+      state.current.left = positioned.left;
+      state.current.top = positioned.top;
+      applyPosition(positioned.left, positioned.top);
       state.panelEl.style.visibility = 'visible';
       const autofocus = options.autofocusSelector ? state.bodyEl.querySelector(options.autofocusSelector) : null;
       if (autofocus?.focus) autofocus.focus();
