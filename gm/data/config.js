@@ -8,6 +8,7 @@ window.BOOKS = {
     defaultPage: 3,
     defaultScale: 1.25,
     defaultVisible: true,
+    preload: true,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Index", page: 205 },
@@ -26,6 +27,7 @@ window.BOOKS = {
     defaultPage: 1,
     defaultScale: 1.25,
     defaultVisible: true,
+    preload: false,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Index", page: 302 },
@@ -40,6 +42,7 @@ window.BOOKS = {
     defaultPage: 2,
     defaultScale: 1.25,
     defaultVisible: true,
+    preload: false,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Species", page: 31 },
@@ -57,6 +60,7 @@ window.BOOKS = {
     defaultPage: 2,
     defaultScale: 1.25,
     defaultVisible: true,
+    preload: false,
     pages: [
       { label: "TOC", page: 2 },
       { label: "Professions", page: 21 },
@@ -74,6 +78,7 @@ window.BOOKS = {
     defaultPage: 1,
     defaultScale: 1.25,
     defaultVisible: false,
+    preload: false,
     pages: [
     { label: "TOC", page: 2 },
     { label: "Ancestries", page: 6 },
@@ -88,6 +93,7 @@ window.BOOKS = {
     defaultPage: 1,
     defaultScale: 1,
     defaultVisible: false,
+    preload: false,
     pages: [
     ]
   },
@@ -99,6 +105,7 @@ window.BOOKS = {
     defaultPage: 1,
     defaultScale: 1,
     defaultVisible: false,
+    preload: true,
     pages: [
     ]
   },
@@ -110,6 +117,7 @@ window.BOOKS = {
     defaultPage: 1,
     defaultScale: 1,
     defaultVisible: false,
+    preload: false,
     pages: [
     ]
   }

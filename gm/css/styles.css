@@ -402,6 +402,24 @@ details[open] > summary::before { transform: rotate(90deg); }
   border-color: var(--accent-strong) !important;
 }
 
+.tabs button.loading {
+  position: relative;
+  padding-right: 34px;
+}
+.tabs button.loading::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #7cc4ff;
+  border-radius: 50%;
+  animation: gm-spin 0.8s linear infinite;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -6px;
+}
+
 .viewer-shell {
   display: flex;
   flex-direction: column;
@@ -439,6 +457,32 @@ details[open] > summary::before { transform: rotate(90deg); }
 .viewer.active {
   visibility: visible;
   pointer-events: auto;
+}
+.viewer-loading {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-direction: column;
+  background: rgba(11, 13, 18, 0.82);
+  color: var(--text);
+  z-index: 2;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+.viewer.loading .viewer-loading {
+  display: flex;
+}
+.viewer-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.24);
+  border-top-color: #7cc4ff;
+  animation: gm-spin 0.8s linear infinite;
 }
 iframe.pdf-frame {
   width: 100%;
@@ -1019,4 +1063,9 @@ a.linkicon:hover::before {
   .sidebar { flex: 0 0 auto; max-width: none; }
   .sidebar-resizer { display: none; }
   .main { min-height: 70vh; }
+}
+
+@keyframes gm-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

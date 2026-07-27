@@ -193,18 +193,41 @@
     wrapper.appendChild(iframe);
     frame.appendChild(wrapper);
 
+    const loading = document.createElement('div');
+    loading.className = 'viewer-loading';
+    loading.setAttribute('aria-hidden', 'true');
+    loading.innerHTML = '<span class="viewer-spinner"></span><span>Loading pages...</span>';
+    wrapper.appendChild(loading);
+
     const viewer = {
       tab,
       book,
       wrapper,
       iframe,
+      loadingEl: loading,
       app: null,
       readyPromise: null,
       loaded: false,
+      loading: false,
     };
+
+    const activeTab = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
+    if (activeTab === tab) {
+      wrapper.classList.add('active');
+    }
 
     viewerState.viewers.set(tab, viewer);
     return viewer;
+  }
+
+  function setViewerLoading(tab, isLoading) {
+    const viewer = viewerState.viewers.get(tab);
+    if (!viewer) return;
+
+    const next = Boolean(isLoading);
+    viewer.loading = next;
+    viewer.wrapper.classList.toggle('loading', next);
+    window.GM.ui?.setTabLoading?.(tab, next);
   }
 
   function showViewer(tab) {
@@ -213,10 +236,20 @@
     });
 
     viewerState.activeTab = tab;
+    const state = getState();
+    if (state.activeTab !== tab) {
+      state.activeTab = tab;
+      saveState();
+    }
   }
 
   function getActiveTab() {
     return viewerState.activeTab;
+  }
+
+  function isTabLoading(tab) {
+    const viewer = viewerState.viewers.get(tab);
+    return Boolean(viewer?.loading || viewer?.readyPromise);
   }
 
   function getCurrentViewer(tab) {
@@ -314,25 +347,31 @@
     if (viewer.app) return viewer.app;
     if (viewer.readyPromise) return viewer.readyPromise;
 
+    setViewerLoading(tab, true);
+
     viewer.readyPromise = (async () => {
-      const scaleValue = resolveScaleValue(tab);
-      const displayPage = getDisplayPage(tab);
-      const src = buildViewerSrc(viewer.book, displayPage, scaleValue);
+      try {
+        const scaleValue = resolveScaleValue(tab);
+        const displayPage = getDisplayPage(tab);
+        const src = buildViewerSrc(viewer.book, displayPage, scaleValue);
 
-      if (!viewer.iframe.src || viewer.iframe.src !== src) {
-        viewer.iframe.src = src;
+        if (!viewer.iframe.src || viewer.iframe.src !== src) {
+          viewer.iframe.src = src;
+        }
+
+        const app = await waitForViewerApp(viewer.iframe);
+        viewer.app = app || null;
+        viewer.loaded = true;
+
+        if (app) {
+          installAppListeners(tab, app);
+        }
+
+        return app;
+      } finally {
+        viewer.readyPromise = null;
+        setViewerLoading(tab, false);
       }
-
-      const app = await waitForViewerApp(viewer.iframe);
-      viewer.app = app || null;
-      viewer.loaded = true;
-
-      if (app) {
-        installAppListeners(tab, app);
-      }
-
-      viewer.readyPromise = null;
-      return app;
     })();
 
     return viewer.readyPromise;
@@ -465,20 +504,22 @@
 
   async function preloadAllViewers() {
     const tabs = Object.keys(getBooks());
-    for (const tab of tabs) {
-      createViewer(tab);
-    }
+    if (!tabs.length) return;
 
-    const active = getState().activeTab || tabs[0];
-    if (active) {
-      await setTabAndPage(active, getDisplayPage(active));
-    }
+    const state = getState();
+    const active = tabs.includes(state.activeTab) ? state.activeTab : tabs[0];
+    if (!active) return;
 
-    tabs
-      .filter((tab) => tab !== active)
-      .forEach((tab) => {
+    await setTabAndPage(active, getDisplayPage(active));
+
+    const preloadTabs = tabs.filter((tab) => tab !== active && getBook(tab)?.preload);
+    if (!preloadTabs.length) return;
+
+    window.setTimeout(() => {
+      preloadTabs.forEach((tab) => {
         ensureViewerLoaded(tab).catch((err) => console.error(err));
       });
+    }, 0);
   }
 
   async function init() {
@@ -501,6 +542,7 @@
     setTabAndPage,
     getDisplayPage,
     getActiveTab,
+    isTabLoading,
     refreshActiveTitle,
     refreshActiveViewer,
     getCurrentDisplayPage,
