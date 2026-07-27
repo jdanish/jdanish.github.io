@@ -82,7 +82,8 @@ window.BOOKS = {
     pages: [
     { label: "TOC", page: 2 },
     { label: "Ancestries", page: 6 },
-    { label: "Gear", page: 47 }
+    { label: "Gear", page: 47 },
+    { label: "Index", page: 268 }
     ]
   },
   chase_ref: {
