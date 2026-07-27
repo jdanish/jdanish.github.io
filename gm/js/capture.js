@@ -141,6 +141,7 @@
       ['copy-link', 'Copy Sidebar Link'],
       ['notes', 'Add to Notes'],
       ['copy-text', 'Copy Text'],
+      ['close', 'Close'],
     ];
 
     buttons.forEach(([action, label]) => {
@@ -171,6 +172,12 @@
             x: state.lastPoint?.x,
             y: state.lastPoint?.y,
           });
+          window.GM.popup?.hide?.();
+          return;
+        }
+
+        if (action === 'close') {
+          window.GM.popup?.hide?.();
           return;
         }
 

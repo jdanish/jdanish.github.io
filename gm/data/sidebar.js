@@ -7,8 +7,6 @@ window.SIDEBAR_SECTIONS = [
       {
         html: `
         
-
-        <div class="stack">
         <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Summary</a>
           <ul>
             <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92">Attack</a>
@@ -67,7 +65,6 @@ window.SIDEBAR_SECTIONS = [
               </li>
             </ul>
           </ul>
-        </div>
 
         `
       }

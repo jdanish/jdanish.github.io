@@ -260,6 +260,7 @@
       removeBookmark(tab, bookmarkId);
       popup.hide();
       refreshPageButtons(tab);
+      window.setTimeout(() => refreshPageButtons(tab), 0);
     });
 
     panel.addEventListener('submit', (event) => {
@@ -271,6 +272,7 @@
       if (updated) {
         popup.hide();
         refreshPageButtons(tab);
+        window.setTimeout(() => refreshPageButtons(tab), 0);
       }
     });
 
