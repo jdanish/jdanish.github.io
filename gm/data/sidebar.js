@@ -77,6 +77,7 @@ window.SIDEBAR_SECTIONS = [
       {
         html: `
           <div class="stack">
+            <a class="linkicon" href="https://immaterialplane.com/apps/swdr/" target="dice">Dice Roller App</a>
             <a class="linkicon jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>
             <a class="linkicon jump-link" href="#" data-tab="swade" data-page="112" data-highlight="Chases &amp; Vehicles">Chases &amp; Vehicles</a>
             <a class="linkicon jump-link" href="#" data-tab="swade" data-page="91" data-highlight="JOKERS">Jokers</a>
