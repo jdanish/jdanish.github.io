@@ -10,6 +10,7 @@
       openSections: {},
       sidebarWidth: null,
       activeTab: null,
+      sidebarTab: 'rules',
       sidebarNotes: '',
       bookVisibility: {},
       searchIncludeHiddenBooks: false,
@@ -24,6 +25,7 @@
       state.pages = state.pages || {};
       state.scales = state.scales || {};
       state.openSections = state.openSections || {};
+      if (typeof state.sidebarTab !== 'string' || !state.sidebarTab) state.sidebarTab = 'rules';
       if (typeof state.sidebarNotes !== 'string') state.sidebarNotes = '';
       if (!state.bookVisibility || typeof state.bookVisibility !== 'object') state.bookVisibility = {};
       if (typeof state.searchIncludeHiddenBooks !== 'boolean') state.searchIncludeHiddenBooks = false;

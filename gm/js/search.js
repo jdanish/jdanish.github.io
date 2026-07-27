@@ -13,6 +13,7 @@
     indexingPromise: null,
     dom: {
       sidebarContentEl: null,
+      searchPanelEl: null,
       searchInputEl: null,
       searchHiddenBooksEl: null,
       clearButtonEl: null,
@@ -298,10 +299,10 @@
   }
 
   function ensureResultsContainer() {
-    const sidebarContentEl = searchState.dom.sidebarContentEl;
-    if (!sidebarContentEl) return null;
+    const host = searchState.dom.searchPanelEl || searchState.dom.sidebarContentEl;
+    if (!host) return null;
 
-    let container = sidebarContentEl.querySelector('#searchResults');
+    let container = host.querySelector('#searchResults');
     if (container) {
       searchState.dom.resultsEl = container;
       return container;
@@ -311,7 +312,7 @@
     container.id = 'searchResults';
     container.className = 'search-results';
     container.hidden = true;
-    sidebarContentEl.insertBefore(container, sidebarContentEl.firstChild);
+    host.appendChild(container);
     searchState.dom.resultsEl = container;
     return container;
   }
@@ -435,9 +436,11 @@
     const q = String(query || '').trim();
     if (q.length < 2) {
       clearResults();
+      window.GM.ui?.restoreSidebarTabFromSearch?.();
       return;
     }
 
+    window.GM.ui?.showSearchSidebar?.();
     renderResults(q, [], [], 'Searching PDFs…');
 
     const sidebarHits = searchSidebar(q);
@@ -453,8 +456,9 @@
     renderResults(q, sidebarHits, pdfHits);
   }
 
-  function setupSearch({ sidebarContentEl, searchInputEl, searchHiddenBooksEl, clearButtonEl }) {
-    searchState.dom.sidebarContentEl = sidebarContentEl || searchState.dom.sidebarContentEl;
+  function setupSearch({ sidebarContentEl, searchPanelEl, searchInputEl, searchHiddenBooksEl, clearButtonEl }) {
+    searchState.dom.sidebarContentEl = searchPanelEl || sidebarContentEl || searchState.dom.sidebarContentEl;
+    searchState.dom.searchPanelEl = searchPanelEl || searchState.dom.searchPanelEl;
     searchState.dom.searchInputEl = searchInputEl || searchState.dom.searchInputEl;
     searchState.dom.searchHiddenBooksEl = searchHiddenBooksEl || searchState.dom.searchHiddenBooksEl;
     searchState.dom.clearButtonEl = clearButtonEl || searchState.dom.clearButtonEl;
@@ -474,7 +478,7 @@
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
           input.value = '';
-          clearResults();
+          performSearch('');
           input.blur();
         }
       });
@@ -497,7 +501,7 @@
     if (clear && clear.dataset.searchBound !== 'true') {
       clear.addEventListener('click', () => {
         if (input) input.value = '';
-        clearResults();
+        performSearch('');
         if (input) input.focus();
       });
       clear.dataset.searchBound = 'true';

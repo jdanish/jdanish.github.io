@@ -1069,3 +1069,79 @@ a.linkicon:hover::before {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+
+.sidebar-body {
+  overflow: hidden;
+}
+
+.sidebar-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.sidebar-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sidebar-tab-button {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sidebar-tab-button.active {
+  background: var(--accent) !important;
+  border-color: var(--accent-strong) !important;
+}
+
+.sidebar-panels {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-panel {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  padding-right: 4px;
+}
+
+.sidebar-panel.active {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.sidebar-panel > details,
+.sidebar-panel > .nested-block,
+.sidebar-panel > .search-results,
+.sidebar-panel > .search-group,
+.sidebar-panel > .search-empty {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.sidebar-panel .search-results {
+  margin: 0;
+}

@@ -2,6 +2,7 @@
 window.SIDEBAR_SECTIONS = [
   {
     title: "Combat",
+    tab: "rules",
     intro: "",
     blocks: [
       {
@@ -72,6 +73,7 @@ window.SIDEBAR_SECTIONS = [
   },
   {
     title: "Other Rules",
+    tab: "rules",
     intro: "",
     blocks: [
       {
@@ -103,11 +105,11 @@ window.SIDEBAR_SECTIONS = [
     ]
   },
   {
-    title: "Current Session",
+    title: "Jean Grayson",
+    tab: "current",
     intro: "",
     blocks: [
       {
-        title: "Jean Grayson",
         html: `
           <div class="stack">
             Profession: <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="33">Psy Commando</a>
