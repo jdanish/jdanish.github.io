@@ -12,6 +12,7 @@
   async function init() {
     window.GM.storage = window.GM.storage || {};
 
+    window.GM.popup?.init?.();
     window.GM.bookmarks?.init?.();
     window.GM.notes?.init?.();
     window.GM.search?.init?.();

@@ -2,7 +2,6 @@
   window.GM = window.GM || {};
 
   const state = {
-    menuEl: null,
     boundIframes: new WeakSet(),
     boundDocs: new WeakSet(),
     touchTimer: null,
@@ -20,9 +19,7 @@
   }
 
   function normalizeText(text) {
-    return String(text || '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    return String(text || '').replace(/\s+/g, ' ').trim();
   }
 
   function truncate(text, max = 120) {
@@ -90,72 +87,6 @@
     };
   }
 
-  function ensureMenu() {
-    if (state.menuEl && document.contains(state.menuEl)) return state.menuEl;
-
-    const menu = document.createElement('div');
-    menu.id = 'captureSelectionMenu';
-    menu.className = 'capture-menu';
-    menu.hidden = true;
-    menu.innerHTML = `
-      <button type="button" data-action="bookmark">Create Bookmark</button>
-      <button type="button" data-action="copy-link">Copy Sidebar Link</button>
-      <button type="button" data-action="notes">Add to Notes</button>
-      <button type="button" data-action="copy-text">Copy Text</button>
-    `;
-    document.body.appendChild(menu);
-    state.menuEl = menu;
-
-    menu.addEventListener('click', async (event) => {
-      const btn = event.target.closest('[data-action]');
-      if (!btn) return;
-      const action = btn.dataset.action;
-      const ctx = state.lastContext;
-      if (!ctx) return;
-
-      try {
-        if (action === 'bookmark') {
-          const name = truncate(ctx.text, 80);
-          window.GM.bookmarks?.addBookmark?.(ctx.tab, ctx.displayPage, name, ctx.text);
-          window.GM.ui?.buildPageButtons?.(ctx.tab);
-        } else if (action === 'copy-link') {
-          const html = window.GM.bookmarks?.bookmarkToAnchor?.(
-            { tab: ctx.tab, page: ctx.displayPage, highlight: ctx.text },
-            truncate(ctx.text, 80)
-          ) || '';
-          await copyText(html);
-        } else if (action === 'notes') {
-          const bookTitle = ctx.book?.title || ctx.tab || 'Book';
-          const noteLine = `• ${ctx.text} — ${bookTitle} p. ${ctx.displayPage}`;
-          window.GM.notes?.appendText?.(noteLine);
-          window.GM.notes?.open?.();
-          window.GM.notes?.focus?.();
-        } else if (action === 'copy-text') {
-          await copyText(ctx.text);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        hideMenu();
-      }
-    });
-
-    document.addEventListener('pointerdown', (event) => {
-      if (state.menuEl && !state.menuEl.hidden && !state.menuEl.contains(event.target)) {
-        hideMenu();
-      }
-    }, true);
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') hideMenu();
-    });
-
-    window.addEventListener('scroll', hideMenu, true);
-    window.addEventListener('resize', hideMenu);
-
-    return menu;
-  }
-
   function copyText(text) {
     const value = String(text || '');
     if (!value) return Promise.resolve();
@@ -175,37 +106,6 @@
     return Promise.resolve();
   }
 
-  function hideMenu() {
-    if (!state.menuEl) return;
-    state.menuEl.hidden = true;
-    state.lastContext = null;
-  }
-
-  function positionMenuAt(x, y) {
-    const menu = ensureMenu();
-    menu.hidden = false;
-    menu.style.visibility = 'hidden';
-    menu.style.left = '0px';
-    menu.style.top = '0px';
-
-    const margin = 12;
-    const width = menu.offsetWidth || 220;
-    const height = menu.offsetHeight || 140;
-
-    const left = Math.min(Math.max(margin, x), window.innerWidth - width - margin);
-    const top = Math.min(Math.max(margin, y), window.innerHeight - height - margin);
-
-    menu.style.left = `${left}px`;
-    menu.style.top = `${top}px`;
-    menu.style.visibility = 'visible';
-  }
-
-  function showMenuForSelection(ctx, x, y) {
-    if (!ctx) return;
-    state.lastContext = ctx;
-    positionMenuAt(x, y);
-  }
-
   function selectionPointFromContext(ctx, fallbackX, fallbackY) {
     const iframeRect = ctx.iframe.getBoundingClientRect();
     const rect = ctx.rect && Number.isFinite(ctx.rect.width) && Number.isFinite(ctx.rect.height) && ctx.rect.width > 0 && ctx.rect.height > 0
@@ -223,6 +123,103 @@
       x: iframeRect.left + fallbackX,
       y: iframeRect.top + fallbackY,
     };
+  }
+
+  function renderMenu(ctx) {
+    const wrap = document.createElement('div');
+    wrap.className = 'capture-menu-content';
+
+    const preview = document.createElement('div');
+    preview.className = 'capture-menu-preview';
+    preview.textContent = truncate(ctx.text, 120);
+
+    const actions = document.createElement('div');
+    actions.className = 'capture-menu-actions';
+
+    const buttons = [
+      ['bookmark', 'Create Bookmark'],
+      ['copy-link', 'Copy Sidebar Link'],
+      ['notes', 'Add to Notes'],
+      ['copy-text', 'Copy Text'],
+    ];
+
+    buttons.forEach(([action, label]) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.action = action;
+      btn.textContent = label;
+      actions.appendChild(btn);
+    });
+
+    wrap.appendChild(preview);
+    wrap.appendChild(actions);
+
+    wrap.addEventListener('click', async (event) => {
+      const btn = event.target.closest('[data-action]');
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const current = state.lastContext;
+      if (!current) {
+        window.GM.popup?.hide?.();
+        return;
+      }
+
+      try {
+        if (action === 'bookmark') {
+          window.GM.bookmarks?.createBookmarkFromContext?.(current, {
+            x: state.lastPoint?.x,
+            y: state.lastPoint?.y,
+          });
+          return;
+        }
+
+        if (action === 'copy-link') {
+          const html = window.GM.bookmarks?.bookmarkToAnchor?.(
+            { tab: current.tab, page: current.displayPage, highlight: current.text },
+            truncate(current.text, 80)
+          ) || '';
+          await copyText(html);
+          window.GM.popup?.hide?.();
+        } else if (action === 'notes') {
+          const bookTitle = current.book?.title || current.tab || 'Book';
+          const noteLine = `• ${current.text} — ${bookTitle} p. ${current.displayPage}`;
+          window.GM.notes?.appendText?.(noteLine);
+          window.GM.notes?.open?.();
+          window.GM.notes?.focus?.();
+          window.GM.popup?.hide?.();
+        } else if (action === 'copy-text') {
+          await copyText(current.text);
+          window.GM.popup?.hide?.();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    return wrap;
+  }
+
+  function showMenuForSelection(ctx, x, y) {
+    if (!ctx) return;
+    state.lastContext = ctx;
+    state.lastPoint = { x, y };
+    window.GM.popup?.show?.({
+      title: 'Selection',
+      content: renderMenu(ctx),
+      x,
+      y,
+      width: 280,
+      className: 'capture-menu-popup',
+    });
+  }
+
+  function clearTouchTimer() {
+    if (state.touchTimer) {
+      window.clearTimeout(state.touchTimer);
+      state.touchTimer = null;
+    }
+    state.touchPoint = null;
   }
 
   function attachFrame(iframe) {
@@ -252,7 +249,7 @@
           const ctx = getSelectionContext(iframe);
           if (!ctx) return;
           const pt = state.touchPoint || { x: event.clientX, y: event.clientY };
-          showMenuForSelection(ctx, iframe.getBoundingClientRect().left + pt.x, iframe.getBoundingClientRect().top + pt.y);
+          showMenuForSelection(ctx, pt.x + 12, pt.y + 12);
         }, 650);
       }, { passive: true });
 
@@ -274,17 +271,7 @@
     iframe.addEventListener('load', bindDoc);
   }
 
-  function clearTouchTimer() {
-    if (state.touchTimer) {
-      window.clearTimeout(state.touchTimer);
-      state.touchTimer = null;
-    }
-    state.touchPoint = null;
-  }
-
   function bindActiveViewer() {
-    ensureMenu();
-
     document.querySelectorAll('#viewerFrame iframe.pdf-frame').forEach((iframe) => {
       attachFrame(iframe);
     });
@@ -302,7 +289,7 @@
   }
 
   function init() {
-    ensureMenu();
+    window.GM.popup?.init?.();
     bindActiveViewer();
     observeViewerFrame();
   }
@@ -310,7 +297,6 @@
   window.GM.capture = {
     init,
     bindActiveViewer,
-    hideMenu,
     getSelectionContext,
   };
 })();

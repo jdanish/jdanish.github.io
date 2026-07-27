@@ -1,14 +1,10 @@
 (function () {
   window.GM = window.GM || {};
 
-  const STORAGE_KEY = 'gmScreenBookmarks_v3';
-  const LONG_PRESS_MS = 500;
-
+  const STORAGE_KEY = 'gmScreenBookmarks_v4';
   let state = loadState();
   let boundContainer = null;
-  let longPressTimer = null;
-  let longPressItem = null;
-  let suppressClickBookmarkId = null;
+  let dragBookmarkId = null;
 
   function loadState() {
     try {
@@ -31,7 +27,7 @@
   function getBooks() { return window.BOOKS || {}; }
 
   function getCurrentTab() {
-    return window.GM.pdfviewer?.getActiveTab?.() || Object.keys(getBooks())[0] || null;
+    return window.GM.pdfviewer?.getActiveTab?.() || window.GM.storage?.state?.activeTab || Object.keys(getBooks())[0] || null;
   }
 
   function getCurrentDisplayPage(tab) {
@@ -143,6 +139,27 @@
     return true;
   }
 
+  function updateBookmark(tab, bookmarkId, updates = {}) {
+    const activeTab = tab || getCurrentTab();
+    if (!activeTab) return null;
+
+    const list = getTabBookmarks(activeTab);
+    const idx = list.findIndex((bm) => bm.id === bookmarkId);
+    if (idx < 0) return null;
+
+    const current = list[idx];
+    const next = {
+      ...current,
+      ...updates,
+      name: updates.name !== undefined ? normalizeName(updates.name) : current.name,
+      highlight: updates.highlight !== undefined ? normalizeHighlight(updates.highlight) : current.highlight,
+    };
+
+    list[idx] = next;
+    saveState();
+    return next;
+  }
+
   function bookmarkToAnchor(bookmark, label) {
     const attrs = [
       `class="linkicon jump-link"`,
@@ -158,14 +175,16 @@
     return `<a ${attrs.join(' ')}>${escapeHtml(label || bookmark.name)}</a>`;
   }
 
-  function copyBookmarkHtml(bookmark) {
-    const html = bookmarkToAnchor(bookmark);
+  function copyText(text) {
+    const value = String(text || '');
+    if (!value) return Promise.resolve();
+
     if (navigator.clipboard?.writeText) {
-      return navigator.clipboard.writeText(html);
+      return navigator.clipboard.writeText(value);
     }
 
     const ta = document.createElement('textarea');
-    ta.value = html;
+    ta.value = value;
     ta.style.position = 'fixed';
     ta.style.left = '-9999px';
     document.body.appendChild(ta);
@@ -175,36 +194,123 @@
     return Promise.resolve();
   }
 
-  function clearLongPressState() {
-    if (longPressTimer) window.clearTimeout(longPressTimer);
-    longPressTimer = null;
+  function copyBookmarkHtml(bookmark, label) {
+    return copyText(bookmarkToAnchor(bookmark, label));
   }
 
-  function hideAllActionMenus(pageLinksEl) {
-    pageLinksEl.querySelectorAll('.bookmark-item.show-actions').forEach((item) => {
-      item.classList.remove('show-actions');
-    });
+  function refreshPageButtons(tab) {
+    window.GM.ui?.buildPageButtons?.(tab || getCurrentTab());
   }
 
-  function revealActionsForItem(pageLinksEl, item) {
-    hideAllActionMenus(pageLinksEl);
-    if (!item) return;
-    item.classList.add('show-actions');
-    suppressClickBookmarkId = item.dataset.bookmarkId || null;
+  function openEditorById(bookmarkId, options = {}) {
+    const tab = options.tab || getCurrentTab();
+    if (!tab) return null;
 
-    const clear = () => {
-      item.classList.remove('show-actions');
-      if (suppressClickBookmarkId === item.dataset.bookmarkId) suppressClickBookmarkId = null;
-      document.removeEventListener('pointerdown', onDocPointerDown, true);
+    const bookmark = getTabBookmarks(tab).find((bm) => bm.id === bookmarkId);
+    if (!bookmark) return null;
+
+    const popup = window.GM.popup;
+    if (!popup) return null;
+
+    const panel = document.createElement('form');
+    panel.className = 'bookmark-editor';
+    panel.innerHTML = `
+      <label class="bookmark-editor-field">
+        <span>Name</span>
+        <input type="text" name="name" value="${escapeHtml(bookmark.name)}" autocomplete="off" />
+      </label>
+      <label class="bookmark-editor-field">
+        <span>Highlight text</span>
+        <textarea name="highlight" rows="3" placeholder="Optional highlighted text">${escapeHtml(bookmark.highlight || '')}</textarea>
+      </label>
+      <div class="bookmark-editor-info">Page ${escapeHtml(String(bookmark.page))}</div>
+      <div class="bookmark-editor-actions">
+        <button type="button" data-action="copy">Copy Sidebar Link</button>
+        <button type="button" data-action="delete">Delete</button>
+        <button type="submit" data-action="save">Save</button>
+      </div>
+    `;
+
+    const nameInput = panel.querySelector('input[name="name"]');
+    const highlightInput = panel.querySelector('textarea[name="highlight"]');
+    const copyBtn = panel.querySelector('[data-action="copy"]');
+    const deleteBtn = panel.querySelector('[data-action="delete"]');
+
+    const doCopy = async () => {
+      const draft = {
+        tab,
+        page: bookmark.page,
+        highlight: normalizeHighlight(highlightInput.value),
+        name: normalizeName(nameInput.value) || bookmark.name,
+      };
+      await copyBookmarkHtml(draft, draft.name);
+      copyBtn.textContent = '✓';
+      window.setTimeout(() => { copyBtn.textContent = 'Copy Sidebar Link'; }, 900);
     };
 
-    function onDocPointerDown(evt) {
-      if (!pageLinksEl.contains(evt.target)) {
-        clear();
-      }
-    }
+    copyBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      doCopy().catch(console.error);
+    });
 
-    document.addEventListener('pointerdown', onDocPointerDown, true);
+    deleteBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      const currentName = normalizeName(nameInput.value) || bookmark.name;
+      if (!window.confirm(`Delete bookmark “${currentName}”?`)) return;
+      removeBookmark(tab, bookmarkId);
+      popup.hide();
+      refreshPageButtons(tab);
+    });
+
+    panel.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const updated = updateBookmark(tab, bookmarkId, {
+        name: nameInput.value,
+        highlight: highlightInput.value,
+      });
+      if (updated) {
+        popup.hide();
+        refreshPageButtons(tab);
+      }
+    });
+
+    popup.show({
+      title: 'Edit Bookmark',
+      anchor: options.anchor || null,
+      x: Number.isFinite(options.x) ? options.x : null,
+      y: Number.isFinite(options.y) ? options.y : null,
+      content: panel,
+      className: 'bookmark-editor-popup',
+      width: 340,
+      autofocusSelector: 'input[name="name"]',
+    });
+
+    window.setTimeout(() => {
+      nameInput?.focus?.();
+      nameInput?.select?.();
+    }, 0);
+
+    return bookmark;
+  }
+
+  function createBookmarkFromContext(ctx, options = {}) {
+    if (!ctx) return null;
+    const tab = ctx.tab || getCurrentTab();
+    if (!tab) return null;
+
+    const currentPage = Number(ctx.displayPage) || getCurrentDisplayPage(tab);
+    const name = getSuggestedName(tab, currentPage, window.GM.ui?.getPageLinksEl?.(), ctx.text);
+    const bookmark = addBookmark(tab, currentPage, name, ctx.text);
+    if (bookmark) {
+      openEditorById(bookmark.id, {
+        tab,
+        anchor: options.anchor || null,
+        x: Number.isFinite(options.x) ? options.x : null,
+        y: Number.isFinite(options.y) ? options.y : null,
+      });
+      refreshPageButtons(tab);
+    }
+    return bookmark;
   }
 
   function render(tab, pageLinksEl) {
@@ -229,6 +335,7 @@
       const item = document.createElement('span');
       item.className = 'bookmark-item';
       item.dataset.bookmarkId = bm.id;
+      item.dataset.tab = activeTab;
 
       const link = document.createElement('button');
       link.type = 'button';
@@ -238,29 +345,19 @@
       link.dataset.action = 'bookmark-jump';
       link.dataset.page = String(bm.page);
       link.dataset.tab = activeTab;
-      if (bm.highlight) link.dataset.highlight = bm.highlight;
+      link.draggable = true;
 
-      const copy = document.createElement('button');
-      copy.type = 'button';
-      copy.className = 'bookmark-copy';
-      copy.title = 'Copy sidebar link';
-      copy.setAttribute('aria-label', `Copy link for ${bm.name}`);
-      copy.textContent = '⧉';
-      copy.dataset.action = 'bookmark-copy';
-      copy.dataset.bookmarkId = bm.id;
-
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'bookmark-remove';
-      remove.title = `Remove ${bm.name}`;
-      remove.setAttribute('aria-label', `Remove bookmark ${bm.name}`);
-      remove.textContent = '×';
-      remove.dataset.action = 'bookmark-remove';
-      remove.dataset.bookmarkId = bm.id;
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'bookmark-edit';
+      edit.title = 'Edit bookmark';
+      edit.setAttribute('aria-label', `Edit bookmark ${bm.name}`);
+      edit.textContent = '✎';
+      edit.dataset.action = 'bookmark-edit';
+      edit.dataset.bookmarkId = bm.id;
 
       item.appendChild(link);
-      item.appendChild(copy);
-      item.appendChild(remove);
+      item.appendChild(edit);
       wrap.appendChild(item);
     });
 
@@ -276,22 +373,6 @@
     pageLinksEl.appendChild(wrap);
 
     if (pageLinksEl.dataset.bookmarkEventsAttached !== 'true') {
-      pageLinksEl.addEventListener('pointerdown', (event) => {
-        const target = event.target.closest('.bookmark-link');
-        if (!target || !pageLinksEl.contains(target)) return;
-        if (event.pointerType !== 'touch') return;
-
-        clearLongPressState();
-        const item = target.closest('.bookmark-item');
-        longPressTimer = window.setTimeout(() => {
-          revealActionsForItem(pageLinksEl, item);
-        }, LONG_PRESS_MS);
-      });
-
-      pageLinksEl.addEventListener('pointerup', clearLongPressState);
-      pageLinksEl.addEventListener('pointercancel', clearLongPressState);
-      pageLinksEl.addEventListener('pointerleave', clearLongPressState);
-
       pageLinksEl.addEventListener('click', async (event) => {
         const target = event.target.closest('[data-action]');
         if (!target || !pageLinksEl.contains(target)) return;
@@ -304,22 +385,15 @@
           const currentPage = getCurrentDisplayPage(currentTab);
           const selectedText = getActiveViewerSelectionText();
           const defaultName = getSuggestedName(currentTab, currentPage, pageLinksEl, selectedText);
-          const name = window.prompt('Bookmark name', defaultName);
-          if (!name) return;
-          addBookmark(currentTab, currentPage, name, selectedText);
-          window.GM.ui?.buildPageButtons?.(currentTab);
+          const bookmark = addBookmark(currentTab, currentPage, defaultName, selectedText);
+          if (bookmark) {
+            openEditorById(bookmark.id, { tab: currentTab, anchor: target });
+            refreshPageButtons(currentTab);
+          }
           return;
         }
 
         if (action === 'bookmark-jump') {
-          const item = target.closest('.bookmark-item');
-          if (item?.classList.contains('show-actions') && suppressClickBookmarkId === item.dataset.bookmarkId) {
-            event.preventDefault();
-            suppressClickBookmarkId = null;
-            item.classList.remove('show-actions');
-            return;
-          }
-
           event.preventDefault();
           const tab = target.dataset.tab || currentTab;
           const page = Number(target.dataset.page) || 1;
@@ -328,29 +402,56 @@
           return;
         }
 
-        if (action === 'bookmark-copy') {
+        if (action === 'bookmark-edit') {
           event.preventDefault();
           const bookmarkId = target.dataset.bookmarkId;
-          const bookmark = getTabBookmarks(currentTab).find((bm) => bm.id === bookmarkId);
-          if (!bookmark) return;
-          try {
-            await copyBookmarkHtml(bookmark);
-            target.textContent = '✓';
-            window.setTimeout(() => { target.textContent = '⧉'; }, 900);
-          } catch (err) {
-            console.error('Copy failed', err);
-          }
+          openEditorById(bookmarkId, { tab: currentTab, anchor: target });
           return;
         }
+      });
 
-        if (action === 'bookmark-remove') {
-          event.preventDefault();
-          const bookmarkId = target.dataset.bookmarkId;
-          const bmName = target.closest('.bookmark-item')?.querySelector('.bookmark-link')?.textContent?.trim() || 'this bookmark';
-          if (!window.confirm(`Remove bookmark “${bmName}”?`)) return;
-          removeBookmark(currentTab, bookmarkId);
-          window.GM.ui?.buildPageButtons?.(currentTab);
-        }
+      pageLinksEl.addEventListener('dragstart', (event) => {
+        const link = event.target.closest('.bookmark-link');
+        if (!link || !pageLinksEl.contains(link)) return;
+        const item = link.closest('.bookmark-item');
+        if (!item) return;
+
+        dragBookmarkId = item.dataset.bookmarkId;
+        item.classList.add('dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', dragBookmarkId);
+      });
+
+      pageLinksEl.addEventListener('dragover', (event) => {
+        const item = event.target.closest('.bookmark-item');
+        if (!item || !dragBookmarkId) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+      });
+
+      pageLinksEl.addEventListener('drop', (event) => {
+        const targetItem = event.target.closest('.bookmark-item');
+        if (!targetItem || !dragBookmarkId) return;
+        event.preventDefault();
+
+        const tab = getCurrentTab();
+        const list = getTabBookmarks(tab);
+        const fromIndex = list.findIndex((bm) => bm.id === dragBookmarkId);
+        const toIndex = list.findIndex((bm) => bm.id === targetItem.dataset.bookmarkId);
+        if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+        const [moved] = list.splice(fromIndex, 1);
+        list.splice(toIndex, 0, moved);
+        state[tab] = list;
+        saveState();
+        dragBookmarkId = null;
+        pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => el.classList.remove('dragging'));
+        window.GM.ui?.buildPageButtons?.(tab);
+      });
+
+      pageLinksEl.addEventListener('dragend', () => {
+        dragBookmarkId = null;
+        pageLinksEl.querySelectorAll('.bookmark-item.dragging').forEach((el) => el.classList.remove('dragging'));
       });
 
       pageLinksEl.dataset.bookmarkEventsAttached = 'true';
@@ -373,7 +474,10 @@
     refresh,
     addBookmark,
     removeBookmark,
+    updateBookmark,
     getTabBookmarks,
     bookmarkToAnchor,
+    createBookmarkFromContext,
+    openEditorById,
   };
 })();

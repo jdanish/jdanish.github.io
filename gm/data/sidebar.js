@@ -7,12 +7,69 @@ window.SIDEBAR_SECTIONS = [
       {
         title: "Combat Reference",
         html: `
-          <div class="stack">
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="90">Combat</a>
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="92">Attack</a>
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="93">Shaken</a>
-            <a class="btn jump-link" href="#" data-tab="swade" data-page="95">Soak</a>
-          </div>
+        
+
+        <div class="stack">
+        <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Combat</a>
+          <ul>
+            <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92">Attack</a>
+            </li>
+            <ul>
+              <li>
+                <strong>Melee</strong>
+                <ul>
+                  <li> <u>To hit</u>: Fighting die + wild; Must equal or beat target's Parry
+                        <ul>
+                          <li>Raise(s) add 1d6 to damage roll
+                          </li>
+                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> for ganging up, flanking, prone, etc.
+                          </li>
+                        </ul>
+                  </li>
+                  <li><u>If hit</u>: Roll Damage; Must equal or beat toughness
+                        <ul>
+                          <li>Raise(s) add wounds
+                          </li>
+                        </ul>
+                    </li>
+                  </ul>
+                </li>
+              <li>  
+                <strong>Ranged</strong>
+                <ul>
+                  <li> <u>To hit</u>: Shooting die + wild die (-2 for medium, -4 long range); Must equal or beat 4
+                        <ul>
+                          <li>Raise(s) add 1d6 to damage roll
+                          </li>
+                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> for range, cover, etc.
+                          </li>
+                        </ul>
+                        <li>NOTE: Don't forget to roll an extra die if ROF is above 1...</li>
+                  </li>
+                  <li><u>If hit</u>: Roll Damage; Must equal or beat toughness
+                        <ul>
+                          <li>Raise(s) add wounds
+                          </li>
+                        </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>  
+                <strong>Damage...</strong>
+                <ul>
+                  <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="95">Soaking</a> to avoid damange</li>
+                    <ul>
+                      <li>Vigor check, ignore one wound per success / raise
+                      </li>
+                    </ul>
+                  <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="93">Shaken or wounded</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </ul>
+        </div>
+
         `
       },
       {
