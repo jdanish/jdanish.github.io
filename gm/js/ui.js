@@ -53,8 +53,8 @@
   }
 
   function getSidebarElementByKeys(sectionKey, blockKey) {
-    if ((sectionKey === 'sidebar-notes' || blockKey === 'sidebar-notes') && dom.sidebarNotesPanelEl) {
-      return dom.sidebarNotesPanelEl;
+    if (sectionKey === 'sidebar-notes' || blockKey === 'sidebar-notes') {
+      return window.GM.notes?.getPanelEl?.() || null;
     }
     if (blockKey && blockEls.has(blockKey)) return blockEls.get(blockKey);
     if (sectionKey && sectionEls.has(sectionKey)) return sectionEls.get(sectionKey);
@@ -84,8 +84,8 @@
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     flashElement(el);
 
-    if (dom.sidebarNotesEl && el.contains(dom.sidebarNotesEl)) {
-      window.setTimeout(() => dom.sidebarNotesEl?.focus?.(), 50);
+    if (el.id === 'sidebarNotesPanel' || el.classList.contains('sidebar-notes')) {
+      window.setTimeout(() => window.GM.notes?.focus?.(), 50);
     }
   }
 
@@ -212,7 +212,6 @@
 
     installSidebarDelegation();
     syncPersistedNestedDetails();
-    setupSidebarNotes();
     window.GM.search?.setupSearch?.({
       sidebarContentEl: dom.sidebarContentEl,
       searchInputEl: dom.sidebarSearchEl,
@@ -321,32 +320,6 @@
     dom.sidebarResizerEl.dataset.resizerBound = 'true';
   }
 
-  function syncNotesToState() {
-    if (!dom.sidebarNotesEl) return;
-    const text = String(getState().sidebarNotes || '');
-    if (dom.sidebarNotesEl.value !== text) dom.sidebarNotesEl.value = text;
-  }
-
-  function setupSidebarNotes() {
-    if (!dom.sidebarNotesEl) return;
-    if (dom.sidebarNotesEl.dataset.notesBound === 'true') {
-      syncNotesToState();
-      return;
-    }
-
-    syncNotesToState();
-
-    dom.sidebarNotesEl.addEventListener('input', () => {
-      getState().sidebarNotes = dom.sidebarNotesEl.value;
-      window.GM.storage?.saveState?.();
-      const currentQuery = dom.sidebarSearchEl?.value || '';
-      if (currentQuery.trim().length >= 2) {
-        window.GM.search?.performSearch?.(currentQuery).catch?.(console.error);
-      }
-    });
-
-    dom.sidebarNotesEl.dataset.notesBound = 'true';
-  }
 
   function init() {
     dom = {
@@ -357,8 +330,6 @@
       sidebarSearchEl: document.getElementById('sidebarSearch'),
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
-      sidebarNotesPanelEl: document.getElementById('sidebarNotesPanel'),
-      sidebarNotesEl: document.getElementById('sidebarNotes'),
     };
 
     buildTabs();
@@ -384,6 +355,5 @@
     revealSidebarElement,
     getSidebarElementByKeys,
     getDisplayPage,
-    syncNotesToState,
   };
 })();

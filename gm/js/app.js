@@ -13,6 +13,7 @@
     window.GM.storage = window.GM.storage || {};
 
     window.GM.bookmarks?.init?.();
+    window.GM.notes?.init?.();
     window.GM.search?.init?.();
     window.GM.ui?.init?.();
     await window.GM.pdfviewer?.init?.();

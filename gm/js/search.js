@@ -92,7 +92,7 @@
   }
 
   function getSidebarNotesText() {
-    return String(window.GM.storage?.state?.sidebarNotes || '').trim();
+    return String(window.GM.notes?.getText?.() || window.GM.storage?.state?.sidebarNotes || '').trim();
   }
 
   function buildSidebarIndex() {
