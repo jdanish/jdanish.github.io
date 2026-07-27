@@ -141,6 +141,30 @@
     dom.textEl?.focus?.();
   }
 
+  function open() {
+    const panel = ensurePanel();
+    if (!panel) return;
+    panel.open = true;
+    setOpenState(true);
+  }
+
+  function appendText(value) {
+    const text = String(value || '').trim();
+    if (!text) return;
+
+    const current = String(getState().sidebarNotes || '').trimEnd();
+    const next = current ? `${current}\n${text}` : text;
+    getState().sidebarNotes = next;
+
+    if (dom.textEl && dom.textEl.value !== next) {
+      dom.textEl.value = next;
+    }
+
+    updateMeta();
+    scheduleSave();
+    open();
+  }
+
   function getPanelEl() {
     return ensurePanel();
   }
@@ -162,6 +186,8 @@
     init,
     render,
     focus,
+    open,
+    appendText,
     getPanelEl,
     getText,
     setText,

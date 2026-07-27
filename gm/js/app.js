@@ -17,6 +17,7 @@
     window.GM.search?.init?.();
     window.GM.ui?.init?.();
     await window.GM.pdfviewer?.init?.();
+    window.GM.capture?.init?.();
 
     // Start search indexing after the viewer is already on screen.
     if (window.GM.search?.preloadSearchIndexes) {
