@@ -4,12 +4,15 @@
   const state = {
     rootEl: null,
     panelEl: null,
+    headerEl: null,
     titleEl: null,
     bodyEl: null,
     closeBtnEl: null,
     current: null,
-    bound: false,
+    dragging: null,
   };
+
+  const MARGIN = 12;
 
   function ensurePopup() {
     if (state.rootEl && document.contains(state.rootEl)) return state.rootEl;
@@ -72,8 +75,11 @@
       if (!root.hidden) hide();
     }, true);
 
+    header.addEventListener('pointerdown', startDrag);
+
     state.rootEl = root;
     state.panelEl = panel;
+    state.headerEl = header;
     state.titleEl = title;
     state.bodyEl = body;
     state.closeBtnEl = closeBtn;
@@ -108,50 +114,118 @@
     return Math.min(Math.max(n, min), max);
   }
 
-  function positionCurrent() {
-    if (!state.current || !state.panelEl || !state.rootEl) return;
-
-    const margin = 12;
+  function measure() {
+    const width = Math.ceil(state.panelEl?.offsetWidth || 280);
+    const height = Math.ceil(state.panelEl?.offsetHeight || 120);
     const vw = window.innerWidth || document.documentElement.clientWidth || 1024;
     const vh = window.innerHeight || document.documentElement.clientHeight || 768;
+    return { width, height, vw, vh };
+  }
 
-    state.panelEl.style.left = '0px';
-    state.panelEl.style.top = '0px';
-    state.panelEl.style.visibility = 'hidden';
+  function getCenteredPosition() {
+    const { width, height, vw, vh } = measure();
+    return {
+      left: clamp(Math.round((vw - width) / 2), MARGIN, Math.max(MARGIN, vw - width - MARGIN)),
+      top: clamp(Math.round((vh - height) / 2), MARGIN, Math.max(MARGIN, vh - height - MARGIN)),
+    };
+  }
 
-    const rect = state.current.anchor?.getBoundingClientRect?.();
-    let left = state.current.x;
-    let top = state.current.y;
+  function applyPosition(left, top) {
+    if (!state.panelEl) return;
+    const { width, height, vw, vh } = measure();
+    const maxLeft = Math.max(MARGIN, vw - width - MARGIN);
+    const maxTop = Math.max(MARGIN, vh - height - MARGIN);
+    const clampedLeft = clamp(Number.isFinite(left) ? left : MARGIN, MARGIN, maxLeft);
+    const clampedTop = clamp(Number.isFinite(top) ? top : MARGIN, MARGIN, maxTop);
+    state.panelEl.style.left = `${clampedLeft}px`;
+    state.panelEl.style.top = `${clampedTop}px`;
+    state.panelEl.style.right = 'auto';
+    state.panelEl.style.bottom = 'auto';
+  }
 
-    if (rect) {
-      left = Number.isFinite(left) ? left : rect.left;
-      top = Number.isFinite(top) ? top : rect.bottom + 8;
-    } else {
-      left = Number.isFinite(left) ? left : margin;
-      top = Number.isFinite(top) ? top : margin;
+  function positionCurrent() {
+    if (!state.current || !state.panelEl || !state.rootEl) return;
+    if (state.dragging) return;
+
+    const currentLeft = Number.isFinite(state.current.left) ? state.current.left : null;
+    const currentTop = Number.isFinite(state.current.top) ? state.current.top : null;
+    if (currentLeft !== null && currentTop !== null) {
+      applyPosition(currentLeft, currentTop);
+      return;
     }
 
-    const width = Math.ceil(state.panelEl.offsetWidth || 280);
-    const height = Math.ceil(state.panelEl.offsetHeight || 120);
+    const centered = getCenteredPosition();
+    state.current.left = centered.left;
+    state.current.top = centered.top;
+    applyPosition(centered.left, centered.top);
+  }
 
-    left = clamp(left, margin, Math.max(margin, vw - width - margin));
-    top = clamp(top, margin, Math.max(margin, vh - height - margin));
+  function startDrag(event) {
+    if (!state.panelEl || !state.rootEl || state.rootEl.hidden) return;
+    if (event.button !== 0) return;
+    if (event.target.closest?.('.gm-popup-close')) return;
 
-    state.panelEl.style.left = `${left}px`;
-    state.panelEl.style.top = `${top}px`;
-    state.panelEl.style.visibility = 'visible';
+    const rect = state.panelEl.getBoundingClientRect();
+    state.dragging = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      header: event.currentTarget,
+    };
+
+    state.panelEl.classList.add('dragging');
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      /* ignore */
+    }
+
+    event.preventDefault();
+  }
+
+  function onDragMove(event) {
+    if (!state.dragging || event.pointerId !== state.dragging.pointerId) return;
+    const { width, height, vw, vh } = measure();
+    const maxLeft = Math.max(MARGIN, vw - width - MARGIN);
+    const maxTop = Math.max(MARGIN, vh - height - MARGIN);
+    const left = clamp(event.clientX - state.dragging.offsetX, MARGIN, maxLeft);
+    const top = clamp(event.clientY - state.dragging.offsetY, MARGIN, maxTop);
+    state.current.left = left;
+    state.current.top = top;
+    applyPosition(left, top);
+    event.preventDefault();
+  }
+
+  function endDrag(event) {
+    if (!state.dragging || event.pointerId !== state.dragging.pointerId) return;
+    try {
+      state.dragging.header?.releasePointerCapture?.(event.pointerId);
+    } catch {
+      /* ignore */
+    }
+    state.dragging = null;
+    state.panelEl?.classList.remove('dragging');
+  }
+
+  function bindDragLifecycle() {
+    if (state.bound) return;
+    document.addEventListener('pointermove', onDragMove);
+    document.addEventListener('pointerup', endDrag);
+    document.addEventListener('pointercancel', endDrag);
+    state.bound = true;
   }
 
   function show(options = {}) {
     ensurePopup();
+    bindDragLifecycle();
     if (!state.rootEl || !state.panelEl || !state.titleEl || !state.bodyEl) return state.rootEl;
 
     if (!state.rootEl.hidden) hide();
 
     state.current = {
       anchor: options.anchor || null,
-      x: Number.isFinite(options.x) ? options.x : null,
-      y: Number.isFinite(options.y) ? options.y : null,
+      left: null,
+      top: null,
       onClose: typeof options.onClose === 'function' ? options.onClose : null,
     };
 
@@ -169,9 +243,14 @@
 
     state.rootEl.hidden = false;
     state.panelEl.style.visibility = 'hidden';
+    state.panelEl.classList.remove('dragging');
 
     window.setTimeout(() => {
-      positionCurrent();
+      const centered = getCenteredPosition();
+      state.current.left = centered.left;
+      state.current.top = centered.top;
+      applyPosition(centered.left, centered.top);
+      state.panelEl.style.visibility = 'visible';
       const autofocus = options.autofocusSelector ? state.bodyEl.querySelector(options.autofocusSelector) : null;
       if (autofocus?.focus) autofocus.focus();
       else {
@@ -188,6 +267,8 @@
     const onClose = state.current?.onClose || null;
     state.rootEl.hidden = true;
     state.current = null;
+    state.dragging = null;
+    state.panelEl?.classList.remove('dragging');
     clearBody();
     if (onClose) {
       try { onClose(); } catch (err) { console.error(err); }
@@ -210,6 +291,7 @@
 
   function init() {
     ensurePopup();
+    bindDragLifecycle();
   }
 
   window.GM.popup = {

@@ -1,16 +1,15 @@
 // Edit this structure to add/remove collapsible sections and nested note blocks.
 window.SIDEBAR_SECTIONS = [
   {
-    title: "General",
+    title: "Combat",
     intro: "",
     blocks: [
       {
-        title: "Combat Reference",
         html: `
         
 
         <div class="stack">
-        <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Combat</a>
+        <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Summary</a>
           <ul>
             <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92">Attack</a>
             </li>
@@ -71,9 +70,14 @@ window.SIDEBAR_SECTIONS = [
         </div>
 
         `
-      },
+      }
+    ]
+  },
+  {
+    title: "Other Rules",
+    intro: "",
+    blocks: [
       {
-        title: "Other Rules",
         html: `
           <div class="stack">
             <a class="btn jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>

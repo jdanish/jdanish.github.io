@@ -661,6 +661,17 @@ a.linkicon:hover::after {
   padding: 10px 12px;
   border-bottom: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.gm-popup.dragging {
+  cursor: grabbing;
+}
+
+.gm-popup-header .gm-popup-close {
+  cursor: pointer;
 }
 
 .gm-popup-title {
