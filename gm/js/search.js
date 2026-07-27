@@ -13,12 +13,12 @@
     indexingPromise: null,
     dom: {
       sidebarContentEl: null,
-      searchPanelEl: null,
       searchInputEl: null,
       searchHiddenBooksEl: null,
       clearButtonEl: null,
       resultsEl: null,
     },
+    previousSidebarTab: null,
     sidebarIndex: [],
   };
 
@@ -53,6 +53,30 @@
     if (!state) return;
     state.searchIncludeHiddenBooks = Boolean(value);
     window.GM.storage?.saveState?.();
+  }
+
+  function rememberSidebarTab(tab) {
+    if (tab && tab !== 'search') {
+      searchState.previousSidebarTab = tab;
+    }
+  }
+
+  function activateSearchTab() {
+    const currentTab = window.GM.ui?.getSidebarTab?.();
+    if (currentTab && currentTab !== 'search') {
+      rememberSidebarTab(currentTab);
+    }
+    if (currentTab !== 'search') {
+      window.GM.ui?.setSidebarTab?.('search');
+    }
+  }
+
+  function restorePreviousSidebarTab() {
+    const previous = searchState.previousSidebarTab;
+    if (previous && previous !== 'search') {
+      window.GM.ui?.setSidebarTab?.(previous);
+    }
+    searchState.previousSidebarTab = null;
   }
 
   function getScriptBaseUrl() {
@@ -299,14 +323,17 @@
   }
 
   function ensureResultsContainer() {
-    const host = searchState.dom.searchPanelEl || searchState.dom.sidebarContentEl;
-    if (!host) return null;
+    const sidebarContentEl = searchState.dom.sidebarContentEl;
+    if (!sidebarContentEl) return null;
 
-    let container = host.querySelector('#searchResults');
+    let container = sidebarContentEl.querySelector('#searchResults');
     if (container) {
       searchState.dom.resultsEl = container;
       return container;
     }
+
+    const searchPanel = sidebarContentEl.querySelector('[data-sidebar-tab="search"]') || sidebarContentEl.querySelector('#sidebarSearchPanel');
+    const host = searchPanel?.querySelector('.sidebar-panel-body') || sidebarContentEl;
 
     container = document.createElement('div');
     container.id = 'searchResults';
@@ -436,11 +463,9 @@
     const q = String(query || '').trim();
     if (q.length < 2) {
       clearResults();
-      window.GM.ui?.restoreSidebarTabFromSearch?.();
       return;
     }
 
-    window.GM.ui?.showSearchSidebar?.();
     renderResults(q, [], [], 'Searching PDFs…');
 
     const sidebarHits = searchSidebar(q);
@@ -456,9 +481,8 @@
     renderResults(q, sidebarHits, pdfHits);
   }
 
-  function setupSearch({ sidebarContentEl, searchPanelEl, searchInputEl, searchHiddenBooksEl, clearButtonEl }) {
-    searchState.dom.sidebarContentEl = searchPanelEl || sidebarContentEl || searchState.dom.sidebarContentEl;
-    searchState.dom.searchPanelEl = searchPanelEl || searchState.dom.searchPanelEl;
+  function setupSearch({ sidebarContentEl, searchInputEl, searchHiddenBooksEl, clearButtonEl }) {
+    searchState.dom.sidebarContentEl = sidebarContentEl || searchState.dom.sidebarContentEl;
     searchState.dom.searchInputEl = searchInputEl || searchState.dom.searchInputEl;
     searchState.dom.searchHiddenBooksEl = searchHiddenBooksEl || searchState.dom.searchHiddenBooksEl;
     searchState.dom.clearButtonEl = clearButtonEl || searchState.dom.clearButtonEl;
@@ -471,14 +495,23 @@
 
     if (input && input.dataset.searchBound !== 'true') {
       const handler = window.GM.utils.debounce(async () => {
-        await performSearch(input.value);
+        const q = String(input.value || '').trim();
+        if (q.length >= 2) {
+          activateSearchTab();
+          await performSearch(input.value);
+          return;
+        }
+
+        clearResults();
+        restorePreviousSidebarTab();
       }, 180);
 
       input.addEventListener('input', handler);
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
           input.value = '';
-          performSearch('');
+          clearResults();
+          restorePreviousSidebarTab();
           input.blur();
         }
       });
@@ -501,7 +534,8 @@
     if (clear && clear.dataset.searchBound !== 'true') {
       clear.addEventListener('click', () => {
         if (input) input.value = '';
-        performSearch('');
+        clearResults();
+        restorePreviousSidebarTab();
         if (input) input.focus();
       });
       clear.dataset.searchBound = 'true';

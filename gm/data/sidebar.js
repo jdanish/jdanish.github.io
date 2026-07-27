@@ -1,6 +1,7 @@
 // Edit this structure to add/remove collapsible sections and nested note blocks.
 window.SIDEBAR_SECTIONS = [
   {
+    id: "combat",
     title: "Combat",
     tab: "rules",
     intro: "",
@@ -72,6 +73,7 @@ window.SIDEBAR_SECTIONS = [
     ]
   },
   {
+    id: "other-rules",
     title: "Other Rules",
     tab: "rules",
     intro: "",
@@ -105,6 +107,7 @@ window.SIDEBAR_SECTIONS = [
     ]
   },
   {
+    id: "jean",
     title: "Jean Grayson",
     tab: "current",
     intro: "",
