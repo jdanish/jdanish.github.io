@@ -563,7 +563,7 @@
         const bookmark = getBookmark(tab, bookmarkId);
         const highlightText = bookmark?.highlight || target.dataset.highlight || '';
 
-        await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
+        await window.GM.ui?.openBookAtPage?.(tab, page, { highlightText });
         return;
       }
 

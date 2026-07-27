@@ -70,6 +70,12 @@
     return changed;
   }
 
+  async function openBookAtPage(tab, displayPage, options = {}) {
+    if (!tab) return null;
+    ensureBookVisible(tab);
+    return window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, options) || null;
+  }
+
   function getCurrentTab() {
     return window.GM.pdfviewer?.getActiveTab?.() || getState().activeTab || Object.keys(getBooks())[0] || null;
   }
@@ -152,6 +158,35 @@
     }
   }
 
+  function bindSidebarJumpTargets(root) {
+    if (!root) return;
+
+    root.querySelectorAll('[data-tab][data-page]').forEach((target) => {
+      if (target.dataset.sidebarJumpBound === 'true') return;
+
+      const activate = async (event) => {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        const tab = target.dataset.tab;
+        const displayPage = Number(target.dataset.page) || 1;
+        const highlightText = target.dataset.highlight || '';
+        if (!tab) return;
+        await window.GM.ui?.openBookAtPage?.(tab, displayPage, { highlightText });
+      };
+
+      target.addEventListener('click', activate);
+      target.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        activate(event);
+      });
+
+      target.dataset.sidebarJumpBound = 'true';
+    });
+  }
+
   function installSidebarDelegation() {
     if (!dom.sidebarContentEl || dom.sidebarContentEl.dataset.sidebarDelegationBound === 'true') return;
 
@@ -160,7 +195,7 @@
       const displayPage = Number(target.dataset.page) || 1;
       const highlightText = target.dataset.highlight || '';
       if (!tab) return;
-      await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, { highlightText });
+      await window.GM.ui?.openBookAtPage?.(tab, displayPage, { highlightText });
     };
 
     dom.sidebarContentEl.addEventListener('click', async (event) => {
@@ -255,6 +290,7 @@
         const nestedBody = document.createElement('div');
         nestedBody.className = 'nested-body';
         nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
+        bindSidebarJumpTargets(nestedBody);
         nested.appendChild(nestedBody);
         body.appendChild(nested);
 
@@ -363,7 +399,7 @@
       dom.tabsEl.appendChild(button);
 
       button.addEventListener('click', () => {
-        window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
+        window.GM.ui?.openBookAtPage?.(tab, getDisplayPage(tab));
       });
     });
 
@@ -386,7 +422,7 @@
       btn.dataset.page = String(entry.page);
 
       btn.addEventListener('click', () => {
-        window.GM.pdfviewer?.setTabAndPage?.(tab, Number(entry.page));
+        window.GM.ui?.openBookAtPage?.(tab, Number(entry.page));
       });
 
       dom.pageLinksEl.appendChild(btn);
@@ -498,6 +534,7 @@
     isBookVisible,
     setBookVisible,
     ensureBookVisible,
+    openBookAtPage,
     toggleBookVisibilityPopup,
     syncBookVisibilityPopup,
   };

@@ -520,7 +520,7 @@
         const tab = result.dataset.tab;
         const page = Number(result.dataset.page) || 1;
         const highlightText = result.dataset.highlight || '';
-        await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
+        await window.GM.ui?.openBookAtPage?.(tab, page, { highlightText });
       });
       searchState.dom.sidebarContentEl.dataset.searchResultBound = 'true';
     }

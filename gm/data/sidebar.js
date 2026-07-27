@@ -19,7 +19,7 @@ window.SIDEBAR_SECTIONS = [
                         <ul>
                           <li>Raise(s) add 1d6 to damage roll
                           </li>
-                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> for ganging up, flanking, prone, etc.
+                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> (<a class="linkicon jump-link" href="#" data-tab="combat_ref" data-page="1">reference</a>) for ganging up, flanking, prone, etc.
                           </li>
                         </ul>
                   </li>
@@ -38,7 +38,7 @@ window.SIDEBAR_SECTIONS = [
                         <ul>
                           <li>Raise(s) add 1d6 to damage roll
                           </li>
-                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> for range, cover, etc.
+                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> (<a class="linkicon jump-link" href="#" data-tab="combat_ref" data-page="1">reference</a>) for range, cover, etc.
                           </li>
                         </ul>
                         <li>NOTE: Don't forget to roll an extra die if ROF is above 1...</li>
