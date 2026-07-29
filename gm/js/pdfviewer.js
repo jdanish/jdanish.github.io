@@ -11,6 +11,7 @@
     initialized: false,
     activeTab: null,
     viewers: new Map(),
+    runtimeScales: new Map(),
     appListenersInstalled: new WeakSet(),
   };
 
@@ -94,12 +95,11 @@
   }
 
   function resolveScaleValue(tab) {
-    const state = getState();
     const book = getBook(tab);
-    const stored = state.scales?.[tab];
+    const runtime = getRuntimeScale(tab);
 
-    if (stored !== undefined && stored !== null && stored !== '') {
-      return stored;
+    if (runtime !== undefined && runtime !== null && runtime !== '') {
+      return runtime;
     }
 
     if (book && book.defaultScale !== undefined && book.defaultScale !== null) {
@@ -131,9 +131,32 @@
   }
 
   function setStoredScale(tab, scaleValue) {
-    const state = getState();
-    state.scales[tab] = scaleValue;
-    saveState();
+    if (!tab) return;
+    viewerState.runtimeScales.set(tab, scaleValue);
+  }
+
+  function getRuntimeScale(tab) {
+    const viewer = viewerState.viewers.get(tab);
+    if (viewer?.app?.pdfViewer?.currentScaleValue !== undefined && viewer?.ignoreScaleEvents !== true) {
+      return viewer.app.pdfViewer.currentScaleValue;
+    }
+
+    if (viewerState.runtimeScales.has(tab)) {
+      return viewerState.runtimeScales.get(tab);
+    }
+
+    return null;
+  }
+
+  function captureRuntimeScale(tab) {
+    if (!tab) return null;
+    const viewer = viewerState.viewers.get(tab);
+    const liveScale = viewer?.app?.pdfViewer?.currentScaleValue;
+    if (liveScale !== undefined && liveScale !== null && liveScale !== '') {
+      viewerState.runtimeScales.set(tab, liveScale);
+      return liveScale;
+    }
+    return null;
   }
 
   function serializeZoomValue(scaleValue) {
@@ -209,6 +232,7 @@
       readyPromise: null,
       loaded: false,
       loading: false,
+      ignoreScaleEvents: true,
     };
 
     const activeTab = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
@@ -333,6 +357,8 @@
     bus.on('updateviewarea', updatePageFromEvent);
 
     bus.on('scalechange', () => {
+      const viewer = viewerState.viewers.get(tab);
+      if (!viewer || viewer.ignoreScaleEvents) return;
       const currentScale = app?.pdfViewer?.currentScaleValue;
       setStoredScale(tab, currentScale);
       window.GM.ui?.updateTabButtonLabels?.();
@@ -348,6 +374,7 @@
     if (viewer.readyPromise) return viewer.readyPromise;
 
     setViewerLoading(tab, true);
+    viewer.ignoreScaleEvents = true;
 
     viewer.readyPromise = (async () => {
       try {
@@ -442,6 +469,8 @@
     const fallbackScale = resolveScaleValue(tab);
     const scaleValue = options.scale !== undefined ? normalizeScaleValue(options.scale, fallbackScale) : fallbackScale;
 
+    viewer.ignoreScaleEvents = false;
+
     if (app.pdfViewer?.currentScaleValue !== scaleValue) {
       app.pdfViewer.currentScaleValue = scaleValue;
       setStoredScale(tab, scaleValue);
@@ -460,6 +489,10 @@
   async function setTabAndPage(tab, displayPage, options = {}) {
     const book = getBook(tab);
     if (!book) return null;
+
+    if (viewerState.activeTab && viewerState.activeTab !== tab) {
+      captureRuntimeScale(viewerState.activeTab);
+    }
 
     window.GM.ui?.ensureBookVisible?.(tab);
 
