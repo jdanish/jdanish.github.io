@@ -70,8 +70,21 @@ window.BOOKS = {
 
     ]
   },
-  fantasy: {
+  starbreaker_star_marshals: {
     order: 5,
+    title: "Starbreaker Star Marshals",
+    file: "pdfs/starbreaker_star_marshals.pdf",
+    pageOffset: -1,
+    defaultPage: 2,
+    defaultScale: 1.25,
+    defaultVisible: true,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 2 }
+    ]
+  },
+  fantasy: {
+    order: 6,
     title: "SWADE Fantasy Companion",
     file: "pdfs/fantasy.pdf",
     pageOffset: -2,
@@ -87,7 +100,7 @@ window.BOOKS = {
     ]
   },
   chase_ref: {
-    order: 6,
+    order: 7,
     title: "Chase Reference",
     file: "pdfs/chase_ref.pdf",
     pageOffset: 0,
@@ -99,7 +112,7 @@ window.BOOKS = {
     ]
   },
   combat_ref: {
-    order: 7,
+    order: 8,
     title: "Combat Reference",
     file: "pdfs/combat_ref.pdf",
     pageOffset: 0,
@@ -111,7 +124,7 @@ window.BOOKS = {
     ]
   },
   combat_survival_guide: {
-    order: 8,
+    order: 9,
     title: "Combat Survival Guide v11",
     file: "pdfs/combat_survival_guide.pdf",
     pageOffset: 0,
