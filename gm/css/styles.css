@@ -57,6 +57,9 @@ body.resizing { cursor: col-resize; user-select: none; }
   cursor: col-resize;
   position: relative;
   align-self: stretch;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .sidebar-resizer::before {
   content: '';
@@ -1130,54 +1133,4 @@ a.linkicon:hover::before {
 #sidebarSections .nested-block,
 .sidebar-sections .nested-block {
   overflow: visible;
-}
-
-/* Sidebar v2 panel layout override for current DOM */
-#sidebarContent,
-.sidebar-content {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-#sidebarTabs,
-.sidebar-tabs {
-  flex: 0 0 auto;
-}
-
-#sidebarPanels,
-.sidebar-panels {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.sidebar-panel {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-panel.active {
-  display: flex;
-}
-
-.sidebar-panel[hidden] {
-  display: none !important;
-}
-
-.sidebar-panel-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.sidebar-panel-body[data-sidebar-panel-body="rules"],
-.sidebar-panel-body[data-sidebar-panel-body="current"],
-.sidebar-panel-body[data-sidebar-panel-body="search"] {
-  min-height: 0;
 }

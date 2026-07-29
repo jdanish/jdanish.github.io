@@ -620,10 +620,11 @@
     const min = Number(uiConfig.sidebarWidth?.min || 300);
     const max = Number(uiConfig.sidebarWidth?.max || 700);
 
-    const drag = { active: false, startX: 0, startWidth: 0 };
+    const drag = { active: false, startX: 0, startWidth: 0, pointerId: null };
 
     const onMove = (event) => {
       if (!drag.active) return;
+      if (drag.pointerId !== null && event.pointerId !== drag.pointerId) return;
       const delta = event.clientX - drag.startX;
       const next = Math.min(max, Math.max(min, drag.startWidth + delta));
       state.sidebarWidth = next;
@@ -632,27 +633,38 @@
       if (sidebarEl) sidebarEl.style.flexBasis = `${next}px`;
     };
 
-    const stop = () => {
+    const stop = (event) => {
       if (!drag.active) return;
+      if (event && drag.pointerId !== null && event.pointerId !== drag.pointerId) return;
       drag.active = false;
+      drag.pointerId = null;
       document.body.classList.remove('resizing');
+      try {
+        dom.sidebarResizerEl.releasePointerCapture?.(event?.pointerId);
+      } catch {
+        // ignore
+      }
       window.GM.storage?.saveState?.();
     };
 
-    dom.sidebarResizerEl.addEventListener('mousedown', (event) => {
+    dom.sidebarResizerEl.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
       event.preventDefault();
       const sidebarEl = document.querySelector('.sidebar');
       if (!sidebarEl) return;
       const rect = sidebarEl.getBoundingClientRect();
       drag.active = true;
+      drag.pointerId = event.pointerId;
       drag.startX = event.clientX;
       drag.startWidth = rect.width;
       document.body.classList.add('resizing');
+      dom.sidebarResizerEl.setPointerCapture?.(event.pointerId);
     });
 
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', stop);
-    window.addEventListener('mouseleave', stop);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+    window.addEventListener('pointerleave', stop);
 
     dom.sidebarResizerEl.dataset.resizerBound = 'true';
   }
