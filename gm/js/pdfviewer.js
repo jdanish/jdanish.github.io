@@ -12,6 +12,7 @@
     activeTab: null,
     viewers: new Map(),
     runtimeScales: new Map(),
+    runtimePages: new Map(),
     appListenersInstalled: new WeakSet(),
   };
 
@@ -85,6 +86,12 @@
     const state = getState();
     const book = getBook(tab);
     if (!book) return 1;
+
+    const runtimePage = getRuntimePage(tab);
+    if (runtimePage !== null && runtimePage !== undefined && runtimePage !== '') {
+      return Number(runtimePage) || 1;
+    }
+
     return Number(state.pages?.[tab] || book.defaultPage || 1);
   }
 
@@ -92,6 +99,27 @@
     const state = getState();
     state.pages[tab] = Number(displayPage) || 1;
     saveState();
+  }
+
+  function setRuntimePage(tab, displayPage) {
+    if (!tab) return;
+    viewerState.runtimePages.set(tab, Number(displayPage) || 1);
+  }
+
+  function getRuntimePage(tab) {
+    if (!tab) return null;
+
+    if (viewerState.runtimePages.has(tab)) {
+      return viewerState.runtimePages.get(tab);
+    }
+
+    const viewer = viewerState.viewers.get(tab);
+    const pending = viewer?.pendingDisplayPage;
+    if (pending !== undefined && pending !== null && pending !== '') {
+      return Number(pending) || 1;
+    }
+
+    return null;
   }
 
   function resolveScaleValue(tab) {
@@ -287,6 +315,11 @@
     const book = viewer?.book || getBook(tab);
     if (!book) return 1;
 
+    const runtimePage = getRuntimePage(tab || viewerState.activeTab || '');
+    if (runtimePage !== null && runtimePage !== undefined && runtimePage !== '') {
+      return Number(runtimePage) || 1;
+    }
+
     const app = viewer?.app;
     const pdfPage = Number(
       app?.page ||
@@ -305,6 +338,7 @@
 
     const displayPage = toDisplayPage(book, Number(pdfPage) || 1);
     setStoredPage(tab, displayPage);
+    setRuntimePage(tab, displayPage);
     window.GM.ui?.setViewerTitle?.(tab, displayPage);
     window.GM.ui?.updateTabButtonLabels?.();
   }
@@ -392,6 +426,12 @@
 
         if (app) {
           installAppListeners(tab, app);
+          if (viewer.pendingDisplayPage !== null && viewer.pendingDisplayPage !== undefined) {
+            const pendingPage = Number(viewer.pendingDisplayPage) || getDisplayPage(tab);
+            viewer.pendingDisplayPage = null;
+            setStoredPage(tab, pendingPage);
+            setRuntimePage(tab, pendingPage);
+          }
         }
 
         return app;
@@ -461,6 +501,7 @@
 
   async function setPageInActiveViewer(tab, displayPage, options = {}) {
     const viewer = createViewer(tab);
+    viewer.pendingDisplayPage = Number(displayPage) || getDisplayPage(tab) || 1;
     const app = await ensureViewerLoaded(tab);
     if (!app) return null;
 
@@ -498,6 +539,12 @@
 
     const resolvedDisplayPage = Number(displayPage || getDisplayPage(tab) || book.defaultPage || 1);
     setStoredPage(tab, resolvedDisplayPage);
+    setRuntimePage(tab, resolvedDisplayPage);
+
+    const viewer = viewerState.viewers.get(tab);
+    if (viewer) {
+      viewer.pendingDisplayPage = resolvedDisplayPage;
+    }
 
     if (options.scale !== undefined) {
       setStoredScale(tab, normalizeScaleValue(options.scale));
