@@ -214,10 +214,10 @@
     const pdfPage = toPdfPage(book, displayPage);
     const zoom = serializeZoomValue(scaleValue);
 
-    // The viewer.html file lives in pdfjs/web/, so this path resolves from there.
-    const filePath = `../../${book.file}`;
+    // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
+    const filePath = `../../../${book.file}`;
 
-    return `pdfjs/web/viewer.html?file=${encodeURIComponent(filePath)}#page=${pdfPage}${
+    return `libs/pdfjs/web/viewer.html?file=${encodeURIComponent(filePath)}#page=${pdfPage}${
       zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
     }`;
   }

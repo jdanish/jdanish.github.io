@@ -1447,7 +1447,7 @@ a.linkicon:hover::before {
 }
 
 
-/* EasyMDE markdown editor */
+/* CodeMirror markdown editor */
 .sidebar-md-editor-popup .sidebar-md-editor,
 .sidebar-md-editor-root .sidebar-md-editor {
   display: flex;
@@ -1464,54 +1464,17 @@ a.linkicon:hover::before {
   overflow: hidden;
 }
 
-.sidebar-md-editor-popup .EasyMDEContainer,
-.sidebar-md-editor-root .EasyMDEContainer {
+.sidebar-md-editor-popup .CodeMirror,
+.sidebar-md-editor-root .CodeMirror {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  height: 100%;
-}
-
-.sidebar-md-editor-popup .EasyMDEContainer .CodeMirror,
-.sidebar-md-editor-root .EasyMDEContainer .CodeMirror {
-  flex: 1 1 auto;
-  min-height: 0;
   height: 100% !important;
-}
-
-.sidebar-md-editor-popup .editor-toolbar,
-.sidebar-md-editor-root .editor-toolbar {
-  background: var(--panel-2) !important;
-  border-color: var(--line) !important;
-  color: var(--text) !important;
-}
-
-.sidebar-md-editor-popup .editor-toolbar a,
-.sidebar-md-editor-root .editor-toolbar a,
-.sidebar-md-editor-popup .editor-toolbar a::before,
-.sidebar-md-editor-root .editor-toolbar a::before,
-.sidebar-md-editor-popup .editor-toolbar a i,
-.sidebar-md-editor-root .editor-toolbar a i {
-  color: var(--text) !important;
-  opacity: 1 !important;
-}
-
-.sidebar-md-editor-popup .editor-toolbar a:hover,
-.sidebar-md-editor-root .editor-toolbar a:hover {
-  background: rgba(124, 196, 255, 0.14) !important;
-}
-
-.sidebar-md-editor-popup .CodeMirror,
-.sidebar-md-editor-root .CodeMirror,
-.sidebar-md-editor-popup .editor-preview,
-.sidebar-md-editor-root .editor-preview,
-.sidebar-md-editor-popup .editor-preview-side,
-.sidebar-md-editor-root .editor-preview-side {
   background: #0f131b !important;
   color: var(--text) !important;
-  border-color: var(--line) !important;
-  height: 100% !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px;
 }
 
 .sidebar-md-editor-popup .CodeMirror-scroll,
@@ -1522,15 +1485,41 @@ a.linkicon:hover::before {
   overflow-y: auto !important;
 }
 
-/* Keep the raw textarea visible as a fallback if EasyMDE fails to load. */
-.sidebar-md-textarea {
-  display: block;
-}
-.sidebar-md-editor-popup .EasyMDEContainer .sidebar-md-textarea,
-.sidebar-md-editor-root .EasyMDEContainer .sidebar-md-textarea {
-  display: none;
+.sidebar-md-editor-popup .CodeMirror-gutters,
+.sidebar-md-editor-root .CodeMirror-gutters {
+  background: #0f131b !important;
+  border-right: 1px solid var(--line) !important;
 }
 
+.sidebar-md-editor-popup .CodeMirror-linenumber,
+.sidebar-md-editor-root .CodeMirror-linenumber {
+  color: #8d96a8 !important;
+}
+
+.sidebar-md-editor-popup .CodeMirror-cursor,
+.sidebar-md-editor-root .CodeMirror-cursor {
+  border-left-color: #ffffff !important;
+}
+
+.sidebar-md-editor-popup .CodeMirror-selected,
+.sidebar-md-editor-root .CodeMirror-selected {
+  background: rgba(124, 196, 255, 0.22) !important;
+}
+
+.sidebar-md-editor-popup .CodeMirror-focused,
+.sidebar-md-editor-root .CodeMirror-focused {
+  outline: none;
+}
+
+.sidebar-md-editor-popup .sidebar-md-textarea,
+.sidebar-md-editor-root .sidebar-md-textarea {
+  display: block;
+}
+
+.sidebar-md-editor-popup .CodeMirror .sidebar-md-textarea,
+.sidebar-md-editor-root .CodeMirror .sidebar-md-textarea {
+  display: none;
+}
 
 .panel-header-actions {
   display: flex;
@@ -1569,42 +1558,55 @@ a.linkicon:hover::before {
   color: var(--text) !important;
 }
 
-/* ---------- EasyMDE Dark Theme ---------- */
 
-.EasyMDEContainer .CodeMirror {
-    background: #171b22;
-    color: #e9edf5;
+.library-warning-banner {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  padding: 12px 16px;
+  background: #3a1d1d;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.library-warning-banner strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
 }
 
-.EasyMDEContainer .CodeMirror-cursor {
-    border-left: 2px solid #ffffff !important;
+
+/* EasyMDE editor scroll fix */
+.sidebar-md-editor-root .sidebar-md-editor-frame,
+.sidebar-md-editor-popup .sidebar-md-editor-frame {
+  overflow: auto;
 }
 
-.EasyMDEContainer .CodeMirror-selected {
-    background: rgba(124,196,255,.25) !important;
+.sidebar-md-editor-root .sidebar-md-editor-frame .EasyMDEContainer,
+.sidebar-md-editor-popup .sidebar-md-editor-frame .EasyMDEContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
-.EasyMDEContainer .CodeMirror-gutters {
-    background: #171b22;
-    border-right: 1px solid #323949;
+.sidebar-md-editor-root .sidebar-md-editor-frame .EasyMDEContainer .editor-toolbar,
+.sidebar-md-editor-popup .sidebar-md-editor-frame .EasyMDEContainer .editor-toolbar,
+.sidebar-md-editor-root .sidebar-md-editor-frame .EasyMDEContainer .editor-statusbar,
+.sidebar-md-editor-popup .sidebar-md-editor-frame .EasyMDEContainer .editor-statusbar {
+  flex: 0 0 auto;
 }
 
-.EasyMDEContainer .CodeMirror-linenumber {
-    color: #7f8ca3;
+.sidebar-md-editor-root .sidebar-md-editor-frame .EasyMDEContainer .CodeMirror,
+.sidebar-md-editor-popup .sidebar-md-editor-frame .EasyMDEContainer .CodeMirror {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto !important;
 }
 
-.EasyMDEContainer .editor-toolbar {
-    background: #202635;
-    border-color: #323949;
-}
-
-.EasyMDEContainer .editor-toolbar button,
-.EasyMDEContainer .editor-toolbar a {
-    color: #e9edf5;
-}
-
-.EasyMDEContainer .editor-preview,
-.EasyMDEContainer .editor-preview-side {
-    background: #171b22;
-    color: #e9edf5;
+.sidebar-md-editor-root .sidebar-md-editor-frame .EasyMDEContainer .CodeMirror-scroll,
+.sidebar-md-editor-popup .sidebar-md-editor-frame .EasyMDEContainer .CodeMirror-scroll {
+  overflow-y: auto !important;
+  max-height: none !important;
 }

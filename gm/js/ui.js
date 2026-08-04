@@ -606,7 +606,7 @@
         editButton.className = 'sidebar-tab-button sidebar-data-button icon-button';
         editButton.setAttribute('aria-label', 'Edit sidebar Markdown');
         editButton.title = 'Edit sidebar Markdown';
-        editButton.innerHTML = '<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>';
+        editButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4l10.5-10.5a2.25 2.25 0 0 0-3.18-3.18L4 16.82V20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.2 6.8l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
         editButton.addEventListener('click', () => toggleSidebarDataPopup());
         dom.sidebarTabsEl.appendChild(editButton);
       }
@@ -760,6 +760,22 @@
     unbindKeydown: null,
   };
 
+  function showLibraryWarning(messages) {
+    const existing = document.getElementById('libraryWarningBanner');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'libraryWarningBanner';
+    banner.className = 'library-warning-banner';
+    banner.setAttribute('role', 'alert');
+    banner.innerHTML = `
+      <strong>Missing local library files</strong>
+      <div>${messages.map((m) => `<div>${String(m).replace(/[&<>]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))}</div>`).join('')}</div>
+    `;
+
+    document.body.prepend(banner);
+  }
+
   function closeSidebarMarkdownEditor() {
     try {
       sidebarMarkdownEditorState.unbindKeydown?.();
@@ -827,10 +843,17 @@
       statusEl.classList.toggle('unsaved', sidebarMarkdownEditorState.dirty);
     };
 
+    const readMarkdown = () => {
+      const editor = sidebarMarkdownEditorState.editor;
+      if (!editor) return sidebarMarkdownEditorState.fallbackTextarea?.value ?? '';
+      if (typeof editor.value === 'function') return editor.value();
+      if (typeof editor.getValue === 'function') return editor.getValue();
+      if (editor.codemirror && typeof editor.codemirror.getValue === 'function') return editor.codemirror.getValue();
+      return sidebarMarkdownEditorState.fallbackTextarea?.value ?? '';
+    };
+
     const saveMarkdown = () => {
-      const markdown = sidebarMarkdownEditorState.editor?.value?.()
-        ?? sidebarMarkdownEditorState.fallbackTextarea?.value
-        ?? '';
+      const markdown = readMarkdown();
       window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
       setDirty(false);
       window.GM.popup?.hide?.();
@@ -886,29 +909,61 @@
         if (window.EasyMDE) {
           sidebarMarkdownEditorState.editor = new window.EasyMDE({
             element: ta,
-            initialValue: initialMarkdown,
-            autoDownloadFontAwesome: true,
             autofocus: true,
-            forceSync: true,
             spellChecker: false,
             status: false,
-            renderingConfig: {
-              singleLineBreaks: false,
-              codeSyntaxHighlighting: false,
-            },
+            forceSync: true,
+            autoDownloadFontAwesome: false,
+            initialValue: initialMarkdown,
           });
 
           ta.style.display = 'none';
-          sidebarMarkdownEditorState.editor.codemirror?.on?.('change', () => setDirty(true));
-          bindKeydown();
-
+          const cm = sidebarMarkdownEditorState.editor.codemirror;
+          cm?.getWrapperElement()?.classList.add('sidebar-md-codemirror');
+          cm?.on('change', () => setDirty(true));
+          cm?.setOption?.('extraKeys', {
+            'Ctrl-S': () => saveMarkdown(),
+            'Cmd-S': () => saveMarkdown(),
+            Esc: () => window.GM.popup?.hide?.(),
+          });
+          sidebarMarkdownEditorState.editor.codemirror?.focus?.();
           window.setTimeout(() => {
             try {
-              sidebarMarkdownEditorState.editor?.codemirror?.refresh?.();
+              sidebarMarkdownEditorState.editor.codemirror?.refresh?.();
             } catch {
               // ignore
             }
           }, 0);
+          bindKeydown();
+        } else if (window.CodeMirror) {
+          sidebarMarkdownEditorState.editor = window.CodeMirror.fromTextArea(ta, {
+            autofocus: true,
+            lineNumbers: true,
+            lineWrapping: true,
+            mode: 'markdown',
+            tabSize: 2,
+            indentUnit: 2,
+            viewportMargin: Infinity,
+          });
+
+          ta.style.display = 'none';
+          const cm = sidebarMarkdownEditorState.editor;
+          cm.getWrapperElement()?.classList.add('sidebar-md-codemirror');
+          cm.on('change', () => setDirty(true));
+          cm.setOption('extraKeys', {
+            'Ctrl-S': () => saveMarkdown(),
+            'Cmd-S': () => saveMarkdown(),
+            Esc: () => window.GM.popup?.hide?.(),
+          });
+
+          window.setTimeout(() => {
+            try {
+              cm.refresh?.();
+            } catch {
+              // ignore
+            }
+          }, 0);
+          bindKeydown();
         } else {
           ta.style.display = 'block';
           ta.addEventListener('input', () => setDirty(true));

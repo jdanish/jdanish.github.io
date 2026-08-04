@@ -9,6 +9,31 @@
     };
   }
 
+  function hasStylesheet(hrefPart) {
+    return Array.from(document.styleSheets).some((sheet) => {
+      const href = sheet?.href || '';
+      return href.includes(hrefPart);
+    });
+  }
+
+  async function checkLocalLibraries() {
+    const warnings = [];
+
+    if (!window.EasyMDE) {
+      warnings.push('EasyMDE not found: expected libs/easymde/easymde.min.js.');
+    }
+
+    const fontAwesomeLoaded = hasStylesheet('libs/fontawesome/css/all.min.css');
+    if (!fontAwesomeLoaded) {
+      warnings.push('Font Awesome not found: expected libs/fontawesome/css/all.min.css.');
+    }
+
+    if (warnings.length) {
+      window.GM?.ui?.showLibraryWarning?.(warnings);
+      console.warn('Missing local libraries:', warnings);
+    }
+  }
+
   async function init() {
     window.GM.storage = window.GM.storage || {};
 
@@ -17,6 +42,7 @@
     window.GM.notes?.init?.();
     window.GM.search?.init?.();
     window.GM.ui?.init?.();
+    await checkLocalLibraries();
     await window.GM.pdfviewer?.init?.();
     window.GM.capture?.init?.();
 
