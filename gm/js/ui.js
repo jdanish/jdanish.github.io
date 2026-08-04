@@ -490,14 +490,131 @@
     });
   }
 
+  function getCurrentSidebarSections() {
+    return Array.isArray(window.SIDEBAR_CURRENT_SECTIONS) ? window.SIDEBAR_CURRENT_SECTIONS : [];
+  }
+
+  function getCurrentSidebarSectionKey(section, index) {
+    return section?.id || `${index}-${window.GM.utils.slugify(section?.title || 'section')}`;
+  }
+
+  function getCurrentSidebarTab() {
+    const sections = getCurrentSidebarSections();
+    const stateTab = String(getState().sidebarCurrentTab || '');
+    if (stateTab && sections.some((section, index) => getCurrentSidebarSectionKey(section, index) === stateTab)) {
+      return stateTab;
+    }
+    return sections.length ? getCurrentSidebarSectionKey(sections[0], 0) : '';
+  }
+
+  function setCurrentSidebarTab(tab) {
+    const next = String(tab || '');
+    const state = getState();
+    if (state.sidebarCurrentTab === next) return next;
+    state.sidebarCurrentTab = next;
+    window.GM.storage?.saveState?.();
+    return next;
+  }
+
+  function renderCurrentPanel() {
+    const panelBody = getSidebarPanelBodyEl('current');
+    if (!panelBody) return;
+
+    panelBody.replaceChildren();
+    panelBody.dataset.rendered = 'true';
+
+    const sections = getCurrentSidebarSections();
+    if (!sections.length) {
+      const empty = document.createElement('p');
+      empty.className = 'tabs-empty';
+      empty.textContent = 'No current notes';
+      panelBody.appendChild(empty);
+      return;
+    }
+
+    const activeKey = getCurrentSidebarTab() || getCurrentSidebarSectionKey(sections[0], 0);
+    const activeIndex = sections.findIndex((section, index) => getCurrentSidebarSectionKey(section, index) === activeKey);
+    const resolvedIndex = activeIndex >= 0 ? activeIndex : 0;
+    const resolvedSection = sections[resolvedIndex];
+    const resolvedKey = getCurrentSidebarSectionKey(resolvedSection, resolvedIndex);
+    if (resolvedKey !== activeKey) setCurrentSidebarTab(resolvedKey);
+
+    const tabBar = document.createElement('div');
+    tabBar.className = 'current-tabs';
+
+    sections.forEach((section, index) => {
+      const key = getCurrentSidebarSectionKey(section, index);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'current-tab-button';
+      button.dataset.currentTab = key;
+      button.textContent = section.title || `Tab ${index + 1}`;
+      button.classList.toggle('active', key === resolvedKey);
+      button.addEventListener('click', () => {
+        setCurrentSidebarTab(key);
+        renderCurrentPanel();
+      });
+      tabBar.appendChild(button);
+    });
+
+    const content = document.createElement('div');
+    content.className = 'current-tab-content';
+
+    const body = document.createElement('div');
+    body.className = 'section-body current-section-body';
+
+    if (resolvedSection.intro) {
+      const intro = document.createElement('p');
+      intro.textContent = resolvedSection.intro;
+      body.appendChild(intro);
+    }
+
+    (resolvedSection.blocks || []).forEach((block, blockIndex) => {
+      const blockKey = `${resolvedKey}/block-${blockIndex}-${window.GM.utils.slugify(block.id || block.title || 'block')}`;
+      const nested = document.createElement('div');
+      nested.className = 'nested-block current-nested-block';
+      nested.dataset.sectionKey = resolvedKey;
+      nested.dataset.sectionTab = 'current';
+      nested.dataset.blockKey = blockKey;
+
+      if (block.title) {
+        const title = document.createElement('div');
+        title.className = 'nested-title';
+        title.textContent = block.title;
+        nested.appendChild(title);
+      }
+
+      const nestedBody = document.createElement('div');
+      nestedBody.className = 'nested-body';
+      nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
+      decorateJumpLinks(nestedBody);
+      nested.appendChild(nestedBody);
+      body.appendChild(nested);
+      blockEls.set(blockKey, nested);
+    });
+
+    content.appendChild(body);
+    panelBody.appendChild(tabBar);
+    panelBody.appendChild(content);
+    syncPersistedNestedDetails();
+  }
+
   function renderSidebarPanel(tab) {
     const panelBody = getSidebarPanelBodyEl(tab);
-    if (!panelBody || panelBody.dataset.rendered === 'true') return;
+    if (!panelBody) return;
 
     if (tab === 'search') {
+      if (panelBody.dataset.rendered === 'true') return;
       panelBody.dataset.rendered = 'true';
       return;
     }
+
+    if (tab === 'current') {
+      renderCurrentPanel();
+      return;
+    }
+
+    if (panelBody.dataset.rendered === 'true') return;
 
     const frag = document.createDocumentFragment();
     const sections = getSidebarSections().filter((section) => getSidebarSectionTab(section) === tab);
@@ -565,12 +682,13 @@
   }
 
   function renderSidebar() {
+
     if (!dom.sidebarContentEl) return;
 
     ensureSidebarShell();
     renderSidebarTabs();
     renderSidebarPanel('rules');
-    renderSidebarPanel('current');
+    renderCurrentPanel();
     renderSidebarPanel('search');
     installSidebarDelegation();
     syncPersistedNestedDetails();

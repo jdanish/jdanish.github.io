@@ -254,9 +254,11 @@ window.SIDEBAR_SECTIONS = [];
     return defaultMarkdownCache[kind] || '';
   }
 
-  function sectionsToMarkdown(sections) {
+  function sectionsToMarkdown(sections, kind = 'rules') {
+    const headingLevel = kind === 'current' ? 1 : 2;
+    const headingPrefix = '#'.repeat(Math.max(1, headingLevel));
     const content = (Array.isArray(sections) ? sections : []).map((section) => {
-      const heading = `## ${String(section?.title || 'Untitled').trim()}`;
+      const heading = `${headingPrefix} ${String(section?.title || 'Untitled').trim()}`;
       const intro = String(section?.intro || '').trim();
       const blocks = Array.isArray(section?.blocks) ? section.blocks : [];
       const parts = [heading, ''];
@@ -689,10 +691,17 @@ window.SIDEBAR_SECTIONS = [];
 
   function parseMarkdownSections(markdown, kind) {
     const normalized = String(markdown || '').replace(/\r\n/g, '\n').trim();
-    const lines = normalized.split('\n');
+    const lines = normalized ? normalized.split('\n') : [];
     const sections = [];
     let current = null;
     let body = [];
+
+    const headingLevel = kind === 'current'
+      ? (lines.some((line) => /^\s*#(?!#)\s+/.test(line)) ? 1 : 2)
+      : 2;
+    const headingPattern = headingLevel === 1
+      ? /^\s*#(?!#)\s+(.+)$/
+      : /^\s*##\s+(.+)$/;
 
     const flush = () => {
       if (!current) return;
@@ -703,7 +712,7 @@ window.SIDEBAR_SECTIONS = [];
     };
 
     lines.forEach((line) => {
-      const match = line.match(/^\s*##\s+(.+)$/);
+      const match = line.match(headingPattern);
       if (match) {
         flush();
         current = { title: match[1].trim(), body: '' };
@@ -778,7 +787,7 @@ window.SIDEBAR_SECTIONS = [];
         try {
           const parsed = JSON.parse(legacy);
           const sections = normalizeSectionList(parsed, kind);
-          const markdown = sanitizeMarkdownSource(sectionsToMarkdown(sections));
+          const markdown = sanitizeMarkdownSource(sectionsToMarkdown(sections, kind));
           localStorage.setItem(STORAGE_KEYS[kind], markdown);
           return markdown;
         } catch (legacyError) {
