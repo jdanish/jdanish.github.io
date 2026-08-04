@@ -1,434 +1,856 @@
 // Edit this structure to add/remove collapsible sections and nested note blocks.
-window.SIDEBAR_SECTIONS = [
-  {
-    id: "combat",
-    title: "Combat",
-    tab: "rules",
-    intro: "",
-    blocks: [
-      {
-        html: `
-        
-        <a class="linkicon jump-link" href="#" data-tab="swade" data-page="90">Summary</a> (<a class="linkicon jump-link" href="#" data-tab="combat_ref" data-page="1">reference</a>) 
-          <ul>
-            <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="92" data-highlight="Attacks">Attack</a>
-            </li>
-            <ul>
-              <li>
-                <strong>Melee</strong>
-                <ul>
-                  <li> <u>To hit</u>: Fighting die + wild; Must equal or beat target's Parry
-                        <ul>
-                          <li>Raise(s) add 1d6 to damage roll
-                          </li>
-                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> (<a class="linkicon jump-link" href="#" data-tab="combat_ref" data-page="1">reference</a>) for ganging up, flanking, prone, etc.
-                          </li>
-                        </ul>
-                  </li>
-                  <li><u>If hit</u>: Roll Damage; Must equal or beat toughness
-                        <ul>
-                          <li>Raise(s) add wounds
-                          </li>
-                        </ul>
-                    </li>
-                  </ul>
-                </li>
-              <li>  
-                <strong>Ranged</strong>
-                <ul>
-                  <li> <u>To hit</u>: Shooting die + wild die (-2 for medium, -4 long range); Must equal or beat 4
-                        <ul>
-                          <li>Raise(s) add 1d6 to damage roll
-                          </li>
-                          <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="96" data-highlight="Situational Rules">Situational Rules</a> (<a class="linkicon jump-link" href="#" data-tab="combat_ref" data-page="1">reference</a>) for range, cover, etc.
-                          </li>
-                        </ul>
-                        <li>NOTE: Don't forget to roll an extra die if ROF is above 1...</li>
-                  </li>
-                  <li><u>If hit</u>: Roll Damage; Must equal or beat toughness
-                        <ul>
-                          <li>Raise(s) add wounds
-                          </li>
-                        </ul>
-                  </li>
-                </ul>
-              </li>
-              <li>  
-                <strong>Damage...</strong>
-                <ul>
-                  <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="95">Soaking</a> to avoid damange</li>
-                    <ul>
-                      <li>Vigor check, ignore one wound per success / raise
-                      </li>
-                    </ul>
-                  <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="93">Shaken or wounded</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </ul>
-
-        `
-      }
-    ]
-  },
-  {
-    id: "other-rules",
-    title: "Other Rules",
-    tab: "rules",
-    intro: "",
-    blocks: [
-      {
-        html: `
-          <div class="stack">
-            <a class="linkicon" href="https://immaterialplane.com/apps/swdr/" target="dice">Dice Roller App</a>
-            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="89">Bennies</a>
-            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="112" data-highlight="Chases &amp; Vehicles in SWADE">Chases &amp; Vehicles</a> (<a class="linkicon jump-link" href="#" data-tab="chase_ref" data-page="1">Chase Reference</a>)
-            <a class="linkicon jump-link" href="#" data-tab="swade" data-page="91" data-highlight="JOKERS">Jokers</a>
-          </div>
-          <div class="stack">
-            <ul>
-              <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="146" data-highlight="Powers">Powers</a>
-              </li>
-              <ul>
-                <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="149" data-highlight="Trappings">Trappings</a>
-                </li>
-                <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="150" data-highlight="Activation">Activation</a>
-                </li>
-                <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="151" data-highlight="Power Modifiers">Power Modifiers</a>
-                </li>
-                 <li><a class="linkicon jump-link" href="#" data-tab="swade" data-page="150" data-highlight="Recharging">Recharging</a>: 5 Power Points per hour spent resting
-                </li>
-              </ul>
-            </ul>
-          </div>
-        `
-      }
-    ]
-  },
-  {
-    id: "jean",
-    title: "Jean Grayson",
-    tab: "current",
-    intro: "",
-    blocks: [
-      {
-        html: `
-          <div class="stack">
-            Profession: <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="33">Psy Commando</a>
-          </div>
-
-          <details class="subsection" open data-persist-key="jean-grayson-weapons">
-            <summary>Weapons</summary>
-            <div class="subsection-body">
-              <table class="sidebar-table">
-                <thead>
-                  <tr>
-                    <th>Weapon</th>
-                    <th>Range</th>
-                    <th>AP</th>
-                    <th>Damage</th>
-                    <th>ROF</th>
-                    <th>Shots</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="PsyFocus" data-tab="starbreaker_core" data-page="120">
-                    <td>PsyFocus Loadout & Advanced</td>
-                    <td>15/30/60</td>
-                    <td>2</td>
-                    <td>2d6</td>
-                    <td>4</td>
-                    <td>100</td>
-                    <td></td>
-                  </tr>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="Open Gatling Laser" data-tab="sfc" data-page="54" data-highlight="Gatling Laser">
-                    <td>Gatling Laser</td>
-                    <td>50/100/200</td>
-                    <td>4</td>
-                    <td>3d6+4</td>
-                    <td>4</td>
-                    <td>80</td>
-                    <td>Cauterize, Heavy Weapon, No Recoil, Overcharge, Snapfire</td>
-                  </tr>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="Blackout Grenades" data-tab="starbreaker_core" data-page="91">
-                    <td>Blackout Grenades</td>
-                    <td>5/10/20</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>LBT Blast, 5 grenades</td>
-                 </tr>
-                 <tr class="link-row" tabindex="0" role="button" aria-label="Flechette Grenades" data-tab="starbreaker_core" data-page="91">
-                    <td>Flechette Grenades</td>
-                    <td>5/10/20</td>
-                    <td>4</td>
-                    <td>3d4</td>
-                    <td></td>
-                    <td></td>
-                    <td>MBT Blast, 5 grenades</td>
-                </tr>
-                 <tr class="link-row" tabindex="0" role="button" aria-label="Gravity Grenades" data-tab="starbreaker_core" data-page="91">
-                    <td>Gravity Grenades</td>
-                    <td>5/10/20</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>MBT Blast, 5 grenades</td>
-                  </tr>
-                  <tr class="link-row" tabindex="0" role="button" aria-label="Web Grenades" data-tab="starbreaker_core" data-page="91">
-                    <td>Web Grenades</td>
-                    <td>5/10/20</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>MBT Blast, 5 grenades</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </details>
-
-          <details class="subsection" data-persist-key="jean-grayson-armor">
-            <summary>Armor</summary>
-            <div class="subsection-body">
-            <ul>
-              <li> <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="42">Star Marine Armor (+6*)</a></li>
-                <ul>
-                <li>Targeting system</li>
-                <li>Ignore 2 point penalties</li>
-                <li>Life support (20 days)</li></ul>
-              <li>Magnetic boots</li>
-              </ul>
-            </div>
-          </details>
-
-          <details class="subsection" data-persist-key="jean-grayson-edges">
-            <summary>Edges</summary>
-            <div class="subsection-body">
-                <ul class="note-list">
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="swade" data-page="38" data-highlight="FLEET-FOOTED">Fleet-Footed</a>
-                    <ul class="note-list">
-                    <li>
-                      When sneaking behind enemy lines, it’s good to go fast. You have +2 Pace and a d8 Running die.
-                  </li> </ul></li>
-
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="starbreaker_core" data-page="119" data-highlight="ARCANE BACKGROUND (PSY COMMANDO)">Arcane Background (Psy Commando)</a>
-                    <ul class="note-list">
-                    <li>As a psychic warrior, your mind is a weapon. Enemy powers used against you suffer a –2 penalty to their rolls and deal 2 less damage.
-                  </li></ul></li>
-
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="starbreaker_core" data-page="120">Basic Psychic Loadout</a>
-                    <ul class="note-list">
-                    <li>Even without your PsyFocus, you have the powers <em>arcane protection</em>, <em>boost/lower Trait</em> (boost only, self only), <em>smite</em> (self only), and <em>wall walker</em> (self only). You can also spend a Power Point to telepathically link up to 8 allies per the <em>mind link</em> power.
-                  </li></ul></li>
-
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="starbreaker_core" data-page="120">PsyFocus Loadout</a>
-                    <ul class="note-list">
-                    <li>While wielding a PsyFocus, you have 5 additional Power Points and the powers <em>bolt</em>, <em>invisibility</em>, and <em>sound/silence</em>.
-                  </li></ul></li>
-
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="starbreaker_core" data-page="120">Advanced PsyFocus Loadout</a>
-                    <ul class="note-list">
-                    <li>While wielding a PsyFocus, you have the powers <em>barrier</em>, <em>blast</em>, and <em>telekinesis</em>.
-                  </li></ul></li>
-
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="33">Living Weapon</a>
-                    <ul class="note-list">
-                    <li>By channeling their psychic energies through their own flesh, psy commandos can enhance their natural capabilities. Once per encounter, as a limited free action, the psy-co may spend a Power Point to gain the benefits of one Combat Edge (<a class="linkicon jump-link" href="#" data-tab="swade" data-page="59">SWADE</a>) of his Rank or less, regardless of its other Requirements, until the end of the encounter. He can’t choose an Edge he already has, or that is currently active.
-                  </li></ul></li>
-
-                  <li>
-                    <a class="linkicon jump-link" href="#" data-tab="starbreaker_star_marines" data-page="40">Heavy Hitters Squad Edge</a>
-                    <ul class="note-list">
-                    <li>The squad is equipped with experimental weapons that occasionally punch well above their weight class. When a squad member makes an attack with a firearm, he can spend a Benny to declare that it’s a “heavy” attack. If the attack hits, it has +4 AP and deals Heavy Damage.
-                  </li></ul></li>
-                </ul>
-            </div>
-          </details>
-
-          <details class="subsection" data-persist-key="jean-grayson-powers">
-            <summary>Powers</summary>
-            <div class="subsection-body">
-                <ul class="note-list">
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="153" data-highlight="arcane protection">Arcane Protection</a>
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> Success with arcane protection means hostile powers suffer a −2 penalty (−4 with a raise) to affect this character. If the hostile power fails due to this penalty, it still activates and expends its Power Points. Harmful powers that do affect the target deal 2 less damage (4 less with a raise). Arcane Protection stacks with Arcane Resistance.</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Additional Recipients (+1):</strong> Affect one additional target per Power Point spent.</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="153" data-highlight="Barrier">Barrier</a>
-                  <ul>
-                    <li><u>Power Points:</u> 2</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> Creates a straight wall 5" long and 1" tall. The barrier has Hardness 10 (12 with a raise) and disappears when destroyed or when the power ends.</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Damage (+1):</strong> Touching the barrier causes 2d4 damage.</li>
-                        <li><strong>Hardened (+1):</strong> Hardness becomes 12 (14 with a raise).</li>
-                        <li><strong>Shaped (+2):</strong> Form the barrier into a circle, square, or other simple shape.</li>
-                        <li><strong>Size (+1):</strong> Double the barrier's length and height.</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="155" data-highlight="Blast">Blast</a>
-                  <ul>
-                    <li><u>Power Points:</u> 3</li>
-                    <li><u>Range:</u> Smarts ×2</li>
-                    <li><u>Duration:</u> Instant</li>
-                    <li><u>Description:</u> Launches an explosive burst affecting a Medium Blast Template. Targets suffer 2d6 damage (3d6 with a raise).</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Area Effect (+0/+1):</strong> Use a Small Blast Template for no additional cost or a Large Blast Template for +1 Power Point.</li>
-                        <li><strong>Damage (+2):</strong> Damage becomes 3d6 (4d6 with a raise).</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="155" data-highlight="bolt">Bolt</a>
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts ×2</li>
-                    <li><u>Duration:</u> Instant</li>
-                    <li><u>Description:</u> Bolt sends damaging bursts of energy toward one or more foes. It ignores Range penalties but is affected by Cover, Illumination, and all other usual penalties. Damage is 2d6 (3d6 with a raise).</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Damage (+2):</strong> Damage becomes 3d6 (4d6 with a raise).</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="155" data-highlight="Boost/Lower Trait">Boost/Lower Trait</a> (boost only, self only)
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> Increases one of the caster's Traits. Additional castings don't stack on the same Trait, but may affect different Traits.</li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="163" data-highlight="Invisibility">Invisibility (self only)</a>
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> The target and carried items become nearly invisible. Attacks and Notice rolls relying on sight suffer −4 (−6 with a raise).</li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="163" data-highlight="Mind Link">Mind Link</a>
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 30 minutes</li>
-                    <li><u>Description:</u> Creates a telepathic connection between willing individuals within one mile (five miles with a raise). If one linked character suffers a Wound, the others must make a Smarts roll or become Shaken. With a raise, communication is nearly instantaneous.</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Additional Recipients (+1):</strong> Affect one additional willing target per additional Power Point.</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="167" data-highlight="Smite">Smite</a> (self only)
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> Enhances one weapon or one full load of ammunition. Damage increases by +2 (+4 with a raise).</li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="167" data-highlight="Sound/Silence">Sound / Silence</a>
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts ×5 (Sound); Smarts (Silence)</li>
-                    <li><u>Duration:</u> Instant (Sound); 5 (Silence)</li>
-                    <li><u>Description:</u> Sound creates convincing noises or voices. Silence suppresses sound within a Large Blast Template, reducing Notice rolls by 4. With a raise, all sound inside the template is completely muted.</li>
-                    <li>
-                      <u>Modifiers:</u>
-                      <ul>
-                        <li><strong>Mobile (+1):</strong> Move the area of effect each round.</li>
-                        <li><strong>Targeted (+0):</strong> Affect individual targets instead of an area.</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="169" data-highlight="Telekinesis">Telekinesis</a>
-                  <ul>
-                    <li><u>Power Points:</u> 5</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> Move objects or creatures using arcane force with Strength d10 (d12 with a raise). Unwilling targets resist with Spirit.</li>
-                    <li>
-                      <u>Uses:</u>
-                      <ul>
-                        <li><strong>Bash:</strong> Slam the target into a surface for Str+d6 damage.</li>
-                        <li><strong>Change Targets:</strong> Release one target and acquire another.</li>
-                        <li><strong>Manipulate:</strong> Operate tools or wield weapons using the caster's arcane skill.</li>
-                        <li><strong>Move:</strong> Move the target up to the caster's Smarts each round as a limited free action.</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-
-                <li>
-                  <a class="linkicon jump-link" href="#" data-tab="swade" data-page="169" data-highlight="Wall Walker">Wall Walker</a> (self only)
-                  <ul>
-                    <li><u>Power Points:</u> 1</li>
-                    <li><u>Range:</u> Smarts</li>
-                    <li><u>Duration:</u> 5</li>
-                    <li><u>Description:</u> Walk on vertical or horizontal surfaces. Success allows movement at half Pace; a raise allows full Pace and running. Gain +4 to Athletics rolls made to cling to a surface.</li>
-                  </ul>
-                </li>
-
-              </ul>
+window.SIDEBAR_SECTIONS = [];
 
 
-          </div>
-          </details>
-        `
-      }
-    ]
+(function () {
+  window.GM = window.GM || {};
+
+  const DEFAULT_SECTIONS = Array.isArray(window.SIDEBAR_SECTIONS) ? window.SIDEBAR_SECTIONS : [];
+  const STORAGE_KEYS = {
+    rules: 'gm_sidebar_rules_md_v1',
+    current: 'gm_sidebar_current_md_v1',
+  };
+  const LEGACY_STORAGE_KEYS = {
+    rules: 'gm_sidebar_rules_json_v1',
+    current: 'gm_sidebar_current_json_v1',
+  };
+
+  const clone = (value) => JSON.parse(JSON.stringify(value));
+
+  const DEFAULT_MARKDOWN = { rules: '', current: '' };
+
+  function slugify(text) {
+    return String(text || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'section';
   }
-];
+
+  function getDefaultSections(kind) {
+    return clone(DEFAULT_SECTIONS.filter((section) => String(section?.tab || 'rules') === kind));
+  }
+
+  function normalizeMarkdownText(value) {
+    return String(value || '')
+      .replace(/\r\n/g, '\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function looksLikeHtml(value) {
+    const text = String(value || '');
+    if (!text) return false;
+    if (!/[<][a-z!/]/i.test(text)) return false;
+    const tagHits = text.match(/<\/?(?:div|span|p|br|ul|ol|li|table|thead|tbody|tr|td|th|details|summary|section|article|strong|b|em|i|u|a)\b/gi) || [];
+    return tagHits.length >= 2 || /class=|data-tab=|data-page=|data-highlight=/i.test(text);
+  }
+
+  function sanitizeMarkdownSource(value) {
+    const text = String(value || '');
+    if (!text.trim()) return '';
+    if (!looksLikeHtml(text)) return normalizeMarkdownText(text);
+    const converted = htmlToMarkdownFragment(text);
+    return normalizeMarkdownText(converted || text);
+  }
+
+  function looksLikeWikiTarget(value) {
+    const text = String(value || '').trim();
+    return Boolean(
+      text && (
+        /^jump:/i.test(text) ||
+        /^https?:\/\//i.test(text) ||
+        /^[a-z0-9_-]+(?:[:\/])[^\s]+$/i.test(text) ||
+        /^[a-z0-9_-]+\s+p\d+$/i.test(text)
+      )
+    );
+  }
+
+  function normalizeWikiTarget(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^jump:/i.test(raw) || /^https?:\/\//i.test(raw)) return raw;
+
+    const [pathPart, queryPart = ''] = raw.split('?');
+    const path = pathPart.trim();
+    if (!path) return raw;
+
+    if (/^[a-z0-9_-]+\/[a-z0-9_\-]+$/i.test(path)) {
+      return `jump:${path}${queryPart ? `?${queryPart}` : ''}`;
+    }
+
+    const colonMatch = path.match(/^([a-z0-9_-]+):(.+)$/i);
+    if (colonMatch) {
+      const [, book, page] = colonMatch;
+      return `jump:${book}/${page}${queryPart ? `?${queryPart}` : ''}`;
+    }
+
+    return raw;
+  }
+
+  function renderWikiLink(raw, renderLabel) {
+    const parts = String(raw || '').split('|');
+    const left = String(parts[0] || '').trim();
+    const right = String(parts[1] || '').trim();
+    let target = left;
+    let label = right || left;
+
+    if (parts.length > 1) {
+      const leftLooksTarget = looksLikeWikiTarget(left);
+      const rightLooksTarget = looksLikeWikiTarget(right);
+      if (!leftLooksTarget && rightLooksTarget) {
+        target = right;
+        label = left;
+      }
+    }
+
+    const normalizedTarget = normalizeWikiTarget(target);
+    const safeLabel = renderLabel(label || target || raw);
+    return `<a href="${String(normalizedTarget || target || '').replace(/"/g, '&quot;')}">${safeLabel}</a>`;
+  }
+
+  function htmlToMarkdownFragment(html) {
+    const raw = String(html || '').trim();
+    if (!raw) return '';
+    if (!/[<][a-z!/]/i.test(raw)) return raw;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div id="sidebar-md-root">${raw}</div>`, 'text/html');
+    const root = doc.getElementById('sidebar-md-root');
+    if (!root) return raw;
+
+    const compact = (value) => String(value || '').replace(/\s+/g, ' ').replace(/\s+([,.;:!?])/g, '$1').trim();
+    const join = (parts) => parts.filter(Boolean).join('');
+
+    const inline = (node) => {
+      if (!node) return '';
+      if (node.nodeType === Node.TEXT_NODE) return String(node.textContent || '').replace(/\s+/g, ' ');
+      if (node.nodeType !== Node.ELEMENT_NODE) return '';
+      const tag = node.tagName.toLowerCase();
+      if (tag === 'br') return '\n';
+      if (tag === 'a') {
+        const text = compact(join(Array.from(node.childNodes).map(inline)) || node.textContent || '');
+        const href = String(node.getAttribute('href') || '');
+        const dataTab = node.getAttribute('data-tab');
+        const dataPage = node.getAttribute('data-page');
+        const dataHighlight = node.getAttribute('data-highlight');
+        if (href.startsWith('jump:') || dataTab || dataPage || node.classList.contains('jump-link')) {
+          let target = href.startsWith('jump:') ? href.slice(5) : `${dataTab || ''}/${dataPage || ''}`;
+          target = String(target || '').replace(/^\/+/, '');
+          if (!target) target = String(href || '').replace(/^jump:/i, '');
+          if (dataHighlight && !target.includes('?highlight=')) target += `?highlight=${encodeURIComponent(dataHighlight)}`;
+          return `[[${target}|${text || href}]]`;
+        }
+        return href ? `[${text || href}](${href})` : (text || '');
+      }
+      if (tag === 'strong' || tag === 'b') return `**${compact(join(Array.from(node.childNodes).map(inline)))}**`;
+      if (tag === 'em' || tag === 'i') return `*${compact(join(Array.from(node.childNodes).map(inline)))}*`;
+      if (tag === 'code') return `\`${String(node.textContent || '').replace(/`/g, '\\`')}\``;
+      return join(Array.from(node.childNodes).map(inline));
+    };
+
+    const renderList = (listEl, depth = 0) => {
+      const ordered = listEl.tagName.toLowerCase() === 'ol';
+      const items = Array.from(listEl.children).filter((child) => child.tagName && child.tagName.toLowerCase() === 'li');
+      return items.map((li, index) => {
+        const marker = ordered ? `${index + 1}. ` : '- ';
+        const prefix = `${'  '.repeat(depth)}${marker}`;
+        const parts = [];
+        const nested = [];
+        Array.from(li.childNodes).forEach((child) => {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            const childTag = child.tagName.toLowerCase();
+            if (childTag === 'ul' || childTag === 'ol') {
+              nested.push(renderList(child, depth + 1));
+              return;
+            }
+            if (childTag === 'table') {
+              parts.push(`\n${renderTable(child)}\n`);
+              return;
+            }
+          }
+          parts.push(inline(child));
+        });
+        const text = compact(join(parts).replace(/\s*\n\s*/g, ' '));
+        return [prefix + text, ...nested].join('\n');
+      }).join('\n');
+    };
+
+    const renderTable = (tableEl) => {
+      const rows = Array.from(tableEl.querySelectorAll('tr'));
+      if (!rows.length) return '';
+      const parseRow = (row) => Array.from(row.children)
+        .filter((cell) => /^(th|td)$/i.test(cell.tagName))
+        .map((cell) => compact(join(Array.from(cell.childNodes).map(inline))).replace(/\|/g, '\\|'));
+      const header = parseRow(rows[0]);
+      const body = rows.slice(1).map(parseRow).filter((row) => row.some(Boolean));
+      const width = Math.max(header.length, ...body.map((row) => row.length), 0);
+      const pad = (row) => row.concat(Array(Math.max(0, width - row.length)).fill(''));
+      return [
+        `| ${pad(header).join(' | ')} |`,
+        `| ${Array(width).fill('---').join(' | ')} |`,
+        ...body.map((row) => `| ${pad(row).join(' | ')} |`),
+      ].join('\n');
+    };
+
+    const block = (node) => {
+      if (!node) return '';
+      if (node.nodeType === Node.TEXT_NODE) return String(node.textContent || '').replace(/\s+/g, ' ');
+      if (node.nodeType !== Node.ELEMENT_NODE) return '';
+      const tag = node.tagName.toLowerCase();
+      if (tag === 'br') return '\n';
+      if (tag === 'details') {
+        const summary = Array.from(node.children).find((child) => child.tagName && child.tagName.toLowerCase() === 'summary');
+        const bodyNodes = Array.from(node.childNodes).filter((child) => child !== summary);
+        const title = summary ? compact(join(Array.from(summary.childNodes).map(inline)) || summary.textContent || '') : '';
+        const body = bodyNodes.map(block).filter(Boolean).join('\n\n').trim();
+        return normalizeMarkdownText([title ? `### ${title}` : '', body].filter(Boolean).join('\n\n'));
+      }
+      if (tag === 'table') return renderTable(node);
+      if (tag === 'ul' || tag === 'ol') return renderList(node, 0);
+      if (/^h[1-6]$/.test(tag)) {
+        const level = Number(tag.slice(1));
+        return `${'#'.repeat(Math.min(level, 6))} ${compact(join(Array.from(node.childNodes).map(inline)) || node.textContent || '')}`.trim();
+      }
+      if (tag === 'p' || tag === 'div' || tag === 'section') {
+        const children = Array.from(node.childNodes).map(block).filter(Boolean).join('\n\n');
+        if (children) return children;
+        return compact(join(Array.from(node.childNodes).map(inline)));
+      }
+      return compact(join(Array.from(node.childNodes).map(inline)));
+    };
+
+    return normalizeMarkdownText(Array.from(root.childNodes).map(block).filter(Boolean).join('\n\n'));
+  }
+
+  async function loadDefaultMarkdown(kind) {
+    const text = await tryLoadExternalMarkdown(kind);
+    return sanitizeMarkdownSource(text || '');
+  }
+
+  function buildDefaultMarkdown(kind) {
+    return sanitizeMarkdownSource(DEFAULT_MARKDOWN[kind] || '');
+  }
+
+  const defaultMarkdownCache = {
+    rules: '',
+    current: '',
+  };
+
+  function getDefaultMarkdown(kind) {
+    return defaultMarkdownCache[kind] || '';
+  }
+
+  function sectionsToMarkdown(sections) {
+    const content = (Array.isArray(sections) ? sections : []).map((section) => {
+      const heading = `## ${String(section?.title || 'Untitled').trim()}`;
+      const intro = String(section?.intro || '').trim();
+      const blocks = Array.isArray(section?.blocks) ? section.blocks : [];
+      const parts = [heading, ''];
+      if (intro) parts.push(intro, '');
+      blocks.forEach((block) => {
+        const blockText = htmlToMarkdownFragment(block?.markdown ?? block?.html ?? block?.text ?? '').trim();
+        if (blockText) parts.push(blockText, '');
+      });
+      return parts.join('\n').trim();
+    }).join('\n\n').trim();
+    return content ? `${content}\n` : '';
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function renderInlineMarkdown(text) {
+    let value = escapeHtml(String(text || ''));
+
+    value = value.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
+    value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
+    value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
+      const safeHref = String(href || '').trim().replace(/"/g, '&quot;');
+      return `<a href="${safeHref}">${label}</a>`;
+    });
+    value = value.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    value = value.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    return value;
+  }
+
+  function renderTableMarkdown(lines) {
+    const rows = lines.filter((line) => /\|/.test(line));
+    if (!rows.length) return '';
+    const splitRow = (line) => {
+      const trimmed = String(line || '').trim().replace(/^\|/, '').replace(/\|$/, '');
+      return trimmed.split('|').map((cell) => cell.trim());
+    };
+    const header = splitRow(rows[0]);
+    const bodyLines = rows.slice(2).filter((line) => /\|/.test(line));
+    const body = bodyLines.map(splitRow);
+    const width = Math.max(header.length, ...body.map((row) => row.length), 0);
+    const pad = (row) => row.concat(Array(Math.max(0, width - row.length)).fill(''));
+    return [
+      '<table class="sidebar-table">',
+      '<thead><tr>',
+      ...pad(header).map((cell) => `<th>${renderInlineMarkdown(cell)}</th>`),
+      '</tr></thead>',
+      '<tbody>',
+      ...body.map((row) => `<tr>${pad(row).map((cell) => `<td>${renderInlineMarkdown(cell)}</td>`).join('')}</tr>`),
+      '</tbody>',
+      '</table>',
+    ].join('');
+  }
+
+  function renderListMarkdown(lines, startIndex, baseIndent) {
+    const first = String(lines[startIndex] || '');
+    const firstMatch = first.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+    if (!firstMatch) return { html: '', nextIndex: startIndex };
+    const ordered = /\d+\./.test(firstMatch[2]);
+    const listTag = ordered ? 'ol' : 'ul';
+    let html = `<${listTag}>`;
+    let i = startIndex;
+    let openItem = false;
+
+    const closeItem = () => {
+      if (!openItem) return;
+      html += '</li>';
+      openItem = false;
+    };
+
+    while (i < lines.length) {
+      const line = String(lines[i] || '');
+      if (!line.trim()) {
+        i += 1;
+        continue;
+      }
+
+      const match = line.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+      if (!match) {
+        const trimmedLine = line.trim();
+        if (/^(#{1,6})\s+/.test(trimmedLine) || /^```/.test(trimmedLine) || /^\|/.test(trimmedLine)) {
+          break;
+        }
+        if (openItem) {
+          html += `<div class="list-continuation">${renderInlineMarkdown(trimmedLine)}</div>`;
+          i += 1;
+          continue;
+        }
+        break;
+      }
+
+      const indent = match[1].length;
+      if (indent < baseIndent) break;
+      if (indent > baseIndent) {
+        const nested = renderListMarkdown(lines, i, indent);
+        if (nested.html) html += nested.html;
+        i = nested.nextIndex;
+        continue;
+      }
+
+      closeItem();
+      html += `<li>${renderInlineMarkdown(match[3])}`;
+      openItem = true;
+      i += 1;
+    }
+
+    closeItem();
+    html += `</${listTag}>`;
+    return { html, nextIndex: i };
+  }
+
+  function renderMarkdownLocally(markdown) {
+    const source = String(markdown || '').replace(/\r\n/g, '\n');
+    const lines = source.split('\n');
+    const output = [];
+
+    const escapeHtml = (value) => String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+    const renderInline = (text) => {
+      let value = escapeHtml(String(text || ''));
+      value = value.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
+      value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
+      value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
+        const safeHref = String(href || '').trim().replace(/"/g, '&quot;');
+        return `<a href="${safeHref}">${label}</a>`;
+      });
+      value = value.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      value = value.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      return value;
+    };
+
+    const flushParagraph = (buffer) => {
+      const text = buffer.join(' ').trim();
+      if (text) output.push(`<p>${renderInline(text)}</p>`);
+      buffer.length = 0;
+    };
+
+    const renderTableFromLines = (tableLines) => {
+      const rows = tableLines.filter((line) => /\|/.test(line));
+      if (!rows.length) return '';
+      const splitRow = (line) => {
+        const trimmed = String(line || '').trim().replace(/^\|/, '').replace(/\|$/, '');
+        return trimmed.split('|').map((cell) => cell.trim());
+      };
+      const header = splitRow(rows[0]);
+      const bodyLines = rows.slice(2).filter((line) => /\|/.test(line));
+      const body = bodyLines.map(splitRow);
+      const width = Math.max(header.length, ...body.map((row) => row.length), 0);
+      const pad = (row) => row.concat(Array(Math.max(0, width - row.length)).fill(''));
+      return [
+        '<table class="sidebar-table">',
+        '<thead><tr>',
+        ...pad(header).map((cell) => `<th>${renderInline(cell)}</th>`),
+        '</tr></thead>',
+        '<tbody>',
+        ...body.map((row) => `<tr>${pad(row).map((cell) => `<td>${renderInline(cell)}</td>`).join('')}</tr>`),
+        '</tbody>',
+        '</table>',
+      ].join('');
+    };
+
+    const renderList = (startIndex, baseIndent) => {
+      const first = String(lines[startIndex] || '');
+      const firstMatch = first.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+      if (!firstMatch) return { html: '', nextIndex: startIndex };
+      const ordered = /\d+\./.test(firstMatch[2]);
+      const listTag = ordered ? 'ol' : 'ul';
+      let html = `<${listTag} class="note-list">`;
+      let i = startIndex;
+      let openItem = false;
+
+      const closeItem = () => {
+        if (!openItem) return;
+        html += '</li>';
+        openItem = false;
+      };
+
+      while (i < lines.length) {
+        const line = String(lines[i] || '');
+        if (!line.trim()) {
+          i += 1;
+          continue;
+        }
+
+        const match = line.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+        if (!match) {
+          const trimmedLine = line.trim();
+          if (/^(#{1,6})\s+/.test(trimmedLine) || /^```/.test(trimmedLine) || /^\|/.test(trimmedLine)) {
+            break;
+          }
+          if (openItem) {
+            html += `<div class="list-continuation">${renderInline(trimmedLine)}</div>`;
+            i += 1;
+            continue;
+          }
+          break;
+        }
+
+        const indent = match[1].length;
+        if (indent < baseIndent) break;
+        if (indent > baseIndent) {
+          const nested = renderList(i, indent);
+          if (nested.html) html += nested.html;
+          i = nested.nextIndex;
+          continue;
+        }
+
+        closeItem();
+        html += `<li>${renderInline(match[3])}`;
+        openItem = true;
+        i += 1;
+      }
+
+      closeItem();
+      html += `</${listTag}>`;
+      return { html, nextIndex: i };
+    };
+
+    const renderBlockRange = (startIndex, endIndex) => {
+      const parts = [];
+      let i = startIndex;
+      const paragraph = [];
+
+      const flush = () => {
+        flushParagraph(paragraph);
+      };
+
+      while (i < endIndex) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          flush();
+          i += 1;
+          continue;
+        }
+
+        const heading = trimmed.match(/^(#{1,6})\s+(.+)$/);
+        if (heading) {
+          flush();
+          const level = heading[1].length;
+          const text = heading[2].trim();
+
+          if (level === 3) {
+            const tagMatch = text.match(/\s*\{(open|closed)\}\s*$/i);
+            const summaryText = tagMatch ? text.replace(/\s*\{(open|closed)\}\s*$/i, '').trim() : text;
+            const open = tagMatch ? tagMatch[1].toLowerCase() === 'open' : false;
+            const bodyStart = i + 1;
+            let bodyEnd = bodyStart;
+            while (bodyEnd < endIndex) {
+              const candidate = lines[bodyEnd].trim();
+              const candidateHeading = candidate.match(/^(#{1,6})\s+(.+)$/);
+              if (candidateHeading && candidateHeading[1].length <= 3) break;
+              bodyEnd += 1;
+            }
+            const bodyHtml = renderBlockRange(bodyStart, bodyEnd).trim();
+            parts.push([
+              `<details class="subsection"${open ? ' open' : ''}>`,
+              `<summary>${renderInline(summaryText)}</summary>`,
+              `<div class="subsection-body">${bodyHtml}</div>`,
+              `</details>`,
+            ].join(''));
+            i = bodyEnd;
+            continue;
+          }
+
+          parts.push(`<h${level}>${renderInline(text)}</h${level}>`);
+          i += 1;
+          continue;
+        }
+
+        const next = lines[i + 1] || '';
+        const isTable = /\|/.test(line) && /^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*$/.test(next);
+        if (isTable) {
+          flush();
+          const tableLines = [line, next];
+          i += 2;
+          while (i < endIndex && /\|/.test(lines[i])) {
+            tableLines.push(lines[i]);
+            i += 1;
+          }
+          parts.push(renderTableFromLines(tableLines));
+          continue;
+        }
+
+        const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
+        if (listMatch) {
+          flush();
+          const list = renderList(i, listMatch[1].length);
+          if (list.html) parts.push(list.html);
+          i = list.nextIndex;
+          continue;
+        }
+
+        paragraph.push(trimmed);
+        i += 1;
+      }
+
+      flush();
+      return parts.join('\n');
+    };
+
+    output.push(renderBlockRange(0, lines.length));
+    return normalizeMarkdownText(output.filter(Boolean).join('\n\n'));
+  }
+
+  function postProcessRenderedMarkdownHtml(html) {
+    const raw = String(html || '').trim();
+    if (!raw) return '';
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div id="sidebar-render-root">${raw}</div>`, 'text/html');
+    const root = doc.getElementById('sidebar-render-root');
+    if (!root) return raw;
+
+    root.querySelectorAll('table').forEach((table) => {
+      table.classList.add('sidebar-table');
+    });
+
+    const nodes = Array.from(root.childNodes);
+    const out = [];
+
+    const getHeadingLevel = (node) => {
+      if (!node || node.nodeType !== Node.ELEMENT_NODE) return 0;
+      const tag = String(node.tagName || '').toLowerCase();
+      const match = tag.match(/^h([1-6])$/);
+      return match ? Number(match[1]) : 0;
+    };
+
+    const isSectionHeading = (node) => getHeadingLevel(node) > 0;
+
+    const makeDetails = (heading) => {
+      const details = doc.createElement('details');
+      details.className = 'subsection';
+
+      const summary = doc.createElement('summary');
+      const headingText = String(heading.textContent || '').trim();
+      const tagMatch = headingText.match(/\s*\{(open|closed)\}\s*$/i);
+      const title = tagMatch ? headingText.replace(/\s*\{(open|closed)\}\s*$/i, '').trim() : headingText;
+      const open = tagMatch ? tagMatch[1].toLowerCase() === 'open' : false;
+      if (open) details.open = true;
+      summary.textContent = title;
+      details.appendChild(summary);
+
+      const body = doc.createElement('div');
+      body.className = 'subsection-body';
+      details.appendChild(body);
+      return { details, body };
+    };
+
+    let i = 0;
+    while (i < nodes.length) {
+      const node = nodes[i];
+      const level = getHeadingLevel(node);
+      if (level === 3) {
+        const { details, body } = makeDetails(node);
+        i += 1;
+        while (i < nodes.length) {
+          const next = nodes[i];
+          const nextLevel = getHeadingLevel(next);
+          if (nextLevel > 0 && nextLevel <= 3) break;
+          body.appendChild(next);
+          i += 1;
+        }
+        out.push(details);
+        continue;
+      }
+      out.push(node);
+      i += 1;
+    }
+
+    root.replaceChildren(...out);
+    return root.innerHTML;
+  }
+
+  function renderMarkdownToHtml(markdown) {
+    const source = sanitizeMarkdownSource(markdown);
+    return postProcessRenderedMarkdownHtml(renderMarkdownLocally(source));
+  }
+
+  function parseMarkdownSections(markdown, kind) {
+    const normalized = String(markdown || '').replace(/\r\n/g, '\n');
+    const lines = normalized.split('\n');
+    const sections = [];
+    let current = null;
+    let body = [];
+
+    const flush = () => {
+      if (!current) return;
+      current.body = body.join('\n').trim();
+      sections.push(current);
+      current = null;
+      body = [];
+    };
+
+    lines.forEach((line) => {
+      const match = line.match(/^##\s+(.+)$/);
+      if (match) {
+        flush();
+        current = { title: match[1].trim(), body: '' };
+        return;
+      }
+
+      if (current) {
+        body.push(line);
+      }
+    });
+
+    flush();
+
+    if (!sections.length) {
+      throw new Error(`No markdown sections found for ${kind}`);
+    }
+
+    return sections.map((section, index) => {
+      const html = renderMarkdownToHtml(section.body || '');
+
+      return {
+        id: slugify(section.title) || `${kind}-${index + 1}`,
+        title: section.title,
+        tab: kind === 'current' ? 'current' : 'rules',
+        intro: '',
+        blocks: [{ html }],
+      };
+    });
+  }
+
+  function normalizeSectionList(input, kind) {
+    if (typeof input === 'string') {
+      return parseMarkdownSections(input, kind);
+    }
+
+    const source = Array.isArray(input)
+      ? input
+      : Array.isArray(input?.sections)
+        ? input.sections
+        : Array.isArray(input?.[kind])
+          ? input[kind]
+          : null;
+
+    if (!Array.isArray(source)) {
+      throw new Error(`Expected a markdown document or array of sidebar sections for ${kind}`);
+    }
+
+    return source.map((section) => ({
+      ...section,
+      tab: kind === 'current' ? 'current' : 'rules',
+    }));
+  }
+
+  function hasStoredOverride(kind) {
+    return Boolean(localStorage.getItem(STORAGE_KEYS[kind]));
+  }
+
+  function hasLegacyOverride(kind) {
+    return Boolean(localStorage.getItem(LEGACY_STORAGE_KEYS[kind]));
+  }
+
+  function loadStoredMarkdown(kind) {
+    try {
+      const current = localStorage.getItem(STORAGE_KEYS[kind]);
+      if (current) return sanitizeMarkdownSource(current);
+
+      const legacy = localStorage.getItem(LEGACY_STORAGE_KEYS[kind]);
+      if (legacy) {
+        try {
+          const parsed = JSON.parse(legacy);
+          const sections = normalizeSectionList(parsed, kind);
+          const markdown = sanitizeMarkdownSource(sectionsToMarkdown(sections));
+          localStorage.setItem(STORAGE_KEYS[kind], markdown);
+          return markdown;
+        } catch (legacyError) {
+          console.warn(`Failed to migrate legacy ${kind} sidebar data`, legacyError);
+        }
+      }
+    } catch (err) {
+      console.warn(`Failed to load stored ${kind} sidebar markdown`, err);
+    }
+
+    return null;
+  }
+
+  function persistStoredMarkdown(kind, markdown) {
+    localStorage.setItem(STORAGE_KEYS[kind], String(markdown || ''));
+  }
+
+  function cloneMarkdown(kind) {
+    return sanitizeMarkdownSource(kind === 'current' ? currentMarkdown : rulesMarkdown || '');
+  }
+
+  function markdownToSections(markdown, kind) {
+    return normalizeSectionList(sanitizeMarkdownSource(markdown), kind);
+  }
+
+  let rulesMarkdown = loadStoredMarkdown('rules') || getDefaultMarkdown('rules');
+  let currentMarkdown = loadStoredMarkdown('current') || getDefaultMarkdown('current');
+  let rulesSections = markdownToSections(rulesMarkdown, 'rules');
+  let currentSections = markdownToSections(currentMarkdown, 'current');
+
+  function applySections(notify = true) {
+    window.SIDEBAR_RULES_SECTIONS = clone(rulesSections);
+    window.SIDEBAR_CURRENT_SECTIONS = clone(currentSections);
+    window.SIDEBAR_SECTIONS = [...window.SIDEBAR_RULES_SECTIONS, ...window.SIDEBAR_CURRENT_SECTIONS];
+
+    if (notify) {
+      window.GM.ui?.refreshSidebarFromData?.();
+    }
+  }
+
+  function refreshSectionsFromMarkdown() {
+    rulesSections = markdownToSections(rulesMarkdown || getDefaultMarkdown('rules'), 'rules');
+    currentSections = markdownToSections(currentMarkdown || getDefaultMarkdown('current'), 'current');
+    applySections(true);
+  }
+
+  function downloadMarkdown(kind) {
+    const markdown = cloneMarkdown(kind) || getDefaultMarkdown(kind);
+    const filename = kind === 'current' ? 'current.md' : 'rules.md';
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function importMarkdownFromText(kind, text) {
+    const markdown = sanitizeMarkdownSource(text);
+    const sections = normalizeSectionList(markdown, kind);
+    if (kind === 'current') {
+      currentMarkdown = markdown;
+      currentSections = sections;
+    } else {
+      rulesMarkdown = markdown;
+      rulesSections = sections;
+    }
+    persistStoredMarkdown(kind, markdown);
+    applySections(true);
+    return sections;
+  }
+
+  async function resetKind(kind) {
+    localStorage.removeItem(STORAGE_KEYS[kind]);
+    localStorage.removeItem(LEGACY_STORAGE_KEYS[kind]);
+    const markdown = await loadDefaultMarkdown(kind);
+    const fallback = defaultMarkdownCache[kind] || '';
+    if (kind === 'current') {
+      currentMarkdown = markdown || fallback;
+    } else {
+      rulesMarkdown = markdown || fallback;
+    }
+    refreshSectionsFromMarkdown();
+  }
+
+  async function tryLoadExternalMarkdown(kind) {
+    const url = `data/${kind}.md`;
+    try {
+      const response = await fetch(url, { cache: 'no-store' });
+      if (!response.ok) return null;
+      return String(await response.text() || '');
+    } catch (err) {
+      return null;
+    }
+  }
+
+  const readyPromise = (async () => {
+    const [rules, current] = await Promise.all([tryLoadExternalMarkdown('rules'), tryLoadExternalMarkdown('current')]);
+    defaultMarkdownCache.rules = sanitizeMarkdownSource(rules || '');
+    defaultMarkdownCache.current = sanitizeMarkdownSource(current || '');
+    if (rules && !hasStoredOverride('rules') && !hasLegacyOverride('rules')) rulesMarkdown = sanitizeMarkdownSource(rules);
+    if (current && !hasStoredOverride('current') && !hasLegacyOverride('current')) currentMarkdown = sanitizeMarkdownSource(current);
+    if (!rulesMarkdown) rulesMarkdown = defaultMarkdownCache.rules || '';
+    if (!currentMarkdown) currentMarkdown = defaultMarkdownCache.current || '';
+    refreshSectionsFromMarkdown();
+  })();
+
+  window.GM.sidebarData = {
+    readyPromise,
+    getRules: () => clone(rulesSections),
+    getCurrent: () => clone(currentSections),
+    getRulesMarkdown: () => rulesMarkdown,
+    getCurrentMarkdown: () => currentMarkdown,
+    downloadMarkdown,
+    downloadKind: downloadMarkdown,
+    importMarkdownFromText,
+    importKindFromText: importMarkdownFromText,
+    resetKind,
+    applySections,
+    setMarkdown(kind, markdown) {
+      return importMarkdownFromText(kind, markdown);
+    },
+  };
+
+  applySections(false);
+})();

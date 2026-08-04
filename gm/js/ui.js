@@ -215,6 +215,22 @@
     });
   }
 
+  function resetSidebarPanels() {
+    sectionEls.clear();
+    blockEls.clear();
+
+    [dom.sidebarRulesPanelBodyEl, dom.sidebarCurrentPanelBodyEl, dom.sidebarSearchPanelBodyEl].forEach((panelBody) => {
+      if (!panelBody) return;
+      panelBody.dataset.rendered = '';
+      panelBody.replaceChildren();
+    });
+  }
+
+  function refreshSidebarFromData() {
+    resetSidebarPanels();
+    renderSidebar();
+  }
+
   const SIDEBAR_TAB_META = {
     rules: { label: 'Rules', icon: '📚' },
     current: { label: 'Current', icon: '🎲' },
@@ -294,6 +310,42 @@
       case 'search': return dom.sidebarSearchPanelBodyEl || null;
       default: return null;
     }
+  }
+
+  function parseJumpHref(href) {
+    const value = String(href || '').trim();
+    if (!value.startsWith('jump:')) return null;
+
+    const raw = value.slice(5);
+    const [path, query = ''] = raw.split('?');
+    const [tab = '', page = ''] = path.split('/');
+    if (!tab || !page) return null;
+
+    const params = new URLSearchParams(query);
+    return {
+      tab,
+      page,
+      highlight: params.get('highlight') || '',
+    };
+  }
+
+  function decorateJumpLinks(root) {
+    if (!root) return;
+
+    root.querySelectorAll('a[href^="jump:"]').forEach((link) => {
+      const meta = parseJumpHref(link.getAttribute('href'));
+      if (!meta) return;
+
+      link.classList.add('linkicon', 'jump-link');
+      link.dataset.tab = meta.tab;
+      link.dataset.page = meta.page;
+      if (meta.highlight) {
+        link.dataset.highlight = meta.highlight;
+      } else {
+        delete link.dataset.highlight;
+      }
+      link.setAttribute('href', '#');
+    });
   }
 
   function updateSidebarPanelVisibility() {
@@ -389,6 +441,17 @@
       button.classList.toggle('active', tab === getSidebarTab());
       button.addEventListener('click', () => setSidebarTab(tab));
       dom.sidebarTabsEl.appendChild(button);
+
+      if (tab === 'search') {
+        const editButton = document.createElement('button');
+        editButton.type = 'button';
+        editButton.className = 'sidebar-tab-button sidebar-data-button icon-button';
+        editButton.setAttribute('aria-label', 'Edit sidebar Markdown');
+        editButton.title = 'Edit sidebar Markdown';
+        editButton.innerHTML = '<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>';
+        editButton.addEventListener('click', () => toggleSidebarDataPopup());
+        dom.sidebarTabsEl.appendChild(editButton);
+      }
     });
   }
 
@@ -445,6 +508,7 @@
         const nestedBody = document.createElement('div');
         nestedBody.className = 'nested-body';
         nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
+        decorateJumpLinks(nestedBody);
         nested.appendChild(nestedBody);
         body.appendChild(nested);
 
@@ -489,7 +553,7 @@
 
   function renderBookVisibilityPopup() {
     const wrap = document.createElement('div');
-    wrap.className = 'book-visibility-panel';
+    wrap.className = 'book-visibility-panel sidebar-data-panel';
 
     const intro = document.createElement('p');
     intro.className = 'book-visibility-intro';
@@ -544,6 +608,285 @@
       className: 'book-visibility-popup',
       width: 380,
       rootClass: 'book-visibility-root',
+    });
+  }
+
+  const sidebarMarkdownEditorState = {
+    kind: null,
+    editor: null,
+    fallbackTextarea: null,
+    dirty: false,
+    unbindKeydown: null,
+  };
+
+  function closeSidebarMarkdownEditor() {
+    try {
+      sidebarMarkdownEditorState.unbindKeydown?.();
+    } catch {
+      // ignore
+    }
+    sidebarMarkdownEditorState.unbindKeydown = null;
+    try {
+      sidebarMarkdownEditorState.editor?.toTextArea?.();
+    } catch {
+      // ignore
+    }
+    try {
+      sidebarMarkdownEditorState.editor?.destroy?.();
+    } catch {
+      // ignore
+    }
+    sidebarMarkdownEditorState.kind = null;
+    sidebarMarkdownEditorState.editor = null;
+    sidebarMarkdownEditorState.fallbackTextarea = null;
+    sidebarMarkdownEditorState.dirty = false;
+  }
+
+  function openSidebarMarkdownEditor(kind) {
+    const label = kind === 'current' ? 'Current' : 'Rules';
+    const initialMarkdown = window.GM.sidebarData?.[`get${label}Markdown`]?.() || '';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'sidebar-md-editor';
+
+    const actions = document.createElement('div');
+    actions.className = 'sidebar-md-editor-actions';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'primary';
+    saveBtn.textContent = 'Save';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.textContent = 'Cancel';
+
+    const statusEl = document.createElement('div');
+    statusEl.className = 'sidebar-md-editor-status';
+    statusEl.textContent = 'Saved';
+
+    actions.appendChild(saveBtn);
+    actions.appendChild(cancelBtn);
+    actions.appendChild(statusEl);
+
+    const hint = document.createElement('p');
+    hint.className = 'book-visibility-intro';
+    hint.textContent = 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and jump: links for PDF navigation.';
+
+    const frame = document.createElement('div');
+    frame.className = 'sidebar-md-editor-frame';
+
+    wrap.appendChild(actions);
+    wrap.appendChild(hint);
+    wrap.appendChild(frame);
+
+    const setDirty = (dirty) => {
+      sidebarMarkdownEditorState.dirty = Boolean(dirty);
+      statusEl.textContent = sidebarMarkdownEditorState.dirty ? 'Unsaved' : 'Saved';
+      statusEl.classList.toggle('unsaved', sidebarMarkdownEditorState.dirty);
+    };
+
+    const saveMarkdown = () => {
+      const markdown = sidebarMarkdownEditorState.editor?.value?.()
+        ?? sidebarMarkdownEditorState.fallbackTextarea?.value
+        ?? '';
+      window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
+      setDirty(false);
+      window.GM.popup?.hide?.();
+    };
+
+    const handleEditorKeydown = (event) => {
+      if (!window.GM.popup?.isOpen?.()) return;
+      const key = String(event.key || '').toLowerCase();
+      if ((event.ctrlKey || event.metaKey) && key === 's') {
+        event.preventDefault();
+        event.stopPropagation();
+        saveMarkdown();
+        return;
+      }
+      if (key === 'escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        window.GM.popup?.hide?.();
+      }
+    };
+
+    window.GM.popup?.show?.({
+      title: `Edit ${label} Markdown`,
+      content: wrap,
+      className: 'sidebar-md-editor-popup',
+      width: 960,
+      rootClass: 'sidebar-md-editor-root',
+      closeOnScroll: false,
+      closeOnOutsidePointerDown: false,
+      closeOnEscape: false,
+      beforeClose: () => {
+        if (!sidebarMarkdownEditorState.dirty) return true;
+        return window.confirm('Discard unsaved changes?');
+      },
+      onClose: () => {
+        closeSidebarMarkdownEditor();
+      },
+    });
+
+    const bindKeydown = () => {
+      document.addEventListener('keydown', handleEditorKeydown, true);
+      sidebarMarkdownEditorState.unbindKeydown = () => document.removeEventListener('keydown', handleEditorKeydown, true);
+    };
+
+    const editorReady = () => {
+      const ta = document.createElement('textarea');
+      ta.className = 'sidebar-md-textarea';
+      ta.value = initialMarkdown;
+      frame.appendChild(ta);
+      sidebarMarkdownEditorState.fallbackTextarea = ta;
+
+      try {
+        if (window.EasyMDE) {
+          sidebarMarkdownEditorState.editor = new window.EasyMDE({
+            element: ta,
+            initialValue: initialMarkdown,
+            autoDownloadFontAwesome: true,
+            autofocus: true,
+            forceSync: true,
+            spellChecker: false,
+            status: false,
+            minHeight: '65vh',
+            maxHeight: '70vh',
+            renderingConfig: {
+              singleLineBreaks: false,
+              codeSyntaxHighlighting: false,
+            },
+          });
+
+          ta.style.display = 'none';
+          sidebarMarkdownEditorState.editor.codemirror?.on?.('change', () => setDirty(true));
+          bindKeydown();
+
+          window.setTimeout(() => {
+            try {
+              sidebarMarkdownEditorState.editor?.codemirror?.refresh?.();
+            } catch {
+              // ignore
+            }
+          }, 0);
+        } else {
+          ta.style.display = 'block';
+          ta.addEventListener('input', () => setDirty(true));
+          bindKeydown();
+        }
+      } catch (error) {
+        console.error('Failed to initialize Markdown editor', error);
+        ta.style.display = 'block';
+        ta.addEventListener('input', () => setDirty(true));
+        bindKeydown();
+      }
+      setDirty(false);
+    };
+
+    requestAnimationFrame(editorReady);
+
+    saveBtn.addEventListener('click', saveMarkdown);
+    cancelBtn.addEventListener('click', () => {
+      window.GM.popup?.hide?.();
+    });
+  }
+  function renderSidebarDataPopup() {
+    const wrap = document.createElement('div');
+    wrap.className = 'book-visibility-panel sidebar-data-panel';
+
+    const intro = document.createElement('p');
+    intro.className = 'book-visibility-intro';
+    intro.textContent = 'Download, load, edit, or reset the Markdown for Rules and Current.';
+    wrap.appendChild(intro);
+
+    const makeGroup = (title, kind) => {
+      const group = document.createElement('div');
+      group.className = 'book-visibility-list';
+
+      const heading = document.createElement('div');
+      heading.className = 'book-visibility-item';
+      heading.style.cursor = 'default';
+      heading.style.fontWeight = '700';
+      heading.style.justifyContent = 'space-between';
+      heading.innerHTML = `<span>${title}</span><small>${kind}.md</small>`;
+      group.appendChild(heading);
+
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.textContent = `Edit ${title}`;
+      editBtn.addEventListener('click', () => openSidebarMarkdownEditor(kind));
+
+      const downloadBtn = document.createElement('button');
+      downloadBtn.type = 'button';
+      downloadBtn.textContent = `Download ${title} Markdown`;
+      downloadBtn.addEventListener('click', () => window.GM.sidebarData?.downloadMarkdown?.(kind));
+
+      const loadBtn = document.createElement('button');
+      loadBtn.type = 'button';
+      loadBtn.textContent = `Load ${title} Markdown`;
+      loadBtn.addEventListener('click', async () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.md,.markdown,.txt,text/markdown,text/plain';
+        input.addEventListener('change', async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            window.GM.sidebarData?.importMarkdownFromText?.(kind, text);
+            window.GM.popup?.hide?.();
+          } catch (error) {
+            window.alert(`Failed to load ${title}: ${error?.message || error}`);
+          }
+        }, { once: true });
+        input.click();
+      });
+
+      const resetBtn = document.createElement('button');
+      resetBtn.type = 'button';
+      resetBtn.textContent = `Reset ${title}`;
+      resetBtn.addEventListener('click', async () => {
+        if (!window.confirm(`Reset ${title} to its Markdown default?`)) return;
+        await window.GM.sidebarData?.resetKind?.(kind);
+        window.GM.popup?.hide?.();
+      });
+
+      group.appendChild(editBtn);
+      group.appendChild(downloadBtn);
+      group.appendChild(loadBtn);
+      group.appendChild(resetBtn);
+      return group;
+    };
+
+    wrap.appendChild(makeGroup('Rules', 'rules'));
+    wrap.appendChild(makeGroup('Current', 'current'));
+    return wrap;
+  }
+
+  function toggleSidebarDataPopup() {
+    const root = document.getElementById('gmPopupRoot');
+    if (root && !root.hidden && root.querySelector('.sidebar-data-panel')) {
+      window.GM.popup?.hide?.();
+      return;
+    }
+
+    window.GM.popup?.show?.({
+      title: 'Sidebar Data',
+      content: renderSidebarDataPopup(),
+      className: 'sidebar-data-popup',
+      width: 420,
+      rootClass: 'sidebar-data-root',
+    });
+  }
+
+  function stopPopupInteraction(el) {
+    if (!el) return;
+    const stop = (event) => {
+      event.stopPropagation();
+    };
+    ['wheel', 'touchstart', 'touchmove', 'pointerdown', 'pointermove', 'scroll', 'click', 'mousedown', 'mouseup'].forEach((type) => {
+      el.addEventListener(type, stop, { passive: true });
     });
   }
 
@@ -725,6 +1068,8 @@
     setBookVisible,
     ensureBookVisible,
     toggleBookVisibilityPopup,
+    toggleSidebarDataPopup,
     syncBookVisibilityPopup,
+    refreshSidebarFromData,
   };
 })();

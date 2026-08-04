@@ -21,7 +21,7 @@ window.BOOKS = {
   },
   sfc: {
     order: 2,
-    title: "SFC",
+    title: "SWADE Science Fiction Companion",
     file: "pdfs/sfc.pdf",
     pageOffset: -2,
     defaultPage: 2,
@@ -35,7 +35,7 @@ window.BOOKS = {
     ]
   },
   starbreaker_core: {
-    order: 3,
+    order: 6,
     title: "Starbreaker Core",
     file: "pdfs/starbreaker_core.pdf",
     pageOffset: -1,
@@ -53,7 +53,7 @@ window.BOOKS = {
     ]
   },
   starbreaker_star_marines: {
-    order: 4,
+    order: 7,
     title: "Starbreaker Star Marines",
     file: "pdfs/starbreaker_star_marines.pdf",
     pageOffset: -1,
@@ -71,7 +71,7 @@ window.BOOKS = {
     ]
   },
   starbreaker_star_marshals: {
-    order: 5,
+    order: 8,
     title: "Starbreaker Star Marshals",
     file: "pdfs/starbreaker_star_marshals.pdf",
     pageOffset: -1,
@@ -84,7 +84,7 @@ window.BOOKS = {
     ]
   },
   fantasy: {
-    order: 6,
+    order: 3,
     title: "SWADE Fantasy Companion",
     file: "pdfs/fantasy.pdf",
     pageOffset: -2,
@@ -99,8 +99,86 @@ window.BOOKS = {
     { label: "Index", page: 268 }
     ]
   },
+   horror: {
+    order: 4,
+    title: "SWADE Horror Companion",
+    file: "pdfs/horror.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    { label: "TOC", page: 2 }
+    ]
+  },
+   spc: {
+    order: 5,
+    title: "SWADE Super Powers Companion",
+    file: "pdfs/spc.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    { label: "TOC", page: 2 }
+    ]
+  },
+    secret_world: {
+    order: 9,
+    title: "Secret World",
+    file: "pdfs/secret_world.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    { label: "TOC", page: 2 }
+    ]
+  },
+  ne_invasion: {
+    order: 10,
+    title: "Necessary Evil",
+    file: "pdfs/ne_invasion.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    { label: "TOC", page: 2 }
+    ]
+  },
+    doom_guard: {
+    order: 11,
+    title: "Doom Guard",
+    file: "pdfs/doom_guard.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    { label: "TOC", page: 2 }
+    ]
+  },
+    occult_city: {
+    order: 12,
+    title: "Occult City",
+    file: "pdfs/occult_city.pdf",
+    pageOffset: -1,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    { label: "TOC", page: 2 }
+    ]
+  },
   chase_ref: {
-    order: 7,
+    order: 13,
     title: "Chase Reference",
     file: "pdfs/chase_ref.pdf",
     pageOffset: 0,
@@ -112,7 +190,7 @@ window.BOOKS = {
     ]
   },
   combat_ref: {
-    order: 8,
+    order: 14,
     title: "Combat Reference",
     file: "pdfs/combat_ref.pdf",
     pageOffset: 0,
@@ -124,7 +202,7 @@ window.BOOKS = {
     ]
   },
   combat_survival_guide: {
-    order: 9,
+    order: 15,
     title: "Combat Survival Guide v11",
     file: "pdfs/combat_survival_guide.pdf",
     pageOffset: 0,

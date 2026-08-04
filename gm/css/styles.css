@@ -57,9 +57,6 @@ body.resizing { cursor: col-resize; user-select: none; }
   cursor: col-resize;
   position: relative;
   align-self: stretch;
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 .sidebar-resizer::before {
   content: '';
@@ -173,6 +170,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 .sidebar-search-row #clearSidebarSearch {
   flex: 0 0 auto;
@@ -192,6 +190,12 @@ body.resizing { cursor: col-resize; user-select: none; }
   font-size: 13px;
 }
 .sidebar-tools input[type="search"]::placeholder { color: #8d96a8; }
+.sidebar-data-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-width: 0;
+  padding: 8px 10px;
+}
 .sidebar-tools input[type="search"]:focus {
   outline: none;
   border-color: rgba(124, 196, 255, 0.5);
@@ -280,63 +284,18 @@ a.btn:hover {
   background: var(--accent) !important;
   border-color: var(--accent-strong) !important;
 }
+.sidebar-tab-button.sidebar-data-button {
+  flex: 0 0 auto;
+  min-width: 36px;
+  padding: 8px 10px;
+  justify-content: center;
+}
 .sidebar-sections {
   display: grid;
   gap: 10px;
   align-content: start;
   min-height: 0;
 }
-
-/* Sidebar v2 panel layout override for current DOM */
-#sidebarContent,
-.sidebar-content {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-#sidebarTabs,
-.sidebar-tabs {
-  flex: 0 0 auto;
-}
-
-#sidebarPanels,
-.sidebar-panels {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.sidebar-panel {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar-panel.active {
-  display: flex;
-}
-
-.sidebar-panel[hidden] {
-  display: none !important;
-}
-
-.sidebar-panel-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.sidebar-panel-body[data-sidebar-panel-body="rules"],
-.sidebar-panel-body[data-sidebar-panel-body="current"],
-.sidebar-panel-body[data-sidebar-panel-body="search"] {
-  min-height: 0;
-}
-
 
 .search-results {
   margin-bottom: 10px;
@@ -449,9 +408,45 @@ details[open] > summary::before { transform: rotate(90deg); }
   padding: 12px 14px 14px;
   border-top: 1px solid var(--line);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
-.section-body > p { margin: 0 0 12px; color: var(--muted); }
+.section-body > :last-child,
+.subsection-body > :last-child { margin-bottom: 0; }
+.section-body > p { margin: 0 0 10px; color: var(--muted); }
+.section-body h1,
+.section-body h2,
+.section-body h3,
+.section-body h4,
+.section-body h5,
+.section-body h6,
+.subsection-body h1,
+.subsection-body h2,
+.subsection-body h3,
+.subsection-body h4,
+.subsection-body h5,
+.subsection-body h6 {
+  margin: 14px 0 8px;
+  line-height: 1.2;
+  color: var(--text);
+}
+.section-body ul, .section-body ol,
+.subsection-body ul, .subsection-body ol {
+  margin: 0 0 8px 1.15rem;
+}
+.section-body li, .subsection-body li {
+  margin: 0;
+}
+.section-body li + li, .subsection-body li + li {
+  margin-top: 0.15rem;
+}
+.section-body p, .subsection-body p {
+  margin: 0 0 8px;
+}
+.section-body h2, .subsection-body h2 { font-size: 16px; font-weight: 800; }
+.section-body h3, .subsection-body h3 { font-size: 14px; font-weight: 800; }
+.section-body h4, .subsection-body h4,
+.section-body h5, .subsection-body h5,
+.section-body h6, .subsection-body h6 { font-size: 13px; font-weight: 800; opacity: 0.96; }
 
 .nested-block {
   border: 1px solid var(--line);
@@ -689,34 +684,38 @@ iframe.pdf-frame {
 }
 .subsection:hover > summary::before { color: var(--text); }
 .subsection[open] > summary::before { transform: rotate(90deg); }
-.subsection .subsection-body { padding: 10px; }
+.subsection .subsection-body { padding: 8px 10px 10px; }
+.subsection .subsection-body > :first-child { margin-top: 0; }
+.subsection .subsection-body > :last-child { margin-bottom: 0; }
+.section-body table,
+.subsection-body table { margin-top: 8px; }
 
 .sidebar-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 8px 0 10px;
   font-size: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
 }
-.sidebar-table thead tr { background: rgba(255, 255, 255, 0.06); }
+.sidebar-table thead tr { background: rgba(255, 255, 255, 0.08); }
 .sidebar-table th,
 .sidebar-table td {
-  padding: 6px 8px;
+  padding: 7px 9px;
   text-align: left;
   vertical-align: top;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.sidebar-table th { color: var(--text); font-weight: 700; }
+.sidebar-table th { color: var(--text); font-weight: 800; }
 .sidebar-table td { color: var(--muted); }
-.sidebar-table tbody tr:nth-child(even) { background: var(--panel); }
-.sidebar-table tbody tr[data-tab] {
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
-}
-.sidebar-table tbody tr[data-tab]:hover { background: rgba(124, 196, 255, 0.15); }
-.sidebar-table tbody tr[data-tab]:hover td { color: var(--text); }
+.sidebar-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+.sidebar-table tbody tr { transition: background 0.12s ease, color 0.12s ease; }
+.sidebar-table tbody tr:hover { background: rgba(124, 196, 255, 0.15); }
+.sidebar-table tbody tr:hover td { color: var(--text); }
+.sidebar-table tbody tr[data-tab] { cursor: pointer; }
 .sidebar-table tbody tr[data-tab]:focus {
   outline: 2px solid rgba(124, 196, 255, 0.45);
   outline-offset: -2px;
@@ -732,15 +731,24 @@ iframe.pdf-frame {
 }
 .sidebar-table th:nth-child(2),
 .sidebar-table td:nth-child(2) { white-space: nowrap; }
-.sidebar-table td:first-child { font-weight: 600; color: var(--text); }
+.sidebar-table td:first-child { font-weight: 700; color: var(--text); }
 
 .note-list {
-  margin: 0;
-  padding-left: 1.1rem;
-  padding-bottom: 1.25rem;
+  margin: 0 0 0.15rem;
+  padding-left: 1.15rem;
 }
-.note-list > li { margin-bottom: 0.8rem; }
-.note-list > li > ul { margin-top: 0.45rem; }
+.note-list > li { margin-bottom: 0.18rem; }
+.note-list > li:last-child { margin-bottom: 0; }
+.note-list > li > ul,
+.note-list > li > ol {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+.note-list .list-continuation {
+  margin-top: 0.1rem;
+  margin-bottom: 0.2rem;
+  color: var(--muted);
+}
 
 /* Stronger linkicon pill style */
 a.linkicon {
@@ -1167,6 +1175,18 @@ a.linkicon:hover::before {
   flex: 0 0 auto;
 }
 
+#sidebarPanels,
+.sidebar-panels {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding-right: 4px;
+}
+
 #sidebarSections,
 .sidebar-sections {
   flex: 1 1 auto;
@@ -1184,4 +1204,338 @@ a.linkicon:hover::before {
 #sidebarSections .nested-block,
 .sidebar-sections .nested-block {
   overflow: visible;
+}
+
+#sidebarPanels details,
+.sidebar-panels details,
+#sidebarPanels .nested-block,
+.sidebar-panels .nested-block {
+  overflow: visible;
+}
+
+#sidebarPanels,
+.sidebar-panels {
+  scrollbar-gutter: stable;
+}
+
+/* Sidebar markdown data editor */
+.sidebar-data-popup .sidebar-data-panel,
+.sidebar-md-editor-root .sidebar-md-editor,
+.sidebar-data-root .sidebar-data-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.sidebar-data-popup .book-visibility-list,
+.sidebar-md-editor-popup .book-visibility-list {
+  gap: 10px;
+}
+
+.sidebar-md-editor {
+  min-height: 0;
+}
+
+.sidebar-md-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sidebar-md-editor-actions button {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.sidebar-md-editor-frame {
+  min-height: 65vh;
+}
+
+.sidebar-md-editor-frame .toastui-editor-defaultUI {
+  height: 65vh;
+}
+
+.sidebar-md-textarea {
+  width: 100%;
+  min-height: 65vh;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #0f131b;
+  color: var(--text);
+  padding: 12px;
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+/* Markdown data manager editor tweaks */
+.sidebar-md-editor-root .gm-popup,
+.sidebar-data-root .gm-popup {
+  resize: both;
+  overflow: auto;
+  width: min(960px, calc(100vw - 24px));
+  height: min(82vh, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+}
+
+.sidebar-md-editor-root .gm-popup-body,
+.sidebar-data-root .gm-popup-body {
+  height: calc(100% - 48px);
+  overflow: auto;
+}
+
+.sidebar-md-editor-root .sidebar-md-editor,
+.sidebar-data-root .sidebar-data-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-frame,
+.sidebar-md-editor-root .sidebar-md-editor-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-frame .toastui-editor-defaultUI,
+.sidebar-md-editor-root .sidebar-md-editor-frame .toastui-editor-defaultUI {
+  height: 100%;
+}
+
+.sidebar-data-popup .sidebar-data-panel > button,
+.sidebar-data-popup .book-visibility-list > button {
+  width: 100%;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-actions > button,
+.sidebar-md-editor-root .sidebar-md-editor-actions > button {
+  width: auto;
+  min-width: 110px;
+}
+
+.sidebar-md-editor-popup .toastui-editor-toolbar button,
+.sidebar-md-editor-root .toastui-editor-toolbar button {
+  width: auto;
+  min-width: 0;
+}
+
+
+
+/* Popup interaction fixes for markdown data manager */
+.sidebar-data-popup.gm-popup,
+.sidebar-data-root .gm-popup,
+.sidebar-md-editor-popup.gm-popup,
+.sidebar-md-editor-root .gm-popup {
+  resize: both;
+  overflow: auto;
+  width: min(960px, calc(100vw - 24px));
+  height: min(82vh, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  touch-action: none;
+}
+
+.sidebar-data-popup.gm-popup-body,
+.sidebar-data-root .gm-popup-body,
+.sidebar-md-editor-popup.gm-popup-body,
+.sidebar-md-editor-root .gm-popup-body {
+  height: calc(100% - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-data-popup .sidebar-data-panel,
+.sidebar-data-root .sidebar-data-panel,
+.sidebar-md-editor-popup .sidebar-md-editor,
+.sidebar-md-editor-root .sidebar-md-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-frame,
+.sidebar-md-editor-root .sidebar-md-editor-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-frame .toastui-editor-defaultUI,
+.sidebar-md-editor-root .sidebar-md-editor-frame .toastui-editor-defaultUI {
+  height: 100%;
+}
+
+.sidebar-md-editor-popup .toastui-editor-toolbar button,
+.sidebar-md-editor-root .toastui-editor-toolbar button {
+  width: auto;
+  min-width: 0;
+}
+
+.sidebar-data-popup .sidebar-data-panel > button,
+.sidebar-data-popup .book-visibility-list > button {
+  width: 100%;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-actions > button,
+.sidebar-md-editor-root .sidebar-md-editor-actions > button {
+  width: auto;
+  min-width: 110px;
+}
+
+
+/* EasyMDE markdown editor */
+.sidebar-md-editor-popup .sidebar-md-editor,
+.sidebar-md-editor-root .sidebar-md-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.sidebar-md-editor-popup .sidebar-md-editor-frame,
+.sidebar-md-editor-root .sidebar-md-editor-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-md-editor-popup .EasyMDEContainer,
+.sidebar-md-editor-root .EasyMDEContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.sidebar-md-editor-popup .EasyMDEContainer .CodeMirror,
+.sidebar-md-editor-root .EasyMDEContainer .CodeMirror {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-md-editor-popup .editor-toolbar,
+.sidebar-md-editor-root .editor-toolbar {
+  background: var(--panel-2) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+.sidebar-md-editor-popup .editor-toolbar a,
+.sidebar-md-editor-root .editor-toolbar a,
+.sidebar-md-editor-popup .editor-toolbar a::before,
+.sidebar-md-editor-root .editor-toolbar a::before,
+.sidebar-md-editor-popup .editor-toolbar a i,
+.sidebar-md-editor-root .editor-toolbar a i {
+  color: var(--text) !important;
+  opacity: 1 !important;
+}
+
+.sidebar-md-editor-popup .editor-toolbar a:hover,
+.sidebar-md-editor-root .editor-toolbar a:hover {
+  background: rgba(124, 196, 255, 0.14) !important;
+}
+
+.sidebar-md-editor-popup .CodeMirror,
+.sidebar-md-editor-root .CodeMirror,
+.sidebar-md-editor-popup .editor-preview,
+.sidebar-md-editor-root .editor-preview,
+.sidebar-md-editor-popup .editor-preview-side,
+.sidebar-md-editor-root .editor-preview-side {
+  background: #0f131b !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+.sidebar-md-editor-popup .CodeMirror-scroll,
+.sidebar-md-editor-root .CodeMirror-scroll {
+  min-height: 0;
+}
+
+/* Keep the raw textarea visible as a fallback if EasyMDE fails to load. */
+.sidebar-md-textarea {
+  display: block;
+}
+.sidebar-md-editor-popup .EasyMDEContainer .sidebar-md-textarea,
+.sidebar-md-editor-root .EasyMDEContainer .sidebar-md-textarea {
+  display: none;
+}
+
+
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.sidebar-md-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sidebar-md-editor-status {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  user-select: none;
+}
+.sidebar-md-editor-status.unsaved {
+  color: #ffcc66;
+}
+
+.sidebar-md-editor-popup .editor-toolbar button,
+.sidebar-md-editor-root .editor-toolbar button {
+  background: transparent !important;
+  color: var(--text) !important;
+}
+.sidebar-md-editor-popup .editor-toolbar button::before,
+.sidebar-md-editor-root .editor-toolbar button::before,
+.sidebar-md-editor-popup .editor-toolbar a::before,
+.sidebar-md-editor-root .editor-toolbar a::before {
+  color: var(--text) !important;
+}
+
+/* ---------- EasyMDE Dark Theme ---------- */
+
+.EasyMDEContainer .CodeMirror {
+    background: #171b22;
+    color: #e9edf5;
+}
+
+.EasyMDEContainer .CodeMirror-cursor {
+    border-left: 2px solid #ffffff !important;
+}
+
+.EasyMDEContainer .CodeMirror-selected {
+    background: rgba(124,196,255,.25) !important;
+}
+
+.EasyMDEContainer .CodeMirror-gutters {
+    background: #171b22;
+    border-right: 1px solid #323949;
+}
+
+.EasyMDEContainer .CodeMirror-linenumber {
+    color: #7f8ca3;
+}
+
+.EasyMDEContainer .editor-toolbar {
+    background: #202635;
+    border-color: #323949;
+}
+
+.EasyMDEContainer .editor-toolbar button,
+.EasyMDEContainer .editor-toolbar a {
+    color: #e9edf5;
+}
+
+.EasyMDEContainer .editor-preview,
+.EasyMDEContainer .editor-preview-side {
+    background: #171b22;
+    color: #e9edf5;
 }

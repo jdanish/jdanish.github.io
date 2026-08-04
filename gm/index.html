@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SWADE & StarBreaker Reference</title>
   <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -35,7 +37,9 @@
       <header class="panel-header">
         <div class="panel-header-row">
           <h1>Rulebooks</h1>
-          <button id="bookVisibilityButton" type="button" class="icon-button" aria-label="Choose visible books" title="Choose visible books">☰</button>
+          <div class="panel-header-actions">
+            <button id="bookVisibilityButton" type="button" class="icon-button" aria-label="Choose visible books" title="Choose visible books">☰</button>
+          </div>
         </div>
       </header>
 
@@ -52,6 +56,7 @@
 
   <script src="js/utils.js"></script>
   <script src="data/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
   <script src="data/sidebar.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/popup.js"></script>

@@ -58,13 +58,16 @@
 
     document.addEventListener('pointerdown', (event) => {
       if (root.hidden) return;
+      if (state.current?.closeOnOutsidePointerDown === false) return;
       if (panel.contains(event.target)) return;
       if (state.current?.anchor && state.current.anchor.contains && state.current.anchor.contains(event.target)) return;
       hide();
     }, true);
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !root.hidden) hide();
+      if (event.key !== 'Escape' || root.hidden) return;
+      if (state.current?.closeOnEscape === false) return;
+      hide();
     });
 
     window.addEventListener('resize', () => {
@@ -72,7 +75,8 @@
     });
 
     window.addEventListener('scroll', () => {
-      if (!root.hidden) hide();
+      if (root.hidden || state.current?.closeOnScroll === false) return;
+      hide();
     }, true);
 
     header.addEventListener('pointerdown', startDrag);
@@ -227,6 +231,10 @@
       left: Number.isFinite(Number(options.x)) ? Number(options.x) : null,
       top: Number.isFinite(Number(options.y)) ? Number(options.y) : null,
       onClose: typeof options.onClose === 'function' ? options.onClose : null,
+      beforeClose: typeof options.beforeClose === 'function' ? options.beforeClose : null,
+      closeOnScroll: options.closeOnScroll !== false,
+      closeOnOutsidePointerDown: options.closeOnOutsidePointerDown !== false,
+      closeOnEscape: options.closeOnEscape !== false,
     };
 
     state.rootEl.className = `gm-popup-root${options.rootClass ? ` ${options.rootClass}` : ''}`;
@@ -266,6 +274,18 @@
 
   function hide() {
     if (!state.rootEl || state.rootEl.hidden) return;
+    const beforeClose = state.current?.beforeClose || null;
+    let allowClose = true;
+    if (beforeClose) {
+      try {
+        allowClose = beforeClose() !== false;
+      } catch (err) {
+        console.error(err);
+        allowClose = false;
+      }
+    }
+    if (!allowClose) return;
+
     const onClose = state.current?.onClose || null;
     state.rootEl.hidden = true;
     state.current = null;
