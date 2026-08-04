@@ -15,7 +15,7 @@
   }
 
   function getState() {
-    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarTab: 'rules', sidebarNotes: '', bookVisibility: {}, searchIncludeHiddenBooks: false };
+    return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarTab: 'rules', currentSubTab: '', sidebarNotes: '', bookVisibility: {}, searchIncludeHiddenBooks: false };
   }
 
   function getBookEntries() {
@@ -255,6 +255,129 @@
     return SIDEBAR_TAB_META[String(tab || 'rules')] || { label: String(tab || 'rules'), icon: '▸' };
   }
 
+  function getCurrentSections() {
+    return getSidebarSections().filter((section) => getSidebarSectionTab(section) === 'current');
+  }
+
+  function getCurrentSubTabId() {
+    const sections = getCurrentSections();
+    if (!sections.length) return '';
+    const state = getState();
+    const desired = String(state.currentSubTab || '').trim();
+    if (desired && sections.some((section) => section.id === desired)) {
+      return desired;
+    }
+    return sections[0].id || '';
+  }
+
+  function setCurrentSubTabId(nextId) {
+    const id = String(nextId || '').trim();
+    const state = getState();
+    if (state.currentSubTab === id) return id;
+    state.currentSubTab = id;
+    window.GM.storage?.saveState?.();
+    return id;
+  }
+
+  function renderSidebarSectionBlocks(sectionKey, tab, section, bodyEl) {
+    (section.blocks || []).forEach((block, blockIndex) => {
+      const blockKey = `${sectionKey}/block-${blockIndex}-${window.GM.utils.slugify(block.id || block.title || 'block')}`;
+      const nested = document.createElement('div');
+      nested.className = 'nested-block';
+      nested.dataset.sectionKey = sectionKey;
+      nested.dataset.sectionTab = tab;
+      nested.dataset.blockKey = blockKey;
+
+      if (block.title) {
+        const title = document.createElement('div');
+        title.className = 'nested-title';
+        title.textContent = block.title;
+        nested.appendChild(title);
+      }
+
+      const nestedBody = document.createElement('div');
+      nestedBody.className = 'nested-body';
+      nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
+      decorateJumpLinks(nestedBody);
+      nested.appendChild(nestedBody);
+      bodyEl.appendChild(nested);
+
+      blockEls.set(blockKey, nested);
+    });
+  }
+
+  function renderCurrentPanel() {
+    const panelBody = dom.sidebarCurrentPanelBodyEl;
+    if (!panelBody || panelBody.dataset.rendered === 'true') return;
+
+    const sections = getCurrentSections();
+    panelBody.replaceChildren();
+
+    if (!sections.length) {
+      panelBody.dataset.rendered = 'true';
+      return;
+    }
+
+    const activeId = getCurrentSubTabId() || sections[0].id || '';
+    if (getState().currentSubTab !== activeId) {
+      setCurrentSubTabId(activeId);
+    }
+
+    const tabs = document.createElement('div');
+    tabs.className = 'current-subtabs';
+
+    const panels = document.createElement('div');
+    panels.className = 'current-subtab-panels';
+
+    sections.forEach((section, sectionIndex) => {
+      const sectionKey = normalizePersistKey(section, sectionIndex);
+      const tabId = section.id || sectionKey;
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'sidebar-tab-button current-subtab-button';
+      button.dataset.currentSubTab = tabId;
+      button.textContent = section.title || `Tab ${sectionIndex + 1}`;
+      button.classList.toggle('active', tabId === activeId);
+
+      const pane = document.createElement('div');
+      pane.className = 'current-subtab-panel';
+      pane.dataset.sectionKey = sectionKey;
+      pane.dataset.sectionTab = 'current';
+      pane.hidden = tabId !== activeId;
+
+      if (section.intro) {
+        const intro = document.createElement('p');
+        intro.textContent = section.intro;
+        pane.appendChild(intro);
+      }
+
+      renderSidebarSectionBlocks(sectionKey, 'current', section, pane);
+
+      button.addEventListener('click', () => {
+        const nextId = section.id || sectionKey;
+        setCurrentSubTabId(nextId);
+        tabs.querySelectorAll('button[data-current-subtab]').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.currentSubTab === nextId);
+        });
+        panels.querySelectorAll('.current-subtab-panel').forEach((el) => {
+          el.hidden = el.dataset.sectionKey !== sectionKey;
+        });
+      });
+
+      tabs.appendChild(button);
+      panels.appendChild(pane);
+      sectionEls.set(sectionKey, pane);
+    });
+
+    panelBody.appendChild(tabs);
+    panelBody.appendChild(panels);
+    panelBody.dataset.rendered = 'true';
+
+    syncPersistedNestedDetails();
+    installSidebarDelegation();
+  }
+
   function getSidebarTab() {
     const stateTab = getState().sidebarTab;
     return getSidebarTabs().includes(stateTab) ? stateTab : 'rules';
@@ -490,121 +613,11 @@
     });
   }
 
-  function getCurrentSidebarSections() {
-    return Array.isArray(window.SIDEBAR_CURRENT_SECTIONS) ? window.SIDEBAR_CURRENT_SECTIONS : [];
-  }
-
-  function getCurrentSidebarSectionKey(section, index) {
-    return section?.id || `${index}-${window.GM.utils.slugify(section?.title || 'section')}`;
-  }
-
-  function getCurrentSidebarTab() {
-    const sections = getCurrentSidebarSections();
-    const stateTab = String(getState().sidebarCurrentTab || '');
-    if (stateTab && sections.some((section, index) => getCurrentSidebarSectionKey(section, index) === stateTab)) {
-      return stateTab;
-    }
-    return sections.length ? getCurrentSidebarSectionKey(sections[0], 0) : '';
-  }
-
-  function setCurrentSidebarTab(tab) {
-    const next = String(tab || '');
-    const state = getState();
-    if (state.sidebarCurrentTab === next) return next;
-    state.sidebarCurrentTab = next;
-    window.GM.storage?.saveState?.();
-    return next;
-  }
-
-  function renderCurrentPanel() {
-    const panelBody = getSidebarPanelBodyEl('current');
-    if (!panelBody) return;
-
-    panelBody.replaceChildren();
-    panelBody.dataset.rendered = 'true';
-
-    const sections = getCurrentSidebarSections();
-    if (!sections.length) {
-      const empty = document.createElement('p');
-      empty.className = 'tabs-empty';
-      empty.textContent = 'No current notes';
-      panelBody.appendChild(empty);
-      return;
-    }
-
-    const activeKey = getCurrentSidebarTab() || getCurrentSidebarSectionKey(sections[0], 0);
-    const activeIndex = sections.findIndex((section, index) => getCurrentSidebarSectionKey(section, index) === activeKey);
-    const resolvedIndex = activeIndex >= 0 ? activeIndex : 0;
-    const resolvedSection = sections[resolvedIndex];
-    const resolvedKey = getCurrentSidebarSectionKey(resolvedSection, resolvedIndex);
-    if (resolvedKey !== activeKey) setCurrentSidebarTab(resolvedKey);
-
-    const tabBar = document.createElement('div');
-    tabBar.className = 'current-tabs';
-
-    sections.forEach((section, index) => {
-      const key = getCurrentSidebarSectionKey(section, index);
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'current-tab-button';
-      button.dataset.currentTab = key;
-      button.textContent = section.title || `Tab ${index + 1}`;
-      button.classList.toggle('active', key === resolvedKey);
-      button.addEventListener('click', () => {
-        setCurrentSidebarTab(key);
-        renderCurrentPanel();
-      });
-      tabBar.appendChild(button);
-    });
-
-    const content = document.createElement('div');
-    content.className = 'current-tab-content';
-
-    const body = document.createElement('div');
-    body.className = 'section-body current-section-body';
-
-    if (resolvedSection.intro) {
-      const intro = document.createElement('p');
-      intro.textContent = resolvedSection.intro;
-      body.appendChild(intro);
-    }
-
-    (resolvedSection.blocks || []).forEach((block, blockIndex) => {
-      const blockKey = `${resolvedKey}/block-${blockIndex}-${window.GM.utils.slugify(block.id || block.title || 'block')}`;
-      const nested = document.createElement('div');
-      nested.className = 'nested-block current-nested-block';
-      nested.dataset.sectionKey = resolvedKey;
-      nested.dataset.sectionTab = 'current';
-      nested.dataset.blockKey = blockKey;
-
-      if (block.title) {
-        const title = document.createElement('div');
-        title.className = 'nested-title';
-        title.textContent = block.title;
-        nested.appendChild(title);
-      }
-
-      const nestedBody = document.createElement('div');
-      nestedBody.className = 'nested-body';
-      nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
-      decorateJumpLinks(nestedBody);
-      nested.appendChild(nestedBody);
-      body.appendChild(nested);
-      blockEls.set(blockKey, nested);
-    });
-
-    content.appendChild(body);
-    panelBody.appendChild(tabBar);
-    panelBody.appendChild(content);
-    syncPersistedNestedDetails();
-  }
-
   function renderSidebarPanel(tab) {
     const panelBody = getSidebarPanelBodyEl(tab);
-    if (!panelBody) return;
+    if (!panelBody || panelBody.dataset.rendered === 'true') return;
 
     if (tab === 'search') {
-      if (panelBody.dataset.rendered === 'true') return;
       panelBody.dataset.rendered = 'true';
       return;
     }
@@ -613,8 +626,6 @@
       renderCurrentPanel();
       return;
     }
-
-    if (panelBody.dataset.rendered === 'true') return;
 
     const frag = document.createDocumentFragment();
     const sections = getSidebarSections().filter((section) => getSidebarSectionTab(section) === tab);
@@ -642,30 +653,7 @@
         body.appendChild(intro);
       }
 
-      (section.blocks || []).forEach((block, blockIndex) => {
-        const blockKey = `${sectionKey}/block-${blockIndex}-${window.GM.utils.slugify(block.id || block.title || 'block')}`;
-        const nested = document.createElement('div');
-        nested.className = 'nested-block';
-        nested.dataset.sectionKey = sectionKey;
-        nested.dataset.sectionTab = tab;
-        nested.dataset.blockKey = blockKey;
-
-        if (block.title) {
-          const title = document.createElement('div');
-          title.className = 'nested-title';
-          title.textContent = block.title;
-          nested.appendChild(title);
-        }
-
-        const nestedBody = document.createElement('div');
-        nestedBody.className = 'nested-body';
-        nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
-        decorateJumpLinks(nestedBody);
-        nested.appendChild(nestedBody);
-        body.appendChild(nested);
-
-        blockEls.set(blockKey, nested);
-      });
+      renderSidebarSectionBlocks(sectionKey, tab, section, body);
 
       details.appendChild(body);
       frag.appendChild(details);
@@ -682,13 +670,12 @@
   }
 
   function renderSidebar() {
-
     if (!dom.sidebarContentEl) return;
 
     ensureSidebarShell();
     renderSidebarTabs();
     renderSidebarPanel('rules');
-    renderCurrentPanel();
+    renderSidebarPanel('current');
     renderSidebarPanel('search');
     installSidebarDelegation();
     syncPersistedNestedDetails();
@@ -761,6 +748,7 @@
       className: 'book-visibility-popup',
       width: 380,
       rootClass: 'book-visibility-root',
+      closeOnScroll: false,
     });
   }
 

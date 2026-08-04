@@ -11,7 +11,7 @@
       sidebarWidth: null,
       activeTab: null,
       sidebarTab: 'rules',
-      sidebarCurrentTab: '',
+      currentSubTab: '',
       sidebarNotes: '',
       bookVisibility: {},
       searchIncludeHiddenBooks: false,
@@ -27,7 +27,7 @@
       state.scales = state.scales || {};
       state.openSections = state.openSections || {};
       if (typeof state.sidebarTab !== 'string' || !state.sidebarTab) state.sidebarTab = 'rules';
-      if (typeof state.sidebarCurrentTab !== 'string') state.sidebarCurrentTab = '';
+      if (typeof state.currentSubTab !== 'string') state.currentSubTab = '';
       if (typeof state.sidebarNotes !== 'string') state.sidebarNotes = '';
       if (!state.bookVisibility || typeof state.bookVisibility !== 'object') state.bookVisibility = {};
       if (typeof state.searchIncludeHiddenBooks !== 'boolean') state.searchIncludeHiddenBooks = false;
