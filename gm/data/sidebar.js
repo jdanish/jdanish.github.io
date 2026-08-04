@@ -46,12 +46,25 @@ window.SIDEBAR_SECTIONS = [];
     return tagHits.length >= 2 || /class=|data-tab=|data-page=|data-highlight=/i.test(text);
   }
 
+  function migrateJumpLinksToWiki(markdown) {
+    const source = String(markdown || '');
+    if (!source.includes('](jump:')) return source;
+    return source.replace(/(!?)\[([^\]\n]+?)\]\(\s*jump:([^\)]+?)\s*\)/g, (match, bang, label, target) => {
+      if (bang) return match;
+      const cleanLabel = String(label || '').trim();
+      const cleanTarget = String(target || '').trim().replace(/\s+"[^"]*"\s*$/, '');
+      if (!cleanTarget) return match;
+      return `[[${cleanTarget}|${cleanLabel || cleanTarget}]]`;
+    });
+  }
+
   function sanitizeMarkdownSource(value) {
     const text = String(value || '');
     if (!text.trim()) return '';
-    if (!looksLikeHtml(text)) return normalizeMarkdownText(text);
-    const converted = htmlToMarkdownFragment(text);
-    return normalizeMarkdownText(converted || text);
+    const migrated = migrateJumpLinksToWiki(text);
+    if (!looksLikeHtml(migrated)) return normalizeMarkdownText(migrated);
+    const converted = htmlToMarkdownFragment(migrated);
+    return normalizeMarkdownText(migrateJumpLinksToWiki(converted || migrated));
   }
 
   function looksLikeWikiTarget(value) {
@@ -223,8 +236,8 @@ window.SIDEBAR_SECTIONS = [];
     return normalizeMarkdownText(Array.from(root.childNodes).map(block).filter(Boolean).join('\n\n'));
   }
 
-  async function loadDefaultMarkdown(kind) {
-    const text = await tryLoadExternalMarkdown(kind);
+  async function loadDefaultMarkdown(kind, { bust = false } = {}) {
+    const text = await tryLoadExternalMarkdown(kind, bust);
     return sanitizeMarkdownSource(text || '');
   }
 
@@ -280,13 +293,55 @@ window.SIDEBAR_SECTIONS = [];
     return value;
   }
 
+  function splitMarkdownTableRow(line) {
+    const source = String(line || '').trim().replace(/^\|/, '').replace(/\|$/, '');
+    const cells = [];
+    let current = '';
+    let bracketDepth = 0;
+    let parenDepth = 0;
+
+    for (let i = 0; i < source.length; i += 1) {
+      const ch = source[i];
+      const next = source[i + 1];
+
+      if (ch === '[') {
+        bracketDepth += 1;
+        current += ch;
+        continue;
+      }
+      if (ch === ']' && bracketDepth > 0) {
+        bracketDepth -= 1;
+        current += ch;
+        continue;
+      }
+      if (ch === '(') {
+        parenDepth += 1;
+        current += ch;
+        continue;
+      }
+      if (ch === ')' && parenDepth > 0) {
+        parenDepth -= 1;
+        current += ch;
+        continue;
+      }
+
+      if (ch === '|' && bracketDepth === 0 && parenDepth === 0) {
+        cells.push(current.trim());
+        current = '';
+        continue;
+      }
+
+      current += ch;
+    }
+
+    cells.push(current.trim());
+    return cells;
+  }
+
   function renderTableMarkdown(lines) {
     const rows = lines.filter((line) => /\|/.test(line));
     if (!rows.length) return '';
-    const splitRow = (line) => {
-      const trimmed = String(line || '').trim().replace(/^\|/, '').replace(/\|$/, '');
-      return trimmed.split('|').map((cell) => cell.trim());
-    };
+    const splitRow = (line) => splitMarkdownTableRow(line);
     const header = splitRow(rows[0]);
     const bodyLines = rows.slice(2).filter((line) => /\|/.test(line));
     const body = bodyLines.map(splitRow);
@@ -395,10 +450,7 @@ window.SIDEBAR_SECTIONS = [];
     const renderTableFromLines = (tableLines) => {
       const rows = tableLines.filter((line) => /\|/.test(line));
       if (!rows.length) return '';
-      const splitRow = (line) => {
-        const trimmed = String(line || '').trim().replace(/^\|/, '').replace(/\|$/, '');
-        return trimmed.split('|').map((cell) => cell.trim());
-      };
+      const splitRow = (line) => splitMarkdownTableRow(line);
       const header = splitRow(rows[0]);
       const bodyLines = rows.slice(2).filter((line) => /\|/.test(line));
       const body = bodyLines.map(splitRow);
@@ -636,7 +688,7 @@ window.SIDEBAR_SECTIONS = [];
   }
 
   function parseMarkdownSections(markdown, kind) {
-    const normalized = String(markdown || '').replace(/\r\n/g, '\n');
+    const normalized = String(markdown || '').replace(/\r\n/g, '\n').trim();
     const lines = normalized.split('\n');
     const sections = [];
     let current = null;
@@ -651,7 +703,7 @@ window.SIDEBAR_SECTIONS = [];
     };
 
     lines.forEach((line) => {
-      const match = line.match(/^##\s+(.+)$/);
+      const match = line.match(/^\s*##\s+(.+)$/);
       if (match) {
         flush();
         current = { title: match[1].trim(), body: '' };
@@ -665,11 +717,14 @@ window.SIDEBAR_SECTIONS = [];
 
     flush();
 
-    if (!sections.length) {
-      throw new Error(`No markdown sections found for ${kind}`);
-    }
+    const fallbackSections = sections.length
+      ? sections
+      : [{
+          title: String(kind || 'section').replace(/^./, (ch) => ch.toUpperCase()),
+          body: normalized,
+        }];
 
-    return sections.map((section, index) => {
+    return fallbackSections.map((section, index) => {
       const html = renderMarkdownToHtml(section.body || '');
 
       return {
@@ -803,7 +858,7 @@ window.SIDEBAR_SECTIONS = [];
   async function resetKind(kind) {
     localStorage.removeItem(STORAGE_KEYS[kind]);
     localStorage.removeItem(LEGACY_STORAGE_KEYS[kind]);
-    const markdown = await loadDefaultMarkdown(kind);
+    const markdown = await loadDefaultMarkdown(kind, { bust: true });
     const fallback = defaultMarkdownCache[kind] || '';
     if (kind === 'current') {
       currentMarkdown = markdown || fallback;
@@ -813,10 +868,14 @@ window.SIDEBAR_SECTIONS = [];
     refreshSectionsFromMarkdown();
   }
 
-  async function tryLoadExternalMarkdown(kind) {
-    const url = `data/${kind}.md`;
+  async function tryLoadExternalMarkdown(kind, bust = false) {
+    const suffix = bust ? `?v=${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
+    const url = `data/${kind}.md${suffix}`;
     try {
-      const response = await fetch(url, { cache: 'no-store' });
+      const response = await fetch(url, {
+        cache: bust ? 'reload' : 'no-store',
+        credentials: 'same-origin',
+      });
       if (!response.ok) return null;
       return String(await response.text() || '');
     } catch (err) {
@@ -825,7 +884,10 @@ window.SIDEBAR_SECTIONS = [];
   }
 
   const readyPromise = (async () => {
-    const [rules, current] = await Promise.all([tryLoadExternalMarkdown('rules'), tryLoadExternalMarkdown('current')]);
+    const [rules, current] = await Promise.all([
+      tryLoadExternalMarkdown('rules', true),
+      tryLoadExternalMarkdown('current', true),
+    ]);
     defaultMarkdownCache.rules = sanitizeMarkdownSource(rules || '');
     defaultMarkdownCache.current = sanitizeMarkdownSource(current || '');
     if (rules && !hasStoredOverride('rules') && !hasLegacyOverride('rules')) rulesMarkdown = sanitizeMarkdownSource(rules);

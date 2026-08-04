@@ -329,22 +329,57 @@
     };
   }
 
+  function getLinkTargetName(href) {
+    const raw = String(href || '').trim();
+    if (!raw) return '';
+    if (/^(mailto:|tel:|javascript:)/i.test(raw)) return '';
+
+    try {
+      const url = new URL(raw, window.location.href);
+      const segments = url.pathname.split('/').filter(Boolean);
+      let last = segments.length ? segments[segments.length - 1] : '';
+      if (!last) last = url.hostname || 'link';
+      last = last.split('#')[0].split('?')[0];
+      last = last.replace(/\.[^.\/]+$/, '');
+      last = last.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+      return last || (url.hostname || 'link');
+    } catch {
+      const cleaned = raw.split('#')[0].split('?')[0];
+      const segments = cleaned.split('/').filter(Boolean);
+      let last = segments.length ? segments[segments.length - 1] : cleaned;
+      last = last.replace(/\.[^.\/]+$/, '');
+      last = last.replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
+      return last || 'link';
+    }
+  }
+
   function decorateJumpLinks(root) {
     if (!root) return;
 
-    root.querySelectorAll('a[href^="jump:"]').forEach((link) => {
-      const meta = parseJumpHref(link.getAttribute('href'));
-      if (!meta) return;
-
-      link.classList.add('linkicon', 'jump-link');
-      link.dataset.tab = meta.tab;
-      link.dataset.page = meta.page;
-      if (meta.highlight) {
-        link.dataset.highlight = meta.highlight;
-      } else {
-        delete link.dataset.highlight;
+    root.querySelectorAll('a').forEach((link) => {
+      link.classList.add('linkicon');
+      const href = String(link.getAttribute('href') || '');
+      const meta = parseJumpHref(href);
+      if (meta) {
+        link.classList.add('jump-link');
+        link.dataset.tab = meta.tab;
+        link.dataset.page = meta.page;
+        if (meta.highlight) {
+          link.dataset.highlight = meta.highlight;
+        } else {
+          delete link.dataset.highlight;
+        }
+        link.setAttribute('href', '#');
+        link.removeAttribute('target');
+        link.removeAttribute('rel');
+        return;
       }
-      link.setAttribute('href', '#');
+
+      const targetName = getLinkTargetName(href);
+      if (targetName) {
+        link.setAttribute('target', targetName);
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
     });
   }
 
@@ -671,7 +706,7 @@
 
     const hint = document.createElement('p');
     hint.className = 'book-visibility-intro';
-    hint.textContent = 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and jump: links for PDF navigation.';
+    hint.textContent = 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and wiki links for PDF navigation.';
 
     const frame = document.createElement('div');
     frame.className = 'sidebar-md-editor-frame';

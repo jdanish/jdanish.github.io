@@ -182,19 +182,20 @@
   }
 
   function bookmarkToAnchor(bookmark, label) {
-    const attrs = [
-      `class="linkicon jump-link"`,
-      `href="#"`,
-      `data-tab="${escapeHtml(bookmark.tab)}"`,
-      `data-page="${escapeHtml(String(bookmark.page))}"`,
-    ];
-
-    const highlight = normalizeText(bookmark.highlight);
+    const tab = String(bookmark?.tab || '').trim();
+    const page = String(bookmark?.page || '').trim();
+    const highlight = normalizeText(bookmark?.highlight);
+    const targetParts = [];
+    if (tab) targetParts.push(tab);
+    if (page) targetParts.push(page);
+    let target = targetParts.join('/');
     if (highlight) {
-      attrs.push(`data-highlight="${escapeHtml(highlight)}"`);
+      const params = new URLSearchParams();
+      params.set('highlight', highlight);
+      target += `?${params.toString()}`;
     }
-
-    return `<a ${attrs.join(' ')}>${escapeHtml(label || bookmark.name)}</a>`;
+    const safeLabel = String(label || bookmark?.name || '').trim() || target;
+    return `[[${target}|${safeLabel}]]`;
   }
 
   function copyText(text) {
