@@ -14,6 +14,7 @@
     runtimeScales: new Map(),
     runtimePages: new Map(),
     appListenersInstalled: new WeakSet(),
+    navigationSeq: 0,
   };
 
   function getStorage() {
@@ -70,6 +71,29 @@
     return getBookOrderMap().get(tab) ?? 9999;
   }
 
+  function beginNavigation(tab) {
+    const token = ++viewerState.navigationSeq;
+    const viewer = tab ? viewerState.viewers.get(tab) : null;
+    if (viewer) {
+      viewer.navigationInProgressToken = token;
+    }
+    return token;
+  }
+
+  function finishNavigation(tab, token) {
+    const viewer = tab ? viewerState.viewers.get(tab) : null;
+    if (!viewer) return;
+    if (token === undefined || token === null || viewer.navigationInProgressToken === token) {
+      viewer.navigationInProgressToken = null;
+    }
+  }
+
+  function isNavigationCurrent(tab, token) {
+    if (token === undefined || token === null) return true;
+    const viewer = tab ? viewerState.viewers.get(tab) : null;
+    return !viewer || viewer.navigationInProgressToken === token;
+  }
+
   function toPdfPage(book, displayPage) {
     const offset = Number(book?.pageOffset || 0);
     const n = Number(displayPage || 1);
@@ -87,12 +111,19 @@
     const book = getBook(tab);
     if (!book) return 1;
 
-    const runtimePage = getRuntimePage(tab);
-    if (runtimePage !== null && runtimePage !== undefined && runtimePage !== '') {
-      return Number(runtimePage) || 1;
+    const storedPage = Number(state.pages?.[tab]);
+    if (Number.isFinite(storedPage) && storedPage > 0) {
+      return storedPage;
     }
 
-    return Number(state.pages?.[tab] || book.defaultPage || 1);
+    const viewer = viewerState.viewers.get(tab);
+    const app = viewer?.app;
+    const livePage = Number(app?.page || app?.pdfViewer?.currentPageNumber || 0);
+    if (Number.isFinite(livePage) && livePage > 0) {
+      return toDisplayPage(book, livePage);
+    }
+
+    return Number(book.defaultPage || 1);
   }
 
   function setStoredPage(tab, displayPage) {
@@ -103,18 +134,15 @@
 
   function setRuntimePage(tab, displayPage) {
     if (!tab) return;
-    viewerState.runtimePages.set(tab, Number(displayPage) || 1);
   }
 
   function getRuntimePage(tab) {
     if (!tab) return null;
 
-    if (viewerState.runtimePages.has(tab)) {
-      return viewerState.runtimePages.get(tab);
-    }
-
     const viewer = viewerState.viewers.get(tab);
-    const pending = viewer?.pendingDisplayPage;
+    if (!viewer) return null;
+
+    const pending = viewer.pendingDisplayPage;
     if (pending !== undefined && pending !== null && pending !== '') {
       return Number(pending) || 1;
     }
@@ -261,6 +289,7 @@
       loaded: false,
       loading: false,
       ignoreScaleEvents: true,
+      navigationInProgressToken: null,
     };
 
     const activeTab = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
@@ -320,19 +349,18 @@
       return Number(runtimePage) || 1;
     }
 
-    const storedDisplayPage = Number(
-      getState().pages?.[tab || viewerState.activeTab || ''] ||
-      book.defaultPage ||
-      1
+    const app = viewer?.app;
+    const pdfPage = Number(
+      app?.page ||
+      app?.pdfViewer?.currentPageNumber ||
+      0
     );
 
-    const app = viewer?.app;
-    const pdfPage = Number(app?.page || app?.pdfViewer?.currentPageNumber || 0);
-    if (pdfPage > 0) {
+    if (Number.isFinite(pdfPage) && pdfPage > 0) {
       return toDisplayPage(book, pdfPage);
     }
 
-    return storedDisplayPage;
+    return Number(getState().pages?.[tab || viewerState.activeTab || ''] || book.defaultPage || 1);
   }
 
   function syncCurrentPage(tab, pdfPage) {
@@ -379,6 +407,9 @@
     if (!bus) return;
 
     const updatePageFromEvent = (evt) => {
+      const viewer = viewerState.viewers.get(tab);
+      if (viewer?.navigationInProgressToken) return;
+
       const pdfPage = Number(
         evt?.pageNumber ||
         evt?.location?.pageNumber ||
@@ -404,7 +435,7 @@
     viewerState.appListenersInstalled.add(app);
   }
 
-  async function ensureViewerLoaded(tab) {
+  async function ensureViewerLoaded(tab, navToken = null) {
     const viewer = createViewer(tab);
 
     if (viewer.app) return viewer.app;
@@ -429,12 +460,10 @@
 
         if (app) {
           installAppListeners(tab, app);
-          if (viewer.pendingDisplayPage !== null && viewer.pendingDisplayPage !== undefined) {
-            const pendingPage = Number(viewer.pendingDisplayPage) || getDisplayPage(tab);
-            viewer.pendingDisplayPage = null;
-            setStoredPage(tab, pendingPage);
-            setRuntimePage(tab, pendingPage);
-          }
+        }
+
+        if (!isNavigationCurrent(tab, navToken)) {
+          return app;
         }
 
         return app;
@@ -475,13 +504,13 @@
     });
   }
 
-  async function highlightTextInActiveViewer(tab, query, displayPage) {
+  async function highlightTextInActiveViewer(tab, query, displayPage, navToken = null) {
     const cleaned = String(query || '').trim();
     if (!cleaned) return;
 
     const viewer = createViewer(tab);
-    const app = await ensureViewerLoaded(tab);
-    if (!app?.eventBus) return;
+    const app = await ensureViewerLoaded(tab, navToken);
+    if (!app?.eventBus || !isNavigationCurrent(tab, navToken)) return;
 
     const book = viewer.book;
     const pdfPage = toPdfPage(book, displayPage ?? getDisplayPage(tab));
@@ -502,11 +531,10 @@
     });
   }
 
-  async function setPageInActiveViewer(tab, displayPage, options = {}) {
+  async function setPageInActiveViewer(tab, displayPage, options = {}, navToken = null) {
     const viewer = createViewer(tab);
-    viewer.pendingDisplayPage = Number(displayPage) || getDisplayPage(tab) || 1;
-    const app = await ensureViewerLoaded(tab);
-    if (!app) return null;
+    const app = await ensureViewerLoaded(tab, navToken);
+    if (!app || !isNavigationCurrent(tab, navToken)) return null;
 
     const book = viewer.book;
     const pdfPage = toPdfPage(book, displayPage);
@@ -524,7 +552,11 @@
       app.page = pdfPage;
     }
 
+    if (!isNavigationCurrent(tab, navToken)) return null;
+
     const currentDisplayPage = toDisplayPage(book, app.page || pdfPage);
+    setStoredPage(tab, currentDisplayPage);
+    setRuntimePage(tab, currentDisplayPage);
     syncCurrentPage(tab, currentDisplayPage);
 
     return app;
@@ -540,35 +572,39 @@
 
     window.GM.ui?.ensureBookVisible?.(tab);
 
-    const resolvedDisplayPage = Number(displayPage || getDisplayPage(tab) || book.defaultPage || 1);
-    setStoredPage(tab, resolvedDisplayPage);
-    setRuntimePage(tab, resolvedDisplayPage);
+    const navToken = beginNavigation(tab);
+    try {
+      const resolvedDisplayPage = Number(displayPage || getDisplayPage(tab) || book.defaultPage || 1);
+      const viewer = viewerState.viewers.get(tab);
+      if (viewer) {
+        viewer.pendingDisplayPage = resolvedDisplayPage;
+      }
 
-    const viewer = viewerState.viewers.get(tab);
-    if (viewer) {
-      viewer.pendingDisplayPage = resolvedDisplayPage;
+      if (options.scale !== undefined) {
+        setStoredScale(tab, normalizeScaleValue(options.scale));
+      }
+
+      showViewer(tab);
+
+      const app = await ensureViewerLoaded(tab, navToken);
+      if (!app || !isNavigationCurrent(tab, navToken)) {
+        return null;
+      }
+
+      window.GM.ui?.setViewerTitle?.(tab, resolvedDisplayPage);
+      window.GM.ui?.buildPageButtons?.(tab);
+      window.GM.ui?.updateTabButtonLabels?.();
+
+      await setPageInActiveViewer(tab, resolvedDisplayPage, options, navToken);
+
+      if (options.highlightText && isNavigationCurrent(tab, navToken)) {
+        await highlightTextInActiveViewer(tab, options.highlightText, resolvedDisplayPage, navToken);
+      }
+
+      return app;
+    } finally {
+      finishNavigation(tab, navToken);
     }
-
-    if (options.scale !== undefined) {
-      setStoredScale(tab, normalizeScaleValue(options.scale));
-    }
-
-    showViewer(tab);
-
-    const app = await ensureViewerLoaded(tab);
-    if (!app) return null;
-
-    window.GM.ui?.setViewerTitle?.(tab, resolvedDisplayPage);
-    window.GM.ui?.buildPageButtons?.(tab);
-    window.GM.ui?.updateTabButtonLabels?.();
-
-    await setPageInActiveViewer(tab, resolvedDisplayPage, options);
-
-    if (options.highlightText) {
-      await highlightTextInActiveViewer(tab, options.highlightText, resolvedDisplayPage);
-    }
-
-    return app;
   }
 
   function refreshActiveTitle() {
