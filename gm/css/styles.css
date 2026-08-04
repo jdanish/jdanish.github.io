@@ -988,6 +988,8 @@ a.linkicon:hover::before {
 .gm-popup-root[hidden] { display: none !important; }
 .gm-popup {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   min-width: 230px;
   max-width: min(360px, calc(100vw - 24px));
   border: 1px solid var(--line);
@@ -1024,7 +1026,10 @@ a.linkicon:hover::before {
   font-size: 16px;
 }
 .gm-popup-body {
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 10px;
+  overflow: auto;
 }
 .gm-popup-body:empty {
   display: none;
@@ -1280,8 +1285,10 @@ a.linkicon:hover::before {
 
 .sidebar-md-editor-root .gm-popup-body,
 .sidebar-data-root .gm-popup-body {
-  height: calc(100% - 48px);
-  overflow: auto;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar-md-editor-root .sidebar-md-editor,
@@ -1296,6 +1303,7 @@ a.linkicon:hover::before {
 .sidebar-md-editor-root .sidebar-md-editor-frame {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar-md-editor-popup .sidebar-md-editor-frame .toastui-editor-defaultUI,
@@ -1392,19 +1400,23 @@ a.linkicon:hover::before {
 .sidebar-md-editor-root .sidebar-md-editor {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar-md-editor-popup .sidebar-md-editor-frame,
 .sidebar-md-editor-root .sidebar-md-editor-frame {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
 }
 
 .sidebar-md-editor-popup .EasyMDEContainer,
 .sidebar-md-editor-root .EasyMDEContainer {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-height: 0;
   height: 100%;
 }
@@ -1413,6 +1425,7 @@ a.linkicon:hover::before {
 .sidebar-md-editor-root .EasyMDEContainer .CodeMirror {
   flex: 1 1 auto;
   min-height: 0;
+  height: 100% !important;
 }
 
 .sidebar-md-editor-popup .editor-toolbar,
@@ -1446,11 +1459,15 @@ a.linkicon:hover::before {
   background: #0f131b !important;
   color: var(--text) !important;
   border-color: var(--line) !important;
+  height: 100% !important;
 }
 
 .sidebar-md-editor-popup .CodeMirror-scroll,
 .sidebar-md-editor-root .CodeMirror-scroll {
   min-height: 0;
+  height: 100% !important;
+  max-height: none !important;
+  overflow-y: auto !important;
 }
 
 /* Keep the raw textarea visible as a fallback if EasyMDE fails to load. */

@@ -786,8 +786,6 @@
             forceSync: true,
             spellChecker: false,
             status: false,
-            minHeight: '65vh',
-            maxHeight: '70vh',
             renderingConfig: {
               singleLineBreaks: false,
               codeSyntaxHighlighting: false,
