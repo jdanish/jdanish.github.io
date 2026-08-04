@@ -320,16 +320,19 @@
       return Number(runtimePage) || 1;
     }
 
-    const app = viewer?.app;
-    const pdfPage = Number(
-      app?.page ||
-      app?.pdfViewer?.currentPageNumber ||
+    const storedDisplayPage = Number(
       getState().pages?.[tab || viewerState.activeTab || ''] ||
       book.defaultPage ||
       1
     );
 
-    return toDisplayPage(book, pdfPage);
+    const app = viewer?.app;
+    const pdfPage = Number(app?.page || app?.pdfViewer?.currentPageNumber || 0);
+    if (pdfPage > 0) {
+      return toDisplayPage(book, pdfPage);
+    }
+
+    return storedDisplayPage;
   }
 
   function syncCurrentPage(tab, pdfPage) {
