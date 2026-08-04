@@ -38,7 +38,7 @@ Profession: [[starbreaker_star_marines/33|Psy Commando]]
 - [[starbreaker_star_marines/40|Heavy Hitters Squad Edge]]
   - The squad is equipped with experimental weapons that occasionally punch well above their weight class. When a squad member makes an attack with a firearm, they can spend a Benny to declare that it’s a “heavy” attack. If the attack hits, it has +4 AP and deals Heavy Damage.
 
-##### Powers
+### Powers
 
 - [[swade/153?highlight=arcane%20protection|Arcane Protection]]
   - **Power Points:** 1
