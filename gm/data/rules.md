@@ -19,7 +19,8 @@
   - **Damage**
     - [[swade/95|Soaking]] to avoid damage.
       - Vigor check; ignore one wound per success or raise.
-    - [[swade/93|Shaken or wounded]]
+    - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace)
+    - [[swade/99?highlight=Fatigue|Fatigue]]
 
 ## Other Rules
 
@@ -32,3 +33,6 @@
   - [[swade/150?highlight=Activation|Activation]]
   - [[swade/151?highlight=Power%20Modifiers|Power Modifiers]]
   - [[swade/150?highlight=Recharging|Recharging]]: 5 Power Points per hour spent resting
+- [[swade/99?highlight=Fatigue|Fatigue]]
+- [[swade/123?highlight=Fear|Fear / Terror]]
+- [[swade/121?highlight=Dramatic+Tasks|Dramatic Tasks]]
