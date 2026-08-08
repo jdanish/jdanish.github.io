@@ -143,6 +143,10 @@
   function revealSidebarElement(el) {
     if (!el) return;
 
+    if (el.matches?.('details')) {
+      el.open = true;
+    }
+
     let current = el;
     while (current) {
       const details = current.closest ? current.closest('details') : null;
@@ -277,6 +281,20 @@
     state.currentSubTab = id;
     window.GM.storage?.saveState?.();
     return id;
+  }
+
+  function setCurrentSubTabBySectionKey(sectionKey) {
+    const sections = getCurrentSections();
+    const key = String(sectionKey || '').trim();
+    if (!key) return '';
+
+    const match = sections.find((section, sectionIndex) => {
+      const derivedKey = normalizePersistKey(section, sectionIndex);
+      return section.id === key || derivedKey === key;
+    });
+
+    if (!match) return '';
+    return setCurrentSubTabId(match.id || key);
   }
 
   function renderSidebarSectionBlocks(sectionKey, tab, section, bodyEl) {
@@ -1265,5 +1283,8 @@
     toggleSidebarDataPopup,
     syncBookVisibilityPopup,
     refreshSidebarFromData,
+    setCurrentSubTabBySectionKey,
+    getSidebarTab,
+    setSidebarTab,
   };
 })();

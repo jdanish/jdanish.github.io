@@ -71,6 +71,32 @@
     }
   }
 
+  function nextFrame() {
+    return new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
+  }
+
+  async function revealSidebarHit(result) {
+    const targetTab = result.dataset.sectionTab || 'rules';
+    window.GM.ui?.setSidebarTab?.(targetTab);
+    if (targetTab === 'current') {
+      window.GM.ui?.setCurrentSubTabBySectionKey?.(result.dataset.sectionKey);
+    }
+
+    // Wait longer for the panel to render, then try both the block and section keys.
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      await nextFrame();
+      await nextFrame();
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+
+      const target = window.GM.ui?.getSidebarElementByKeys?.(result.dataset.sectionKey, result.dataset.blockKey)
+        || window.GM.ui?.getSidebarElementByKeys?.(result.dataset.sectionKey, null);
+      if (target) {
+        window.GM.ui?.revealSidebarElement?.(target);
+        return;
+      }
+    }
+  }
+
   function restorePreviousSidebarTab() {
     const previous = searchState.previousSidebarTab;
     if (previous && previous !== 'search') {
@@ -157,6 +183,7 @@
           type: 'sidebar-block',
           sectionKey,
           blockKey,
+          sectionTab: section.tab === 'current' ? 'current' : 'rules',
           sectionIndex,
           blockIndex,
           sectionTitle: section.title || '',
@@ -178,6 +205,7 @@
       type: 'sidebar',
       sectionKey: hit.sectionKey,
       blockKey: hit.blockKey,
+      sectionTab: hit.sectionTab || 'rules',
       title: hit.blockTitle || hit.sectionTitle || 'Sidebar',
       sectionTitle: hit.sectionTitle || '',
       snippet,
@@ -373,13 +401,44 @@
     header.appendChild(right);
     resultsEl.appendChild(header);
 
+    const tabGroup = document.createElement('details');
+    tabGroup.className = 'search-group search-group-tabs';
+    tabGroup.open = true;
+
+    const tabSummary = document.createElement('summary');
+    tabSummary.textContent = 'Sidebar tabs';
+    tabGroup.appendChild(tabSummary);
+
+    const tabBody = document.createElement('div');
+    tabBody.className = 'search-group-body';
+
+    [
+      { tab: 'rules', title: 'Rules', meta: 'Open Rules', snippet: 'Jump to the Rules sidebar tab.' },
+      { tab: 'current', title: 'Current', meta: 'Open Current', snippet: 'Jump to the Current sidebar tab.' },
+    ].forEach((hit) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'btn search-result-item';
+      item.dataset.searchHit = 'sidebar-tab';
+      item.dataset.tab = hit.tab;
+      item.innerHTML = `
+        <div class="search-result-title">${window.GM.utils.escapeHtml(hit.title)}</div>
+        <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.meta || '')}</div>
+        <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
+      `;
+      tabBody.appendChild(item);
+    });
+
+    tabGroup.appendChild(tabBody);
+    resultsEl.appendChild(tabGroup);
+
     if (sidebarHits.length) {
       const group = document.createElement('details');
       group.className = 'search-group';
       group.open = true;
 
       const summary = document.createElement('summary');
-      summary.textContent = `Sidebar (${sidebarHits.length})`;
+      summary.textContent = `Sidebar content (${sidebarHits.length})`;
       group.appendChild(summary);
 
       const body = document.createElement('div');
@@ -391,6 +450,7 @@
         item.className = 'btn search-result-item';
         item.dataset.searchHit = hit.type || 'sidebar';
         item.dataset.sectionKey = hit.sectionKey;
+        item.dataset.sectionTab = hit.sectionTab || 'rules';
         item.dataset.blockKey = hit.blockKey;
 
         item.innerHTML = `
@@ -497,7 +557,6 @@
       const handler = window.GM.utils.debounce(async () => {
         const q = String(input.value || '').trim();
         if (q.length >= 2) {
-          activateSearchTab();
           await performSearch(input.value);
           return;
         }
@@ -507,7 +566,18 @@
       }, 180);
 
       input.addEventListener('input', handler);
-      input.addEventListener('keydown', (event) => {
+      input.addEventListener('keydown', async (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          activateSearchTab();
+          const q = String(input.value || '').trim();
+          if (q.length >= 2) {
+            await performSearch(q);
+          } else {
+            clearResults();
+          }
+          return;
+        }
         if (event.key === 'Escape') {
           input.value = '';
           clearResults();
@@ -547,11 +617,13 @@
         if (!result || !searchState.dom.sidebarContentEl.contains(result)) return;
 
         const hitType = result.dataset.searchHit;
+        if (hitType === 'sidebar-tab') {
+          const nextTab = result.dataset.tab || 'rules';
+          window.GM.ui?.setSidebarTab?.(nextTab);
+          return;
+        }
         if (hitType === 'sidebar' || hitType === 'sidebar-notes') {
-          const target = window.GM.ui?.getSidebarElementByKeys?.(result.dataset.sectionKey, result.dataset.blockKey);
-          if (target) {
-            window.GM.ui?.revealSidebarElement?.(target);
-          }
+          await revealSidebarHit(result);
           return;
         }
 
