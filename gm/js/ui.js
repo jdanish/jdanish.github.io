@@ -3,6 +3,7 @@
 
   const sectionEls = new Map();
   const blockEls = new Map();
+  const sidebarSearchEntries = [];
 
   let dom = {};
 
@@ -25,6 +26,39 @@
       if (orderA !== orderB) return orderA - orderB;
       return String(a[1]?.title || a[0]).localeCompare(String(b[1]?.title || b[0]));
     });
+  }
+
+  function normalizeSearchText(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function clearSidebarSearchIndex() {
+    sidebarSearchEntries.length = 0;
+  }
+
+  function registerSidebarSearchEntry({ element, tab, sectionKey, blockKey, navKey, title, text, kind }) {
+    if (!element) return null;
+    const rawText = normalizeSearchText(text ?? element.innerText ?? element.textContent ?? '');
+    if (!rawText) return null;
+
+    const entry = {
+      element,
+      tab: tab || 'rules',
+      sectionKey: sectionKey || '',
+      blockKey: blockKey || '',
+      navKey: navKey || blockKey || sectionKey || '',
+      title: normalizeSearchText(title || ''),
+      text: rawText.toLowerCase(),
+      rawText,
+      kind: kind || 'block',
+    };
+
+    sidebarSearchEntries.push(entry);
+    return entry;
+  }
+
+  function getSidebarSearchIndex() {
+    return sidebarSearchEntries.slice();
   }
 
   function isBookVisible(tab) {
@@ -222,6 +256,7 @@
   function resetSidebarPanels() {
     sectionEls.clear();
     blockEls.clear();
+    clearSidebarSearchIndex();
 
     [dom.sidebarRulesPanelBodyEl, dom.sidebarCurrentPanelBodyEl, dom.sidebarSearchPanelBodyEl].forEach((panelBody) => {
       if (!panelBody) return;
@@ -321,6 +356,16 @@
       bodyEl.appendChild(nested);
 
       blockEls.set(blockKey, nested);
+      registerSidebarSearchEntry({
+        element: nested,
+        tab,
+        sectionKey,
+        blockKey,
+        navKey: blockKey,
+        title: block.title || section.title || '',
+        text: nested.innerText || nested.textContent || '',
+        kind: 'block',
+      });
     });
   }
 
@@ -386,6 +431,16 @@
       tabs.appendChild(button);
       panels.appendChild(pane);
       sectionEls.set(sectionKey, pane);
+      registerSidebarSearchEntry({
+        element: pane,
+        tab: 'current',
+        sectionKey,
+        blockKey: '',
+        navKey: sectionKey,
+        title: section.title || `Tab ${sectionIndex + 1}`,
+        text: `${section.title || ''} ${section.intro || ''}`,
+        kind: 'section',
+      });
     });
 
     panelBody.appendChild(tabs);
@@ -676,6 +731,16 @@
       details.appendChild(body);
       frag.appendChild(details);
       sectionEls.set(sectionKey, details);
+      registerSidebarSearchEntry({
+        element: details,
+        tab,
+        sectionKey,
+        blockKey: '',
+        navKey: sectionKey,
+        title: section.title || `Section ${sectionIndex + 1}`,
+        text: `${section.title || ''} ${section.intro || ''}`,
+        kind: 'section',
+      });
 
       details.addEventListener('toggle', () => {
         getState().openSections[sectionKey] = details.open;
@@ -698,6 +763,7 @@
     installSidebarDelegation();
     syncPersistedNestedDetails();
     updateSidebarPanelVisibility();
+    window.GM.search?.refreshIndex?.();
 
     window.GM.search?.setupSearch?.({
       sidebarContentEl: dom.sidebarContentEl,
@@ -1286,5 +1352,8 @@
     setCurrentSubTabBySectionKey,
     getSidebarTab,
     setSidebarTab,
+    registerSidebarSearchEntry,
+    clearSidebarSearchIndex,
+    getSidebarSearchIndex,
   };
 })();

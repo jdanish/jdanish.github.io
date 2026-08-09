@@ -160,39 +160,29 @@
   }
 
   function buildSidebarIndex() {
-    searchState.sidebarIndex = [];
+    const registry = window.GM.ui?.getSidebarSearchIndex?.() || [];
 
-    (window.SIDEBAR_SECTIONS || []).forEach((section, sectionIndex) => {
-      const sectionKey = section.id
-        ? window.GM.utils.slugify(section.id)
-        : `${sectionIndex}-${window.GM.utils.slugify(section.title || 'section')}`;
-
-      (section.blocks || []).forEach((block, blockIndex) => {
-        const blockKey = `${sectionKey}/block-${blockIndex}-${window.GM.utils.slugify(block.id || block.title || 'block')}`;
-        const text = [
-          section.title || '',
-          section.intro || '',
-          block.title || '',
-          stripHtml(block.html || block.text || ''),
-        ]
-          .join(' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-        searchState.sidebarIndex.push({
-          type: 'sidebar-block',
-          sectionKey,
-          blockKey,
-          sectionTab: section.tab === 'current' ? 'current' : 'rules',
-          sectionIndex,
-          blockIndex,
-          sectionTitle: section.title || '',
-          blockTitle: block.title || '',
-          searchText: text.toLowerCase(),
-          snippet: extractSnippet(text, ''),
-        });
-      });
-    });
+    searchState.sidebarIndex = registry
+      .map((entry, index) => {
+        const rawText = String(entry?.rawText || entry?.text || entry?.title || '').replace(/\s+/g, ' ').trim();
+        const searchText = String(entry?.text || rawText || '').toLowerCase();
+        return {
+          type: entry?.kind === 'section' ? 'sidebar-section' : 'sidebar-block',
+          sectionKey: entry?.sectionKey || '',
+          blockKey: entry?.blockKey || '',
+          sectionTab: entry?.tab === 'current' ? 'current' : 'rules',
+          sectionIndex: Number(entry?.sectionIndex ?? index),
+          blockIndex: Number(entry?.blockIndex ?? index),
+          sectionTitle: entry?.kind === 'section' ? String(entry?.title || '').trim() : String(entry?.sectionTitle || entry?.title || '').trim(),
+          blockTitle: entry?.kind === 'block' ? String(entry?.title || '').trim() : '',
+          searchText,
+          snippet: extractSnippet(rawText, ''),
+          navKey: entry?.navKey || entry?.blockKey || entry?.sectionKey || '',
+          kind: entry?.kind || 'block',
+          _index: index,
+        };
+      })
+      .filter((item) => item.searchText);
   }
 
   function getSidebarHitResult(hit, query) {
@@ -401,37 +391,6 @@
     header.appendChild(right);
     resultsEl.appendChild(header);
 
-    const tabGroup = document.createElement('details');
-    tabGroup.className = 'search-group search-group-tabs';
-    tabGroup.open = true;
-
-    const tabSummary = document.createElement('summary');
-    tabSummary.textContent = 'Sidebar tabs';
-    tabGroup.appendChild(tabSummary);
-
-    const tabBody = document.createElement('div');
-    tabBody.className = 'search-group-body';
-
-    [
-      { tab: 'rules', title: 'Rules', meta: 'Open Rules', snippet: 'Jump to the Rules sidebar tab.' },
-      { tab: 'current', title: 'Current', meta: 'Open Current', snippet: 'Jump to the Current sidebar tab.' },
-    ].forEach((hit) => {
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'btn search-result-item';
-      item.dataset.searchHit = 'sidebar-tab';
-      item.dataset.tab = hit.tab;
-      item.innerHTML = `
-        <div class="search-result-title">${window.GM.utils.escapeHtml(hit.title)}</div>
-        <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.meta || '')}</div>
-        <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
-      `;
-      tabBody.appendChild(item);
-    });
-
-    tabGroup.appendChild(tabBody);
-    resultsEl.appendChild(tabGroup);
-
     if (sidebarHits.length) {
       const group = document.createElement('details');
       group.className = 'search-group';
@@ -617,11 +576,6 @@
         if (!result || !searchState.dom.sidebarContentEl.contains(result)) return;
 
         const hitType = result.dataset.searchHit;
-        if (hitType === 'sidebar-tab') {
-          const nextTab = result.dataset.tab || 'rules';
-          window.GM.ui?.setSidebarTab?.(nextTab);
-          return;
-        }
         if (hitType === 'sidebar' || hitType === 'sidebar-notes') {
           await revealSidebarHit(result);
           return;
