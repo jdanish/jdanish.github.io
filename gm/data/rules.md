@@ -12,7 +12,7 @@
   - **Ranged**
     - *To hit:* Shooting die + wild die (-2 for medium, -4 long range); must equal or beat 4.
       - Raise(s) add 1d6 to the damage roll.
-      - [[swade/96?highlight=Situational%20Rules|Situational Rules]] ([[combat_ref/1|reference]]) for range, cover, etc.
+      - [[swade/96?highlight=Situational%20Rules|Situational Rules]] ([[combat_ref/1|reference]]) for [[swade/92?highlight=ranGe+PenaLtieS|range penalties]], [[swade/98?highlight=Cover+%26+Obstacles|cover & obstacles]], etc.
     - *Note:* Don't forget to roll an extra die if ROF is above 1.
     - *If hit:* Roll damage; must equal or beat toughness.
       - Raise(s) add wounds.
