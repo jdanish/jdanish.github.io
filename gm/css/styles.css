@@ -1525,6 +1525,38 @@ a.linkicon:hover::before {
   background: rgba(124, 196, 255, 0.22) !important;
 }
 
+
+/* CodeMirror selected text in editor mode */
+.sidebar-md-editor-popup .CodeMirror .CodeMirror-selectedtext,
+.sidebar-md-editor-root .CodeMirror .CodeMirror-selectedtext,
+.sidebar-notes .CodeMirror .CodeMirror-selectedtext,
+.sidebar-notes-codemirror .CodeMirror .CodeMirror-selectedtext,
+.sidebar-md-editor-popup .CodeMirror .CodeMirror-line span.CodeMirror-selectedtext,
+.sidebar-md-editor-root .CodeMirror .CodeMirror-line span.CodeMirror-selectedtext,
+.sidebar-notes .CodeMirror .CodeMirror-line span.CodeMirror-selectedtext,
+.sidebar-notes-codemirror .CodeMirror .CodeMirror-line span.CodeMirror-selectedtext,
+.sidebar-md-editor-popup .CodeMirror .CodeMirror-line > span > span.CodeMirror-selectedtext,
+.sidebar-md-editor-root .CodeMirror .CodeMirror-line > span > span.CodeMirror-selectedtext,
+.sidebar-notes .CodeMirror .CodeMirror-line > span > span.CodeMirror-selectedtext,
+.sidebar-notes-codemirror .CodeMirror .CodeMirror-line > span > span.CodeMirror-selectedtext {
+  color: #000000 !important;
+  background: #ffffff !important;
+  text-shadow: none !important;
+}
+
+/* Some CodeMirror builds use a selection background overlay instead of the span class */
+.sidebar-md-editor-popup .CodeMirror .CodeMirror-selected,
+.sidebar-md-editor-root .CodeMirror .CodeMirror-selected,
+.sidebar-notes .CodeMirror .CodeMirror-selected,
+.sidebar-notes-codemirror .CodeMirror .CodeMirror-selected,
+.sidebar-md-editor-popup .CodeMirror .CodeMirror-selectedtext,
+.sidebar-md-editor-root .CodeMirror .CodeMirror-selectedtext,
+.sidebar-notes .CodeMirror .CodeMirror-selectedtext,
+.sidebar-notes-codemirror .CodeMirror .CodeMirror-selectedtext {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
 .sidebar-md-editor-popup .CodeMirror-focused,
 .sidebar-md-editor-root .CodeMirror-focused {
   outline: none;
@@ -1575,6 +1607,22 @@ a.linkicon:hover::before {
 .sidebar-md-editor-popup .editor-toolbar a::before,
 .sidebar-md-editor-root .editor-toolbar a::before {
   color: var(--text) !important;
+}
+
+.sidebar-notes .editor-toolbar button:hover,
+.sidebar-notes .editor-toolbar button.active,
+.sidebar-notes .editor-toolbar a:hover,
+.sidebar-notes .editor-toolbar a.active {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #888 !important;
+}
+
+.sidebar-notes .editor-toolbar button:hover::before,
+.sidebar-notes .editor-toolbar button.active::before,
+.sidebar-notes .editor-toolbar a:hover::before,
+.sidebar-notes .editor-toolbar a.active::before {
+  color: #000000 !important;
 }
 
 
@@ -1717,49 +1765,4 @@ a.linkicon:hover::before {
   font-size: 14px !important;
   line-height: 1 !important;
   font-weight: 700 !important;
-}
-
-
-/* Active EasyMDE toolbar buttons: white background with black icon/text */
-.sidebar-md-editor-popup .editor-toolbar button:hover,
-.sidebar-md-editor-root .editor-toolbar button:hover,
-.sidebar-notes .editor-toolbar button:hover,
-.sidebar-md-editor-popup .editor-toolbar button.active,
-.sidebar-md-editor-root .editor-toolbar button.active,
-.sidebar-notes .editor-toolbar button.active,
-.sidebar-md-editor-popup .editor-toolbar a:hover,
-.sidebar-md-editor-root .editor-toolbar a:hover,
-.sidebar-notes .editor-toolbar a:hover,
-.sidebar-md-editor-popup .editor-toolbar a.active,
-.sidebar-md-editor-root .editor-toolbar a.active,
-.sidebar-notes .editor-toolbar a.active{
-  background:#fff !important;
-  color:#000 !important;
-}
-
-.sidebar-md-editor-popup .editor-toolbar button:hover i,
-.sidebar-md-editor-root .editor-toolbar button:hover i,
-.sidebar-notes .editor-toolbar button:hover i,
-.sidebar-md-editor-popup .editor-toolbar button.active i,
-.sidebar-md-editor-root .editor-toolbar button.active i,
-.sidebar-notes .editor-toolbar button.active i,
-.sidebar-md-editor-popup .editor-toolbar a:hover i,
-.sidebar-md-editor-root .editor-toolbar a:hover i,
-.sidebar-notes .editor-toolbar a:hover i,
-.sidebar-md-editor-popup .editor-toolbar a.active i,
-.sidebar-md-editor-root .editor-toolbar a.active i,
-.sidebar-notes .editor-toolbar a.active i,
-.sidebar-md-editor-popup .editor-toolbar button:hover::before,
-.sidebar-md-editor-root .editor-toolbar button:hover::before,
-.sidebar-notes .editor-toolbar button:hover::before,
-.sidebar-md-editor-popup .editor-toolbar button.active::before,
-.sidebar-md-editor-root .editor-toolbar button.active::before,
-.sidebar-notes .editor-toolbar button.active::before,
-.sidebar-md-editor-popup .editor-toolbar a:hover::before,
-.sidebar-md-editor-root .editor-toolbar a:hover::before,
-.sidebar-notes .editor-toolbar a:hover::before,
-.sidebar-md-editor-popup .editor-toolbar a.active::before,
-.sidebar-md-editor-root .editor-toolbar a.active::before,
-.sidebar-notes .editor-toolbar a.active::before{
-  color:#000 !important;
 }
