@@ -14,6 +14,8 @@
     panelBound: false,
     editorBound: false,
     saveTimer: null,
+    resizeRaf: null,
+    resizeStopTimer: null,
     suppressSync: false,
   };
 
@@ -25,6 +27,7 @@
       sidebarWidth: 460,
       activeTab: null,
       sidebarNotes: '',
+      sidebarNotesHeight: 420,
     };
   }
 
@@ -58,6 +61,55 @@
     return state.openSections?.[NOTES_KEY];
   }
 
+  function getStoredHeight() {
+    const raw = Number(getState().sidebarNotesHeight);
+    return Number.isFinite(raw) && raw > 0 ? raw : 420;
+  }
+
+  function setStoredHeight(px) {
+    const next = Math.max(220, Math.round(Number(px) || 0));
+    getState().sidebarNotesHeight = next;
+    return next;
+  }
+
+  function applyPanelHeight(px) {
+    const panel = dom.panelEl || ensurePanel();
+    if (!panel) return;
+    const next = Math.max(220, Math.round(Number(px) || 0));
+    panel.style.height = `${next}px`;
+    panel.style.maxHeight = `${Math.max(220, Math.floor(window.innerHeight - 24))}px`;
+    panel.dataset.notesHeight = String(next);
+    window.setTimeout(syncNotesBodySizing, 0);
+  }
+
+  function clearPanelHeight() {
+    const panel = dom.panelEl || ensurePanel();
+    if (!panel) return;
+    panel.style.height = '';
+    panel.style.maxHeight = '';
+    delete panel.dataset.notesHeight;
+    const body = panel.querySelector('.sidebar-notes-body');
+    if (body) {
+      body.style.flex = '';
+      body.style.height = '';
+      body.style.maxHeight = '';
+    }
+  }
+
+  function syncNotesBodySizing() {
+    const panel = dom.panelEl || ensurePanel();
+    if (!panel || !panel.open) return;
+    const body = panel.querySelector('.sidebar-notes-body');
+    const header = panel.querySelector('.sidebar-notes-header');
+    if (!body || !header) return;
+    const panelBox = panel.getBoundingClientRect();
+    const headerBox = header.getBoundingClientRect();
+    const next = Math.max(0, Math.floor(panelBox.height - headerBox.height));
+    body.style.flex = '0 0 auto';
+    body.style.height = `${next}px`;
+    body.style.maxHeight = `${next}px`;
+  }
+
   function ensurePanel() {
     if (dom.panelEl && document.contains(dom.panelEl)) return dom.panelEl;
 
@@ -68,17 +120,22 @@
     if (!panel) {
       panel = document.createElement('details');
       panel.id = 'sidebarNotesPanel';
-      panel.className = 'sidebar-notes';
+      panel.className = 'sidebar-notes sidebar-md-editor-root';
       panel.innerHTML = `
         <summary class="sidebar-notes-header">
-          <span class="sidebar-notes-title">Notes</span>
-          <span class="sidebar-notes-meta">
-            <span id="sidebarNotesCount">0 chars</span>
-            <span id="sidebarNotesStatus">Saved</span>
-          </span>
+          <div class="sidebar-notes-resizer" aria-hidden="true"></div>
+          <div class="sidebar-notes-header-row">
+            <span class="sidebar-notes-title">Notes</span>
+            <span class="sidebar-notes-meta">
+              <span id="sidebarNotesCount">0 chars</span>
+              <span id="sidebarNotesStatus">Saved</span>
+            </span>
+          </div>
         </summary>
-        <div class="sidebar-notes-body">
-          <textarea id="sidebarNotes" class="sidebar-notes-textarea" placeholder="Write session notes here..."></textarea>
+        <div class="sidebar-notes-body sidebar-md-editor">
+          <div class="sidebar-md-editor-frame sidebar-notes-frame">
+            <textarea id="sidebarNotes" class="sidebar-md-textarea sidebar-notes-textarea" placeholder="Write session notes here..."></textarea>
+          </div>
         </div>
       `;
       host.appendChild(panel);
@@ -95,6 +152,19 @@
 
   function setStatus(text) {
     if (dom.statusEl) dom.statusEl.textContent = text;
+  }
+
+  function refreshEditor() {
+    try {
+      dom.editor?.codemirror?.refresh?.();
+    } catch {
+      // ignore
+    }
+    try {
+      dom.editor?.refresh?.();
+    } catch {
+      // ignore
+    }
   }
 
   function scheduleSave() {
@@ -206,7 +276,7 @@
           'Ctrl-S': () => window.GM.storage?.saveState?.(),
           'Cmd-S': () => window.GM.storage?.saveState?.(),
         });
-        window.setTimeout(() => dom.editor.codemirror?.refresh?.(), 0);
+        window.setTimeout(refreshEditor, 0);
       } else if (window.CodeMirror) {
         dom.editorMode = 'codemirror';
         dom.editor = window.CodeMirror.fromTextArea(dom.textEl, {
@@ -225,7 +295,7 @@
           'Ctrl-S': () => window.GM.storage?.saveState?.(),
           'Cmd-S': () => window.GM.storage?.saveState?.(),
         });
-        window.setTimeout(() => dom.editor.refresh?.(), 0);
+        window.setTimeout(refreshEditor, 0);
       } else {
         dom.editorMode = 'textarea';
         dom.editor = null;
@@ -245,6 +315,82 @@
     setStatus('Saved');
   }
 
+  function setupResizer() {
+    const panel = dom.panelEl || ensurePanel();
+    if (!panel || panel.dataset.notesResizerBound === 'true') return;
+
+    const resizer = panel.querySelector('.sidebar-notes-resizer');
+    if (!resizer) return;
+
+    const state = getState();
+    const minHeight = 220;
+    const maxHeight = Math.max(minHeight, Math.floor(window.innerHeight - 120));
+    const drag = { active: false, pointerId: null, startY: 0, startHeight: 0 };
+
+    const clamp = (value) => Math.min(maxHeight, Math.max(minHeight, value));
+
+    const scheduleRefresh = () => {
+      if (dom.resizeRaf) return;
+      dom.resizeRaf = window.requestAnimationFrame(() => {
+        dom.resizeRaf = null;
+        refreshEditor();
+      });
+    };
+
+    const onMove = (event) => {
+      if (!drag.active) return;
+      if (drag.pointerId !== null && event.pointerId !== drag.pointerId) return;
+      const delta = event.clientY - drag.startY;
+      const next = clamp(drag.startHeight - delta);
+      setStoredHeight(next);
+      applyPanelHeight(next);
+      scheduleRefresh();
+    };
+
+    const stop = (event) => {
+      if (!drag.active) return;
+      if (event && drag.pointerId !== null && event.pointerId !== drag.pointerId) return;
+      drag.active = false;
+      drag.pointerId = null;
+      document.body.classList.remove('resizing');
+      try {
+        resizer.releasePointerCapture?.(event?.pointerId);
+      } catch {
+        // ignore
+      }
+      if (dom.resizeRaf) {
+        window.cancelAnimationFrame(dom.resizeRaf);
+        dom.resizeRaf = null;
+      }
+      window.clearTimeout(dom.resizeStopTimer);
+      dom.resizeStopTimer = window.setTimeout(() => {
+        syncNotesBodySizing();
+        refreshEditor();
+        window.GM.storage?.saveState?.();
+      }, 0);
+    };
+
+    resizer.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const panelBox = panel.getBoundingClientRect();
+      drag.active = true;
+      drag.pointerId = event.pointerId;
+      drag.startY = event.clientY;
+      drag.startHeight = panelBox.height;
+      document.body.classList.add('resizing');
+      resizer.setPointerCapture?.(event.pointerId);
+    });
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+    window.addEventListener('pointerleave', stop);
+
+    panel.dataset.notesResizerBound = 'true';
+  }
+
   function render() {
     const panel = ensurePanel();
     if (!panel) return null;
@@ -254,6 +400,13 @@
       if (typeof persisted === 'boolean') panel.open = persisted;
       else panel.open = true;
       panel.dataset.notesRendered = 'true';
+    }
+
+    if (panel.open) {
+      applyPanelHeight(getStoredHeight());
+      window.setTimeout(syncNotesBodySizing, 0);
+    } else {
+      clearPanelHeight();
     }
 
     dom.textEl = panel.querySelector('textarea');
@@ -276,9 +429,18 @@
     if (!dom.panelBound) {
       panel.addEventListener('toggle', () => {
         setOpenState(panel.open);
+        if (panel.open) {
+          applyPanelHeight(getStoredHeight());
+          window.setTimeout(syncNotesBodySizing, 0);
+        } else {
+          clearPanelHeight();
+        }
+        window.setTimeout(refreshEditor, 0);
       });
       dom.panelBound = true;
     }
+
+    setupResizer();
 
     return panel;
   }
@@ -304,6 +466,8 @@
     if (!panel) return;
     panel.open = true;
     setOpenState(true);
+    applyPanelHeight(getStoredHeight());
+    window.setTimeout(refreshEditor, 0);
   }
 
   function appendText(value) {
@@ -334,6 +498,7 @@
     window.GM.storage?.saveState?.();
     updateMeta();
     setStatus('Saved');
+    window.setTimeout(refreshEditor, 0);
   }
 
   window.GM.notes = {
