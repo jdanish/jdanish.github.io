@@ -945,6 +945,19 @@
     document.body.prepend(banner);
   }
 
+  function insertTaskListItem(editor) {
+    const cm = editor?.codemirror || editor;
+    if (!cm) return;
+    const replacement = '- [ ] ';
+    if (typeof cm.replaceSelection === 'function') {
+      cm.replaceSelection(replacement, 'end');
+    } else if (typeof cm.replaceRange === 'function') {
+      const cursor = typeof cm.getCursor === 'function' ? cm.getCursor() : null;
+      if (cursor) cm.replaceRange(replacement, cursor, cursor, 'end');
+    }
+    cm.focus?.();
+  }
+
   function closeSidebarMarkdownEditor() {
     try {
       sidebarMarkdownEditorState.unbindKeydown?.();
@@ -1084,6 +1097,31 @@
             forceSync: true,
             autoDownloadFontAwesome: false,
             initialValue: initialMarkdown,
+            toolbar: [
+              'bold',
+              'italic',
+              'heading',
+              '|',
+              'quote',
+              'unordered-list',
+              'ordered-list',
+              {
+                name: 'checkbox-list',
+                action: (editor) => insertTaskListItem(editor),
+                className: 'easy-checkbox-toolbar',
+                title: 'Insert task list item',
+              },
+              '|',
+              'link',
+              'image',
+              'table',
+              'code',
+              '|',
+              'preview',
+              'side-by-side',
+              'fullscreen',
+              'guide',
+            ],
           });
 
           ta.style.display = 'none';

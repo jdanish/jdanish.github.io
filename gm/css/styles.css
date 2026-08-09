@@ -1514,7 +1514,9 @@ a.linkicon:hover::before {
 }
 
 .sidebar-md-editor-popup .CodeMirror-cursor,
-.sidebar-md-editor-root .CodeMirror-cursor {
+.sidebar-md-editor-root .CodeMirror-cursor,
+.sidebar-notes .CodeMirror-cursor,
+.sidebar-notes-codemirror .CodeMirror-cursor {
   border-left-color: #ffffff !important;
 }
 
@@ -1701,4 +1703,18 @@ a.linkicon:hover::before {
 .sidebar-md-editor-popup .editor-preview-side {
   background: #0f131b !important;
   color: var(--text) !important;
+}
+
+
+.sidebar-md-editor-popup .editor-toolbar button.easy-checkbox-toolbar::before,
+.sidebar-md-editor-root .editor-toolbar button.easy-checkbox-toolbar::before,
+.sidebar-notes .editor-toolbar button.easy-checkbox-toolbar::before,
+.sidebar-md-editor-popup .editor-toolbar a.easy-checkbox-toolbar::before,
+.sidebar-md-editor-root .editor-toolbar a.easy-checkbox-toolbar::before,
+.sidebar-notes .editor-toolbar a.easy-checkbox-toolbar::before {
+  content: '☑' !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
 }
