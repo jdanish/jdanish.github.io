@@ -125,7 +125,10 @@
         <summary class="sidebar-notes-header">
           <div class="sidebar-notes-resizer" aria-hidden="true"></div>
           <div class="sidebar-notes-header-row">
-            <span class="sidebar-notes-title">Notes</span>
+            <span class="sidebar-notes-toggle">
+              <span class="sidebar-notes-caret" aria-hidden="true"></span>
+              <span class="sidebar-notes-title">Notes</span>
+            </span>
             <span class="sidebar-notes-meta">
               <span id="sidebarNotesCount">0 chars</span>
               <span id="sidebarNotesStatus">Saved</span>
@@ -389,6 +392,26 @@
     window.addEventListener('pointerleave', stop);
 
     panel.dataset.notesResizerBound = 'true';
+
+    // Only clicks on the Notes label/caret should toggle the panel.
+    if (!panel.dataset.notesToggleBound) {
+      const header = panel.querySelector('.sidebar-notes-header');
+      if (header) {
+        header.addEventListener('click', (event) => {
+          const withinToggle = event.target.closest('.sidebar-notes-toggle');
+          if (withinToggle) return;
+          event.preventDefault();
+          event.stopPropagation();
+        }, true);
+      }
+      if (resizer) {
+        resizer.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }, true);
+      }
+      panel.dataset.notesToggleBound = 'true';
+    }
   }
 
   function render() {
