@@ -1718,3 +1718,48 @@ a.linkicon:hover::before {
   line-height: 1 !important;
   font-weight: 700 !important;
 }
+
+
+/* Active EasyMDE toolbar buttons: white background with black icon/text */
+.sidebar-md-editor-popup .editor-toolbar button:hover,
+.sidebar-md-editor-root .editor-toolbar button:hover,
+.sidebar-notes .editor-toolbar button:hover,
+.sidebar-md-editor-popup .editor-toolbar button.active,
+.sidebar-md-editor-root .editor-toolbar button.active,
+.sidebar-notes .editor-toolbar button.active,
+.sidebar-md-editor-popup .editor-toolbar a:hover,
+.sidebar-md-editor-root .editor-toolbar a:hover,
+.sidebar-notes .editor-toolbar a:hover,
+.sidebar-md-editor-popup .editor-toolbar a.active,
+.sidebar-md-editor-root .editor-toolbar a.active,
+.sidebar-notes .editor-toolbar a.active{
+  background:#fff !important;
+  color:#000 !important;
+}
+
+.sidebar-md-editor-popup .editor-toolbar button:hover i,
+.sidebar-md-editor-root .editor-toolbar button:hover i,
+.sidebar-notes .editor-toolbar button:hover i,
+.sidebar-md-editor-popup .editor-toolbar button.active i,
+.sidebar-md-editor-root .editor-toolbar button.active i,
+.sidebar-notes .editor-toolbar button.active i,
+.sidebar-md-editor-popup .editor-toolbar a:hover i,
+.sidebar-md-editor-root .editor-toolbar a:hover i,
+.sidebar-notes .editor-toolbar a:hover i,
+.sidebar-md-editor-popup .editor-toolbar a.active i,
+.sidebar-md-editor-root .editor-toolbar a.active i,
+.sidebar-notes .editor-toolbar a.active i,
+.sidebar-md-editor-popup .editor-toolbar button:hover::before,
+.sidebar-md-editor-root .editor-toolbar button:hover::before,
+.sidebar-notes .editor-toolbar button:hover::before,
+.sidebar-md-editor-popup .editor-toolbar button.active::before,
+.sidebar-md-editor-root .editor-toolbar button.active::before,
+.sidebar-notes .editor-toolbar button.active::before,
+.sidebar-md-editor-popup .editor-toolbar a:hover::before,
+.sidebar-md-editor-root .editor-toolbar a:hover::before,
+.sidebar-notes .editor-toolbar a:hover::before,
+.sidebar-md-editor-popup .editor-toolbar a.active::before,
+.sidebar-md-editor-root .editor-toolbar a.active::before,
+.sidebar-notes .editor-toolbar a.active::before{
+  color:#000 !important;
+}
