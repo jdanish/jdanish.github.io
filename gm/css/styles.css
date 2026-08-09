@@ -364,6 +364,23 @@ a.btn:hover {
   color: var(--muted);
   margin-bottom: 8px;
 }
+.search-results-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.search-results-status {
+  white-space: nowrap;
+}
+.search-collapse-button {
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
 .search-group {
   margin-top: 10px;
   border: 1px solid var(--line);

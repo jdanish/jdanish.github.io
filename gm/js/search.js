@@ -17,6 +17,7 @@
       searchHiddenBooksEl: null,
       clearButtonEl: null,
       resultsEl: null,
+      collapseButtonEl: null,
     },
     previousSidebarTab: null,
     sidebarIndex: [],
@@ -387,6 +388,33 @@
     resultsEl.replaceChildren();
   }
 
+  function syncSearchCollapseButtonState() {
+    const resultsEl = searchState.dom.resultsEl || ensureResultsContainer();
+    const button = searchState.dom.collapseButtonEl;
+    if (!resultsEl || !button) return;
+
+    const groups = Array.from(resultsEl.querySelectorAll('details.search-group'));
+    if (!groups.length) {
+      button.hidden = true;
+      return;
+    }
+
+    button.hidden = false;
+    const anyOpen = groups.some((group) => group.open);
+    button.textContent = anyOpen ? 'Collapse all' : 'Expand all';
+    button.dataset.collapsed = anyOpen ? 'false' : 'true';
+    button.setAttribute('aria-pressed', anyOpen ? 'false' : 'true');
+  }
+
+  function setAllSearchGroupsOpen(open) {
+    const resultsEl = searchState.dom.resultsEl || ensureResultsContainer();
+    if (!resultsEl) return;
+    resultsEl.querySelectorAll('details.search-group').forEach((group) => {
+      group.open = Boolean(open);
+    });
+    syncSearchCollapseButtonState();
+  }
+
   function renderResults(query, sidebarHits, pdfHits, statusText = '') {
     const resultsEl = searchState.dom.resultsEl || ensureResultsContainer();
     if (!resultsEl) return;
@@ -404,7 +432,25 @@
     left.textContent = `Search results for “${query}”`;
 
     const right = document.createElement('div');
-    right.textContent = statusText || `${sidebarHits.length + pdfHits.length} matches`;
+    right.className = 'search-results-actions';
+
+    const status = document.createElement('span');
+    status.className = 'search-results-status';
+    status.textContent = statusText || `${sidebarHits.length + pdfHits.length} matches`;
+
+    const collapseButton = document.createElement('button');
+    collapseButton.type = 'button';
+    collapseButton.className = 'btn search-collapse-button';
+    collapseButton.textContent = 'Collapse all';
+    collapseButton.setAttribute('aria-pressed', 'false');
+    collapseButton.addEventListener('click', () => {
+      const anyOpen = Array.from(resultsEl.querySelectorAll('details.search-group')).some((group) => group.open);
+      setAllSearchGroupsOpen(!anyOpen);
+    });
+    searchState.dom.collapseButtonEl = collapseButton;
+
+    right.appendChild(status);
+    right.appendChild(collapseButton);
 
     header.appendChild(left);
     header.appendChild(right);
@@ -441,6 +487,7 @@
         body.appendChild(item);
       });
 
+      group.addEventListener('toggle', syncSearchCollapseButtonState);
       group.appendChild(body);
       resultsEl.appendChild(group);
     }
@@ -486,9 +533,12 @@
           body.appendChild(item);
         });
 
+        group.addEventListener('toggle', syncSearchCollapseButtonState);
         group.appendChild(body);
         resultsEl.appendChild(group);
       });
+
+    syncSearchCollapseButtonState();
 
     if (!sidebarHits.length && !pdfHits.length) {
       const empty = document.createElement('div');
