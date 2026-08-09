@@ -1610,3 +1610,78 @@ a.linkicon:hover::before {
   overflow-y: auto !important;
   max-height: none !important;
 }
+
+
+.search-inline-highlight {
+  background: rgba(255, 214, 102, 0.26);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 0.08em;
+  box-shadow: 0 0 0 1px rgba(255, 214, 102, 0.28);
+}
+
+.sidebar-notes .sidebar-notes-body,
+.sidebar-notes .EasyMDEContainer,
+.sidebar-notes .CodeMirror,
+.sidebar-notes .editor-toolbar,
+.sidebar-notes .editor-preview,
+.sidebar-notes .editor-preview-side,
+.sidebar-md-editor-root .EasyMDEContainer,
+.sidebar-md-editor-popup .EasyMDEContainer,
+.sidebar-md-editor-root .editor-preview,
+.sidebar-md-editor-popup .editor-preview,
+.sidebar-md-editor-root .editor-preview-side,
+.sidebar-md-editor-popup .editor-preview-side {
+  background: #0f131b !important;
+  color: var(--text) !important;
+}
+
+.sidebar-notes .sidebar-notes-body,
+.sidebar-md-editor-root .gm-popup-body,
+.sidebar-md-editor-popup .gm-popup-body {
+  background: var(--panel);
+}
+
+.sidebar-notes .EasyMDEContainer .CodeMirror,
+.sidebar-notes .CodeMirror,
+.sidebar-md-editor-root .EasyMDEContainer .CodeMirror,
+.sidebar-md-editor-popup .EasyMDEContainer .CodeMirror,
+.sidebar-md-editor-root .CodeMirror,
+.sidebar-md-editor-popup .CodeMirror {
+  background: #0f131b !important;
+  color: var(--text) !important;
+}
+
+.sidebar-notes .EasyMDEContainer .CodeMirror-gutters,
+.sidebar-notes .CodeMirror-gutters,
+.sidebar-md-editor-root .EasyMDEContainer .CodeMirror-gutters,
+.sidebar-md-editor-popup .EasyMDEContainer .CodeMirror-gutters,
+.sidebar-md-editor-root .CodeMirror-gutters,
+.sidebar-md-editor-popup .CodeMirror-gutters {
+  background: #0f131b !important;
+  border-right: 1px solid var(--line) !important;
+}
+
+.sidebar-notes .EasyMDEContainer .editor-toolbar,
+.sidebar-md-editor-root .EasyMDEContainer .editor-toolbar,
+.sidebar-md-editor-popup .EasyMDEContainer .editor-toolbar,
+.sidebar-notes .editor-toolbar,
+.sidebar-md-editor-root .editor-toolbar,
+.sidebar-md-editor-popup .editor-toolbar,
+.sidebar-notes .editor-statusbar,
+.sidebar-md-editor-root .editor-statusbar,
+.sidebar-md-editor-popup .editor-statusbar {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+.sidebar-notes .editor-preview,
+.sidebar-notes .editor-preview-side,
+.sidebar-md-editor-root .editor-preview,
+.sidebar-md-editor-popup .editor-preview,
+.sidebar-md-editor-root .editor-preview-side,
+.sidebar-md-editor-popup .editor-preview-side {
+  background: #0f131b !important;
+  color: var(--text) !important;
+}

@@ -92,6 +92,10 @@
         || window.GM.ui?.getSidebarElementByKeys?.(result.dataset.sectionKey, null);
       if (target) {
         window.GM.ui?.revealSidebarElement?.(target);
+        const highlightText = result.dataset.highlight || '';
+        if (highlightText) {
+          window.GM.ui?.highlightSidebarElementText?.(target, highlightText);
+        }
         return;
       }
     }
@@ -214,6 +218,7 @@
 
       results.push({
         ...getSidebarHitResult(item, q),
+        highlight: q,
         score: idx,
       });
     });
@@ -230,6 +235,7 @@
         blockTitle: 'Editable Notes',
         searchText: notes.toLowerCase(),
         snippet: extractSnippet(notes, q),
+        highlight: q,
         score: notes.toLowerCase().indexOf(q),
       });
     }
@@ -304,11 +310,22 @@
     if (q.length < 2) return [];
 
     const includeHiddenBooks = getSearchIncludeHiddenBooks();
-    const tabs = Object.keys(getBooks()).filter((tab) => includeHiddenBooks || window.GM.ui?.isBookVisible?.(tab) !== false);
+    const allTabs = Object.keys(getBooks());
+    const visibleTabs = allTabs.filter((tab) => window.GM.ui?.isBookVisible?.(tab) !== false);
+    const hiddenTabs = allTabs.filter((tab) => !visibleTabs.includes(tab));
+    const tabs = includeHiddenBooks ? visibleTabs.concat(hiddenTabs) : visibleTabs;
     const results = [];
 
     for (const tab of tabs) {
-      const index = await ensureTextIndex(tab);
+      let index = null;
+      try {
+        index = await ensureTextIndex(tab);
+      } catch (err) {
+        const bookTitle = getBooks()?.[tab]?.title || tab;
+        console.warn(`Skipping search index for ${bookTitle}`, err);
+        continue;
+      }
+
       if (!index) continue;
 
       index.pages.forEach((page) => {
@@ -363,6 +380,7 @@
   }
 
   function clearResults() {
+    window.GM.ui?.clearSidebarInlineHighlight?.();
     const resultsEl = searchState.dom.resultsEl || ensureResultsContainer();
     if (!resultsEl) return;
     resultsEl.hidden = true;
@@ -373,6 +391,7 @@
     const resultsEl = searchState.dom.resultsEl || ensureResultsContainer();
     if (!resultsEl) return;
 
+    window.GM.ui?.clearSidebarInlineHighlight?.();
     resultsEl.hidden = !query;
     resultsEl.replaceChildren();
 
@@ -408,6 +427,7 @@
         item.type = 'button';
         item.className = 'btn search-result-item';
         item.dataset.searchHit = hit.type || 'sidebar';
+        item.dataset.highlight = hit.highlight || query;
         item.dataset.sectionKey = hit.sectionKey;
         item.dataset.sectionTab = hit.sectionTab || 'rules';
         item.dataset.blockKey = hit.blockKey;

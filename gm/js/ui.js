@@ -4,6 +4,7 @@
   const sectionEls = new Map();
   const blockEls = new Map();
   const sidebarSearchEntries = [];
+  let activeSidebarHighlightRoot = null;
 
   let dom = {};
 
@@ -172,6 +173,90 @@
     void el.offsetWidth;
     el.classList.add('flash-highlight');
     window.setTimeout(() => el.classList.remove('flash-highlight'), 1200);
+  }
+
+  function escapeRegExp(value) {
+    return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function clearSidebarInlineHighlight(root = activeSidebarHighlightRoot) {
+    if (!root) return;
+    const marks = root.querySelectorAll?.('mark.search-inline-highlight') || [];
+    marks.forEach((mark) => {
+      const textNode = document.createTextNode(mark.textContent || '');
+      mark.replaceWith(textNode);
+    });
+    if (activeSidebarHighlightRoot === root) {
+      activeSidebarHighlightRoot = null;
+    }
+  }
+
+  function highlightSidebarElementText(root, query) {
+    if (!root) return false;
+    const cleaned = String(query || '').trim();
+    if (!cleaned) {
+      clearSidebarInlineHighlight(root);
+      return false;
+    }
+
+    if (activeSidebarHighlightRoot && activeSidebarHighlightRoot !== root) {
+      clearSidebarInlineHighlight(activeSidebarHighlightRoot);
+    }
+
+    clearSidebarInlineHighlight(root);
+
+    const escaped = escapeRegExp(cleaned);
+    const previewRegex = new RegExp(escaped, 'i');
+    const wrapRegex = new RegExp(escaped, 'gi');
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        if (parent.closest('mark.search-inline-highlight, textarea, input, script, style, select, option')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return previewRegex.test(node.nodeValue || '') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      },
+    });
+
+    const nodes = [];
+    while (walker.nextNode()) {
+      nodes.push(walker.currentNode);
+    }
+
+    let matched = false;
+    nodes.forEach((node) => {
+      const source = String(node.nodeValue || '');
+      if (!source) return;
+      wrapRegex.lastIndex = 0;
+      let lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      let nodeMatched = false;
+      source.replace(wrapRegex, (match, offset) => {
+        if (offset > lastIndex) {
+          frag.appendChild(document.createTextNode(source.slice(lastIndex, offset)));
+        }
+        const mark = document.createElement('mark');
+        mark.className = 'search-inline-highlight';
+        mark.textContent = match;
+        frag.appendChild(mark);
+        lastIndex = offset + match.length;
+        matched = true;
+        nodeMatched = true;
+        return match;
+      });
+      if (!nodeMatched) return;
+      if (lastIndex < source.length) {
+        frag.appendChild(document.createTextNode(source.slice(lastIndex)));
+      }
+      node.parentNode?.replaceChild(frag, node);
+    });
+
+    if (matched) {
+      activeSidebarHighlightRoot = root;
+    }
+
+    return matched;
   }
 
   function revealSidebarElement(el) {
@@ -1340,6 +1425,8 @@
     setTabLoading,
     applySidebarWidthFromState,
     revealSidebarElement,
+    highlightSidebarElementText,
+    clearSidebarInlineHighlight,
     getSidebarElementByKeys,
     getDisplayPage,
     isBookVisible,

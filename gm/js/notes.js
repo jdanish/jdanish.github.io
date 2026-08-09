@@ -9,8 +9,12 @@
     textEl: null,
     statusEl: null,
     countEl: null,
-    bound: false,
+    editor: null,
+    editorMode: 'none',
+    panelBound: false,
+    editorBound: false,
     saveTimer: null,
+    suppressSync: false,
   };
 
   function defaultState() {
@@ -89,6 +93,120 @@
     }, 250);
   }
 
+  function getEditorValue() {
+    if (dom.editor) {
+      if (typeof dom.editor.value === 'function') return dom.editor.value();
+      if (typeof dom.editor.getValue === 'function') return dom.editor.getValue();
+      if (dom.editor.codemirror && typeof dom.editor.codemirror.getValue === 'function') {
+        return dom.editor.codemirror.getValue();
+      }
+    }
+    return dom.textEl?.value || '';
+  }
+
+  function setEditorValue(value) {
+    const next = String(value || '');
+    dom.suppressSync = true;
+    try {
+      if (dom.editor) {
+        if (typeof dom.editor.value === 'function') {
+          dom.editor.value(next);
+          return;
+        }
+        if (typeof dom.editor.setValue === 'function') {
+          dom.editor.setValue(next);
+          return;
+        }
+        if (dom.editor.codemirror && typeof dom.editor.codemirror.setValue === 'function') {
+          dom.editor.codemirror.setValue(next);
+          return;
+        }
+      }
+      if (dom.textEl && dom.textEl.value !== next) {
+        dom.textEl.value = next;
+      }
+    } finally {
+      window.setTimeout(() => { dom.suppressSync = false; }, 0);
+    }
+  }
+
+  function syncStateFromEditor() {
+    const next = getEditorValue();
+    if (String(getState().sidebarNotes || '') === String(next || '')) return;
+    getState().sidebarNotes = String(next || '');
+    updateMeta();
+    scheduleSave();
+  }
+
+  function bindEditor() {
+    if (dom.editorBound || !dom.textEl) return;
+
+    const handleInput = () => {
+      if (dom.suppressSync) return;
+      syncStateFromEditor();
+    };
+
+    const current = String(getState().sidebarNotes || '');
+    dom.textEl.value = current;
+
+    try {
+      if (window.EasyMDE) {
+        dom.editorMode = 'easymde';
+        dom.editor = new window.EasyMDE({
+          element: dom.textEl,
+          autofocus: false,
+          spellChecker: false,
+          status: false,
+          forceSync: true,
+          autoDownloadFontAwesome: false,
+          initialValue: current,
+        });
+        dom.textEl.style.display = 'none';
+        dom.editor.codemirror?.getWrapperElement?.()?.classList.add('sidebar-notes-codemirror');
+        dom.editor.codemirror?.on?.('change', handleInput);
+        dom.editor.codemirror?.setOption?.('extraKeys', {
+          'Ctrl-S': () => window.GM.storage?.saveState?.(),
+          'Cmd-S': () => window.GM.storage?.saveState?.(),
+        });
+        window.setTimeout(() => dom.editor.codemirror?.refresh?.(), 0);
+      } else if (window.CodeMirror) {
+        dom.editorMode = 'codemirror';
+        dom.editor = window.CodeMirror.fromTextArea(dom.textEl, {
+          autofocus: false,
+          lineNumbers: true,
+          lineWrapping: true,
+          mode: 'markdown',
+          tabSize: 2,
+          indentUnit: 2,
+          viewportMargin: Infinity,
+        });
+        dom.textEl.style.display = 'none';
+        dom.editor.getWrapperElement?.()?.classList.add('sidebar-notes-codemirror');
+        dom.editor.on('change', handleInput);
+        dom.editor.setOption?.('extraKeys', {
+          'Ctrl-S': () => window.GM.storage?.saveState?.(),
+          'Cmd-S': () => window.GM.storage?.saveState?.(),
+        });
+        window.setTimeout(() => dom.editor.refresh?.(), 0);
+      } else {
+        dom.editorMode = 'textarea';
+        dom.editor = null;
+        dom.textEl.style.display = 'block';
+        dom.textEl.addEventListener('input', handleInput);
+      }
+    } catch (error) {
+      console.error('Failed to initialize notes markdown editor', error);
+      dom.editorMode = 'textarea';
+      dom.editor = null;
+      dom.textEl.style.display = 'block';
+      dom.textEl.addEventListener('input', handleInput);
+    }
+
+    dom.editorBound = true;
+    updateMeta();
+    setStatus('Saved');
+  }
+
   function render() {
     const panel = ensurePanel();
     if (!panel) return null;
@@ -97,7 +215,6 @@
       const persisted = getOpenState();
       if (typeof persisted === 'boolean') panel.open = persisted;
       else panel.open = true;
-
       panel.dataset.notesRendered = 'true';
     }
 
@@ -107,27 +224,22 @@
 
     if (!dom.textEl) return panel;
 
-    const current = String(getState().sidebarNotes || '');
-    if (dom.textEl.value !== current) dom.textEl.value = current;
-    updateMeta();
-    setStatus('Saved');
+    if (!dom.editorBound) {
+      bindEditor();
+    } else {
+      const current = String(getState().sidebarNotes || '');
+      if (!dom.suppressSync && getEditorValue() !== current) {
+        setEditorValue(current);
+      }
+      updateMeta();
+      setStatus('Saved');
+    }
 
-    if (!dom.bound) {
-      dom.textEl.addEventListener('input', () => {
-        getState().sidebarNotes = dom.textEl.value;
-        updateMeta();
-        scheduleSave();
-      });
-
-      dom.textEl.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') dom.textEl.blur();
-      });
-
+    if (!dom.panelBound) {
       panel.addEventListener('toggle', () => {
         setOpenState(panel.open);
       });
-
-      dom.bound = true;
+      dom.panelBound = true;
     }
 
     return panel;
@@ -138,6 +250,14 @@
   }
 
   function focus() {
+    if (dom.editor?.codemirror?.focus) {
+      dom.editor.codemirror.focus();
+      return;
+    }
+    if (dom.editor?.textarea && typeof dom.editor.textarea.focus === 'function') {
+      dom.editor.textarea.focus();
+      return;
+    }
     dom.textEl?.focus?.();
   }
 
@@ -155,11 +275,7 @@
     const current = String(getState().sidebarNotes || '').trimEnd();
     const next = current ? `${current}\n${text}` : text;
     getState().sidebarNotes = next;
-
-    if (dom.textEl && dom.textEl.value !== next) {
-      dom.textEl.value = next;
-    }
-
+    setEditorValue(next);
     updateMeta();
     scheduleSave();
     open();
@@ -174,12 +290,12 @@
   }
 
   function setText(value) {
-    getState().sidebarNotes = String(value || '');
+    const next = String(value || '');
+    getState().sidebarNotes = next;
+    setEditorValue(next);
     window.GM.storage?.saveState?.();
-    if (dom.textEl && dom.textEl.value !== getState().sidebarNotes) {
-      dom.textEl.value = getState().sidebarNotes;
-    }
     updateMeta();
+    setStatus('Saved');
   }
 
   window.GM.notes = {
