@@ -678,7 +678,7 @@
         const shots = fgCleanName(fgChildText(item, 'ammo > max'));
         const notes = fgCleanName(fgChildText(item, 'bonusdamage'));
         return [
-          `<strong>${fgXmlEscape(n)}</strong>`,
+          fgXmlEscape(n),
           fgXmlEscape(range || ''),
           fgXmlEscape(ap || ''),
           fgXmlEscape(damage || ''),
@@ -702,7 +702,10 @@
         if (!n) return '';
         const desc = fgCleanName(fgChildText(item, 'shortdescription'));
         const prereq = fgCleanName(fgChildText(item, 'prerequisites'));
-        return `<li><strong>${fgXmlEscape(n)}</strong>${desc ? `<div>${fgXmlEscape(desc)}</div>` : ''}${prereq ? `<div><em>Prerequisites:</em> ${fgXmlEscape(prereq)}</div>` : ''}</li>`;
+        const descHtml = fgXmlEscape(desc)
+          .replace(/&lt;em&gt;(.*?)&lt;\/em&gt;/gi, '<em>$1</em>')
+          .replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gi, '<em>$1</em>');
+        return `<li><strong>${fgXmlEscape(n)}</strong>${desc ? `<div>${descHtml}</div>` : ''}${prereq ? `<div><em>Prerequisites:</em> ${fgXmlEscape(prereq)}</div>` : ''}</li>`;
       })
       .filter(Boolean);
 
@@ -716,11 +719,11 @@
         const notes = fgCleanName(fgChildText(item, 'notes'));
         const trappings = fgCleanName(fgChildText(item, 'trappings'));
         const parts = [`<strong>${fgXmlEscape(n)}</strong>`];
-        if (ppv) parts.push(`<div><strong>Power Points:</strong> ${fgXmlEscape(ppv)}</div>`);
-        if (range) parts.push(`<div><strong>Range:</strong> ${fgXmlEscape(range)}</div>`);
-        if (duration) parts.push(`<div><strong>Duration:</strong> ${fgXmlEscape(duration)}</div>`);
-        if (notes) parts.push(`<div><strong>Description:</strong> ${fgXmlEscape(notes)}</div>`);
-        if (trappings) parts.push(`<div><strong>Trappings:</strong> ${fgXmlEscape(trappings)}</div>`);
+        if (ppv) parts.push(`<div><em>Power Points:</em> ${fgXmlEscape(ppv)}</div>`);
+        if (range) parts.push(`<div><em>Range:</em> ${fgXmlEscape(range)}</div>`);
+        if (duration) parts.push(`<div><em>Duration:</em> ${fgXmlEscape(duration)}</div>`);
+        if (notes) parts.push(`<div><em>Description:</em> ${fgXmlEscape(notes)}</div>`);
+        if (trappings) parts.push(`<div><em>Trappings:</em> ${fgXmlEscape(trappings)}</div>`);
         return `<li>${parts.join('')}</li>`;
       })
       .filter(Boolean);
@@ -757,7 +760,7 @@
         html: `<ul>${armorItems.map((item) => {
           const n = fgCleanName(fgChildText(item, 'name'));
           const protection = fgCleanName(fgChildText(item, 'protection'));
-          return n ? `<li><strong>${fgXmlEscape(n)}</strong>${protection ? ` (+${fgXmlEscape(protection)})` : ''}</li>` : '';
+          return n ? `<li>${fgXmlEscape(n)}${protection ? ` (+${fgXmlEscape(protection)})` : ''}</li>` : '';
         }).filter(Boolean).join('')}</ul>`,
       });
     }
@@ -770,7 +773,7 @@
         html: `<ul>${inventory.map((item) => {
           const n = fgCleanName(fgChildText(item, 'name'));
           const count = fgCleanName(fgChildText(item, 'count'));
-          return n ? `<li><strong>${fgXmlEscape(n)}</strong>${count && count !== '1' ? ` ×${fgXmlEscape(count)}` : ''}</li>` : '';
+          return n ? `<li>${fgXmlEscape(n)}${count && count !== '1' ? ` ×${fgXmlEscape(count)}` : ''}</li>` : '';
         }).filter(Boolean).join('')}</ul>`,
       });
     }
@@ -793,23 +796,44 @@
       });
     }
 
+    const itemHtmlToMarkdown = (html) => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = String(html || '');
+      const li = wrapper.querySelector('li') || wrapper.firstElementChild || wrapper;
+      const title = fgCleanName(li.querySelector(':scope > strong')?.textContent || '');
+      const parts = [];
+      if (title) parts.push(`- **${title}**`);
+
+      const inlineToMarkdown = (node) => {
+        if (!node) return '';
+        return Array.from(node.childNodes || []).map((child) => {
+          if (child.nodeType === Node.TEXT_NODE) return String(child.textContent || '');
+          if (child.nodeType !== Node.ELEMENT_NODE) return '';
+          const tag = child.tagName.toLowerCase();
+          const inner = inlineToMarkdown(child);
+          if (tag === 'em' || tag === 'i') return `*${inner.trim()}*`;
+          if (tag === 'strong' || tag === 'b') return `**${inner.trim()}**`;
+          return inner;
+        }).join('').replace(/\s+/g, ' ').trim();
+      };
+
+      Array.from(li.children || []).forEach((child) => {
+        if (child.matches?.(':scope > strong')) return;
+        const detail = inlineToMarkdown(child);
+        if (detail) parts.push(`  - ${detail}`);
+      });
+      return parts.join('\n');
+    };
+
     const lines = [`# ${name}`, ''];
-    if (profession) lines.push(`**Profession:** ${profession}`, '');
-    if (race) lines.push(`**Ancestry:** ${race}`, '');
     if (attrs.length) lines.push(`**Attributes:** ${attrs.join(', ')}`, '');
     if (skills.length) lines.push(`**Skills:** ${skills.join(', ')}`, '');
     if (pace || parry || toughness) lines.push(`**Pace:** ${pace || ''}${runDie ? ` (${runDie})` : ''}; **Parry:** ${parry || ''}; **Toughness:** ${toughness || ''}${armor ? ` (${armor})` : ''}`, '');
-    const resourcesLine = [];
-    if (bennies) resourcesLine.push(`**Bennies:** ${bennies}`);
-    if (wounds) resourcesLine.push(`**Wounds:** ${wounds}`);
-    if (fatigue) resourcesLine.push(`**Fatigue:** ${fatigue}`);
-    if (ppMax || pp) resourcesLine.push(`**Power Points:** ${pp || '0'}${ppMax ? `/${ppMax}` : ''}`);
-    if (advances) resourcesLine.push(`**Advances:** ${advances}`);
-    if (resourcesLine.length) lines.push(resourcesLine.join('; '), '');
+    if (ppMax || pp) lines.push(`**Power Points:** ${pp || '0'}${ppMax ? ` / ${ppMax}` : ''}`, '');
     if (hindrances.length) lines.push(`**Hindrances:** ${hindrances.join(', ')}`, '');
 
     if (weaponRows.length) {
-      lines.push('## Weapons', '', '| Weapon | Range | AP | Damage | ROF | Shots | Notes |', '| --- | --- | --- | --- | --- | --- | --- |');
+      lines.push('### Weapons', '', '| Weapon | Range | AP | Damage | ROF | Shots | Notes |', '| --- | --- | --- | --- | --- | --- | --- |');
       weaponRows.forEach((row) => {
         lines.push(`| ${row.map((cell) => String(cell).replace(/<[^>]+>/g, '')).join(' | ')} |`);
       });
@@ -817,41 +841,40 @@
     }
 
     if (armorItems.length) {
-      lines.push('## Armor', '');
+      lines.push('### Armor', '');
       armorItems.forEach((item) => {
         const n = fgCleanName(fgChildText(item, 'name'));
         const protection = fgCleanName(fgChildText(item, 'protection'));
-        if (n) lines.push(`- **${n}**${protection ? ` (+${protection})` : ''}`);
+        if (n) lines.push(`- ${n}${protection ? ` (+${protection})` : ''}`);
       });
       lines.push('');
     }
 
     if (inventory.length) {
-      lines.push('## Gear', '');
+      lines.push('### Gear', '');
       inventory.forEach((item) => {
         const n = fgCleanName(fgChildText(item, 'name'));
         const count = fgCleanName(fgChildText(item, 'count'));
-        if (n) lines.push(`- **${n}**${count && count !== '1' ? ` ×${count}` : ''}`);
+        if (n) lines.push(`- ${n}${count && count !== '1' ? ` ×${count}` : ''}`);
       });
       lines.push('');
     }
 
     if (edgeItems.length) {
-      lines.push('## Edges & Abilities', '');
+      lines.push('### Edges & Abilities', '');
       edgeItems.forEach((item) => {
-        lines.push(`- ${item.replace(/^<li>|<\/li>$/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()}`);
+        lines.push(itemHtmlToMarkdown(item));
       });
       lines.push('');
     }
 
     if (powerItems.length) {
-      lines.push('## Powers', '');
+      lines.push('### Powers', '');
       powerItems.forEach((item) => {
-        lines.push(`- ${item.replace(/^<li>|<\/li>$/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()}`);
+        lines.push(itemHtmlToMarkdown(item));
       });
       lines.push('');
     }
-
     const markdown = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 
     const sections = [{

@@ -2475,3 +2475,24 @@ html[data-theme="dark"] .editor-preview-side pre {
   margin: 0;
   padding-left: 18px;
 }
+
+/* Imported character typography: keep list details subordinate to section headings */
+.current-subtab-panel .nested-block.subsection > summary {
+  font-size: 14px;
+}
+
+.current-subtab-panel .section-body,
+.current-subtab-panel .subsection-body,
+.current-subtab-panel .section-body li,
+.current-subtab-panel .subsection-body li {
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.current-subtab-panel .section-body li > ul,
+.current-subtab-panel .section-body li > div,
+.current-subtab-panel .subsection-body li > ul,
+.current-subtab-panel .subsection-body li > div {
+  font-size: 12px;
+}
+
