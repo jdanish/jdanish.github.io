@@ -4,6 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SWADE & StarBreaker Reference</title>
+  <script>
+    (function () {
+      try {
+        const raw = localStorage.getItem('gm_screen_state_v5');
+        const parsed = raw ? JSON.parse(raw) : {};
+        const mode = parsed && typeof parsed.themeMode === 'string' ? parsed.themeMode : 'dark';
+        const resolved = mode === 'system'
+          ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+          : (mode === 'light' ? 'light' : 'dark');
+        document.documentElement.dataset.theme = resolved;
+        document.documentElement.style.colorScheme = resolved;
+      } catch (err) {
+        document.documentElement.dataset.theme = 'dark';
+        document.documentElement.style.colorScheme = 'dark';
+      }
+    })();
+  </script>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
@@ -39,7 +56,8 @@
         <div class="panel-header-row">
           <h1>Rulebooks</h1>
           <div class="panel-header-actions">
-            <button id="bookVisibilityButton" type="button" class="icon-button" aria-label="Choose visible books" title="Choose visible books">☰</button>
+            <button id="themeButton" type="button" class="icon-button" aria-label="Theme: Dark. Click to switch." title="Theme: Dark. Click to switch.">☾</button>
+          <button id="bookVisibilityButton" type="button" class="icon-button" aria-label="Choose visible books" title="Choose visible books">☰</button>
           </div>
         </div>
       </header>

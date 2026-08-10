@@ -15,6 +15,7 @@
       sidebarNotes: '',
       bookVisibility: {},
       searchIncludeHiddenBooks: false,
+      themeMode: 'dark',
     };
   }
 
@@ -31,6 +32,7 @@
       if (typeof state.sidebarNotes !== 'string') state.sidebarNotes = '';
       if (!state.bookVisibility || typeof state.bookVisibility !== 'object') state.bookVisibility = {};
       if (typeof state.searchIncludeHiddenBooks !== 'boolean') state.searchIncludeHiddenBooks = false;
+      if (typeof state.themeMode !== 'string' || !['dark', 'light', 'system'].includes(state.themeMode)) state.themeMode = 'dark';
       return state;
     } catch (err) {
       console.error('Failed to load state', err);

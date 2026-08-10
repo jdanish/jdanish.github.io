@@ -20,6 +20,85 @@
     return window.GM.storage?.state || { pages: {}, scales: {}, openSections: {}, sidebarWidth: 460, sidebarTab: 'rules', currentSubTab: '', sidebarNotes: '', bookVisibility: {}, searchIncludeHiddenBooks: false };
   }
 
+  const THEME_MODES = ['dark', 'light', 'system'];
+  const themeMediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+  let themeMediaListenerBound = false;
+
+  function normalizeThemeMode(value) {
+    const next = String(value || '').trim().toLowerCase();
+    return THEME_MODES.includes(next) ? next : 'dark';
+  }
+
+  function getThemeMode() {
+    return normalizeThemeMode(getState().themeMode);
+  }
+
+  function isSystemLightTheme() {
+    return Boolean(themeMediaQuery?.matches);
+  }
+
+  function resolveThemeMode(mode = getThemeMode()) {
+    if (mode === 'system') return isSystemLightTheme() ? 'light' : 'dark';
+    return mode === 'light' ? 'light' : 'dark';
+  }
+
+  function updateThemeButton() {
+    if (!dom.themeButtonEl) return;
+    const mode = getThemeMode();
+    const resolved = resolveThemeMode(mode);
+    const label = mode === 'system' ? `System (${resolved})` : mode.charAt(0).toUpperCase() + mode.slice(1);
+    const icon = mode === 'light' ? '☀' : mode === 'dark' ? '☾' : '◐';
+    const title = `Theme: ${label}. Click to switch.`;
+    dom.themeButtonEl.textContent = icon;
+    dom.themeButtonEl.title = title;
+    dom.themeButtonEl.setAttribute('aria-label', title);
+    dom.themeButtonEl.dataset.themeMode = mode;
+    dom.themeButtonEl.dataset.themeResolved = resolved;
+  }
+
+  function applyThemeMode(mode = getThemeMode()) {
+    const resolved = resolveThemeMode(mode);
+    document.documentElement.dataset.theme = resolved;
+    document.documentElement.style.colorScheme = resolved;
+    if (document.body) document.body.dataset.theme = resolved;
+    updateThemeButton();
+    return resolved;
+  }
+
+  function setThemeMode(nextMode) {
+    const mode = normalizeThemeMode(nextMode);
+    const state = getState();
+    if (state.themeMode === mode) {
+      applyThemeMode(mode);
+      return mode;
+    }
+    state.themeMode = mode;
+    window.GM.storage?.saveState?.();
+    applyThemeMode(mode);
+    return mode;
+  }
+
+  function cycleThemeMode() {
+    const current = getThemeMode();
+    const next = current === 'dark' ? 'light' : current === 'light' ? 'system' : 'dark';
+    return setThemeMode(next);
+  }
+
+  function bindThemeMediaListener() {
+    if (themeMediaListenerBound || !themeMediaQuery) return;
+    const handler = () => {
+      if (getThemeMode() === 'system') {
+        applyThemeMode();
+      }
+    };
+    if (typeof themeMediaQuery.addEventListener === 'function') {
+      themeMediaQuery.addEventListener('change', handler);
+    } else if (typeof themeMediaQuery.addListener === 'function') {
+      themeMediaQuery.addListener(handler);
+    }
+    themeMediaListenerBound = true;
+  }
+
   function getBookEntries() {
     return Object.entries(getBooks()).sort((a, b) => {
       const orderA = Number(a[1]?.order ?? 0);
@@ -1433,13 +1512,22 @@
       searchIncludeHiddenBooksEl: document.getElementById('searchIncludeHiddenBooks'),
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
+      themeButtonEl: document.getElementById('themeButton'),
       bookVisibilityButtonEl: document.getElementById('bookVisibilityButton'),
     };
+
+    applyThemeMode();
+    bindThemeMediaListener();
 
     buildTabs();
     renderSidebar();
     applySidebarWidthFromState();
     setupResizer();
+
+    if (dom.themeButtonEl && dom.themeButtonEl.dataset.bound !== 'true') {
+      dom.themeButtonEl.addEventListener('click', cycleThemeMode);
+      dom.themeButtonEl.dataset.bound = 'true';
+    }
 
     if (dom.bookVisibilityButtonEl && dom.bookVisibilityButtonEl.dataset.bound !== 'true') {
       dom.bookVisibilityButtonEl.addEventListener('click', toggleBookVisibilityPopup);
