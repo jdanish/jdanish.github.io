@@ -2,6 +2,14 @@
 
 Profession: [[starbreaker_star_marines/33|Psy Commando]]
 
+**Attributes:** Agility d8, Smarts d8, Spirit d6, Strength d6, Vigor d8
+
+**Skills:** Athletics d8, Battle d4, Common Knowledge d4, Driving d6, Fighting d8, Hacking d4, Notice d6, Persuasion d4, Psionics d10, Repair d6, Shooting d10, Stealth d8, Thievery d4
+
+**Pace:** 8 (d8); **Parry:** 6; **Toughness:** 12 (6)
+
+**Hindrances:** Bad Luck (Major), Driven (Major)
+
 ### Weapons
 
 | Weapon | Range | AP | Damage | ROF | Shots | Notes |
