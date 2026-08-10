@@ -2496,3 +2496,72 @@ html[data-theme="dark"] .editor-preview-side pre {
   font-size: 12px;
 }
 
+
+/* Reference Index Builder */
+.reference-index-dialog {
+  width: min(900px, 92vw);
+  max-height: 86vh;
+  padding: 0;
+  border: 1px solid var(--border-color, #444);
+  border-radius: 10px;
+  background: var(--panel-bg, #181818);
+  color: var(--text-color, #eee);
+  box-shadow: 0 18px 55px rgba(0,0,0,.45);
+}
+.reference-index-dialog::backdrop { background: rgba(0,0,0,.55); }
+.reference-index-builder { display: flex; flex-direction: column; gap: 12px; padding: 16px; min-height: 0; }
+.reference-index-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.reference-index-header h2 { margin: 0 0 4px; font-size: 18px; }
+.reference-index-header p { margin: 0; opacity: .75; font-size: 12px; line-height: 1.4; }
+.reference-index-close { border: 0; background: transparent; color: inherit; font-size: 24px; cursor: pointer; }
+.reference-index-controls { display: grid; grid-template-columns: 1.3fr .8fr 1fr auto; gap: 8px; align-items: end; }
+.reference-index-controls label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; opacity: .9; }
+.reference-index-controls select, .reference-index-controls input { box-sizing: border-box; width: 100%; padding: 7px 8px; border: 1px solid #4a4a4a; border-radius: 5px; background: #202020; color: #eee; }
+.reference-index-controls button, .reference-index-footer button { padding: 7px 10px; border: 1px solid #555; border-radius: 5px; background: #2a2a2a; color: #eee; cursor: pointer; }
+.reference-index-controls button:hover, .reference-index-footer button:hover { background: #333; }
+.reference-index-controls button:disabled, .reference-index-footer button:disabled { opacity: .5; cursor: default; }
+.reference-index-help { font-size: 11px; opacity: .7; }
+.reference-index-status { min-height: 18px; font-size: 12px; }
+.reference-index-results { min-height: 160px; max-height: 48vh; overflow: auto; border: 1px solid #333; border-radius: 6px; }
+.reference-index-list { display: grid; }
+.reference-index-row { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center; padding: 6px 9px; border-bottom: 1px solid #2c2c2c; font-size: 12px; }
+.reference-index-row:last-child { border-bottom: 0; }
+.reference-index-row:hover { background: rgba(255,255,255,.04); }
+.reference-index-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reference-index-page { opacity: .65; font-variant-numeric: tabular-nums; }
+.reference-index-empty { padding: 18px; opacity: .7; font-size: 12px; }
+.reference-index-footer { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.reference-index-footer > div { display: flex; gap: 8px; }
+.reference-index-counts { font-size: 11px; opacity: .7; }
+.current-index-button { flex: 0 0 auto !important; width: auto !important; min-width: 0 !important; margin-left: 4px; padding: 6px 9px !important; border-style: dashed !important; opacity: .9; white-space: nowrap; }
+.current-index-button:hover { opacity: 1; }
+@media (max-width: 760px) {
+  .reference-index-controls { grid-template-columns: 1fr 1fr; }
+  .reference-index-controls label:nth-child(3) { grid-column: 1 / -1; }
+  .reference-index-controls .reference-index-scan { grid-column: 2; }
+}
+
+/* Book-level reference index action */
+.book-visibility-item {
+  gap: 8px;
+}
+.book-visibility-book-label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+  cursor: pointer;
+}
+.book-visibility-book-label span {
+  min-width: 0;
+}
+.book-visibility-book-label small {
+  white-space: nowrap;
+}
+.book-index-button {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  font-size: 0.82rem;
+}

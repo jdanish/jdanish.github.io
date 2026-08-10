@@ -1,6 +1,8 @@
 (function () {
   window.GM = window.GM || {};
 
+  const appScriptUrl = document.currentScript?.src ? new URL(document.currentScript.src) : null;
+
   function debounce(fn, delay) {
     let timer = null;
     return function debounced(...args) {
@@ -36,6 +38,15 @@
 
   async function init() {
     window.GM.storage = window.GM.storage || {};
+
+    if (!window.GM.referenceIndex) {
+      try {
+        const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
+        await import(moduleUrl.href);
+      } catch (err) {
+        console.error('Reference Index Builder failed to load', err);
+      }
+    }
 
     window.GM.popup?.init?.();
     window.GM.bookmarks?.init?.();

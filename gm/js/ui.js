@@ -967,6 +967,148 @@
     const targetId = incomingSections[0]?.id || String(imported.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     window.GM.ui?.setCurrentSubTabBySectionKey?.(targetId);
   }
+  function closeReferenceIndexBuilder(dialog) {
+    dialog?.remove?.();
+  }
+
+  function openReferenceIndexBuilder(initialBookKey = '') {
+    if (document.querySelector('.reference-index-dialog')) return;
+    const dialog = document.createElement('dialog');
+    dialog.className = 'reference-index-dialog';
+
+    const form = document.createElement('div');
+    form.className = 'reference-index-builder';
+    form.innerHTML = `
+      <div class="reference-index-header">
+        <div>
+          <h2>Reference Index Builder</h2>
+          <p>Give each list a printed-page range. The builder scans those pages for heading-like entries and lets you select what to add.</p>
+        </div>
+        <button type="button" class="reference-index-close" aria-label="Close">×</button>
+      </div>
+      <div class="reference-index-controls">
+        <label>Book<select class="reference-index-book"></select></label>
+        <label>List type<select class="reference-index-kind">
+          <option value="edges">Edges</option>
+          <option value="powers">Powers</option>
+        </select></label>
+        <label>Printed page ranges<input class="reference-index-ranges" placeholder="37-53, 60-61" /></label>
+        <button type="button" class="reference-index-scan">Scan pages</button>
+      </div>
+      <div class="reference-index-help">Example: SWADE Core → Edges → <strong>37-53</strong>. Existing entries with the same name will be updated when you add them.</div>
+      <div class="reference-index-status"></div>
+      <div class="reference-index-results"></div>
+      <div class="reference-index-footer">
+        <span class="reference-index-counts"></span>
+        <div>
+          <button type="button" class="reference-index-add" disabled>Add selected</button>
+          <button type="button" class="reference-index-download">Download config.js</button>
+        </div>
+      </div>
+    `;
+    dialog.appendChild(form);
+    document.body.appendChild(dialog);
+
+    const bookSelect = form.querySelector('.reference-index-book');
+    const kindSelect = form.querySelector('.reference-index-kind');
+    const rangeInput = form.querySelector('.reference-index-ranges');
+    const scanButton = form.querySelector('.reference-index-scan');
+    const addButton = form.querySelector('.reference-index-add');
+    const resultsEl = form.querySelector('.reference-index-results');
+    const statusEl = form.querySelector('.reference-index-status');
+    const countsEl = form.querySelector('.reference-index-counts');
+
+    getBookEntries().forEach(([key, book]) => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = book.title || key;
+      bookSelect.appendChild(option);
+    });
+    if (initialBookKey && Array.from(bookSelect.options).some((option) => option.value === initialBookKey)) {
+      bookSelect.value = initialBookKey;
+    }
+
+    function refreshCounts() {
+      const stats = window.GM.referenceIndex?.getStats?.() || {};
+      countsEl.textContent = `Current index: ${stats.edges || 0} edges · ${stats.items || 0} items · ${stats.powers || 0} powers`;
+    }
+    refreshCounts();
+
+    let candidates = [];
+
+    function renderCandidates() {
+      resultsEl.replaceChildren();
+      addButton.disabled = !candidates.some((c) => c.selected);
+      if (!candidates.length) {
+        resultsEl.innerHTML = '<div class="reference-index-empty">No candidate headings found in the selected range.</div>';
+        return;
+      }
+      const table = document.createElement('div');
+      table.className = 'reference-index-list';
+      candidates.forEach((candidate, idx) => {
+        const row = document.createElement('label');
+        row.className = 'reference-index-row';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = candidate.selected !== false;
+        checkbox.addEventListener('change', () => {
+          candidate.selected = checkbox.checked;
+          addButton.disabled = !candidates.some((c) => c.selected);
+        });
+        const label = document.createElement('span');
+        label.className = 'reference-index-label';
+        label.textContent = candidate.label;
+        const page = document.createElement('span');
+        page.className = 'reference-index-page';
+        page.textContent = `p. ${candidate.displayPage}`;
+        row.append(checkbox, label, page);
+        row.dataset.index = String(idx);
+        table.appendChild(row);
+      });
+      resultsEl.appendChild(table);
+    }
+
+    scanButton.addEventListener('click', async () => {
+      scanButton.disabled = true;
+      addButton.disabled = true;
+      resultsEl.replaceChildren();
+      statusEl.textContent = 'Scanning PDF pages…';
+      try {
+        candidates = await window.GM.referenceIndex.scanBook(bookSelect.value, kindSelect.value, rangeInput.value);
+        candidates.forEach((candidate) => { candidate.selected = true; });
+        statusEl.textContent = `Found ${candidates.length} candidate ${kindSelect.options[kindSelect.selectedIndex].text.toLowerCase()}. Review and add the ones you want.`;
+        renderCandidates();
+      } catch (err) {
+        console.error('Reference index scan failed', err);
+        statusEl.textContent = `Scan failed: ${err?.message || err}`;
+        resultsEl.innerHTML = '<div class="reference-index-empty">Check that the book has a configured PDF and the page range uses printed page numbers.</div>';
+      } finally {
+        scanButton.disabled = false;
+      }
+    });
+
+    addButton.addEventListener('click', () => {
+      const selected = candidates.filter((candidate) => candidate.selected);
+      const added = window.GM.referenceIndex?.addEntries?.(selected) || 0;
+      statusEl.textContent = `Added or updated ${selected.length} entries (${added} new).`;
+      refreshCounts();
+      addButton.disabled = true;
+    });
+
+    form.querySelector('.reference-index-download').addEventListener('click', () => {
+      window.GM.referenceIndex?.downloadConfig?.();
+      statusEl.textContent = 'Downloaded config.js with the current reference index.';
+    });
+
+    form.querySelector('.reference-index-close').addEventListener('click', () => closeReferenceIndexBuilder(dialog));
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeReferenceIndexBuilder(dialog);
+    });
+    dialog.addEventListener('cancel', () => closeReferenceIndexBuilder(dialog));
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+  }
+
   function createFantasyGroundsImportButton() {
     const button = document.createElement('button');
     button.type = 'button';
@@ -1417,9 +1559,12 @@
     list.className = 'book-visibility-list';
 
     getBookEntries().forEach(([tab, book]) => {
-      const label = document.createElement('label');
-      label.className = 'book-visibility-item';
-      label.dataset.tab = tab;
+      const row = document.createElement('div');
+      row.className = 'book-visibility-item';
+      row.dataset.tab = tab;
+
+      const pickLabel = document.createElement('label');
+      pickLabel.className = 'book-visibility-book-label';
 
       const input = document.createElement('input');
       input.type = 'checkbox';
@@ -1438,10 +1583,25 @@
         updateTabButtonLabels();
       });
 
-      label.appendChild(input);
-      label.appendChild(title);
-      label.appendChild(meta);
-      list.appendChild(label);
+      pickLabel.appendChild(input);
+      pickLabel.appendChild(title);
+      pickLabel.appendChild(meta);
+
+      const indexButton = document.createElement('button');
+      indexButton.type = 'button';
+      indexButton.className = 'book-index-button';
+      indexButton.textContent = 'Build Index';
+      indexButton.title = 'Build page references for this book';
+      indexButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        window.GM.popup?.hide?.();
+        window.setTimeout(() => openReferenceIndexBuilder(tab), 0);
+      });
+
+      row.appendChild(pickLabel);
+      row.appendChild(indexButton);
+      list.appendChild(row);
     });
 
     wrap.appendChild(list);
