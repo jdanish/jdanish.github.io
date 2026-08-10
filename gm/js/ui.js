@@ -709,20 +709,12 @@
       .filter(Boolean);
 
     const summaryParts = [];
-    if (profession) summaryParts.push(`<p><strong>Profession:</strong> ${fgXmlEscape(profession)}</p>`);
-    if (race) summaryParts.push(`<p><strong>Ancestry:</strong> ${fgXmlEscape(race)}</p>`);
     if (attrs.length) summaryParts.push(`<p><strong>Attributes:</strong> ${fgXmlEscape(attrs.join(', '))}</p>`);
     if (skills.length) summaryParts.push(`<p><strong>Skills:</strong> ${fgXmlEscape(skills.join(', '))}</p>`);
     if (pace || parry || toughness) {
       summaryParts.push(`<p><strong>Pace:</strong> ${fgXmlEscape(pace)}${runDie ? ` (${fgXmlEscape(runDie)})` : ''}; <strong>Parry:</strong> ${fgXmlEscape(parry)}; <strong>Toughness:</strong> ${fgXmlEscape(toughness)}${armor ? ` (${fgXmlEscape(armor)})` : ''}</p>`);
     }
-    const resources = [];
-    if (bennies) resources.push(`Bennies: ${bennies}`);
-    if (wounds) resources.push(`Wounds: ${wounds}`);
-    if (fatigue) resources.push(`Fatigue: ${fatigue}`);
-    if (ppMax || pp) resources.push(`Power Points: ${pp || '0'}${ppMax ? `/${ppMax}` : ''}`);
-    if (advances) resources.push(`Advances: ${advances}`);
-    if (resources.length) summaryParts.push(`<p>${resources.map((r) => r.replace(/\*\*/g, '')).join('; ')}</p>`);
+    if (ppMax || pp) summaryParts.push(`<p><strong>Power Points:</strong> ${fgXmlEscape(pp || '0')}${ppMax ? ` / ${fgXmlEscape(ppMax)}` : ''}</p>`);
     if (hindrances.length) summaryParts.push(`<p><strong>Hindrances:</strong> ${fgXmlEscape(hindrances.join(', '))}</p>`);
 
     const blocks = [
