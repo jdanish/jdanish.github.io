@@ -2438,3 +2438,40 @@ html[data-theme="dark"] .editor-preview-side pre {
   color: #eeeeee !important;
 }
 
+/* Current character Fantasy Grounds import button */
+.current-subtabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.current-import-button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin-left: 4px;
+  padding: 6px 9px !important;
+  border-style: dashed !important;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+.current-import-button:hover {
+  opacity: 1;
+}
+
+
+
+/* Imported current character sections */
+.current-subtab-panel .nested-block.subsection {
+  margin-bottom: 10px;
+}
+.current-subtab-panel .nested-block.subsection .subsection-body {
+  padding: 12px 14px 14px;
+}
+.current-subtab-panel .nested-block.subsection table {
+  width: 100%;
+}
+.current-subtab-panel .nested-block.subsection ul {
+  margin: 0;
+  padding-left: 18px;
+}

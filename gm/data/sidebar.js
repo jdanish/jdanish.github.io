@@ -864,6 +864,21 @@ window.SIDEBAR_SECTIONS = [];
     return sections;
   }
 
+  function importSectionsFromData(kind, markdown, sections) {
+    const normalizedSections = normalizeSectionList(sections, kind);
+    const normalizedMarkdown = sanitizeMarkdownSource(markdown || '');
+    if (kind === 'current') {
+      currentMarkdown = normalizedMarkdown;
+      currentSections = normalizedSections;
+    } else {
+      rulesMarkdown = normalizedMarkdown;
+      rulesSections = normalizedSections;
+    }
+    if (normalizedMarkdown) persistStoredMarkdown(kind, normalizedMarkdown);
+    applySections(true);
+    return normalizedSections;
+  }
+
   async function resetKind(kind) {
     localStorage.removeItem(STORAGE_KEYS[kind]);
     localStorage.removeItem(LEGACY_STORAGE_KEYS[kind]);
@@ -915,6 +930,7 @@ window.SIDEBAR_SECTIONS = [];
     downloadMarkdown,
     downloadKind: downloadMarkdown,
     importMarkdownFromText,
+    importSectionsFromData,
     importKindFromText: importMarkdownFromText,
     resetKind,
     applySections,

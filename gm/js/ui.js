@@ -499,21 +499,37 @@
   function renderSidebarSectionBlocks(sectionKey, tab, section, bodyEl) {
     (section.blocks || []).forEach((block, blockIndex) => {
       const blockKey = `${sectionKey}/block-${blockIndex}-${window.GM.utils.slugify(block.id || block.title || 'block')}`;
-      const nested = document.createElement('div');
-      nested.className = 'nested-block';
-      nested.dataset.sectionKey = sectionKey;
-      nested.dataset.sectionTab = tab;
-      nested.dataset.blockKey = blockKey;
+      const collapsible = Boolean(block.collapsible);
+      let nested;
 
-      if (block.title) {
-        const title = document.createElement('div');
-        title.className = 'nested-title';
-        title.textContent = block.title;
-        nested.appendChild(title);
+      if (collapsible) {
+        nested = document.createElement('details');
+        nested.className = 'nested-block subsection';
+        nested.dataset.sectionKey = sectionKey;
+        nested.dataset.sectionTab = tab;
+        nested.dataset.blockKey = blockKey;
+        nested.dataset.persistKey = blockKey;
+        nested.open = block.expanded !== false;
+        const summary = document.createElement('summary');
+        summary.textContent = block.title || section.title || '';
+        nested.appendChild(summary);
+      } else {
+        nested = document.createElement('div');
+        nested.className = 'nested-block';
+        nested.dataset.sectionKey = sectionKey;
+        nested.dataset.sectionTab = tab;
+        nested.dataset.blockKey = blockKey;
+
+        if (block.title) {
+          const title = document.createElement('div');
+          title.className = 'nested-title';
+          title.textContent = block.title;
+          nested.appendChild(title);
+        }
       }
 
       const nestedBody = document.createElement('div');
-      nestedBody.className = 'nested-body';
+      nestedBody.className = collapsible ? 'subsection-body nested-body' : 'nested-body';
       nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
       decorateJumpLinks(nestedBody);
       nested.appendChild(nestedBody);
@@ -531,6 +547,367 @@
         kind: 'block',
       });
     });
+  }
+
+
+  function fgChildText(parent, selector, fallback = '') {
+    const node = parent?.querySelector?.(selector);
+    return String(node?.textContent ?? fallback).trim();
+  }
+
+  function fgList(parent, selector) {
+    const container = parent?.querySelector?.(selector);
+    if (!container) return [];
+    return Array.from(container.children || []);
+  }
+
+  function fgCleanName(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function fgMarkdownEscape(value) {
+    return String(value || '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ').trim();
+  }
+
+
+  function fgXmlEscape(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function fgFormatDie(value) {
+    return fgCleanName(value).replace(/^d(?=\d)/i, 'd');
+  }
+
+  function fgJoinNonEmpty(parts, separator = ', ') {
+    return parts.filter(Boolean).join(separator);
+  }
+
+  function fgBuildParagraphs(items) {
+    return items.filter(Boolean).map((line) => `<p>${line}</p>`).join('');
+  }
+
+  function fgBuildList(items) {
+    const content = items.filter(Boolean).map((item) => `<li>${item}</li>`).join('');
+    return content ? `<ul>${content}</ul>` : '';
+  }
+
+  function fgBuildTable(headers, rows) {
+    const head = `<tr>${headers.map((h) => `<th>${fgXmlEscape(h)}</th>`).join('')}</tr>`;
+    const body = rows.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('');
+    return rows.length ? `<table class="sidebar-table"><thead>${head}</thead><tbody>${body}</tbody></table>` : '';
+  }
+
+
+
+
+
+  function fgXmlToCurrentMarkdown(xmlText) {
+    const doc = new DOMParser().parseFromString(String(xmlText || ''), 'application/xml');
+    if (doc.querySelector('parsererror')) throw new Error('The selected file is not valid XML.');
+    const character = doc.querySelector('root > character, character');
+    if (!character) throw new Error('No Fantasy Grounds <character> record was found.');
+
+    const name = fgCleanName(fgChildText(character, 'name', 'Imported Character')) || 'Imported Character';
+    const race = fgCleanName(fgChildText(character, 'race'));
+    const profession = fgCleanName(fgChildText(character, 'archetype'));
+
+    const attrNames = ['agility', 'smarts', 'spirit', 'strength', 'vigor'];
+    const attrs = attrNames
+      .map((key) => {
+        const value = fgChildText(character, key);
+        return value ? `${key[0].toUpperCase()}${key.slice(1)} ${value}` : '';
+      })
+      .filter(Boolean);
+
+    const skills = fgList(character, 'skills')
+      .map((item) => {
+        const skillName = fgCleanName(fgChildText(item, 'name'));
+        const die = fgCleanName(fgChildText(item, 'skill'));
+        if (!skillName || skillName === '(Unskilled)') return '';
+        return `${skillName}${die ? ` ${die}` : ''}`;
+      })
+      .filter(Boolean);
+
+    const hindrances = fgList(character, 'hindrances')
+      .map((item) => fgCleanName(fgChildText(item, 'name')))
+      .filter(Boolean);
+
+    const pace = fgChildText(character, 'pace');
+    const runDie = fgChildText(character, 'rundie');
+    const parry = fgChildText(character, 'parry');
+    const toughness = fgChildText(character, 'toughness');
+    const armor = fgChildText(character, 'armor');
+
+    const bennies = fgChildText(character, 'main > bennies');
+    const wounds = fgChildText(character, 'main > wounds');
+    const fatigue = fgChildText(character, 'main > fatigue');
+    const pp = fgChildText(character, 'main > powerpoints');
+    const ppMax = fgChildText(character, 'main > powerpointsmax');
+    const advances = fgChildText(character, 'advances');
+
+    const weaponRows = fgList(character, 'weaponlist')
+      .map((item) => {
+        const n = fgCleanName(fgChildText(item, 'name'));
+        if (!n || n === 'Unarmed') return null;
+        const range = fgCleanName(fgChildText(item, 'traittype')) === 'Melee' ? '—' : fgCleanName(fgChildText(item, 'range'));
+        const ap = fgCleanName(fgChildText(item, 'armorpiercing'));
+        const damage = fgCleanName(fgChildText(item, 'damage'));
+        const rof = fgCleanName(fgChildText(item, 'rof'));
+        const shots = fgCleanName(fgChildText(item, 'ammo > max'));
+        const notes = fgCleanName(fgChildText(item, 'bonusdamage'));
+        return [
+          `<strong>${fgXmlEscape(n)}</strong>`,
+          fgXmlEscape(range || ''),
+          fgXmlEscape(ap || ''),
+          fgXmlEscape(damage || ''),
+          fgXmlEscape(rof || ''),
+          fgXmlEscape(shots || ''),
+          fgXmlEscape(notes || ''),
+        ];
+      })
+      .filter(Boolean);
+
+    const armorItems = fgList(character, 'armorlist').filter((item) => {
+      const n = fgCleanName(fgChildText(item, 'name'));
+      return n && n !== '(Unarmored)';
+    });
+
+    const inventory = fgList(character, 'invlist');
+
+    const edgeItems = [...fgList(character, 'edges'), ...fgList(character, 'special')]
+      .map((item) => {
+        const n = fgCleanName(fgChildText(item, 'name'));
+        if (!n) return '';
+        const desc = fgCleanName(fgChildText(item, 'shortdescription'));
+        const prereq = fgCleanName(fgChildText(item, 'prerequisites'));
+        return `<li><strong>${fgXmlEscape(n)}</strong>${desc ? `<div>${fgXmlEscape(desc)}</div>` : ''}${prereq ? `<div><em>Prerequisites:</em> ${fgXmlEscape(prereq)}</div>` : ''}</li>`;
+      })
+      .filter(Boolean);
+
+    const powerItems = fgList(character, 'powerlist')
+      .map((item) => {
+        const n = fgCleanName(fgChildText(item, 'name'));
+        if (!n) return '';
+        const ppv = fgCleanName(fgChildText(item, 'powerpoints'));
+        const range = fgCleanName(fgChildText(item, 'range'));
+        const duration = fgCleanName(fgChildText(item, 'duration'));
+        const notes = fgCleanName(fgChildText(item, 'notes'));
+        const trappings = fgCleanName(fgChildText(item, 'trappings'));
+        const parts = [`<strong>${fgXmlEscape(n)}</strong>`];
+        if (ppv) parts.push(`<div><strong>Power Points:</strong> ${fgXmlEscape(ppv)}</div>`);
+        if (range) parts.push(`<div><strong>Range:</strong> ${fgXmlEscape(range)}</div>`);
+        if (duration) parts.push(`<div><strong>Duration:</strong> ${fgXmlEscape(duration)}</div>`);
+        if (notes) parts.push(`<div><strong>Description:</strong> ${fgXmlEscape(notes)}</div>`);
+        if (trappings) parts.push(`<div><strong>Trappings:</strong> ${fgXmlEscape(trappings)}</div>`);
+        return `<li>${parts.join('')}</li>`;
+      })
+      .filter(Boolean);
+
+    const summaryParts = [];
+    if (profession) summaryParts.push(`<p><strong>Profession:</strong> ${fgXmlEscape(profession)}</p>`);
+    if (race) summaryParts.push(`<p><strong>Ancestry:</strong> ${fgXmlEscape(race)}</p>`);
+    if (attrs.length) summaryParts.push(`<p><strong>Attributes:</strong> ${fgXmlEscape(attrs.join(', '))}</p>`);
+    if (skills.length) summaryParts.push(`<p><strong>Skills:</strong> ${fgXmlEscape(skills.join(', '))}</p>`);
+    if (pace || parry || toughness) {
+      summaryParts.push(`<p><strong>Pace:</strong> ${fgXmlEscape(pace)}${runDie ? ` (${fgXmlEscape(runDie)})` : ''}; <strong>Parry:</strong> ${fgXmlEscape(parry)}; <strong>Toughness:</strong> ${fgXmlEscape(toughness)}${armor ? ` (${fgXmlEscape(armor)})` : ''}</p>`);
+    }
+    const resources = [];
+    if (bennies) resources.push(`Bennies: ${bennies}`);
+    if (wounds) resources.push(`Wounds: ${wounds}`);
+    if (fatigue) resources.push(`Fatigue: ${fatigue}`);
+    if (ppMax || pp) resources.push(`Power Points: ${pp || '0'}${ppMax ? `/${ppMax}` : ''}`);
+    if (advances) resources.push(`Advances: ${advances}`);
+    if (resources.length) summaryParts.push(`<p>${resources.map((r) => r.replace(/\*\*/g, '')).join('; ')}</p>`);
+    if (hindrances.length) summaryParts.push(`<p><strong>Hindrances:</strong> ${fgXmlEscape(hindrances.join(', '))}</p>`);
+
+    const blocks = [
+      {
+        html: summaryParts.join(''),
+      },
+    ];
+
+    if (weaponRows.length) {
+      blocks.push({
+        title: 'Weapons',
+        collapsible: true,
+        expanded: true,
+        html: fgBuildTable(['Weapon', 'Range', 'AP', 'Damage', 'ROF', 'Shots', 'Notes'], weaponRows),
+      });
+    }
+
+    if (armorItems.length) {
+      blocks.push({
+        title: 'Armor',
+        collapsible: true,
+        expanded: true,
+        html: `<ul>${armorItems.map((item) => {
+          const n = fgCleanName(fgChildText(item, 'name'));
+          const protection = fgCleanName(fgChildText(item, 'protection'));
+          return n ? `<li><strong>${fgXmlEscape(n)}</strong>${protection ? ` (+${fgXmlEscape(protection)})` : ''}</li>` : '';
+        }).filter(Boolean).join('')}</ul>`,
+      });
+    }
+
+    if (inventory.length) {
+      blocks.push({
+        title: 'Gear',
+        collapsible: true,
+        expanded: true,
+        html: `<ul>${inventory.map((item) => {
+          const n = fgCleanName(fgChildText(item, 'name'));
+          const count = fgCleanName(fgChildText(item, 'count'));
+          return n ? `<li><strong>${fgXmlEscape(n)}</strong>${count && count !== '1' ? ` ×${fgXmlEscape(count)}` : ''}</li>` : '';
+        }).filter(Boolean).join('')}</ul>`,
+      });
+    }
+
+    if (edgeItems.length) {
+      blocks.push({
+        title: 'Edges & Abilities',
+        collapsible: true,
+        expanded: true,
+        html: `<ul>${edgeItems.join('')}</ul>`,
+      });
+    }
+
+    if (powerItems.length) {
+      blocks.push({
+        title: 'Powers',
+        collapsible: true,
+        expanded: true,
+        html: `<ul>${powerItems.join('')}</ul>`,
+      });
+    }
+
+    const lines = [`# ${name}`, ''];
+    if (profession) lines.push(`**Profession:** ${profession}`, '');
+    if (race) lines.push(`**Ancestry:** ${race}`, '');
+    if (attrs.length) lines.push(`**Attributes:** ${attrs.join(', ')}`, '');
+    if (skills.length) lines.push(`**Skills:** ${skills.join(', ')}`, '');
+    if (pace || parry || toughness) lines.push(`**Pace:** ${pace || ''}${runDie ? ` (${runDie})` : ''}; **Parry:** ${parry || ''}; **Toughness:** ${toughness || ''}${armor ? ` (${armor})` : ''}`, '');
+    const resourcesLine = [];
+    if (bennies) resourcesLine.push(`**Bennies:** ${bennies}`);
+    if (wounds) resourcesLine.push(`**Wounds:** ${wounds}`);
+    if (fatigue) resourcesLine.push(`**Fatigue:** ${fatigue}`);
+    if (ppMax || pp) resourcesLine.push(`**Power Points:** ${pp || '0'}${ppMax ? `/${ppMax}` : ''}`);
+    if (advances) resourcesLine.push(`**Advances:** ${advances}`);
+    if (resourcesLine.length) lines.push(resourcesLine.join('; '), '');
+    if (hindrances.length) lines.push(`**Hindrances:** ${hindrances.join(', ')}`, '');
+
+    if (weaponRows.length) {
+      lines.push('## Weapons', '', '| Weapon | Range | AP | Damage | ROF | Shots | Notes |', '| --- | --- | --- | --- | --- | --- | --- |');
+      weaponRows.forEach((row) => {
+        lines.push(`| ${row.map((cell) => String(cell).replace(/<[^>]+>/g, '')).join(' | ')} |`);
+      });
+      lines.push('');
+    }
+
+    if (armorItems.length) {
+      lines.push('## Armor', '');
+      armorItems.forEach((item) => {
+        const n = fgCleanName(fgChildText(item, 'name'));
+        const protection = fgCleanName(fgChildText(item, 'protection'));
+        if (n) lines.push(`- **${n}**${protection ? ` (+${protection})` : ''}`);
+      });
+      lines.push('');
+    }
+
+    if (inventory.length) {
+      lines.push('## Gear', '');
+      inventory.forEach((item) => {
+        const n = fgCleanName(fgChildText(item, 'name'));
+        const count = fgCleanName(fgChildText(item, 'count'));
+        if (n) lines.push(`- **${n}**${count && count !== '1' ? ` ×${count}` : ''}`);
+      });
+      lines.push('');
+    }
+
+    if (edgeItems.length) {
+      lines.push('## Edges & Abilities', '');
+      edgeItems.forEach((item) => {
+        lines.push(`- ${item.replace(/^<li>|<\/li>$/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()}`);
+      });
+      lines.push('');
+    }
+
+    if (powerItems.length) {
+      lines.push('## Powers', '');
+      powerItems.forEach((item) => {
+        lines.push(`- ${item.replace(/^<li>|<\/li>$/g, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()}`);
+      });
+      lines.push('');
+    }
+
+    const markdown = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+    const sections = [{
+      id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'imported-character',
+      title: name,
+      tab: 'current',
+      intro: '',
+      blocks,
+    }];
+
+    return { name, markdown, sections };
+  }
+
+  function upsertImportedCurrentCharacter(imported) {
+    const currentMarkdown = String(window.GM.sidebarData?.getCurrentMarkdown?.() || '').trim();
+    const nextMarkdown = [currentMarkdown, imported.markdown].filter(Boolean).join('\n\n');
+    const currentSections = Array.isArray(imported.sections) && imported.sections.length ? imported.sections : [];
+    const nextSections = currentSections.length ? currentSections : [{
+      id: String(imported.name || 'imported-character').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'imported-character',
+      title: imported.name || 'Imported Character',
+      tab: 'current',
+      intro: '',
+      blocks: [{ html: `<pre>${fgXmlEscape(imported.markdown || '')}</pre>` }],
+    }];
+
+    if (window.GM.sidebarData?.importSectionsFromData) {
+      window.GM.sidebarData.importSectionsFromData('current', nextMarkdown, nextSections);
+    } else {
+      window.GM.sidebarData?.setMarkdown?.('current', nextMarkdown);
+    }
+
+    const targetId = nextSections[0]?.id || String(imported.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    window.GM.ui?.setCurrentSubTabBySectionKey?.(targetId);
+  }
+  function createFantasyGroundsImportButton() {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sidebar-tab-button current-import-button';
+    button.textContent = '＋ Import';
+    button.title = 'Import a Fantasy Grounds character XML file';
+
+    button.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.xml,text/xml,application/xml';
+      input.hidden = true;
+      document.body.appendChild(input);
+
+      input.addEventListener('change', async () => {
+        const file = input.files?.[0];
+        input.remove();
+        if (!file) return;
+        try {
+          const imported = fgXmlToCurrentMarkdown(await file.text());
+          upsertImportedCurrentCharacter(imported);
+        } catch (err) {
+          console.error('Fantasy Grounds character import failed', err);
+          window.alert(`Could not import Fantasy Grounds character: ${err?.message || err}`);
+        }
+      }, { once: true });
+
+      input.click();
+    });
+
+    return button;
   }
 
   function renderCurrentPanel() {
@@ -606,6 +983,8 @@
         kind: 'section',
       });
     });
+
+    tabs.appendChild(createFantasyGroundsImportButton());
 
     panelBody.appendChild(tabs);
     panelBody.appendChild(panels);
