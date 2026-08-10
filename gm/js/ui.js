@@ -479,6 +479,10 @@
     if (state.currentSubTab === id) return id;
     state.currentSubTab = id;
     window.GM.storage?.saveState?.();
+    if (dom.sidebarCurrentPanelBodyEl) {
+      dom.sidebarCurrentPanelBodyEl.dataset.rendered = '';
+    }
+    window.GM.ui?.refreshSidebarFromData?.();
     return id;
   }
 
@@ -494,6 +498,19 @@
 
     if (!match) return '';
     return setCurrentSubTabId(match.id || key);
+  }
+
+  function syncCurrentSubTabUi(activeId) {
+    const panelBody = dom.sidebarCurrentPanelBodyEl;
+    if (!panelBody) return;
+
+    const nextId = String(activeId || getCurrentSubTabId() || '').trim();
+    panelBody.querySelectorAll('button[data-current-subtab]').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.currentSubTab === nextId);
+    });
+    panelBody.querySelectorAll('.current-subtab-panel').forEach((pane) => {
+      pane.hidden = pane.dataset.sectionKey !== nextId && pane.dataset.currentSubTab !== nextId;
+    });
   }
 
   function renderSidebarSectionBlocks(sectionKey, tab, section, bodyEl) {
@@ -848,17 +865,41 @@
     return { name, markdown, sections };
   }
 
+
+  function mergeCurrentSections(existingSections, importedSections) {
+    const existing = Array.isArray(existingSections) ? existingSections.slice() : [];
+    const incoming = Array.isArray(importedSections) ? importedSections.slice() : [];
+    if (!incoming.length) return existing;
+
+    const out = existing.slice();
+    incoming.forEach((section) => {
+      const sectionId = String(section?.id || '').trim();
+      if (!sectionId) {
+        out.push(section);
+        return;
+      }
+      const idx = out.findIndex((item) => String(item?.id || '').trim() === sectionId);
+      if (idx >= 0) {
+        out[idx] = section;
+      } else {
+        out.push(section);
+      }
+    });
+    return out;
+  }
+
   function upsertImportedCurrentCharacter(imported) {
     const currentMarkdown = String(window.GM.sidebarData?.getCurrentMarkdown?.() || '').trim();
     const nextMarkdown = [currentMarkdown, imported.markdown].filter(Boolean).join('\n\n');
-    const currentSections = Array.isArray(imported.sections) && imported.sections.length ? imported.sections : [];
-    const nextSections = currentSections.length ? currentSections : [{
+    const existingSections = Array.isArray(window.GM.sidebarData?.getCurrent?.()) ? window.GM.sidebarData.getCurrent() : [];
+    const incomingSections = Array.isArray(imported.sections) && imported.sections.length ? imported.sections : [{
       id: String(imported.name || 'imported-character').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'imported-character',
       title: imported.name || 'Imported Character',
       tab: 'current',
       intro: '',
       blocks: [{ html: `<pre>${fgXmlEscape(imported.markdown || '')}</pre>` }],
     }];
+    const nextSections = mergeCurrentSections(existingSections, incomingSections);
 
     if (window.GM.sidebarData?.importSectionsFromData) {
       window.GM.sidebarData.importSectionsFromData('current', nextMarkdown, nextSections);
@@ -866,7 +907,7 @@
       window.GM.sidebarData?.setMarkdown?.('current', nextMarkdown);
     }
 
-    const targetId = nextSections[0]?.id || String(imported.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const targetId = incomingSections[0]?.id || String(imported.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     window.GM.ui?.setCurrentSubTabBySectionKey?.(targetId);
   }
   function createFantasyGroundsImportButton() {
@@ -918,6 +959,7 @@
     if (getState().currentSubTab !== activeId) {
       setCurrentSubTabId(activeId);
     }
+    syncCurrentSubTabUi(activeId);
 
     const tabs = document.createElement('div');
     tabs.className = 'current-subtabs';
@@ -953,12 +995,6 @@
       button.addEventListener('click', () => {
         const nextId = section.id || sectionKey;
         setCurrentSubTabId(nextId);
-        tabs.querySelectorAll('button[data-current-subtab]').forEach((btn) => {
-          btn.classList.toggle('active', btn.dataset.currentSubTab === nextId);
-        });
-        panels.querySelectorAll('.current-subtab-panel').forEach((el) => {
-          el.hidden = el.dataset.sectionKey !== sectionKey;
-        });
       });
 
       tabs.appendChild(button);
