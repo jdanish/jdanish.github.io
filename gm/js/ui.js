@@ -587,6 +587,35 @@
   }
 
 
+  function fgReferenceEntry(kind, name) {
+    const label = fgCleanName(name);
+    if (!label) return null;
+    const bucket = window.REFERENCE_INDEX?.[kind];
+    const entry = bucket?.[label.toLowerCase()];
+    return entry?.source ? { label: entry.label || label, source: entry.source } : null;
+  }
+
+  function fgReferenceMarkdown(kind, name) {
+    const label = fgCleanName(name);
+    if (!label) return '';
+    const entry = fgReferenceEntry(kind, label);
+    if (!entry) return fgMarkdownEscape(label);
+    const safeLabel = fgMarkdownEscape(entry.label);
+    return `[[${entry.source}|${safeLabel}]]`;
+  }
+
+  function fgReferenceHtml(kind, name) {
+    const label = fgCleanName(name);
+    if (!label) return '';
+    const entry = fgReferenceEntry(kind, label);
+    if (!entry) return fgXmlEscape(label);
+    const source = String(entry.source || '').trim();
+    const jumpHref = /^jump:/i.test(source) ? source : `jump:${source.replace(/^\/+/, '')}`;
+    const safeHref = jumpHref.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const safeLabel = fgXmlEscape(entry.label);
+    return `<a href="${safeHref}">${safeLabel}</a>`;
+  }
+
   function fgXmlEscape(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -678,7 +707,7 @@
         const shots = fgCleanName(fgChildText(item, 'ammo > max'));
         const notes = fgCleanName(fgChildText(item, 'bonusdamage'));
         return [
-          fgXmlEscape(n),
+          fgReferenceHtml('items', n),
           fgXmlEscape(range || ''),
           fgXmlEscape(ap || ''),
           fgXmlEscape(damage || ''),
@@ -705,7 +734,7 @@
         const descHtml = fgXmlEscape(desc)
           .replace(/&lt;em&gt;(.*?)&lt;\/em&gt;/gi, '<em>$1</em>')
           .replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gi, '<em>$1</em>');
-        return `<li><strong>${fgXmlEscape(n)}</strong>${desc ? `<div>${descHtml}</div>` : ''}${prereq ? `<div><em>Prerequisites:</em> ${fgXmlEscape(prereq)}</div>` : ''}</li>`;
+        return `<li><strong>${fgReferenceHtml('edges', n)}</strong>${desc ? `<div>${descHtml}</div>` : ''}${prereq ? `<div><em>Prerequisites:</em> ${fgXmlEscape(prereq)}</div>` : ''}</li>`;
       })
       .filter(Boolean);
 
@@ -718,7 +747,7 @@
         const duration = fgCleanName(fgChildText(item, 'duration'));
         const notes = fgCleanName(fgChildText(item, 'notes'));
         const trappings = fgCleanName(fgChildText(item, 'trappings'));
-        const parts = [`<strong>${fgXmlEscape(n)}</strong>`];
+        const parts = [`<strong>${fgReferenceHtml('powers', n)}</strong>`];
         if (ppv) parts.push(`<div><em>Power Points:</em> ${fgXmlEscape(ppv)}</div>`);
         if (range) parts.push(`<div><em>Range:</em> ${fgXmlEscape(range)}</div>`);
         if (duration) parts.push(`<div><em>Duration:</em> ${fgXmlEscape(duration)}</div>`);
@@ -760,7 +789,7 @@
         html: `<ul>${armorItems.map((item) => {
           const n = fgCleanName(fgChildText(item, 'name'));
           const protection = fgCleanName(fgChildText(item, 'protection'));
-          return n ? `<li>${fgXmlEscape(n)}${protection ? ` (+${fgXmlEscape(protection)})` : ''}</li>` : '';
+          return n ? `<li>${fgReferenceHtml('items', n)}${protection ? ` (+${fgXmlEscape(protection)})` : ''}</li>` : '';
         }).filter(Boolean).join('')}</ul>`,
       });
     }
@@ -773,7 +802,7 @@
         html: `<ul>${inventory.map((item) => {
           const n = fgCleanName(fgChildText(item, 'name'));
           const count = fgCleanName(fgChildText(item, 'count'));
-          return n ? `<li>${fgXmlEscape(n)}${count && count !== '1' ? ` ×${fgXmlEscape(count)}` : ''}</li>` : '';
+          return n ? `<li>${fgReferenceHtml('items', n)}${count && count !== '1' ? ` ×${fgXmlEscape(count)}` : ''}</li>` : '';
         }).filter(Boolean).join('')}</ul>`,
       });
     }
@@ -811,6 +840,11 @@
           if (child.nodeType !== Node.ELEMENT_NODE) return '';
           const tag = child.tagName.toLowerCase();
           const inner = inlineToMarkdown(child);
+          if (tag === 'a') {
+            const href = String(child.getAttribute('href') || '').trim();
+            const label = inner.trim();
+            return href ? `[[${href}|${label}]]` : label;
+          }
           if (tag === 'em' || tag === 'i') return `*${inner.trim()}*`;
           if (tag === 'strong' || tag === 'b') return `**${inner.trim()}**`;
           return inner;
@@ -980,7 +1014,8 @@
 
     const activeId = getCurrentSubTabId() || sections[0].id || '';
     if (getState().currentSubTab !== activeId) {
-      setCurrentSubTabId(activeId);
+      getState().currentSubTab = activeId;
+      window.GM.storage?.saveState?.();
     }
     syncCurrentSubTabUi(activeId);
 

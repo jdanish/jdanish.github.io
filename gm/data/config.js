@@ -214,3 +214,115 @@ window.BOOKS = {
     ]
   }
 };
+
+
+// Pre-built reference index seeded from data/current.md.
+// Keys are normalized names; update this map as your reference library grows.
+window.REFERENCE_INDEX = {
+  "edges": {
+    "fleet-footed": {
+      "label": "Fleet-Footed",
+      "source": "swade/38?highlight=FLEET-FOOTED"
+    },
+    "arcane background (psy commando)": {
+      "label": "Arcane Background (Psy Commando)",
+      "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
+    },
+    "basic psychic loadout": {
+      "label": "Basic Psychic Loadout",
+      "source": "starbreaker_core/120"
+    },
+    "psyfocus loadout": {
+      "label": "PsyFocus Loadout",
+      "source": "starbreaker_core/120"
+    },
+    "advanced psyfocus loadout": {
+      "label": "Advanced PsyFocus Loadout",
+      "source": "starbreaker_core/120"
+    },
+    "living weapon": {
+      "label": "Living Weapon",
+      "source": "starbreaker_star_marines/33"
+    },
+    "heavy hitters squad edge": {
+      "label": "Heavy Hitters Squad Edge",
+      "source": "starbreaker_star_marines/40"
+    }
+  },
+  "items": {
+    "psyfocus loadout & advanced": {
+      "label": "PsyFocus Loadout & Advanced",
+      "source": "starbreaker_core/120"
+    },
+    "gatling laser": {
+      "label": "Gatling Laser",
+      "source": "sfc/54?highlight=Gatling%20Laser"
+    },
+    "blackout grenades": {
+      "label": "Blackout Grenades",
+      "source": "starbreaker_core/91"
+    },
+    "flechette grenades": {
+      "label": "Flechette Grenades",
+      "source": "starbreaker_core/91"
+    },
+    "gravity grenades": {
+      "label": "Gravity Grenades",
+      "source": "starbreaker_core/91"
+    },
+    "web grenades": {
+      "label": "Web Grenades",
+      "source": "starbreaker_core/91"
+    },
+    "star marine armor (+6*)": {
+      "label": "Star Marine Armor (+6*)",
+      "source": "starbreaker_star_marines/42"
+    }
+  },
+  "powers": {
+    "arcane protection": {
+      "label": "Arcane Protection",
+      "source": "swade/153?highlight=arcane%20protection"
+    },
+    "barrier": {
+      "label": "Barrier",
+      "source": "swade/153?highlight=Barrier"
+    },
+    "blast": {
+      "label": "Blast",
+      "source": "swade/155?highlight=Blast"
+    },
+    "bolt": {
+      "label": "Bolt",
+      "source": "swade/155?highlight=bolt"
+    },
+    "boost/lower trait": {
+      "label": "Boost/Lower Trait",
+      "source": "swade/155?highlight=Boost%2FLower%20Trait"
+    },
+    "invisibility": {
+      "label": "Invisibility",
+      "source": "swade/163?highlight=Invisibility"
+    },
+    "mind link": {
+      "label": "Mind Link",
+      "source": "swade/163?highlight=Mind%20Link"
+    },
+    "smite": {
+      "label": "Smite",
+      "source": "swade/167?highlight=Smite"
+    },
+    "sound / silence": {
+      "label": "Sound / Silence",
+      "source": "swade/167?highlight=Sound%2FSilence"
+    },
+    "telekinesis": {
+      "label": "Telekinesis",
+      "source": "swade/169?highlight=Telekinesis"
+    },
+    "wall walker": {
+      "label": "Wall Walker",
+      "source": "swade/169?highlight=Wall%20Walker"
+    }
+  }
+};
