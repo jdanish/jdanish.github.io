@@ -2565,3 +2565,69 @@ html[data-theme="dark"] .editor-preview-side pre {
   padding: 4px 8px;
   font-size: 0.82rem;
 }
+
+/* Interactive Markdown counters */
+.sidebar-tracker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 2px 0;
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+  vertical-align: middle;
+}
+.sidebar-tracker-label {
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+.sidebar-tracker-controls {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.sidebar-tracker-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.sidebar-tracker-button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel-alt, rgba(255,255,255,.06));
+  color: var(--text);
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 1;
+}
+.sidebar-tracker-button:hover {
+  background: rgba(124,196,255,.18);
+}
+.sidebar-tracker-input {
+  width: 52px;
+  box-sizing: border-box;
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--input-bg, rgba(0,0,0,.18));
+  color: var(--text);
+  text-align: center;
+  font: inherit;
+}
+html[data-theme="light"] .sidebar-tracker-input {
+  background: #fff;
+  color: #111827;
+}
+
+.sidebar-tracker-max {
+  white-space: nowrap;
+  color: var(--text);
+}

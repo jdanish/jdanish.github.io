@@ -281,9 +281,55 @@ window.SIDEBAR_SECTIONS = [];
       .replace(/'/g, '&#39;');
   }
 
+  function trackerStorageKey(key) {
+    return `gm_tracker_${String(key || '').trim().toLowerCase()}`;
+  }
+
+  function getTrackerValue(key, fallback) {
+    try {
+      const stored = localStorage.getItem(trackerStorageKey(key));
+      if (stored !== null && stored !== '') {
+        const parsed = Number(stored);
+        if (Number.isFinite(parsed)) return Math.trunc(parsed);
+      }
+    } catch {
+      // Ignore storage failures.
+    }
+    const parsedFallback = Number(fallback);
+    return Number.isFinite(parsedFallback) ? Math.trunc(parsedFallback) : 0;
+  }
+
+  function renderTracker(raw) {
+    const parts = String(raw || '').split('|');
+    const key = String(parts[0] || '').trim();
+    const fallback = Number(parts[1] || 0);
+    const maxRaw = parts[2] === undefined || parts[2] === '' ? null : Number(parts[2]);
+    const max = Number.isFinite(maxRaw) ? Math.trunc(maxRaw) : null;
+    const enforceRaw = parts[3];
+    const enforceMax = enforceRaw === undefined ? max !== null : /^(?:1|true|yes)$/i.test(String(enforceRaw).trim());
+    if (!key) return '';
+    let value = getTrackerValue(key, fallback);
+    if (value < 0) value = 0;
+    if (enforceMax && max !== null && value > max) value = max;
+    const safeKey = escapeHtml(key).replace(/'/g, '&#39;');
+    const range = max !== null ? `<span class="sidebar-tracker-max"> / ${max}</span>` : '';
+    const maxAttr = enforceMax && max !== null ? ` max="${max}"` : '';
+    const ariaName = escapeHtml(key.replace(/[-_]+/g, ' '));
+    return [
+      `<span class="sidebar-tracker" data-tracker-key="${safeKey}" data-tracker-max="${max !== null ? max : ''}" data-tracker-enforce-max="${enforceMax ? 'true' : 'false'}">`,
+      `<span class="sidebar-tracker-controls">`,
+      `<button type="button" class="sidebar-tracker-button" data-tracker-action="decrement" aria-label="Decrease ${ariaName}">▼</button>`,
+      `<input type="number" class="sidebar-tracker-input" value="${value}" min="0"${maxAttr} aria-label="${ariaName}" inputmode="numeric">`,
+      range,
+      `<button type="button" class="sidebar-tracker-button" data-tracker-action="increment" aria-label="Increase ${ariaName}">▲</button>`,
+      `</span></span>`,
+    ].join('');
+  }
+
   function renderInlineMarkdown(text) {
     let value = escapeHtml(String(text || ''));
 
+    value = value.replace(/\{\{counter\\?:([^{}|]+)\|(-?\d+)(?:\|(-?\d+))?(?:\|(true|false|1|0|yes|no))?\}\}/gi, (_, key, initial, max, enforce) => renderTracker(`${key}|${initial}|${max ?? ''}|${enforce ?? ''}`));
     value = value.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
     value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
     value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
@@ -432,6 +478,7 @@ window.SIDEBAR_SECTIONS = [];
 
     const renderInline = (text) => {
       let value = escapeHtml(String(text || ''));
+      value = value.replace(/\{\{counter\\?:([^{}|]+)\|(-?\d+)(?:\|(-?\d+))?(?:\|(true|false|1|0|yes|no))?\}\}/gi, (_, key, initial, max, enforce) => renderTracker(`${key}|${initial}|${max ?? ''}|${enforce ?? ''}`));
       value = value.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
       value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
       value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
@@ -684,6 +731,60 @@ window.SIDEBAR_SECTIONS = [];
     return root.innerHTML;
   }
 
+  function bindTrackerEvents(root) {
+    if (!root || root.dataset.trackerEventsBound === 'true') return;
+    root.dataset.trackerEventsBound = 'true';
+
+    const persist = (tracker, nextValue) => {
+      const key = tracker?.dataset?.trackerKey || '';
+      const input = tracker?.querySelector?.('.sidebar-tracker-input');
+      if (!key || !input) return;
+      const parsed = Number(nextValue);
+      const maxRaw = tracker?.dataset?.trackerMax;
+      const max = maxRaw === '' || maxRaw == null ? null : Number(maxRaw);
+      const enforceMax = tracker?.dataset?.trackerEnforceMax === 'true';
+      let value = Number.isFinite(parsed) ? Math.trunc(parsed) : 0;
+      value = Math.max(0, value);
+      if (enforceMax && Number.isFinite(max)) value = Math.min(max, value);
+      input.value = String(value);
+      try {
+        localStorage.setItem(trackerStorageKey(key), String(value));
+      } catch {
+        // Ignore storage failures.
+      }
+    };
+
+    root.addEventListener('click', (event) => {
+      const button = event.target.closest?.('.sidebar-tracker-button');
+      if (!button || !root.contains(button)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const tracker = button.closest('.sidebar-tracker');
+      const input = tracker?.querySelector?.('.sidebar-tracker-input');
+      if (!input) return;
+      const current = Number(input.value);
+      const base = Number.isFinite(current) ? Math.trunc(current) : 0;
+      persist(tracker, base + (button.dataset.trackerAction === 'increment' ? 1 : -1));
+    });
+
+    root.addEventListener('change', (event) => {
+      const input = event.target.closest?.('.sidebar-tracker-input');
+      if (!input || !root.contains(input)) return;
+      persist(input.closest('.sidebar-tracker'), input.value);
+    });
+
+    root.addEventListener('keydown', (event) => {
+      const input = event.target.closest?.('.sidebar-tracker-input');
+      if (!input || !root.contains(input)) return;
+      if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+      event.preventDefault();
+      const tracker = input.closest('.sidebar-tracker');
+      const current = Number(input.value);
+      const base = Number.isFinite(current) ? Math.trunc(current) : 0;
+      persist(tracker, base + (event.key === 'ArrowUp' ? 1 : -1));
+    });
+  }
+
   function renderMarkdownToHtml(markdown) {
     const source = sanitizeMarkdownSource(markdown);
     return postProcessRenderedMarkdownHtml(renderMarkdownLocally(source));
@@ -934,6 +1035,7 @@ window.SIDEBAR_SECTIONS = [];
     importKindFromText: importMarkdownFromText,
     resetKind,
     applySections,
+    bindTrackerEvents,
     setMarkdown(kind, markdown) {
       return importMarkdownFromText(kind, markdown);
     },

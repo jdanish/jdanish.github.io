@@ -549,6 +549,7 @@
       nestedBody.className = collapsible ? 'subsection-body nested-body' : 'nested-body';
       nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
       decorateJumpLinks(nestedBody);
+      window.GM.sidebarData?.bindTrackerEvents?.(nestedBody);
       nested.appendChild(nestedBody);
       bodyEl.appendChild(nested);
 
@@ -570,6 +571,27 @@
   function fgChildText(parent, selector, fallback = '') {
     const node = parent?.querySelector?.(selector);
     return String(node?.textContent ?? fallback).trim();
+  }
+
+  function fgMainValue(character, field) {
+    const main = character?.querySelector?.('main');
+    if (!main) return '';
+    const wanted = String(field || '').trim().toLowerCase();
+    const direct = Array.from(main.children || []).find((child) =>
+      String(child.tagName || '').toLowerCase() === wanted
+    );
+    if (direct) return fgCleanName(direct.textContent);
+    const nested = main.querySelector?.(wanted);
+    return fgCleanName(nested?.textContent || '');
+  }
+
+  function fgMainHasValue(character, field) {
+    const main = character?.querySelector?.('main');
+    if (!main) return false;
+    const wanted = String(field || '').trim().toLowerCase();
+    return Array.from(main.querySelectorAll?.('*') || []).some((node) =>
+      String(node.tagName || '').toLowerCase() === wanted
+    );
   }
 
   function fgList(parent, selector) {
@@ -693,9 +715,11 @@
     const bennies = fgChildText(character, 'main > bennies');
     const wounds = fgChildText(character, 'main > wounds');
     const fatigue = fgChildText(character, 'main > fatigue');
-    const pp = fgChildText(character, 'main > powerpoints');
-    const ppMax = fgChildText(character, 'main > powerpointsmax');
     const advances = fgChildText(character, 'advances');
+    const hasPowerPoints = fgMainHasValue(character, 'powerpoints');
+    const hasPowerPointsMax = fgMainHasValue(character, 'powerpointsmax');
+    const powerPoints = hasPowerPoints ? fgMainValue(character, 'powerpoints') : '';
+    const powerPointsMax = hasPowerPointsMax ? fgMainValue(character, 'powerpointsmax') : '';
 
     const weaponRows = fgList(character, 'weaponlist')
       .map((item) => {
@@ -749,11 +773,11 @@
         const notes = fgCleanName(fgChildText(item, 'notes'));
         const trappings = fgCleanName(fgChildText(item, 'trappings'));
         const parts = [`<strong>${fgReferenceHtml('powers', n)}</strong>`];
-        if (ppv) parts.push(`<div><em>Power Points:</em> ${fgXmlEscape(ppv)}</div>`);
-        if (range) parts.push(`<div><em>Range:</em> ${fgXmlEscape(range)}</div>`);
-        if (duration) parts.push(`<div><em>Duration:</em> ${fgXmlEscape(duration)}</div>`);
-        if (notes) parts.push(`<div><em>Description:</em> ${fgXmlEscape(notes)}</div>`);
-        if (trappings) parts.push(`<div><em>Trappings:</em> ${fgXmlEscape(trappings)}</div>`);
+        if (ppv) parts.push(`<div><strong>Power Points:</strong> ${fgXmlEscape(ppv)}</div>`);
+        if (range) parts.push(`<div><strong>Range:</strong> ${fgXmlEscape(range)}</div>`);
+        if (duration) parts.push(`<div><strong>Duration:</strong> ${fgXmlEscape(duration)}</div>`);
+        if (notes) parts.push(`<div><strong>Description:</strong> ${fgXmlEscape(notes)}</div>`);
+        if (trappings) parts.push(`<div><strong>Modifiers:</strong> ${fgXmlEscape(trappings)}</div>`);
         return `<li>${parts.join('')}</li>`;
       })
       .filter(Boolean);
@@ -764,7 +788,6 @@
     if (pace || parry || toughness) {
       summaryParts.push(`<p><strong>Pace:</strong> ${fgXmlEscape(pace)}${runDie ? ` (${fgXmlEscape(runDie)})` : ''}; <strong>Parry:</strong> ${fgXmlEscape(parry)}; <strong>Toughness:</strong> ${fgXmlEscape(toughness)}${armor ? ` (${fgXmlEscape(armor)})` : ''}</p>`);
     }
-    if (ppMax || pp) summaryParts.push(`<p><strong>Power Points:</strong> ${fgXmlEscape(pp || '0')}${ppMax ? ` / ${fgXmlEscape(ppMax)}` : ''}</p>`);
     if (hindrances.length) summaryParts.push(`<p><strong>Hindrances:</strong> ${fgXmlEscape(hindrances.join(', '))}</p>`);
 
     const blocks = [
@@ -830,9 +853,17 @@
       const wrapper = document.createElement('div');
       wrapper.innerHTML = String(html || '');
       const li = wrapper.querySelector('li') || wrapper.firstElementChild || wrapper;
-      const title = fgCleanName(li.querySelector(':scope > strong')?.textContent || '');
+      const titleStrong = li.querySelector(':scope > strong');
+      const titleLink = titleStrong?.querySelector(':scope > a');
+      const title = fgCleanName(titleStrong?.textContent || '');
       const parts = [];
-      if (title) parts.push(`- **${title}**`);
+      if (titleLink) {
+        const href = String(titleLink.getAttribute('href') || '').trim();
+        const label = fgCleanName(titleLink.textContent || title);
+        parts.push(href ? `- [[${href}|${label}]]` : `- **${label}**`);
+      } else if (title) {
+        parts.push(`- **${title}**`);
+      }
 
       const inlineToMarkdown = (node) => {
         if (!node) return '';
@@ -852,19 +883,34 @@
         }).join('').replace(/\s+/g, ' ').trim();
       };
 
+      const titleLinkMarkdown = titleLink
+        ? `[[${String(titleLink.getAttribute('href') || '').trim()}|${fgCleanName(titleLink.textContent || title)}]]`
+        : '';
+
       Array.from(li.children || []).forEach((child) => {
         if (child.matches?.(':scope > strong')) return;
         const detail = inlineToMarkdown(child);
-        if (detail) parts.push(`  - ${detail}`);
+        if (!detail) return;
+        // Some imported Power blocks contain the linked title a second time
+        // as the first detail node. Never preserve that redundant line.
+        if (titleLinkMarkdown && detail === titleLinkMarkdown) return;
+        if (detail === `**${title}**`) return;
+        parts.push(`  - ${detail}`);
       });
       return parts.join('\n');
     };
 
     const lines = [`# ${name}`, ''];
     if (attrs.length) lines.push(`**Attributes:** ${attrs.join(', ')}`, '');
+    const numericPowerPointsMax = hasPowerPointsMax && /^-?\d+(?:\.\d+)?$/.test(String(powerPointsMax).trim())
+      ? Number(powerPointsMax)
+      : null;
+    if (hasPowerPoints && numericPowerPointsMax !== null && numericPowerPointsMax > 0) {
+      const counterKey = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'character'}-power-points`;
+      lines.push(`**Power Points:** {{counter:${counterKey}|${powerPoints}|${powerPointsMax}|true}}`, '');
+    }
     if (skills.length) lines.push(`**Skills:** ${skills.join(', ')}`, '');
     if (pace || parry || toughness) lines.push(`**Pace:** ${pace || ''}${runDie ? ` (${runDie})` : ''}; **Parry:** ${parry || ''}; **Toughness:** ${toughness || ''}${armor ? ` (${armor})` : ''}`, '');
-    if (ppMax || pp) lines.push(`**Power Points:** ${pp || '0'}${ppMax ? ` / ${ppMax}` : ''}`, '');
     if (hindrances.length) lines.push(`**Hindrances:** ${hindrances.join(', ')}`, '');
 
     if (weaponRows.length) {
@@ -960,7 +1006,9 @@
     const nextSections = mergeCurrentSections(existingSections, incomingSections);
 
     if (window.GM.sidebarData?.importSectionsFromData) {
-      window.GM.sidebarData.importSectionsFromData('current', nextMarkdown, nextSections);
+      // Re-parse the combined Markdown so custom elements (counters, links, etc.)
+      // render immediately instead of displaying the imported source as raw HTML.
+      window.GM.sidebarData.importSectionsFromData('current', nextMarkdown, nextMarkdown);
     } else {
       window.GM.sidebarData?.setMarkdown?.('current', nextMarkdown);
     }

@@ -230,69 +230,53 @@ window.REFERENCE_INDEX = {
     },
     "basic psychic loadout": {
       "label": "Basic Psychic Loadout",
-      "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
+      "source": "starbreaker_core/120"
     },
     "psyfocus loadout": {
       "label": "PsyFocus Loadout",
-      "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
-    },
-    "psyfocus": {
-      "label": "PsyFocus",
-      "source": "starbreaker_core/120?highlight=PsyFocus"
+      "source": "starbreaker_core/120"
     },
     "advanced psyfocus loadout": {
       "label": "Advanced PsyFocus Loadout",
-      "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
+      "source": "starbreaker_core/120"
     },
     "living weapon": {
       "label": "Living Weapon",
-      "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
+      "source": "starbreaker_star_marines/33"
     },
     "heavy hitters squad edge": {
       "label": "Heavy Hitters Squad Edge",
-      "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
+      "source": "starbreaker_star_marines/40"
     }
   },
   "items": {
     "psyfocus loadout & advanced": {
       "label": "PsyFocus Loadout & Advanced",
-      "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
+      "source": "starbreaker_core/120"
     },
     "gatling laser": {
       "label": "Gatling Laser",
       "source": "sfc/54?highlight=Gatling%20Laser"
     },
-    "blackout grenade": {
-      "label": "Blackout Grenade",
-      "source": "starbreaker_core/91?highlight=Blackout%20Grenade"
+    "blackout grenades": {
+      "label": "Blackout Grenades",
+      "source": "starbreaker_core/91"
     },
-      "blackout smoke grenade": {
-      "label": "Blackout Smoke Grenade",
-      "source": "starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade"
+    "flechette grenades": {
+      "label": "Flechette Grenades",
+      "source": "starbreaker_core/91"
     },
-    "flechette grenade": {
-      "label": "Flechette Grenade",
-      "source": "starbreaker_core/91?highlight=Flechette%20Grenade"
-    },
-    "flechette disk": {
-      "label": "Flechette Disk",
-      "source": "starbreaker_core/91?highlight=Flechette%20Disk"
-    },
-    "emp grenade": {
-      "label": "EMP Grenade",
-      "source": "starbreaker_core/91?highlight=EMP%20Grenade"
-    },
-    "gravity grenade": {
-      "label": "Gravity Grenade",
-      "source": "starbreaker_core/91?highlight=Gravity%20Grenade"
+    "gravity grenades": {
+      "label": "Gravity Grenades",
+      "source": "starbreaker_core/91"
     },
     "web grenades": {
       "label": "Web Grenades",
-      "source": "starbreaker_core/91?highlight=Web%20Grenades"
+      "source": "starbreaker_core/91"
     },
     "star marine armor (+6*)": {
       "label": "Star Marine Armor (+6*)",
-      "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
+      "source": "starbreaker_star_marines/42"
     }
   },
   "powers": {

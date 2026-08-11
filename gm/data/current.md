@@ -10,8 +10,7 @@ Profession: [[starbreaker_star_marines/33|Psy Commando]]
 
 **Hindrances:** Bad Luck (Major), Driven (Major)
 
-**Power Points:** 20
-
+**Power Points:** {{counter:jean-power-points|0|20}}
 
 ### Weapons
 
@@ -19,10 +18,10 @@ Profession: [[starbreaker_star_marines/33|Psy Commando]]
 | --- | --- | --- | --- | --- | --- | --- |
 | [[starbreaker_core/120|PsyFocus Loadout & Advanced]] | 15/30/60 | 2 | 2d6 | 4 | 100 | |
 | [[sfc/54?highlight=Gatling%20Laser|Gatling Laser]] | 50/100/200 | 4 | 3d6+4 | 4 | 80 | Cauterize, Heavy Weapon, No Recoil, Overcharge, Snapfire |
-| [[starbreaker_core/91|Blackout Grenade]] | 5/10/20 |  |  |  |  | LBT Blast, 5 grenades |
-| [[starbreaker_core/91|Flechette Grenade]] | 5/10/20 | 4 | 3d4 |  |  | MBT Blast, 5 grenades |
-| [[starbreaker_core/91|Gravity Grenade]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
-| [[starbreaker_core/91|Web Grenade]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
+| [[starbreaker_core/91|Blackout Grenades]] | 5/10/20 |  |  |  |  | LBT Blast, 5 grenades |
+| [[starbreaker_core/91|Flechette Grenades]] | 5/10/20 | 4 | 3d4 |  |  | MBT Blast, 5 grenades |
+| [[starbreaker_core/91|Gravity Grenades]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
+| [[starbreaker_core/91|Web Grenades]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
 
 ### Armor
 
@@ -50,6 +49,7 @@ Profession: [[starbreaker_star_marines/33|Psy Commando]]
   - The squad is equipped with experimental weapons that occasionally punch well above their weight class. When a squad member makes an attack with a firearm, they can spend a Benny to declare that it’s a “heavy” attack. If the attack hits, it has +4 AP and deals Heavy Damage.
 
 ### Powers
+
 
 - [[swade/153?highlight=arcane%20protection|Arcane Protection]]
   - **Power Points:** 1
