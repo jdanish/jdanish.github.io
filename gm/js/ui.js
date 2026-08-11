@@ -915,8 +915,17 @@
 
     if (weaponRows.length) {
       lines.push('### Weapons', '', '| Weapon | Range | AP | Damage | ROF | Shots | Notes |', '| --- | --- | --- | --- | --- | --- | --- |');
-      weaponRows.forEach((row) => {
-        lines.push(`| ${row.map((cell) => String(cell).replace(/<[^>]+>/g, '')).join(' | ')} |`);
+      weaponRows.forEach((row, rowIndex) => {
+        const item = fgList(character, 'weaponlist').filter((candidate) => fgCleanName(fgChildText(candidate, 'name')) !== 'Unarmed')[rowIndex];
+        const weaponName = fgCleanName(fgChildText(item, 'name'));
+        const range = fgCleanName(fgChildText(item, 'traittype')) === 'Melee' ? '—' : fgCleanName(fgChildText(item, 'range'));
+        const ap = fgCleanName(fgChildText(item, 'armorpiercing'));
+        const damage = fgCleanName(fgChildText(item, 'damage'));
+        const rof = fgCleanName(fgChildText(item, 'rof'));
+        const shots = fgCleanName(fgChildText(item, 'ammo > max'));
+        const notes = fgCleanName(fgChildText(item, 'bonusdamage'));
+        const weaponRef = fgReferenceMarkdown('items', weaponName);
+        lines.push(`| ${weaponRef} | ${range || ''} | ${ap || ''} | ${damage || ''} | ${rof || ''} | ${shots || ''} | ${notes || ''} |`);
       });
       lines.push('');
     }
@@ -926,7 +935,7 @@
       armorItems.forEach((item) => {
         const n = fgCleanName(fgChildText(item, 'name'));
         const protection = fgCleanName(fgChildText(item, 'protection'));
-        if (n) lines.push(`- ${n}${protection ? ` (+${protection})` : ''}`);
+        if (n) lines.push(`- ${fgReferenceMarkdown('items', n)}${protection ? ` (+${protection})` : ''}`);
       });
       lines.push('');
     }
@@ -936,7 +945,7 @@
       inventory.forEach((item) => {
         const n = fgCleanName(fgChildText(item, 'name'));
         const count = fgCleanName(fgChildText(item, 'count'));
-        if (n) lines.push(`- ${n}${count && count !== '1' ? ` ×${count}` : ''}`);
+        if (n) lines.push(`- ${fgReferenceMarkdown('items', n)}${count && count !== '1' ? ` ×${count}` : ''}`);
       });
       lines.push('');
     }

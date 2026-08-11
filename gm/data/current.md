@@ -16,12 +16,13 @@ Profession: [[starbreaker_star_marines/33|Psy Commando]]
 
 | Weapon | Range | AP | Damage | ROF | Shots | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| [[starbreaker_core/120|PsyFocus Loadout & Advanced]] | 15/30/60 | 2 | 2d6 | 4 | 100 | |
+| [[starbreaker_core/120?highlight=PsyFocus|PsyFocus]] | 15/30/60 | 2 | 2d6 | 4 | 100 | |
 | [[sfc/54?highlight=Gatling%20Laser|Gatling Laser]] | 50/100/200 | 4 | 3d6+4 | 4 | 80 | Cauterize, Heavy Weapon, No Recoil, Overcharge, Snapfire |
-| [[starbreaker_core/91|Blackout Grenades]] | 5/10/20 |  |  |  |  | LBT Blast, 5 grenades |
-| [[starbreaker_core/91|Flechette Grenades]] | 5/10/20 | 4 | 3d4 |  |  | MBT Blast, 5 grenades |
-| [[starbreaker_core/91|Gravity Grenades]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
+| [[starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade|Blackout Smoke Grenade]] | 5/10/20 |  |  |  |  | LBT Blast, 5 grenades |
+| [[starbreaker_core/91?highlight=Flechette%20Disk|Flechette Disk]] | 5/10/20 | 4 | 3d4 |  |  | MBT Blast, 5 grenades |
+| [[starbreaker_core/91?highlight=Gravity%20Grenade|Gravity Grenade]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
 | [[starbreaker_core/91|Web Grenades]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
+| [[starbreaker_core/91?highlight=EMP%20Grenade|EMP Grenade]] |  | 0 | 3d6 (nonlethal) |  | 0 |  |
 
 ### Armor
 
