@@ -612,8 +612,9 @@
     const source = String(entry.source || '').trim();
     const jumpHref = /^jump:/i.test(source) ? source : `jump:${source.replace(/^\/+/, '')}`;
     const safeHref = jumpHref.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const safeHighlight = fgXmlEscape(label).replace(/"/g, '&quot;');
     const safeLabel = fgXmlEscape(entry.label);
-    return `<a href="${safeHref}">${safeLabel}</a>`;
+    return `<a href="${safeHref}" data-highlight="${safeHighlight}">${safeLabel}</a>`;
   }
 
   function fgXmlEscape(value) {

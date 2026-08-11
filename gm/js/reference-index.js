@@ -226,46 +226,9 @@
     return '';
   }
 
-  function looksLikeCleanItemName(text) {
-    const value = normalizeLine(text);
-    if (!value || value.length < 2 || value.length > 48) return false;
-    if (isFieldLabel(value)) return false;
-    if (/^(?:item|armor|weapon|weapons|gear|equipment|cost|weight|notes?|min\.? str\.?|range|damage|rof|ap|parry|reach|toughness)$/i.test(value)) return false;
-    if (/^[A-Z\s/&-]{5,}$/.test(value) && !/[a-z]/.test(value)) return false;
-    if (/[.!?]$/.test(value)) return false;
-    if (/^[A-Z][A-Za-z0-9'’&/-]*(?:\s+[A-Z][A-Za-z0-9'’&/-]*){0,5}(?:\s*\([^)]*\))?$/.test(value)) return true;
-    return false;
-  }
-
-  function hasNearbyItemStats(lines, index) {
-    const window = lines.slice(index, index + 4).map((line) => normalizeLine(line?.text)).filter(Boolean);
-    const joined = window.join(' ');
-    // Armor rows often extract the name separately from the stat columns.
-    // Look for the characteristic bonus + die + min-str/weight/cost sequence
-    // anywhere in the next few reconstructed lines.
-    if (/\+\d+\s+d\d+(?:[+-]\d+)?(?:\s|$)/i.test(joined) &&
-        /\bd\d+(?:[+-]\d+)?\b/i.test(joined) &&
-        /(?:\s|^)(?:\d+(?:\.\d+)?|—|-)(?:\s+)(?:\d+(?:\.\d+)?|—|-)(?:\s*$)/i.test(joined.replace(/\s+/g, ' '))) {
-      return true;
-    }
-    // Weapon rows commonly contain Str+d8 / d6 / 2d6 plus compact stat columns.
-    if (/(?:Str\s*\+\s*)?d\d+|\d+d\d+/i.test(joined) &&
-        /(?:\b\d+(?:\.\d+)?\b|—|-){2,}/.test(joined)) {
-      return true;
-    }
-    return false;
-  }
-
   function looksLikeItemEntry(lines, index) {
-    const raw = normalizeLine(lines[index]?.text);
-    const label = extractItemLabel(raw);
-    if (label && looksLikeEntryTitle(label.replace(/\s*\([^)]*\)\s*$/, ''))) return true;
-
-    // PDF table extraction can place the item name on its own line and the
-    // numeric cells on adjacent lines. Treat a clean name as an item when
-    // the nearby lines contain a plausible stat signature.
-    if (looksLikeCleanItemName(raw) && hasNearbyItemStats(lines, index)) return true;
-    return false;
+    const label = extractItemLabel(lines[index]?.text);
+    return !!label && looksLikeEntryTitle(label.replace(/\s*\([^)]*\)\s*$/, ''));
   }
 
   function candidatePredicate(category, lines, index) {
@@ -323,8 +286,7 @@
 
       for (let i = 0; i < lines.length; i += 1) {
         if (!candidatePredicate(category, lines, i)) continue;
-        const rawLabel = category === 'items' ? (extractItemLabel(lines[i].text) || normalizeLine(lines[i].text)) : normalizeLine(lines[i].text);
-        const label = category === 'items' ? normalizeLine(rawLabel.replace(/\s*\([^)]*\)\s*$/, '')) : rawLabel;
+        const label = category === 'items' ? extractItemLabel(lines[i].text) : normalizeLine(lines[i].text);
         const key = normalizeKey(label);
         if (!key || seen.has(key)) continue;
         if (/^(requirements?|description|notes?|special|gear|edges?|powers?)$/i.test(label)) continue;
