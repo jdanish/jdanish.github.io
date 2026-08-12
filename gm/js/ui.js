@@ -1399,16 +1399,28 @@
         const newOrder = Array.from(tabs.querySelectorAll('.gm-workspace-tab')).map((el) => el.dataset.documentPath);
         clearDragClasses();
         draggedPath = null;
-        try {
-          await window.GM.sidebarData?.setWorkspaceDocumentOrder?.(newOrder);
-        } catch (err) {
-          window.alert(`Could not reorder documents: ${err?.message || err}`);
-        }
+        // Persistence is committed in dragend so it also works when drop is
+        // skipped by the browser.
         void from;
+        void newOrder;
       });
 
-      docButton.addEventListener('dragend', () => {
+      docButton.addEventListener('dragend', async () => {
         clearDragClasses();
+
+        // Commit the final DOM order at drag end. Some browsers do not fire
+        // drop when the pointer is released over a non-target area.
+        if (dragMoved) {
+          const newOrder = Array.from(tabs.querySelectorAll('.gm-workspace-tab'))
+            .map((el) => el.dataset.documentPath)
+            .filter(Boolean);
+          try {
+            await window.GM.sidebarData?.setWorkspaceDocumentOrder?.(newOrder);
+          } catch (err) {
+            console.error('Could not persist document tab order', err);
+          }
+        }
+
         draggedPath = null;
         window.setTimeout(() => { dragMoved = false; }, 0);
       });
