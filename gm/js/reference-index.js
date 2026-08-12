@@ -633,7 +633,20 @@
 
       if (original && !sameRecord) removeEntry(original.category, original.key);
       addEntry({ label: name, category: type, source: sourceValue, aliases });
-      window.GM.popup?.hide?.();
+
+      // Keep the reference editor open after saving. Update its identity so a
+      // second save edits the same record even if the name/type changed.
+      seed.label = name;
+      seed.category = normalizeType(type);
+      seed.type = normalizeType(type);
+      seed.key = targetKey;
+      seed.source = sourceValue;
+      seed.aliases = aliases;
+      root.querySelector('[data-action="save"]').textContent = 'Saved';
+      window.setTimeout(() => {
+        const saveButton = root.querySelector('[data-action="save"]');
+        if (saveButton) saveButton.textContent = 'Save to local index';
+      }, 900);
       window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
     });
     return root;
@@ -670,10 +683,11 @@
         <input data-index-search type="search" placeholder="Search name, type, alias, book...">
         <select data-index-type><option value="">All types</option></select>
         <select data-index-book multiple size="3" aria-label="Filter by book"></select>
-        <select data-index-sort><option value="label">Name</option><option value="type">Type</option><option value="bookPage">Book / page</option></select>
+        <button type="button" data-index-reset-view>Reset View</button>
         <button type="button" data-index-add class="primary">Add Entry</button><button type="button" data-index-save ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Save to Data Folder</button><button type="button" data-index-reload ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Reload from Data Folder</button><button type="button" data-index-import>Import Index</button><button type="button" data-index-export>Export Index</button>
       </div>
       <div class="reference-index-summary" data-index-summary></div>
+      <div class="reference-index-table-head" data-index-table-head></div>
       <div class="reference-index-browser-list" data-index-list></div>
     `;
     const typeSelect = wrap.querySelector('[data-index-type]');
@@ -691,22 +705,36 @@
     });
     allBooksOption.selected = true;
     const search = wrap.querySelector('[data-index-search]');
-    const sortSelect = wrap.querySelector('[data-index-sort]');
     const list = wrap.querySelector('[data-index-list]');
-    if (restoreState) {
-      search.value = restoreState.search || '';
-      typeSelect.value = restoreState.type || '';
-      sortSelect.value = restoreState.sort || 'label';
-      const desiredBooks = Array.isArray(restoreState.books) ? restoreState.books : [];
-      if (desiredBooks.length) {
-        allBooksOption.selected = false;
-        Array.from(bookSelect.options).forEach((option) => {
-          option.selected = desiredBooks.includes(option.value);
-        });
-      }
-    }
     const summary = wrap.querySelector('[data-index-summary]');
+    const tableHead = wrap.querySelector('[data-index-table-head]');
+    const savedView = restoreState || getIndexViewState() || {};
+    let sortKey = savedView.sortKey || 'label';
+    let sortDir = savedView.sortDir === 'desc' ? 'desc' : 'asc';
 
+    function captureViewState() {
+      return {
+        search: search.value,
+        type: typeSelect.value,
+        books: Array.from(bookSelect.selectedOptions).map((option) => option.value),
+        sortKey,
+        sortDir,
+        scrollTop: list.scrollTop,
+      };
+    }
+
+    function persistViewState() {
+      saveIndexViewState(captureViewState());
+    }
+
+    if (savedView.search) search.value = savedView.search;
+    if (savedView.type) typeSelect.value = savedView.type;
+    if (Array.isArray(savedView.books) && savedView.books.length) {
+      allBooksOption.selected = false;
+      Array.from(bookSelect.options).forEach((option) => {
+        option.selected = savedView.books.includes(option.value);
+      });
+    }
     function render() {
       const index = ensureIndex();
       const query = search.value.trim().toLowerCase();
@@ -723,49 +751,126 @@
           entries.push({ category, key, ...entry });
         });
       });
-      const sort = sortSelect.value;
-      if (sort === 'bookPage') {
-        entries.sort((a, b) => {
-          const sa = parseSource(a.source || '');
-          const sb = parseSource(b.source || '');
-          return String(sa.book || '').localeCompare(String(sb.book || ''))
+      entries.sort((a, b) => {
+        const sa = parseSource(a.source || '');
+        const sb = parseSource(b.source || '');
+        let result = 0;
+        if (sortKey === 'label') {
+          result = a.label.localeCompare(b.label);
+        } else if (sortKey === 'type') {
+          result = a.category.localeCompare(b.category) || a.label.localeCompare(b.label);
+        } else if (sortKey === 'book') {
+          result = String(sa.book || '').localeCompare(String(sb.book || ''))
+            || a.label.localeCompare(b.label);
+        } else if (sortKey === 'page') {
+          result = String(sa.book || '').localeCompare(String(sb.book || ''))
             || (Number(sa.page) || 0) - (Number(sb.page) || 0)
             || a.label.localeCompare(b.label);
+        }
+        return sortDir === 'desc' ? -result : result;
+      });
+      tableHead.replaceChildren();
+      [
+        ['label', 'Name'],
+        ['type', 'Type'],
+        ['book', 'Book'],
+        ['page', 'Page'],
+      ].forEach(([key, label]) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `reference-index-table-sort${sortKey === key ? ' active' : ''}`;
+        button.textContent = `${label}${sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}`;
+        button.addEventListener('click', () => {
+          if (sortKey === key) {
+            sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            sortKey = key;
+            sortDir = 'asc';
+          }
+          persistViewState();
+          render();
         });
-      } else {
-        entries.sort((a,b) => String(a[sort] || '').localeCompare(String(b[sort] || '')) || a.label.localeCompare(b.label));
-      }
+        tableHead.appendChild(button);
+      });
+      const editHead = document.createElement('span');
+      editHead.textContent = 'Edit';
+      editHead.className = 'reference-index-table-action-head';
+      const showHead = document.createElement('span');
+      showHead.textContent = '🔍';
+      showHead.className = 'reference-index-table-action-head';
+      showHead.title = 'Preview in book';
+      const deleteHead = document.createElement('span');
+      deleteHead.textContent = '🗑';
+      deleteHead.className = 'reference-index-table-action-head';
+      deleteHead.title = 'Delete';
+      tableHead.append(editHead, showHead, deleteHead);
+
       summary.textContent = `${entries.length} result${entries.length === 1 ? '' : 's'} · ${getPendingHint()}`;
+
       list.replaceChildren();
       if (!entries.length) { list.textContent = 'No matching references.'; return; }
       entries.forEach((entry) => {
         const row = document.createElement('div');
         row.className = 'reference-index-row';
-        const main = document.createElement('button');
-        main.type = 'button';
+
+        const main = document.createElement('span');
         main.className = 'reference-index-row-main';
-        main.innerHTML = `<strong>${escapeHtml(entry.label)}</strong><span>${escapeHtml(entry.category)} · ${escapeHtml(entry.source)}</span><small>Click to view or edit this reference</small>`;
-        main.addEventListener('click', () => {
+        main.innerHTML = `<strong>${escapeHtml(entry.label)}</strong>`;
+
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.className = 'reference-index-row-edit';
+        edit.textContent = '✎';
+        edit.title = `Edit ${entry.label}`;
+        edit.setAttribute('aria-label', `Edit ${entry.label}`);
+        edit.addEventListener('click', () => {
           state.browserViewState = {
             search: search.value,
             type: typeSelect.value,
             books: Array.from(bookSelect.selectedOptions).map((option) => option.value),
-            sort: sortSelect.value,
+            sortKey, sortDir,
             scrollTop: list.scrollTop,
           };
           openEntryEditor(entry);
         });
+
+        const type = document.createElement('span');
+        type.className = 'reference-index-row-type';
+        type.textContent = entry.category;
+
+        const source = parseSource(entry.source || '');
+        const book = document.createElement('span');
+        book.className = 'reference-index-row-book';
+        book.textContent = window.BOOKS?.[source.book]?.title || source.book || '—';
+        book.title = source.book || '';
+
+        const page = document.createElement('span');
+        page.className = 'reference-index-row-page';
+        page.textContent = source.page ? `p. ${source.page}` : '—';
+
         const jump = document.createElement('button');
         jump.type = 'button';
-        jump.textContent = 'Show in Book';
-        jump.className = 'reference-index-row-jump primary';
+        jump.textContent = '🔍';
+        jump.className = 'reference-index-row-jump';
+        jump.title = `Preview ${entry.label} in book`;
+        jump.setAttribute('aria-label', `Preview ${entry.label} in book`);
         jump.addEventListener('click', () => jumpToEntry(entry));
+
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.textContent = '×';
-        remove.title = 'Remove from local index';
-        remove.addEventListener('click', () => { if (confirm(`Remove ${entry.label} from the local index?`)) { removeEntry(entry.category, entry.key); render(); window.dispatchEvent(new CustomEvent('gm-reference-index-changed')); } });
-        row.append(main, jump, remove);
+        remove.className = 'reference-index-row-delete';
+        remove.textContent = '🗑';
+        remove.title = 'Delete from local index';
+        remove.setAttribute('aria-label', 'Delete from local index');
+        remove.addEventListener('click', () => {
+          if (confirm(`Remove ${entry.label} from the local index?`)) {
+            removeEntry(entry.category, entry.key);
+            render();
+            window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+          }
+        });
+
+        row.append(main, type, book, page, edit, jump, remove);
         list.appendChild(row);
       });
     }
@@ -775,8 +880,8 @@
     function typesForBrowser(callback) { callback(INDEX_TYPES); }
     function escapeHtml(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-    search.addEventListener('input', render);
-    typeSelect.addEventListener('change', render);
+    search.addEventListener('input', () => { persistViewState(); render(); });
+    typeSelect.addEventListener('change', () => { persistViewState(); render(); });
     bookSelect.addEventListener('change', () => {
       const selected = Array.from(bookSelect.selectedOptions);
       if (!selected.length) {
@@ -787,9 +892,24 @@
       } else {
         allBooksOption.selected = false;
       }
+      persistViewState();
       render();
     });
-    sortSelect.addEventListener('change', render);
+    list.addEventListener('scroll', () => {
+      window.clearTimeout(list._saveViewTimer);
+      list._saveViewTimer = window.setTimeout(persistViewState, 150);
+    });
+    wrap.querySelector('[data-index-reset-view]').addEventListener('click', () => {
+      resetIndexViewState();
+      search.value = '';
+      typeSelect.value = '';
+      Array.from(bookSelect.options).forEach((option) => { option.selected = false; });
+      allBooksOption.selected = true;
+      sortKey = 'label';
+      sortDir = 'asc';
+      list.scrollTop = 0;
+      render();
+    });
     wrap.querySelector('[data-index-add]').addEventListener('click', () => openEntryEditor());
     wrap.querySelector('[data-index-reload]').addEventListener('click', async () => {
       const btn = wrap.querySelector('[data-index-reload]');
@@ -860,8 +980,9 @@
         }
       }, 0);
     }
-    if (restoreState && Number.isFinite(restoreState.scrollTop)) {
-      window.setTimeout(() => { list.scrollTop = restoreState.scrollTop; }, 0);
+    persistViewState();
+    if (savedView && Number.isFinite(savedView.scrollTop)) {
+      window.setTimeout(() => { list.scrollTop = savedView.scrollTop; }, 0);
     }
     return wrap;
   }
@@ -900,6 +1021,30 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  }
+
+  function getIndexViewState() {
+    try {
+      return JSON.parse(localStorage.getItem('gmReferenceIndexView') || 'null') || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveIndexViewState(view) {
+    try {
+      localStorage.setItem('gmReferenceIndexView', JSON.stringify(view || {}));
+    } catch {
+      /* ignore storage failures */
+    }
+  }
+
+  function resetIndexViewState() {
+    try {
+      localStorage.removeItem('gmReferenceIndexView');
+    } catch {
+      /* ignore storage failures */
+    }
   }
 
   function getStats() {

@@ -5,10 +5,6 @@
     "ancestries": {},
     "armor": {},
     "edges": {
-      "ace": {
-        "label": "Ace",
-        "source": "swade/46?highlight=Ace"
-      },
       "acrobat": {
         "label": "Acrobat",
         "source": "swade/47?highlight=Acrobat"
@@ -20,6 +16,10 @@
       "alertness": {
         "label": "Alertness",
         "source": "swade/37?highlight=Alertness"
+      },
+      "ambidextrous": {
+        "label": "Ambidextrous",
+        "source": "swade/36?highlight=Ambidextrous"
       },
       "arcane background": {
         "label": "Arcane Background",
@@ -33,6 +33,10 @@
         "label": "Arcane Resistance",
         "source": "swade/37?highlight=Arcane%20Resistance"
       },
+      "aristocrat": {
+        "label": "Aristocrat",
+        "source": "swade/36?highlight=Aristocrat"
+      },
       "artificer": {
         "label": "Artificer",
         "source": "swade/44?highlight=Artificer"
@@ -40,6 +44,10 @@
       "assassin": {
         "label": "Assassin",
         "source": "swade/47?highlight=Assassin"
+      },
+      "attractive": {
+        "label": "Attractive",
+        "source": "swade/36?highlight=Attractive"
       },
       "basic psychic loadout": {
         "label": "Basic Psychic Loadout",
@@ -53,6 +61,10 @@
         "label": "Beast Master",
         "source": "swade/50?highlight=Beast%20Master"
       },
+      "berserk": {
+        "label": "Berserk",
+        "source": "swade/37?highlight=Berserk"
+      },
       "block": {
         "label": "Block",
         "source": "swade/39?highlight=Block"
@@ -65,8 +77,8 @@
         "label": "Brave",
         "source": "swade/37?highlight=Brave"
       },
-      "brawler dead shot": {
-        "label": "Brawler Dead Shot",
+      "brawler": {
+        "label": "Brawler",
         "source": "swade/40?highlight=Brawler%20Dead%20Shot"
       },
       "brawny": {
@@ -128,6 +140,10 @@
       "counterattack": {
         "label": "Counterattack",
         "source": "swade/40?highlight=Counterattack"
+      },
+      "dead shot": {
+        "label": "Dead Shot",
+        "source": "swade/40?highlight=Dead%20Shot"
       },
       "dodge": {
         "label": "Dodge",
@@ -313,6 +329,10 @@
         "label": "New Powers",
         "source": "swade/46?highlight=New%20Powers"
       },
+      "power points": {
+        "label": "Power Points",
+        "source": "swade/46?highlight=Power%20Points"
+      },
       "power surge": {
         "label": "Power Surge",
         "source": "swade/46?highlight=Power%20Surge"
@@ -389,6 +409,10 @@
         "label": "Trademark Weapon",
         "source": "swade/43?highlight=Trademark%20Weapon"
       },
+      "very attractive": {
+        "label": "Very Attractive",
+        "source": "swade/37?highlight=Very%20Attractive"
+      },
       "weapon": {
         "label": "Weapon",
         "source": "swade/43?highlight=Weapon"
@@ -455,12 +479,7 @@
     },
     "monsters": {},
     "npcs": {},
-    "other": {
-      "ambidextrous": {
-        "label": "Ambidextrous",
-        "source": "swade/36?highlight=Ambidextrous"
-      }
-    },
+    "other": {},
     "powers": {
       "arcane protection": {
         "label": "Arcane Protection",
