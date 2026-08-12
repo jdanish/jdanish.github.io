@@ -373,7 +373,8 @@ window.SIDEBAR_SECTIONS = [];
         continue;
       }
 
-      if (ch === '|' && bracketDepth === 0 && parenDepth === 0) {
+      const counterOpen = current.lastIndexOf('{{counter:') > current.lastIndexOf('}}') || current.lastIndexOf('{{counter?:') > current.lastIndexOf('}}');
+      if (ch === '|' && bracketDepth === 0 && parenDepth === 0 && !counterOpen) {
         cells.push(current.trim());
         current = '';
         continue;
@@ -916,6 +917,10 @@ window.SIDEBAR_SECTIONS = [];
 
   let rulesMarkdown = loadStoredMarkdown('rules') || getDefaultMarkdown('rules');
   let currentMarkdown = loadStoredMarkdown('current') || getDefaultMarkdown('current');
+  let activeDocumentPath = 'current.md';
+  let activeDocumentMeta = { path: 'current.md', type: 'current', name: 'Current' };
+  let openDocumentPaths = [];
+  const WORKSPACE_STORAGE_KEY = 'gm_workspace_v1';
   let rulesSections = markdownToSections(rulesMarkdown, 'rules');
   let currentSections = markdownToSections(currentMarkdown, 'current');
 
@@ -980,6 +985,195 @@ window.SIDEBAR_SECTIONS = [];
     return normalizedSections;
   }
 
+  function stripFrontMatter(markdown) {
+    const text = String(markdown || '').replace(/^\uFEFF/, '');
+    const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
+    return match ? text.slice(match[0].length).trim() : text.trim();
+  }
+
+  function parseDocumentMeta(path, markdown) {
+    const text = String(markdown || '').replace(/^\uFEFF/, '');
+    const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
+    const meta = {};
+    if (match) {
+      match[1].split(/\r?\n/).forEach((line) => {
+        const m = line.match(/^([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(.*)$/);
+        if (m) meta[m[1]] = m[2].trim().replace(/^['"]|['"]$/g, '');
+      });
+    }
+    const fallbackName = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || 'Untitled';
+    return { path, type: meta.type || 'note', name: meta.name || fallbackName };
+  }
+
+  function loadWorkspaceState() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(WORKSPACE_STORAGE_KEY) || '{}') || {};
+      activeDocumentPath = parsed.activePath || 'current.md';
+      openDocumentPaths = Array.isArray(parsed.openPaths) ? parsed.openPaths.filter(Boolean) : [];
+      if (activeDocumentPath && !openDocumentPaths.includes(activeDocumentPath)) {
+        openDocumentPaths.unshift(activeDocumentPath);
+      }
+    } catch {
+      activeDocumentPath = 'current.md';
+      openDocumentPaths = ['current.md'];
+    }
+  }
+
+  async function saveWorkspaceState() {
+    const value = JSON.stringify({ activePath: activeDocumentPath, openPaths: openDocumentPaths });
+    localStorage.setItem(WORKSPACE_STORAGE_KEY, value);
+    if (window.GM.data?.getStatus?.().connected) {
+      try { await window.GM.data.writeFile('workspace.json', value); } catch { /* local state remains authoritative */ }
+    }
+  }
+
+  function getActiveDocument() {
+    return { ...activeDocumentMeta, path: activeDocumentPath, markdown: currentMarkdown };
+  }
+
+  function getWorkspaceDocuments() {
+    return openDocumentPaths.slice();
+  }
+
+  async function setWorkspaceDocumentOrder(paths) {
+    const order = Array.isArray(paths) ? paths.map(String).filter(Boolean) : [];
+    const unique = order.filter((path, index) => order.indexOf(path) === index);
+    if (!unique.length) return false;
+    openDocumentPaths = unique;
+    if (!openDocumentPaths.includes(activeDocumentPath)) openDocumentPaths.unshift(activeDocumentPath);
+    await saveWorkspaceState();
+    return true;
+  }
+
+  async function reorderWorkspaceDocuments(fromPath, toPath, before = true) {
+    const from = String(fromPath || '');
+    const to = String(toPath || '');
+    if (!from || !to || from === to) return false;
+    const order = openDocumentPaths.slice();
+    const fromIndex = order.indexOf(from);
+    const toIndex = order.indexOf(to);
+    if (fromIndex < 0 || toIndex < 0) return false;
+    order.splice(fromIndex, 1);
+    let insertAt = order.indexOf(to);
+    if (insertAt < 0) return false;
+    if (!before) insertAt += 1;
+    order.splice(insertAt, 0, from);
+    openDocumentPaths = order;
+    await saveWorkspaceState();
+    window.GM.ui?.renderWorkspaceTabs?.();
+    return true;
+  }
+
+  function getDocumentDisplayName(path = activeDocumentPath) {
+    if (path === activeDocumentPath) return activeDocumentMeta.name || 'Current';
+    const file = String(path || '').split('/').pop() || path;
+    return file.replace(/\.md$/i, '') || 'Untitled';
+  }
+
+  async function listDocuments() {
+    if (!window.GM.data?.getStatus?.().connected) return [];
+    const files = await window.GM.data.listFiles();
+    const documents = [];
+    for (const path of files) {
+      if (!/\.md$/i.test(path)) continue;
+      if (/^rules\.md$/i.test(path)) continue;
+      const text = await window.GM.data.readFile(path);
+      if (text === null) continue;
+      const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, text);
+      documents.push({ ...meta, markdown: stripFrontMatter(text) });
+    }
+    return documents.sort((a, b) => `${a.type}:${a.name}`.localeCompare(`${b.type}:${b.name}`));
+  }
+
+  async function openDocument(path) {
+    if (!window.GM.data?.getStatus?.().connected) throw new Error('Connect a data folder first.');
+    const text = await window.GM.data.readFile(path);
+    if (text === null) throw new Error(`Document not found: ${path}`);
+    const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, text);
+    activeDocumentPath = path;
+    activeDocumentMeta = meta;
+    if (!openDocumentPaths.includes(path)) openDocumentPaths.push(path);
+    importMarkdownFromText('current', stripFrontMatter(text));
+    await saveWorkspaceState();
+    window.GM.ui?.refreshSidebarFromData?.();
+    window.GM.ui?.setSidebarTab?.('current');
+    return meta;
+  }
+
+  async function loadActiveFromFolder(folder) {
+    if (!folder) return false;
+    loadWorkspaceState();
+    if (folder.activePath) activeDocumentPath = folder.activePath;
+    const path = folder.activePath || 'current.md';
+    const raw = folder.activeMarkdown || folder.current || '';
+    const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, raw);
+    activeDocumentMeta = meta;
+    if (path !== 'current.md' && raw) importMarkdownFromText('current', stripFrontMatter(raw));
+    else if (folder.current) importMarkdownFromText('current', folder.current);
+    await saveWorkspaceState();
+    return true;
+  }
+
+  async function saveActiveDocument() {
+    if (!window.GM.data?.getStatus?.().connected) return false;
+    let body = currentMarkdown;
+    if (activeDocumentPath !== 'current.md') {
+      const raw = await window.GM.data.readFile(activeDocumentPath);
+      const match = String(raw || '').match(/^---\s*\n[\s\S]*?\n---\s*\n?/);
+      const prefix = match ? match[0] : '';
+      body = `${prefix}${currentMarkdown.trim()}\n`;
+    }
+    await window.GM.data.writeFile(activeDocumentPath, body);
+    await saveWorkspaceState();
+    return true;
+  }
+
+  async function saveCurrentToDataFolder() {
+    return saveActiveDocument();
+  }
+
+  async function closeDocument(path) {
+    if (!path || path === 'current.md') return false;
+    openDocumentPaths = openDocumentPaths.filter((entry) => entry !== path);
+    if (activeDocumentPath === path) {
+      const next = openDocumentPaths[openDocumentPaths.length - 1] || 'current.md';
+      await openDocument(next);
+    } else {
+      await saveWorkspaceState();
+    }
+    return true;
+  }
+
+  async function renameActiveDocument(newName) {
+    if (!activeDocumentPath) throw new Error('No active document.');
+    const cleaned = String(newName || '').trim().replace(/\.md$/i, '');
+    if (!cleaned) throw new Error('Enter a document name.');
+    const slug = cleaned.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled';
+    const parts = activeDocumentPath.split('/');
+    parts.pop();
+    const folder = parts.join('/');
+    const newPath = `${folder ? `${folder}/` : ''}${slug}.md`;
+    if (newPath === activeDocumentPath) return activeDocumentMeta;
+
+    const oldPath = activeDocumentPath;
+    if (oldPath === 'current.md') {
+      const targetExists = await window.GM.data.readFile(newPath);
+      if (targetExists !== null) throw new Error(`A file already exists at ${newPath}.`);
+      await window.GM.data.writeFile(newPath, `${currentMarkdown.trim()}\n`);
+      await window.GM.data.removeFile(oldPath);
+    } else {
+      await window.GM.data.renameFile(oldPath, newPath);
+    }
+
+    activeDocumentPath = newPath;
+    activeDocumentMeta = { ...activeDocumentMeta, path: newPath, name: cleaned, type: activeDocumentMeta.type || 'note' };
+    openDocumentPaths = openDocumentPaths.map((path) => path === oldPath ? newPath : path);
+    if (!openDocumentPaths.includes(newPath)) openDocumentPaths.push(newPath);
+    await saveWorkspaceState();
+    window.GM.ui?.refreshSidebarFromData?.();
+    return activeDocumentMeta;
+  }
+
   async function resetKind(kind) {
     localStorage.removeItem(STORAGE_KEYS[kind]);
     localStorage.removeItem(LEGACY_STORAGE_KEYS[kind]);
@@ -1008,6 +1202,8 @@ window.SIDEBAR_SECTIONS = [];
     }
   }
 
+  loadWorkspaceState();
+
   const readyPromise = (async () => {
     const [rules, current] = await Promise.all([
       tryLoadExternalMarkdown('rules', true),
@@ -1034,6 +1230,19 @@ window.SIDEBAR_SECTIONS = [];
     importSectionsFromData,
     importKindFromText: importMarkdownFromText,
     resetKind,
+    listDocuments,
+    loadDocument: openDocument,
+    openDocument,
+    closeDocument,
+    getActiveDocument,
+    getWorkspaceDocuments,
+    reorderWorkspaceDocuments,
+    setWorkspaceDocumentOrder,
+    getDocumentDisplayName,
+    loadActiveFromFolder,
+    saveActiveDocument,
+    renameActiveDocument,
+    saveCurrentToDataFolder,
     applySections,
     bindTrackerEvents,
     setMarkdown(kind, markdown) {

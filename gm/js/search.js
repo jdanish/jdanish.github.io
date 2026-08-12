@@ -208,6 +208,34 @@
     };
   }
 
+  function searchReferenceIndex(query) {
+    const q = String(query || '').trim().toLowerCase();
+    if (q.length < 2) return [];
+    const index = window.GM.referenceIndex?.getIndex?.() || {};
+    const results = [];
+    Object.entries(index).forEach(([category, bucket]) => {
+      Object.entries(bucket || {}).forEach(([key, entry]) => {
+        const aliases = Array.isArray(entry?.aliases) ? entry.aliases : [];
+        const haystack = [entry?.label, category, entry?.source, ...aliases].join(' ').toLowerCase();
+        const idx = haystack.indexOf(q);
+        if (idx < 0) return;
+        results.push({
+          type: 'reference',
+          category,
+          key,
+          label: String(entry?.label || key),
+          source: String(entry?.source || ''),
+          aliases,
+          snippet: aliases.length ? `Aliases: ${aliases.join(', ')}` : '',
+          score: idx,
+          entry: { category, key, ...entry },
+        });
+      });
+    });
+    results.sort((a, b) => a.score - b.score || a.category.localeCompare(b.category) || a.label.localeCompare(b.label));
+    return results;
+  }
+
   function searchSidebar(query) {
     const q = String(query || '').trim().toLowerCase();
     if (q.length < 2) return [];
@@ -415,7 +443,7 @@
     syncSearchCollapseButtonState();
   }
 
-  function renderResults(query, sidebarHits, pdfHits, statusText = '') {
+  function renderResults(query, referenceHits, sidebarHits, pdfHits, statusText = '') {
     const resultsEl = searchState.dom.resultsEl || ensureResultsContainer();
     if (!resultsEl) return;
 
@@ -436,7 +464,7 @@
 
     const status = document.createElement('span');
     status.className = 'search-results-status';
-    status.textContent = statusText || `${sidebarHits.length + pdfHits.length} matches`;
+    status.textContent = statusText || `${referenceHits.length + sidebarHits.length + pdfHits.length} matches`;
 
     const collapseButton = document.createElement('button');
     collapseButton.type = 'button';
@@ -455,6 +483,44 @@
     header.appendChild(left);
     header.appendChild(right);
     resultsEl.appendChild(header);
+
+    if (referenceHits.length) {
+      const group = document.createElement('details');
+      group.className = 'search-group';
+      group.open = true;
+
+      const summary = document.createElement('summary');
+      summary.textContent = `Reference Index (${referenceHits.length})`;
+      group.appendChild(summary);
+
+      const body = document.createElement('div');
+      body.className = 'search-group-body';
+
+      referenceHits.forEach((hit) => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item search-reference-result';
+        item.innerHTML = `
+          <button type="button" class="btn search-result-main" data-search-hit="reference">
+            <div class="search-result-title">${window.GM.utils.escapeHtml(hit.label)}</div>
+            <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.category)} · ${window.GM.utils.escapeHtml(hit.source)}</div>
+            <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
+          </button>
+          <div class="search-result-actions">
+            <button type="button" class="btn" data-reference-action="edit">Edit</button>
+            <button type="button" class="btn" data-reference-action="pdf">Open in Book</button>
+          </div>
+        `;
+        const main = item.querySelector('[data-search-hit="reference"]');
+        main.addEventListener('click', () => window.GM.referenceIndex?.openEntryEditor?.(hit.entry));
+        item.querySelector('[data-reference-action="edit"]')?.addEventListener('click', () => window.GM.referenceIndex?.openEntryEditor?.(hit.entry));
+        item.querySelector('[data-reference-action="pdf"]')?.addEventListener('click', () => window.GM.referenceIndex?.jumpToEntry?.(hit.entry));
+        body.appendChild(item);
+      });
+
+      group.addEventListener('toggle', syncSearchCollapseButtonState);
+      group.appendChild(body);
+      resultsEl.appendChild(group);
+    }
 
     if (sidebarHits.length) {
       const group = document.createElement('details');
@@ -540,7 +606,7 @@
 
     syncSearchCollapseButtonState();
 
-    if (!sidebarHits.length && !pdfHits.length) {
+    if (!referenceHits.length && !sidebarHits.length && !pdfHits.length) {
       const empty = document.createElement('div');
       empty.className = 'search-empty';
       empty.textContent = 'No matches found.';
@@ -555,8 +621,9 @@
       return;
     }
 
-    renderResults(q, [], [], 'Searching PDFs…');
+    renderResults(q, [], [], [], 'Searching reference index and PDFs…');
 
+    const referenceHits = searchReferenceIndex(q);
     const sidebarHits = searchSidebar(q);
     let pdfHits = [];
 
@@ -567,7 +634,7 @@
       pdfHits = [];
     }
 
-    renderResults(q, sidebarHits, pdfHits);
+    renderResults(q, referenceHits, sidebarHits, pdfHits);
   }
 
   function setupSearch({ sidebarContentEl, searchInputEl, searchHiddenBooksEl, clearButtonEl }) {
@@ -646,6 +713,7 @@
         if (!result || !searchState.dom.sidebarContentEl.contains(result)) return;
 
         const hitType = result.dataset.searchHit;
+        if (hitType === 'reference') return;
         if (hitType === 'sidebar' || hitType === 'sidebar-notes') {
           await revealSidebarHit(result);
           return;

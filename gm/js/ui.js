@@ -609,27 +609,38 @@
   }
 
 
-  function fgReferenceEntry(kind, name) {
+  function fgReferenceEntry(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return null;
-    const bucket = window.REFERENCE_INDEX?.[kind];
-    const entry = bucket?.[label.toLowerCase()];
-    return entry?.source ? { label: entry.label || label, source: entry.source } : null;
+    const types = [kind, ...preferredTypes].filter(Boolean);
+    const index = window.REFERENCE_INDEX || {};
+    const normalized = label.toLowerCase();
+    for (const type of types) {
+      const bucket = index[type];
+      const direct = bucket?.[normalized];
+      if (direct?.source) return { label: direct.label || label, source: direct.source };
+      for (const [key, candidate] of Object.entries(bucket || {})) {
+        if (Array.isArray(candidate?.aliases) && candidate.aliases.some((alias) => String(alias).trim().toLowerCase() === normalized) && candidate.source) {
+          return { label: candidate.label || label, source: candidate.source };
+        }
+      }
+    }
+    return null;
   }
 
-  function fgReferenceMarkdown(kind, name) {
+  function fgReferenceMarkdown(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return '';
-    const entry = fgReferenceEntry(kind, label);
+    const entry = fgReferenceEntry(kind, label, preferredTypes);
     if (!entry) return fgMarkdownEscape(label);
     const safeLabel = fgMarkdownEscape(entry.label);
     return `[[${entry.source}|${safeLabel}]]`;
   }
 
-  function fgReferenceHtml(kind, name) {
+  function fgReferenceHtml(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return '';
-    const entry = fgReferenceEntry(kind, label);
+    const entry = fgReferenceEntry(kind, label, preferredTypes);
     if (!entry) return fgXmlEscape(label);
     const source = String(entry.source || '').trim();
     const jumpHref = /^jump:/i.test(source) ? source : `jump:${source.replace(/^\/+/, '')}`;
@@ -750,7 +761,7 @@
 
     const inventory = fgList(character, 'invlist');
 
-    const edgeItems = [...fgList(character, 'edges'), ...fgList(character, 'special')]
+    const edgeItems = fgList(character, 'edges')
       .map((item) => {
         const n = fgCleanName(fgChildText(item, 'name'));
         if (!n) return '';
@@ -760,6 +771,18 @@
           .replace(/&lt;em&gt;(.*?)&lt;\/em&gt;/gi, '<em>$1</em>')
           .replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gi, '<em>$1</em>');
         return `<li><strong>${fgReferenceHtml('edges', n)}</strong>${desc ? `<div>${descHtml}</div>` : ''}${prereq ? `<div><em>Prerequisites:</em> ${fgXmlEscape(prereq)}</div>` : ''}</li>`;
+      })
+      .filter(Boolean);
+
+    const specialAbilityItems = fgList(character, 'special')
+      .map((item) => {
+        const n = fgCleanName(fgChildText(item, 'name'));
+        if (!n) return '';
+        const desc = fgCleanName(fgChildText(item, 'shortdescription'));
+        const descHtml = fgXmlEscape(desc)
+          .replace(/&lt;em&gt;(.*?)&lt;\/em&gt;/gi, '<em>$1</em>')
+          .replace(/&lt;i&gt;(.*?)&lt;\/i&gt;/gi, '<em>$1</em>');
+        return `<li><strong>${fgReferenceHtml('abilities', n, ['abilities', 'edges', 'other'])}</strong>${desc ? `<div>${descHtml}</div>` : ''}</li>`;
       })
       .filter(Boolean);
 
@@ -833,10 +856,18 @@
 
     if (edgeItems.length) {
       blocks.push({
-        title: 'Edges & Abilities',
+        title: 'Edges',
         collapsible: true,
         expanded: true,
         html: `<ul>${edgeItems.join('')}</ul>`,
+      });
+    }
+    if (specialAbilityItems.length) {
+      blocks.push({
+        title: 'Special Abilities',
+        collapsible: true,
+        expanded: true,
+        html: `<ul>${specialAbilityItems.join('')}</ul>`,
       });
     }
 
@@ -951,8 +982,15 @@
     }
 
     if (edgeItems.length) {
-      lines.push('### Edges & Abilities', '');
+      lines.push('### Edges', '');
       edgeItems.forEach((item) => {
+        lines.push(itemHtmlToMarkdown(item));
+      });
+      lines.push('');
+    }
+    if (specialAbilityItems.length) {
+      lines.push('### Special Abilities', '');
+      specialAbilityItems.forEach((item) => {
         lines.push(itemHtmlToMarkdown(item));
       });
       lines.push('');
@@ -1001,7 +1039,17 @@
     return out;
   }
 
-  function upsertImportedCurrentCharacter(imported) {
+  async function upsertImportedCurrentCharacter(imported) {
+    const connected = !!window.GM.data?.getStatus?.().connected;
+    if (connected && window.GM.data?.writeTextDocument) {
+      const path = await window.GM.data.writeTextDocument('character', imported.name || 'Imported Character', imported.markdown || '');
+      window.GM.ui?.showToast?.(`Imported ${imported.name || 'character'} as ${path}`);
+      // A connected import is a new document: create it, open it, and make it active.
+      await window.GM.sidebarData?.openDocument?.(path);
+      window.GM.ui?.refreshSidebarFromData?.();
+      return path;
+    }
+
     const currentMarkdown = String(window.GM.sidebarData?.getCurrentMarkdown?.() || '').trim();
     const nextMarkdown = [currentMarkdown, imported.markdown].filter(Boolean).join('\n\n');
     const existingSections = Array.isArray(window.GM.sidebarData?.getCurrent?.()) ? window.GM.sidebarData.getCurrent() : [];
@@ -1012,18 +1060,11 @@
       intro: '',
       blocks: [{ html: `<pre>${fgXmlEscape(imported.markdown || '')}</pre>` }],
     }];
-    const nextSections = mergeCurrentSections(existingSections, incomingSections);
-
-    if (window.GM.sidebarData?.importSectionsFromData) {
-      // Re-parse the combined Markdown so custom elements (counters, links, etc.)
-      // render immediately instead of displaying the imported source as raw HTML.
-      window.GM.sidebarData.importSectionsFromData('current', nextMarkdown, nextMarkdown);
-    } else {
-      window.GM.sidebarData?.setMarkdown?.('current', nextMarkdown);
-    }
-
+    mergeCurrentSections(existingSections, incomingSections);
+    window.GM.sidebarData?.importMarkdownFromText?.('current', nextMarkdown);
     const targetId = incomingSections[0]?.id || String(imported.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     window.GM.ui?.setCurrentSubTabBySectionKey?.(targetId);
+    return null;
   }
   function closeReferenceIndexBuilder(dialog) {
     dialog?.remove?.();
@@ -1060,7 +1101,9 @@
         <span class="reference-index-counts"></span>
         <div>
           <button type="button" class="reference-index-add" disabled>Add selected</button>
-          <button type="button" class="reference-index-download">Download config.js</button>
+          <button type="button" class="reference-index-save" ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Save to Data Folder</button>
+          <button type="button" class="reference-index-download">Export index.json</button>
+          <button type="button" class="reference-index-browser-button">Open Index</button>
         </div>
       </div>
     `;
@@ -1153,11 +1196,20 @@
       addButton.disabled = true;
     });
 
+    form.querySelector('.reference-index-save').addEventListener('click', async () => {
+      try {
+        const saved = await window.GM.referenceIndex?.saveIndexToConnectedFolder?.();
+        statusEl.textContent = saved ? 'Saved index.json to the connected data folder.' : 'Connect a writable data folder first.';
+      } catch (err) {
+        statusEl.textContent = `Could not save index.json: ${err?.message || err}`;
+      }
+    });
     form.querySelector('.reference-index-download').addEventListener('click', () => {
-      window.GM.referenceIndex?.downloadConfig?.();
-      statusEl.textContent = 'Downloaded config.js with the current reference index.';
+      window.GM.referenceIndex?.downloadIndex?.();
+      statusEl.textContent = 'Exported index.json with the current reference index.';
     });
 
+    form.querySelector('.reference-index-browser-button').addEventListener('click', () => { closeReferenceIndexBuilder(dialog); window.setTimeout(() => window.GM.referenceIndex?.openBrowser?.(), 0); });
     form.querySelector('.reference-index-close').addEventListener('click', () => closeReferenceIndexBuilder(dialog));
     dialog.addEventListener('click', (event) => {
       if (event.target === dialog) closeReferenceIndexBuilder(dialog);
@@ -1165,6 +1217,16 @@
     dialog.addEventListener('cancel', () => closeReferenceIndexBuilder(dialog));
     if (typeof dialog.showModal === 'function') dialog.showModal();
     else dialog.setAttribute('open', '');
+  }
+
+  function createMonsterImportButton() {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sidebar-tab-button current-import-button';
+    button.textContent = '＋ Monster';
+    button.title = 'Import a monster stat block from text or Markdown';
+    button.addEventListener('click', () => window.GM.monsterImporter?.openImporter?.());
+    return button;
   }
 
   function createFantasyGroundsImportButton() {
@@ -1187,7 +1249,7 @@
         if (!file) return;
         try {
           const imported = fgXmlToCurrentMarkdown(await file.text());
-          upsertImportedCurrentCharacter(imported);
+          await upsertImportedCurrentCharacter(imported);
         } catch (err) {
           console.error('Fantasy Grounds character import failed', err);
           window.alert(`Could not import Fantasy Grounds character: ${err?.message || err}`);
@@ -1200,12 +1262,161 @@
     return button;
   }
 
+  function renderWorkspaceTabs() {
+    const tabs = document.createElement('div');
+    tabs.className = 'gm-workspace-tabs';
+    const active = window.GM.sidebarData?.getActiveDocument?.() || { path: 'current.md', name: 'Current' };
+    let orderedPaths = window.GM.sidebarData?.getWorkspaceDocuments?.() || [];
+    if (!orderedPaths.includes(active.path)) orderedPaths = [active.path, ...orderedPaths];
+    if (!orderedPaths.length) orderedPaths = ['current.md'];
+
+    let draggedPath = null;
+    let dragMoved = false;
+
+    const clearDragClasses = () => {
+      tabs.querySelectorAll('.gm-workspace-tab.dragging, .gm-workspace-tab.drag-over-before, .gm-workspace-tab.drag-over-after').forEach((el) => {
+        el.classList.remove('dragging', 'drag-over-before', 'drag-over-after');
+      });
+    };
+
+    orderedPaths.forEach((path) => {
+      const docButton = document.createElement('div');
+      docButton.setAttribute('role', 'tab');
+      docButton.tabIndex = 0;
+      docButton.className = 'gm-workspace-tab';
+      docButton.draggable = true;
+      docButton.dataset.documentPath = path;
+      docButton.classList.toggle('active', path === active.path);
+      docButton.title = path;
+
+      const label = document.createElement('span');
+      label.className = 'gm-workspace-tab-label';
+      label.textContent = path === active.path
+        ? (active.name || (path === 'current.md' ? 'Current' : path.split('/').pop().replace(/\.md$/i, '')))
+        : (path === 'current.md' ? 'Current' : path.split('/').pop().replace(/\.md$/i, ''));
+      docButton.appendChild(label);
+
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'gm-workspace-tab-edit';
+      edit.textContent = '✎';
+      edit.title = `Edit ${label.textContent}`;
+      edit.setAttribute('aria-label', `Edit ${label.textContent}`);
+      edit.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          if (path !== active.path) await window.GM.sidebarData?.openDocument?.(path);
+          openSidebarMarkdownEditor('current');
+        } catch (err) {
+          window.alert(`Could not edit document: ${err?.message || err}`);
+        }
+      });
+      docButton.appendChild(edit);
+
+      if (path !== 'current.md') {
+        const close = document.createElement('span');
+        close.className = 'gm-workspace-tab-close';
+        close.textContent = '×';
+        close.title = 'Close document';
+        close.setAttribute('aria-label', `Close ${label.textContent}`);
+        close.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          try { await window.GM.sidebarData?.closeDocument?.(path); } catch (err) { window.alert(`Could not close document: ${err?.message || err}`); }
+        });
+        docButton.appendChild(close);
+      }
+
+      docButton.addEventListener('click', async (event) => {
+        if (dragMoved || event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-close')) return;
+        if (path === active.path) return;
+        try {
+          await window.GM.sidebarData?.openDocument?.(path);
+        } catch (err) {
+          window.alert(`Could not open document: ${err?.message || err}`);
+        }
+      });
+
+      docButton.addEventListener('keydown', async (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        if (event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-close')) return;
+        event.preventDefault();
+        if (path === active.path) return;
+        try {
+          await window.GM.sidebarData?.openDocument?.(path);
+        } catch (err) {
+          window.alert(`Could not open document: ${err?.message || err}`);
+        }
+      });
+
+      docButton.addEventListener('dragstart', (event) => {
+        draggedPath = path;
+        dragMoved = false;
+        docButton.classList.add('dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', path);
+      });
+
+      docButton.addEventListener('dragover', (event) => {
+        if (!draggedPath || draggedPath === path) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        const rect = docButton.getBoundingClientRect();
+        const before = event.clientX < rect.left + rect.width / 2;
+        const draggedEl = tabs.querySelector(`.gm-workspace-tab[data-document-path=\"${CSS.escape(draggedPath)}\"]`);
+        if (!draggedEl || draggedEl === docButton) return;
+        tabs.querySelectorAll('.gm-workspace-tab.drag-over-before, .gm-workspace-tab.drag-over-after').forEach((el) => {
+          el.classList.remove('drag-over-before', 'drag-over-after');
+        });
+        docButton.classList.add(before ? 'drag-over-before' : 'drag-over-after');
+        if (before) tabs.insertBefore(draggedEl, docButton);
+        else tabs.insertBefore(draggedEl, docButton.nextSibling);
+        dragMoved = true;
+      });
+
+      docButton.addEventListener('drop', async (event) => {
+        if (!draggedPath) return;
+        event.preventDefault();
+        dragMoved = true;
+        const from = draggedPath;
+        const newOrder = Array.from(tabs.querySelectorAll('.gm-workspace-tab')).map((el) => el.dataset.documentPath);
+        clearDragClasses();
+        draggedPath = null;
+        try {
+          await window.GM.sidebarData?.setWorkspaceDocumentOrder?.(newOrder);
+        } catch (err) {
+          window.alert(`Could not reorder documents: ${err?.message || err}`);
+        }
+        void from;
+      });
+
+      docButton.addEventListener('dragend', () => {
+        clearDragClasses();
+        draggedPath = null;
+        window.setTimeout(() => { dragMoved = false; }, 0);
+      });
+
+      tabs.appendChild(docButton);
+    });
+
+    const browse = document.createElement('button');
+    browse.type = 'button';
+    browse.className = 'gm-workspace-add';
+    browse.textContent = '＋ Open';
+    browse.title = 'Open another character, monster, note, or Markdown document';
+    browse.addEventListener('click', () => openDocumentBrowser());
+    tabs.appendChild(browse);
+    return tabs;
+  }
+
   function renderCurrentPanel() {
     const panelBody = dom.sidebarCurrentPanelBodyEl;
     if (!panelBody || panelBody.dataset.rendered === 'true') return;
 
     const sections = getCurrentSections();
     panelBody.replaceChildren();
+    panelBody.appendChild(renderWorkspaceTabs());
 
     if (!sections.length) {
       panelBody.dataset.rendered = 'true';
@@ -1221,6 +1432,10 @@
 
     const tabs = document.createElement('div');
     tabs.className = 'current-subtabs';
+    const activeDocument = window.GM.sidebarData?.getActiveDocument?.() || { path: 'current.md' };
+    const entityDocument = /^(characters|monsters|notes)\//i.test(String(activeDocument.path || ''));
+    const showSectionTabs = sections.length > 1 || !entityDocument;
+    if (!showSectionTabs) tabs.hidden = true;
 
     const panels = document.createElement('div');
     panels.className = 'current-subtab-panels';
@@ -1255,7 +1470,7 @@
         setCurrentSubTabId(nextId);
       });
 
-      tabs.appendChild(button);
+      if (showSectionTabs) tabs.appendChild(button);
       panels.appendChild(pane);
       sectionEls.set(sectionKey, pane);
       registerSidebarSearchEntry({
@@ -1269,8 +1484,6 @@
         kind: 'section',
       });
     });
-
-    tabs.appendChild(createFantasyGroundsImportButton());
 
     panelBody.appendChild(tabs);
     panelBody.appendChild(panels);
@@ -1744,8 +1957,9 @@
   }
 
   function openSidebarMarkdownEditor(kind) {
-    const label = kind === 'current' ? 'Current' : 'Rules';
-    const initialMarkdown = window.GM.sidebarData?.[`get${label}Markdown`]?.() || '';
+    const activeDoc = kind === 'current' ? (window.GM.sidebarData?.getActiveDocument?.() || null) : null;
+    const label = kind === 'current' ? (activeDoc?.name || 'Current') : 'Rules';
+    const initialMarkdown = kind === 'current' ? String(activeDoc?.markdown || '') : (window.GM.sidebarData?.getRulesMarkdown?.() || '');
 
     const wrap = document.createElement('div');
     wrap.className = 'sidebar-md-editor';
@@ -1796,9 +2010,14 @@
       return sidebarMarkdownEditorState.fallbackTextarea?.value ?? '';
     };
 
-    const saveMarkdown = () => {
+    const saveMarkdown = async () => {
       const markdown = readMarkdown();
-      window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
+      if (kind === 'current') {
+        window.GM.sidebarData?.importMarkdownFromText?.('current', markdown);
+        await window.GM.sidebarData?.saveActiveDocument?.();
+      } else {
+        window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
+      }
       setDirty(false);
       window.GM.popup?.hide?.();
     };
@@ -1809,7 +2028,7 @@
       if ((event.ctrlKey || event.metaKey) && key === 's') {
         event.preventDefault();
         event.stopPropagation();
-        saveMarkdown();
+        saveMarkdown().catch((err) => window.alert(`Could not save document: ${err?.message || err}`));
         return;
       }
       if (key === 'escape') {
@@ -1891,8 +2110,8 @@
           cm?.getWrapperElement()?.classList.add('sidebar-md-codemirror');
           cm?.on('change', () => setDirty(true));
           cm?.setOption?.('extraKeys', {
-            'Ctrl-S': () => saveMarkdown(),
-            'Cmd-S': () => saveMarkdown(),
+            'Ctrl-S': () => saveMarkdown().catch((err) => window.alert(`Could not save document: ${err?.message || err}`)),
+            'Cmd-S': () => saveMarkdown().catch((err) => window.alert(`Could not save document: ${err?.message || err}`)),
             Esc: () => window.GM.popup?.hide?.(),
           });
           sidebarMarkdownEditorState.editor.codemirror?.focus?.();
@@ -1920,8 +2139,8 @@
           cm.getWrapperElement()?.classList.add('sidebar-md-codemirror');
           cm.on('change', () => setDirty(true));
           cm.setOption('extraKeys', {
-            'Ctrl-S': () => saveMarkdown(),
-            'Cmd-S': () => saveMarkdown(),
+            'Ctrl-S': () => saveMarkdown().catch((err) => window.alert(`Could not save document: ${err?.message || err}`)),
+            'Cmd-S': () => saveMarkdown().catch((err) => window.alert(`Could not save document: ${err?.message || err}`)),
             Esc: () => window.GM.popup?.hide?.(),
           });
 
@@ -1954,14 +2173,121 @@
       window.GM.popup?.hide?.();
     });
   }
+  async function refreshFromConnectedFolder() {
+    const folder = await window.GM.data?.loadFolderContents?.();
+    if (!folder) return;
+    if (folder.rules) window.GM.sidebarData?.importMarkdownFromText?.('rules', folder.rules);
+    if (folder.current) window.GM.sidebarData?.importMarkdownFromText?.('current', folder.current);
+    await window.GM.referenceIndex?.loadIndexFile?.();
+    renderSidebar();
+    buildTabs();
+  }
+
+  async function openDocumentBrowser() {
+    const wrap = document.createElement('div');
+    wrap.className = 'gm-document-browser';
+    wrap.innerHTML = `
+      <div class="gm-document-toolbar">
+        <input type="search" data-doc-search placeholder="Search characters, monsters, notes...">
+        <button type="button" data-doc-refresh>Refresh</button>
+        <button type="button" data-doc-import-character>＋ Import Character</button>
+        <button type="button" data-doc-import-monster>＋ Import Monster</button>
+      </div>
+      <div data-doc-list class="gm-document-list"></div>
+    `;
+    const list = wrap.querySelector('[data-doc-list]');
+    const search = wrap.querySelector('[data-doc-search]');
+
+    async function renderDocuments() {
+      list.textContent = 'Loading...';
+      try {
+        const docs = await window.GM.sidebarData?.listDocuments?.() || [];
+        const query = search.value.trim().toLowerCase();
+        const filtered = docs.filter((doc) => `${doc.name} ${doc.type} ${doc.path}`.toLowerCase().includes(query));
+        list.replaceChildren();
+        if (!filtered.length) { list.textContent = 'No document files found. Connect a data folder and import or create a file.'; return; }
+        const groups = new Map();
+        filtered.forEach((doc) => { if (!groups.has(doc.type)) groups.set(doc.type, []); groups.get(doc.type).push(doc); });
+        groups.forEach((items, type) => {
+          const group = document.createElement('section');
+          group.className = 'gm-document-group';
+          const heading = document.createElement('h3'); heading.textContent = type; group.appendChild(heading);
+          items.forEach((doc) => {
+            const row = document.createElement('div'); row.className = 'gm-document-row';
+            const open = document.createElement('button'); open.type='button'; open.textContent=doc.name; open.className='gm-document-open';
+            open.addEventListener('click', async () => {
+              await window.GM.sidebarData.openDocument(doc.path);
+              window.GM.popup?.hide?.();
+              setSidebarTab('current');
+            });
+            const path = document.createElement('small'); path.textContent=doc.path;
+            row.append(open, path); group.appendChild(row);
+          });
+          list.appendChild(group);
+        });
+      } catch (err) { list.textContent = `Could not read the data folder: ${err?.message || err}`; }
+    }
+    search.addEventListener('input', renderDocuments);
+    wrap.querySelector('[data-doc-refresh]').addEventListener('click', renderDocuments);
+    wrap.querySelector('[data-doc-import-character]').addEventListener('click', () => {
+      window.GM.popup?.hide?.();
+      createFantasyGroundsImportButton().click();
+    });
+    wrap.querySelector('[data-doc-import-monster]').addEventListener('click', () => {
+      window.GM.popup?.hide?.();
+      createMonsterImportButton().click();
+    });
+    window.GM.popup?.show?.({ title:'Data Documents', content:wrap, className:'gm-document-browser-popup', width:620, closeOnScroll:false });
+    await renderDocuments();
+    return wrap;
+  }
+
   function renderSidebarDataPopup() {
     const wrap = document.createElement('div');
     wrap.className = 'book-visibility-panel sidebar-data-panel';
 
     const intro = document.createElement('p');
     intro.className = 'book-visibility-intro';
-    intro.textContent = 'Download, load, edit, or reset the Markdown for Rules and Current.';
+    const dataStatus = window.GM.data?.getStatus?.() || {};
+    intro.textContent = dataStatus.connected
+      ? `Connected data folder: ${dataStatus.name || 'folder'}`
+      : 'Connect a data folder to manage character, monster, note, current, and index files.';
     wrap.appendChild(intro);
+
+    const folderActions = document.createElement('div');
+    folderActions.className = 'sidebar-data-actions';
+    const connectBtn = document.createElement('button'); connectBtn.type='button'; connectBtn.textContent=dataStatus.connected ? 'Reconnect Folder' : 'Connect Data Folder';
+    connectBtn.addEventListener('click', async () => {
+      try {
+        const ok = dataStatus.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder();
+        if (ok) {
+          await refreshFromConnectedFolder();
+          await window.GM.referenceIndex?.loadIndexFile?.();
+          window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+          window.GM.popup?.hide?.();
+        }
+      } catch (err) { alert(`Could not connect to the data folder: ${err?.message || err}`); }
+    });
+    const newFolderBtn = document.createElement('button');
+    newFolderBtn.type='button';
+    newFolderBtn.textContent='Connect New Data Folder';
+    newFolderBtn.addEventListener('click', async () => {
+      try {
+        const ok = await window.GM.data.chooseFolder({ forceNew: true });
+        if (ok) {
+          await refreshFromConnectedFolder();
+          await window.GM.referenceIndex?.loadIndexFile?.();
+          window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+          window.GM.popup?.hide?.();
+        }
+      } catch (err) { alert(`Could not connect to the new data folder: ${err?.message || err}`); }
+    });
+    const downloadFolderBtn = document.createElement('button'); downloadFolderBtn.type='button'; downloadFolderBtn.textContent='Download Data Folder';
+    downloadFolderBtn.addEventListener('click', async () => { try { await window.GM.data.downloadFolder(); } catch(err) { alert(`Could not download the data folder: ${err?.message || err}`); } });
+    const docsBtn = document.createElement('button'); docsBtn.type='button'; docsBtn.textContent='Browse Characters / Monsters / Notes'; docsBtn.addEventListener('click', () => openDocumentBrowser());
+    const indexBtn = document.createElement('button'); indexBtn.type='button'; indexBtn.textContent='Open Reference Index'; indexBtn.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
+    folderActions.append(connectBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn);
+    wrap.appendChild(folderActions);
 
     const makeGroup = (title, kind) => {
       const group = document.createElement('div');
@@ -1974,11 +2300,6 @@
       heading.style.justifyContent = 'space-between';
       heading.innerHTML = `<span>${title}</span><small>${kind}.md</small>`;
       group.appendChild(heading);
-
-      const editBtn = document.createElement('button');
-      editBtn.type = 'button';
-      editBtn.textContent = `Edit ${title}`;
-      editBtn.addEventListener('click', () => openSidebarMarkdownEditor(kind));
 
       const downloadBtn = document.createElement('button');
       downloadBtn.type = 'button';
@@ -2006,6 +2327,33 @@
         input.click();
       });
 
+      if (kind === 'current') {
+        const saveFolderBtn = document.createElement('button');
+        saveFolderBtn.type = 'button';
+        saveFolderBtn.textContent = 'Save Active Document to Data Folder';
+        saveFolderBtn.disabled = !window.GM.data?.getStatus?.().connected;
+        saveFolderBtn.addEventListener('click', async () => {
+          try { await window.GM.sidebarData.saveActiveDocument?.(); window.GM.popup?.hide?.(); }
+          catch (err) { alert(`Could not save the active document: ${err?.message || err}`); }
+        });
+        group.appendChild(saveFolderBtn);
+
+        const renameBtn = document.createElement('button');
+        renameBtn.type = 'button';
+        renameBtn.textContent = 'Rename Active Document';
+        renameBtn.disabled = !window.GM.data?.getStatus?.().connected;
+        renameBtn.addEventListener('click', async () => {
+          const currentName = window.GM.sidebarData?.getDocumentDisplayName?.() || 'Current';
+          const nextName = window.prompt('New file name (without .md):', currentName);
+          if (nextName === null) return;
+          try {
+            await window.GM.sidebarData?.renameActiveDocument?.(nextName);
+            window.GM.popup?.hide?.();
+          } catch (err) { alert(`Could not rename the document: ${err?.message || err}`); }
+        });
+        group.appendChild(renameBtn);
+      }
+
       const resetBtn = document.createElement('button');
       resetBtn.type = 'button';
       resetBtn.textContent = `Reset ${title}`;
@@ -2015,7 +2363,13 @@
         window.GM.popup?.hide?.();
       });
 
-      group.appendChild(editBtn);
+      if (kind !== 'current') {
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.textContent = `Edit ${title}`;
+        editBtn.addEventListener('click', () => openSidebarMarkdownEditor(kind));
+        group.appendChild(editBtn);
+      }
       group.appendChild(downloadBtn);
       group.appendChild(loadBtn);
       group.appendChild(resetBtn);
@@ -2023,7 +2377,6 @@
     };
 
     wrap.appendChild(makeGroup('Rules', 'rules'));
-    wrap.appendChild(makeGroup('Current', 'current'));
     return wrap;
   }
 
@@ -2245,6 +2598,7 @@
     toggleSidebarDataPopup,
     syncBookVisibilityPopup,
     refreshSidebarFromData,
+    renderWorkspaceTabs,
     setCurrentSubTabBySectionKey,
     getSidebarTab,
     setSidebarTab,

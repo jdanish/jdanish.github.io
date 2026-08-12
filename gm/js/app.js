@@ -39,6 +39,14 @@
   async function init() {
     window.GM.storage = window.GM.storage || {};
 
+    try {
+      const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
+      await import(moduleUrl.href);
+      await window.GM.data?.init?.();
+    } catch (err) {
+      console.error('Data folder manager failed to load', err);
+    }
+
     if (!window.GM.referenceIndex) {
       try {
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
@@ -46,6 +54,38 @@
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);
       }
+    }
+
+    try {
+      const moduleUrl = new URL('./monster-importer.js', appScriptUrl || new URL('./', window.location.href));
+      await import(moduleUrl.href);
+    } catch (err) {
+      console.error('Monster importer failed to load', err);
+    }
+
+    try {
+      await window.GM.sidebarData?.readyPromise;
+      const folder = await window.GM.data?.loadFolderContents?.();
+      if (folder) {
+        if (folder.rules && window.GM.sidebarData?.importMarkdownFromText) {
+          window.GM.sidebarData.importMarkdownFromText('rules', folder.rules);
+        }
+        if (window.GM.sidebarData?.loadActiveFromFolder) {
+          await window.GM.sidebarData.loadActiveFromFolder(folder);
+        } else if (folder.current && window.GM.sidebarData?.importMarkdownFromText) {
+          window.GM.sidebarData.importMarkdownFromText('current', folder.current);
+        }
+      }
+      await window.GM.referenceIndex?.loadIndexFile?.();
+      if (window.GM.referenceIndex && window.GM.data?.getStatus?.().connected) {
+        try { await window.GM.data.ensureStructure?.(); } catch { /* folder can remain read-only */ }
+        try {
+          const existingIndex = await window.GM.data.readFile('index.json');
+          if (!existingIndex) await window.GM.data.writeFile('index.json', window.GM.referenceIndex.buildIndexJson());
+        } catch { /* keep in-memory index */ }
+      }
+    } catch (err) {
+      console.warn('Connected data folder could not be loaded', err);
     }
 
     window.GM.popup?.init?.();

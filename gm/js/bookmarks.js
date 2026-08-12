@@ -286,6 +286,7 @@
         </div>
         <div class="bookmark-editor-actions">
           <button type="button" data-action="copy">Copy Sidebar Link</button>
+          <button type="button" data-action="index" class="reference-index-add-bookmark">Add to Reference Index</button>
           <button type="button" data-action="delete" class="danger">Delete</button>
           <button type="button" data-action="save" class="primary">Save</button>
           <button type="button" data-action="close">Close</button>
@@ -302,6 +303,7 @@
     const pageInput = backdrop.querySelector('[data-field="page"]');
     const highlightInput = backdrop.querySelector('[data-field="highlight"]');
     const deleteBtn = backdrop.querySelector('[data-action="delete"]');
+    const indexBtn = backdrop.querySelector('[data-action="index"]');
 
     const editorState = {
       tab: null,
@@ -336,6 +338,7 @@
       highlightInput.value = bookmark?.highlight || '';
       if (titleEl) titleEl.textContent = mode === 'create' ? 'New Bookmark' : 'Edit Bookmark';
       if (deleteBtn) deleteBtn.hidden = mode === 'create';
+      if (indexBtn) indexBtn.hidden = !String(bookmark?.highlight || '').trim();
       backdrop.hidden = false;
 
       const rect = card.getBoundingClientRect();
@@ -408,6 +411,18 @@
         else if (action === 'save') onSave();
         else if (action === 'delete') onDelete();
         else if (action === 'copy') onCopy();
+        else if (action === 'index') {
+          const values = readValues();
+          const existing = window.GM.referenceIndex?.findEntry?.(values.name);
+          const entry = {
+            label: values.name,
+            category: existing?.category || window.GM.referenceIndex?.guessCategory?.(values.name, values.highlight, editorState.tab) || 'other',
+            source: existing?.source || `${editorState.tab}/${values.page}?highlight=${encodeURIComponent(values.highlight || values.name)}`,
+            ...(existing?.aliases ? { aliases: existing.aliases } : {}),
+          };
+          closeEditor();
+          window.setTimeout(() => window.GM.referenceIndex?.openEntryEditor?.(entry), 0);
+        }
       });
     });
 

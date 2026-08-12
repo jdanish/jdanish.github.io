@@ -432,6 +432,12 @@ details[open] > summary::before {
 .search-result-title { font-size: 13px; font-weight: 700; }
 .search-result-meta { margin-top: 3px; font-size: 11px; color: var(--muted); }
 .search-result-snippet { margin-top: 5px; font-size: 12px; color: var(--text); opacity: 0.92; line-height: 1.45; }
+.search-reference-result { display: flex; align-items: stretch; gap: 8px; padding: 0; }
+.search-reference-result .search-result-main { flex: 1; text-align: left; border: 0; background: transparent; padding: 10px; }
+.search-reference-result .search-result-actions { display: flex; align-items: center; gap: 6px; padding: 8px 8px 8px 0; }
+.search-reference-result .search-result-actions .btn { white-space: nowrap; }
+.reference-index-row-main small { display: block; margin-top: 4px; font-size: 10px; color: var(--muted); font-weight: 400; }
+
 .search-empty { color: var(--muted); font-size: 12px; padding: 8px 2px; }
 
 details {
@@ -1526,7 +1532,7 @@ a.linkicon:hover::before {
   height: min(82vh, calc(100vh - 24px));
   max-width: calc(100vw - 24px);
   max-height: calc(100vh - 24px);
-  touch-action: none;
+  touch-action: auto;
 }
 
 .sidebar-data-popup.gm-popup-body,
@@ -1553,6 +1559,7 @@ a.linkicon:hover::before {
 .sidebar-md-editor-root .sidebar-md-editor-frame {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
@@ -2134,6 +2141,38 @@ html[data-theme="light"] textarea::placeholder {
   color: #7c8595 !important;
 }
 
+
+/* Workspace controls need explicit contrast in light mode. */
+html[data-theme="light"] .gm-workspace-tabs {
+  border-bottom-color: var(--line) !important;
+}
+html[data-theme="light"] .gm-workspace-tab,
+html[data-theme="light"] .gm-workspace-add {
+  background: #f1f5f9 !important;
+  color: #1f2937 !important;
+  border-color: #b8c2cf !important;
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.05);
+}
+html[data-theme="light"] .gm-workspace-tab:hover,
+html[data-theme="light"] .gm-workspace-add:hover {
+  background: #e5edf7 !important;
+  border-color: #8da0b5 !important;
+}
+html[data-theme="light"] .gm-workspace-tab.active {
+  background: #dbeafe !important;
+  color: #0f172a !important;
+  border-color: #60a5fa !important;
+}
+html[data-theme="light"] .gm-workspace-tab-edit,
+html[data-theme="light"] .gm-workspace-tab-close {
+  color: #334155 !important;
+}
+html[data-theme="light"] .gm-workspace-tab-edit:hover,
+html[data-theme="light"] .gm-workspace-tab-close:hover {
+  background: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
 html[data-theme="light"] .sidebar-tools button,
 html[data-theme="light"] button:not(.bookmark-edit),
 html[data-theme="light"] a.btn,
@@ -2631,3 +2670,201 @@ html[data-theme="light"] .sidebar-tracker-input {
   white-space: nowrap;
   color: var(--text);
 }
+
+/* Data-folder, document browser, and reference-index UI */
+.sidebar-data-actions,
+.reference-index-toolbar,
+.gm-document-toolbar,
+.reference-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.sidebar-data-actions button,
+.reference-index-toolbar button,
+.gm-document-toolbar button,
+.reference-entry-actions button {
+  border: 1px solid var(--border-color, rgba(255,255,255,.14));
+  background: var(--panel-bg, rgba(255,255,255,.04));
+  color: inherit;
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.sidebar-data-actions button:hover,
+.reference-index-toolbar button:hover,
+.gm-document-toolbar button:hover,
+.reference-entry-actions button:hover {
+  filter: brightness(1.12);
+}
+.reference-index-toolbar input,
+.reference-index-toolbar select,
+.gm-document-toolbar input,
+.reference-entry-editor input,
+.reference-entry-editor select,
+.reference-entry-editor textarea {
+  min-width: 0;
+  border: 1px solid var(--border-color, rgba(255,255,255,.14));
+  background: var(--input-bg, rgba(0,0,0,.18));
+  color: inherit;
+  border-radius: 6px;
+  padding: 7px 9px;
+}
+.reference-index-toolbar input { flex: 1 1 250px; }
+.reference-index-browser-list,
+.gm-document-list { margin-top: 10px; max-height: 62vh; overflow: auto; }
+.reference-index-summary { margin: 8px 0; opacity: .72; font-size: .9em; }
+.reference-index-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 6px;
+  align-items: stretch;
+  min-width: 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.reference-index-row-main {
+  min-width: 0;
+  max-width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 10px 4px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.reference-index-row-main strong,
+.reference-index-row-main span,
+.reference-index-row-main small {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.reference-index-row-main span { opacity: .68; font-size: .86em; }
+.reference-index-row > button:not(.reference-index-row-main) {
+  align-self: center;
+  border: 1px solid rgba(255,255,255,.1);
+  background: transparent;
+  color: inherit;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 8px;
+}
+.gm-document-group { margin-bottom: 14px; }
+.gm-document-group h3 { margin: 10px 0 4px; text-transform: capitalize; }
+.gm-document-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 6px 0;
+}
+.gm-document-open {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 600;
+}
+.gm-document-row small { opacity: .58; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reference-entry-editor { display: grid; gap: 10px; }
+.reference-entry-editor label { display: grid; gap: 4px; font-size: .92em; }
+.reference-entry-actions { justify-content: flex-end; }
+
+/* Index/reference editors must remain above bookmark editing UI. */
+.reference-entry-editor-popup.gm-popup,
+.reference-index-browser-popup.gm-popup { z-index: 3200; }
+.reference-entry-editor { max-height: 70vh; overflow: auto; }
+.reference-index-browser-popup .gm-popup-body { overflow: hidden; }
+.reference-index-browser { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+.reference-index-browser-list { flex: 1 1 auto; min-height: 0; overflow: auto; }
+
+/* Multi-document workspace */
+.gm-workspace-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px 8px 6px;
+  margin: 0 0 8px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-color, rgba(255,255,255,.12));
+  scrollbar-width: thin;
+}
+
+.gm-workspace-tab,
+.gm-workspace-add {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  max-width: 240px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color, rgba(255,255,255,.14));
+  border-radius: 7px;
+  background: var(--panel-alt, rgba(255,255,255,.04));
+  color: inherit;
+  cursor: pointer;
+}
+
+.gm-workspace-tab > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gm-workspace-tab.active {
+  font-weight: 700;
+  border-color: var(--accent, #6ea8fe);
+  background: var(--panel-highlight, rgba(110,168,254,.12));
+}
+
+.gm-workspace-tab-close {
+  flex: 0 0 auto;
+  font-size: 1.05em;
+  line-height: 1;
+  opacity: .7;
+}
+
+.gm-workspace-tab-close:hover {
+  opacity: 1;
+}
+
+.gm-workspace-add {
+  opacity: .9;
+}
+
+/* Workspace: keep document tabs as the primary navigation layer. */
+.gm-workspace-tabs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.gm-document-toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.gm-document-toolbar [data-doc-search] { flex: 1 1 240px; min-width: 180px; }
+
+/* Workspace document tabs: compact edit affordance and bookmark-like drag ordering. */
+.gm-workspace-tab { position: relative; }
+.gm-workspace-tab-label { min-width: 0; }
+.gm-workspace-tab-edit,
+.gm-workspace-tab-close {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 1px 3px;
+  margin: 0;
+  cursor: pointer;
+  line-height: 1;
+}
+.gm-workspace-tab-edit { opacity: .72; font-size: .98em; }
+.gm-workspace-tab-edit:hover,
+.gm-workspace-tab-close:hover { opacity: 1; }
+.gm-workspace-tab.dragging { opacity: .45; }
+.gm-workspace-tab.drag-over-before { box-shadow: inset 3px 0 0 var(--accent, #6ea8fe); }
+.gm-workspace-tab.drag-over-after { box-shadow: inset -3px 0 0 var(--accent, #6ea8fe); }
+.gm-workspace-tab { cursor: grab; }
+.gm-workspace-tab:active { cursor: grabbing; }

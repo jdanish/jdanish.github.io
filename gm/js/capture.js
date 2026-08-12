@@ -168,6 +168,7 @@
 
     const buttons = [
       ['bookmark', 'Create Bookmark'],
+      ['index', 'Add to Reference Index'],
       ['copy-link', 'Copy Sidebar Link'],
       ['notes', 'Add to Notes'],
       ['copy-text', 'Copy Text'],
@@ -198,11 +199,23 @@
 
       try {
         if (action === 'bookmark') {
+          window.GM.popup?.hide?.();
           window.GM.bookmarks?.createBookmarkFromContext?.(current, {
             x: state.lastPoint?.x,
             y: state.lastPoint?.y,
           });
+          return;
+        }
+
+        if (action === 'index') {
+          const existing = window.GM.referenceIndex?.findEntry?.(current.text);
           window.GM.popup?.hide?.();
+          window.setTimeout(() => window.GM.referenceIndex?.openEntryEditor?.({
+            label: existing?.label || truncate(current.text, 80),
+            category: existing?.category || window.GM.referenceIndex?.guessCategory?.(current.text, current.text, current.tab) || 'other',
+            source: existing?.source || `${current.tab}/${current.displayPage}?highlight=${encodeURIComponent(current.text)}`,
+            ...(existing?.aliases ? { aliases: existing.aliases } : {}),
+          }), 0);
           return;
         }
 

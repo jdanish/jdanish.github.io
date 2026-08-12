@@ -74,8 +74,10 @@
       if (!root.hidden) positionCurrent();
     });
 
-    window.addEventListener('scroll', () => {
+    window.addEventListener('scroll', (event) => {
       if (root.hidden || state.current?.closeOnScroll === false) return;
+      const target = event?.target;
+      if (target && (target === panel || panel.contains?.(target))) return;
       hide();
     }, true);
 

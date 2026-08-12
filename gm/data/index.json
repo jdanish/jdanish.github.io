@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "entries": {
+    "edges": {
+      "fleet-footed": {
+        "label": "Fleet-Footed",
+        "source": "swade/38?highlight=FLEET-FOOTED"
+      },
+      "arcane background (psy commando)": {
+        "label": "Arcane Background (Psy Commando)",
+        "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
+      },
+      "basic psychic loadout": {
+        "label": "Basic Psychic Loadout",
+        "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
+      },
+      "psyfocus loadout": {
+        "label": "PsyFocus Loadout",
+        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
+      },
+      "advanced psyfocus loadout": {
+        "label": "Advanced PsyFocus Loadout",
+        "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
+      },
+      "living weapon": {
+        "label": "Living Weapon",
+        "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
+      },
+      "heavy hitters squad edge": {
+        "label": "Heavy Hitters Squad Edge",
+        "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
+      }
+    },
+    "items": {
+      "psyfocus loadout & advanced": {
+        "label": "PsyFocus Loadout & Advanced",
+        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
+      },
+      "psyfocus": {
+        "label": "PsyFocus",
+        "source": "starbreaker_core/120?highlight=PsyFocus"
+      },
+      "gatling laser": {
+        "label": "Gatling Laser",
+        "source": "sfc/54?highlight=Gatling%20Laser"
+      },
+      "blackout grenades": {
+        "label": "Blackout Grenades",
+        "source": "starbreaker_core/91?highlight=Blackout%20Grenades"
+      },
+      "blackout smoke grenade": {
+        "label": "Blackout Smoke Grenade",
+        "source": "starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade"
+      },
+      "flechette grenades": {
+        "label": "Flechette Grenades",
+        "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
+      },
+      "flechette disk": {
+        "label": "Flechette Disk",
+        "source": "starbreaker_core/91?highlight=Flechette%20Disk"
+      },
+      "emp grenade": {
+        "label": "EMP Grenade",
+        "source": "starbreaker_core/91?highlight=EMP%20Grenade"
+      },
+      "gravity grenades": {
+        "label": "Gravity Grenades",
+        "source": "starbreaker_core/91?highlight=Gravity%20Grenades"
+      },
+      "gravity grenade": {
+        "label": "Gravity Grenade",
+        "source": "starbreaker_core/91?highlight=Gravity%20Grenade"
+      },
+      "web grenades": {
+        "label": "Web Grenades",
+        "source": "starbreaker_core/91?highlight=Web%20Grenades"
+      },
+      "web grenade": {
+        "label": "Web Grenade",
+        "source": "starbreaker_core/91?highlight=Web%20Grenade"
+      },
+      "star marine armor (+6*)": {
+        "label": "Star Marine Armor (+6*)",
+        "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
+      }
+    },
+    "powers": {
+      "arcane protection": {
+        "label": "Arcane Protection",
+        "source": "swade/153?highlight=arcane%20protection"
+      },
+      "barrier": {
+        "label": "Barrier",
+        "source": "swade/153?highlight=Barrier"
+      },
+      "blast": {
+        "label": "Blast",
+        "source": "swade/155?highlight=Blast"
+      },
+      "bolt": {
+        "label": "Bolt",
+        "source": "swade/155?highlight=bolt"
+      },
+      "boost/lower trait": {
+        "label": "Boost/Lower Trait",
+        "source": "swade/155?highlight=Boost%2FLower%20Trait"
+      },
+      "invisibility": {
+        "label": "Invisibility",
+        "source": "swade/163?highlight=Invisibility"
+      },
+      "mind link": {
+        "label": "Mind Link",
+        "source": "swade/163?highlight=Mind%20Link"
+      },
+      "smite": {
+        "label": "Smite",
+        "source": "swade/167?highlight=Smite"
+      },
+      "sound / silence": {
+        "label": "Sound / Silence",
+        "source": "swade/167?highlight=Sound%2FSilence"
+      },
+      "telekinesis": {
+        "label": "Telekinesis",
+        "source": "swade/169?highlight=Telekinesis"
+      },
+      "wall walker": {
+        "label": "Wall Walker",
+        "source": "swade/169?highlight=Wall%20Walker"
+      }
+    }
+  }
+}
