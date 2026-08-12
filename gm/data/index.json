@@ -93,6 +93,10 @@
         "label": "Brute",
         "source": "swade/37?highlight=Brute"
       },
+      "calculating": {
+        "label": "Calculating",
+        "source": "swade/40?highlight=Calculating"
+      },
       "champion healer": {
         "label": "Champion Healer",
         "source": "swade/51?highlight=Champion%20Healer"
@@ -165,6 +169,10 @@
         "label": "Extra Effort",
         "source": "swade/45?highlight=Extra%20Effort"
       },
+      "extraction": {
+        "label": "Extraction",
+        "source": "swade/40?highlight=Extraction"
+      },
       "fame": {
         "label": "Fame",
         "source": "swade/38?highlight=Fame"
@@ -189,6 +197,10 @@
         "label": "Filthy Rich",
         "source": "swade/39?highlight=Filthy%20Rich"
       },
+      "first strike": {
+        "label": "First Strike",
+        "source": "swade/41?highlight=First%20Strike"
+      },
       "fleet-footed": {
         "label": "Fleet-Footed",
         "source": "swade/38?highlight=FLEET-FOOTED"
@@ -196,6 +208,10 @@
       "followers": {
         "label": "Followers",
         "source": "swade/52?highlight=Followers"
+      },
+      "free runner": {
+        "label": "Free Runner",
+        "source": "swade/41?highlight=Free%20Runner"
       },
       "frenzy": {
         "label": "Frenzy",
@@ -212,6 +228,14 @@
       "great luck": {
         "label": "Great Luck",
         "source": "swade/39?highlight=Great%20Luck"
+      },
+      "hard to kill": {
+        "label": "Hard To Kill",
+        "source": "swade/41?highlight=Hard%20To%20Kill"
+      },
+      "harder to kill": {
+        "label": "Harder to Kill",
+        "source": "swade/41?highlight=Harder%20to%20Kill"
       },
       "heavy hitters squad edge": {
         "label": "Heavy Hitters Squad Edge",
@@ -237,9 +261,17 @@
         "label": "Improved Dodge",
         "source": "swade/40?highlight=Improved%20Dodge"
       },
+      "improved extraction": {
+        "label": "Improved Extraction",
+        "source": "swade/41?highlight=Improved%20Extraction"
+      },
       "improved first strike": {
         "label": "Improved First Strike",
         "source": "swade/41?highlight=Improved%20First%20Strike"
+      },
+      "improved frenzy": {
+        "label": "Improved Frenzy",
+        "source": "swade/41?highlight=Improved%20Frenzy"
       },
       "improved rapid fire": {
         "label": "Improved Rapid Fire",
@@ -269,9 +301,9 @@
         "label": "Iron Will",
         "source": "swade/50?highlight=Iron%20Will"
       },
-      "killer instinct mighty blow": {
-        "label": "Killer Instinct Mighty Blow",
-        "source": "swade/42?highlight=Killer%20Instinct%20Mighty%20Blow"
+      "killer instinct": {
+        "label": "Killer Instinct",
+        "source": "swade/42?highlight=Killer%20Instinct"
       },
       "legendary edges": {
         "label": "Legendary Edges",
@@ -320,6 +352,10 @@
       "mentalist": {
         "label": "Mentalist",
         "source": "swade/45?highlight=Mentalist"
+      },
+      "mighty blow": {
+        "label": "Mighty Blow",
+        "source": "swade/42?highlight=Mighty%20Blow"
       },
       "natural leader": {
         "label": "Natural Leader",
