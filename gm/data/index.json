@@ -1,21 +1,10 @@
 {
   "version": 1,
   "entries": {
-    "abilities": {},
-    "ancestries": {},
-    "armor": {},
     "edges": {
-      "advanced psyfocus loadout": {
-        "label": "Advanced PsyFocus Loadout",
-        "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
-      },
-      "alertness": {
-        "label": "Alertness",
-        "source": "swade/36?highlight=Alertness"
-      },
-      "ambidextrous": {
-        "label": "Ambidextrous",
-        "source": "swade/36?highlight=Ambidextrous"
+      "fleet-footed": {
+        "label": "Fleet-Footed",
+        "source": "swade/38?highlight=FLEET-FOOTED"
       },
       "arcane background (psy commando)": {
         "label": "Arcane Background (Psy Commando)",
@@ -25,29 +14,36 @@
         "label": "Basic Psychic Loadout",
         "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
       },
-      "fleet-footed": {
-        "label": "Fleet-Footed",
-        "source": "swade/38?highlight=FLEET-FOOTED"
+      "psyfocus loadout": {
+        "label": "PsyFocus Loadout",
+        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
       },
-      "heavy hitters squad edge": {
-        "label": "Heavy Hitters Squad Edge",
-        "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
-      },
-      "improved arcane resistance": {
-        "label": "Improved Arcane Resistance",
-        "source": "swade/36?highlight=Improved%20Arcane%20Resistance"
+      "advanced psyfocus loadout": {
+        "label": "Advanced PsyFocus Loadout",
+        "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
       },
       "living weapon": {
         "label": "Living Weapon",
         "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
       },
-      "psyfocus loadout": {
-        "label": "PsyFocus Loadout",
-        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
+      "heavy hitters squad edge": {
+        "label": "Heavy Hitters Squad Edge",
+        "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
       }
     },
-    "hindrances": {},
     "items": {
+      "psyfocus loadout & advanced": {
+        "label": "PsyFocus Loadout & Advanced",
+        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
+      },
+      "psyfocus": {
+        "label": "PsyFocus",
+        "source": "starbreaker_core/120?highlight=PsyFocus"
+      },
+      "gatling laser": {
+        "label": "Gatling Laser",
+        "source": "sfc/54?highlight=Gatling%20Laser"
+      },
       "blackout grenades": {
         "label": "Blackout Grenades",
         "source": "starbreaker_core/91?highlight=Blackout%20Grenades"
@@ -56,54 +52,39 @@
         "label": "Blackout Smoke Grenade",
         "source": "starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade"
       },
-      "emp grenade": {
-        "label": "EMP Grenade",
-        "source": "starbreaker_core/91?highlight=EMP%20Grenade"
+      "flechette grenades": {
+        "label": "Flechette Grenades",
+        "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
       },
       "flechette disk": {
         "label": "Flechette Disk",
         "source": "starbreaker_core/91?highlight=Flechette%20Disk"
       },
-      "flechette grenades": {
-        "label": "Flechette Grenades",
-        "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
-      },
-      "gatling laser": {
-        "label": "Gatling Laser",
-        "source": "sfc/54?highlight=Gatling%20Laser"
-      },
-      "gravity grenade": {
-        "label": "Gravity Grenade",
-        "source": "starbreaker_core/91?highlight=Gravity%20Grenade"
+      "emp grenade": {
+        "label": "EMP Grenade",
+        "source": "starbreaker_core/91?highlight=EMP%20Grenade"
       },
       "gravity grenades": {
         "label": "Gravity Grenades",
         "source": "starbreaker_core/91?highlight=Gravity%20Grenades"
       },
-      "psyfocus": {
-        "label": "PsyFocus",
-        "source": "starbreaker_core/120?highlight=PsyFocus"
+      "gravity grenade": {
+        "label": "Gravity Grenade",
+        "source": "starbreaker_core/91?highlight=Gravity%20Grenade"
       },
-      "psyfocus loadout & advanced": {
-        "label": "PsyFocus Loadout & Advanced",
-        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
-      },
-      "star marine armor (+6*)": {
-        "label": "Star Marine Armor (+6*)",
-        "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
+      "web grenades": {
+        "label": "Web Grenades",
+        "source": "starbreaker_core/91?highlight=Web%20Grenades"
       },
       "web grenade": {
         "label": "Web Grenade",
         "source": "starbreaker_core/91?highlight=Web%20Grenade"
       },
-      "web grenades": {
-        "label": "Web Grenades",
-        "source": "starbreaker_core/91?highlight=Web%20Grenades"
+      "star marine armor (+6*)": {
+        "label": "Star Marine Armor (+6*)",
+        "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
       }
     },
-    "monsters": {},
-    "npcs": {},
-    "other": {},
     "powers": {
       "arcane protection": {
         "label": "Arcane Protection",
@@ -149,9 +130,6 @@
         "label": "Wall Walker",
         "source": "swade/169?highlight=Wall%20Walker"
       }
-    },
-    "rules": {},
-    "skills": {},
-    "weapons": {}
+    }
   }
 }

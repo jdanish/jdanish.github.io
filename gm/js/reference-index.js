@@ -9,7 +9,27 @@
     pdfjsPromise: null,
     pdfjsLib: null,
     lastCandidates: [],
+    persistedSignature: null,
   };
+
+  function indexSignature(index) {
+    return JSON.stringify(sortedIndex(index || ensureIndex()));
+  }
+
+  function isIndexDirty() {
+    const signature = indexSignature(ensureIndex());
+    return state.persistedSignature !== null && signature !== state.persistedSignature;
+  }
+
+  function markIndexDirty() {
+    window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+  }
+
+  function markIndexClean() {
+    state.persistedSignature = indexSignature(ensureIndex());
+    window.dispatchEvent(new CustomEvent('gm-reference-index-saved'));
+    window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+  }
 
   function getScriptBaseUrl() {
     const current = document.currentScript?.src;
@@ -348,7 +368,7 @@
     return cloneIndex(ensureIndex());
   }
 
-  function setIndex(next) {
+  function setIndex(next, options = {}) {
     const incoming = next?.entries || next || {};
     window.REFERENCE_INDEX = {};
     Object.keys(incoming).forEach((type) => {
@@ -358,6 +378,11 @@
       });
     });
     ensureIndex();
+    if (options.markDirty === false) {
+      state.persistedSignature = indexSignature(ensureIndex());
+    } else {
+      markIndexDirty();
+    }
     return getIndex();
   }
 
@@ -379,6 +404,7 @@
       source,
       ...(Array.isArray(entry?.aliases) && entry.aliases.length ? { aliases: entry.aliases.slice() } : {}),
     };
+    markIndexDirty();
     return { category, key, entry: index[category][key], previous, created: !previous };
   }
 
@@ -396,6 +422,7 @@
     const normalized = normalizeKey(key);
     if (!bucket?.[normalized]) return false;
     delete bucket[normalized];
+    markIndexDirty();
     return true;
   }
 
@@ -450,13 +477,17 @@
       }
       if (!text) return false;
       const parsed = JSON.parse(text);
-      setIndex(parsed);
+      setIndex(parsed, { markDirty: false });
       return true;
     } catch (err) {
       console.warn('Could not load standalone reference index; retaining current index.', err);
       ensureIndex();
       return false;
     }
+  }
+
+  function getSaveStatus() {
+    return { dirty: isIndexDirty(), connected: !!window.GM.data?.getStatus?.().connected };
   }
 
   function buildIndexJson() {
@@ -478,6 +509,7 @@
   async function saveIndexToConnectedFolder() {
     if (!window.GM.data?.getStatus?.().connected) return false;
     await window.GM.data.writeFile('index.json', buildIndexJson());
+    markIndexClean();
     return true;
   }
 
@@ -751,6 +783,7 @@
     buildConfigJs,
     downloadConfig,
     getStats,
+    getSaveStatus,
     getCandidates: () => state.lastCandidates.slice(),
   };
 })();

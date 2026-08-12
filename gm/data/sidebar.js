@@ -491,9 +491,9 @@ window.SIDEBAR_SECTIONS = [];
       return value;
     };
 
-    const flushParagraph = (buffer) => {
+    const flushParagraph = (buffer, target = output) => {
       const text = buffer.join(' ').trim();
-      if (text) output.push(`<p>${renderInline(text)}</p>`);
+      if (text) target.push(`<p>${renderInline(text)}</p>`);
       buffer.length = 0;
     };
 
@@ -581,7 +581,7 @@ window.SIDEBAR_SECTIONS = [];
       const paragraph = [];
 
       const flush = () => {
-        flushParagraph(paragraph);
+        flushParagraph(paragraph, parts);
       };
 
       while (i < endIndex) {
@@ -797,20 +797,22 @@ window.SIDEBAR_SECTIONS = [];
     const sections = [];
     let current = null;
     let body = [];
+    let preamble = [];
 
-    const headingLevel = kind === 'current'
-      ? (lines.some((line) => /^\s*#(?!#)\s+/.test(line)) ? 1 : 2)
-      : 2;
-    const headingPattern = headingLevel === 1
-      ? /^\s*#(?!#)\s+(.+)$/
-      : /^\s*##\s+(.+)$/;
+    // One Markdown hierarchy for every document:
+    //   #  = workspace tab
+    //   ## = visible section/header inside the tab
+    //   ### = collapsible section inside the tab
+    const headingPattern = /^\s*#(?!#)\s+(.+)$/;
 
     const flush = () => {
       if (!current) return;
-      current.body = body.join('\n').trim();
+      const prefix = sections.length === 0 && preamble.length ? `${preamble.join('\n').trim()}\n\n` : '';
+      current.body = `${prefix}${body.join('\n')}`.trim();
       sections.push(current);
       current = null;
       body = [];
+      preamble = [];
     };
 
     lines.forEach((line) => {
@@ -821,31 +823,26 @@ window.SIDEBAR_SECTIONS = [];
         return;
       }
 
-      if (current) {
-        body.push(line);
-      }
+      if (current) body.push(line);
+      else if (line.trim()) preamble.push(line);
     });
 
     flush();
 
-    const fallbackSections = sections.length
-      ? sections
-      : [{
-          title: String(kind || 'section').replace(/^./, (ch) => ch.toUpperCase()),
-          body: normalized,
-        }];
+    if (!sections.length) {
+      sections.push({
+        title: String(kind || 'section').replace(/^./, (ch) => ch.toUpperCase()),
+        body: normalized,
+      });
+    }
 
-    return fallbackSections.map((section, index) => {
-      const html = renderMarkdownToHtml(section.body || '');
-
-      return {
-        id: slugify(section.title) || `${kind}-${index + 1}`,
-        title: section.title,
-        tab: kind === 'current' ? 'current' : 'rules',
-        intro: '',
-        blocks: [{ html }],
-      };
-    });
+    return sections.map((section, index) => ({
+      id: slugify(section.title) || `${kind}-${index + 1}`,
+      title: section.title,
+      tab: kind === 'rules' ? 'rules' : 'current',
+      intro: '',
+      blocks: [{ html: renderMarkdownToHtml(section.body || '') }],
+    }));
   }
 
   function normalizeSectionList(input, kind) {
@@ -867,7 +864,7 @@ window.SIDEBAR_SECTIONS = [];
 
     return source.map((section) => ({
       ...section,
-      tab: kind === 'current' ? 'current' : 'rules',
+      tab: kind === 'rules' ? 'rules' : 'current',
     }));
   }
 
@@ -909,6 +906,14 @@ window.SIDEBAR_SECTIONS = [];
 
   function cloneMarkdown(kind) {
     return sanitizeMarkdownSource(kind === 'current' ? currentMarkdown : rulesMarkdown || '');
+  }
+
+  function getWorkspaceSectionKind(meta = activeDocumentMeta, path = activeDocumentPath) {
+    const type = String(meta?.type || '').trim().toLowerCase();
+    const documentPath = String(path || '').trim();
+    if (type === 'current' || !documentPath || documentPath.toLowerCase() === 'current.md') return 'current';
+    if (/^(characters|monsters|notes)\//i.test(documentPath) || ['character', 'monster', 'note'].includes(type)) return 'entity';
+    return 'entity';
   }
 
   function markdownToSections(markdown, kind) {
@@ -955,9 +960,9 @@ window.SIDEBAR_SECTIONS = [];
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function importMarkdownFromText(kind, text) {
+  function importMarkdownFromText(kind, text, sectionKind = kind) {
     const markdown = sanitizeMarkdownSource(text);
-    const sections = normalizeSectionList(markdown, kind);
+    const sections = normalizeSectionList(markdown, sectionKind);
     if (kind === 'current') {
       currentMarkdown = markdown;
       currentSections = sections;
@@ -1027,6 +1032,10 @@ window.SIDEBAR_SECTIONS = [];
     }
   }
 
+  function getActiveSections() {
+    return markdownToSections(currentMarkdown || '', 'current');
+  }
+
   function getActiveDocument() {
     return { ...activeDocumentMeta, path: activeDocumentPath, markdown: currentMarkdown };
   }
@@ -1093,7 +1102,7 @@ window.SIDEBAR_SECTIONS = [];
     activeDocumentPath = path;
     activeDocumentMeta = meta;
     if (!openDocumentPaths.includes(path)) openDocumentPaths.push(path);
-    importMarkdownFromText('current', stripFrontMatter(text));
+    importMarkdownFromText('current', stripFrontMatter(text), getWorkspaceSectionKind(meta, path));
     await saveWorkspaceState();
     window.GM.ui?.refreshSidebarFromData?.();
     window.GM.ui?.setSidebarTab?.('current');
@@ -1108,8 +1117,8 @@ window.SIDEBAR_SECTIONS = [];
     const raw = folder.activeMarkdown || folder.current || '';
     const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, raw);
     activeDocumentMeta = meta;
-    if (path !== 'current.md' && raw) importMarkdownFromText('current', stripFrontMatter(raw));
-    else if (folder.current) importMarkdownFromText('current', folder.current);
+    if (path !== 'current.md' && raw) importMarkdownFromText('current', stripFrontMatter(raw), getWorkspaceSectionKind(meta, path));
+    else if (folder.current) importMarkdownFromText('current', folder.current, 'current');
     await saveWorkspaceState();
     return true;
   }
@@ -1235,6 +1244,7 @@ window.SIDEBAR_SECTIONS = [];
     openDocument,
     closeDocument,
     getActiveDocument,
+    getActiveSections,
     getWorkspaceDocuments,
     reorderWorkspaceDocuments,
     setWorkspaceDocumentOrder,

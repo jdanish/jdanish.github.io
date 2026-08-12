@@ -34,44 +34,136 @@
     return result;
   }
 
-  function parseStatBlock(text) {
-    const raw = clean(text);
-    const lines = raw.split('\n').map(clean).filter(Boolean);
-    if (!lines.length) throw new Error('The stat block is empty.');
-    let name = lines[0].replace(/^#+\s*/, '').trim();
-    if (/^(attributes?|stats?)$/i.test(name) && lines[1]) name = lines[1];
-    const body = lines.slice(1);
-
-    const sections = [];
-    let current = null;
-    const knownSection = /^(attributes?|skills?|hindrances?|edges?(?:\s*&\s*abilities)?|special abilities?|weapons?|armor|gear|equipment|powers?|notes?|description)$/i;
-    body.forEach((line) => {
-      const heading = line.match(/^#{1,6}\s+(.+)$/);
-      const labelHeading = line.match(/^([A-Za-z][A-Za-z &'/-]{1,40}):\s*$/);
-      const candidate = heading?.[1] || labelHeading?.[1];
-      if (candidate && knownSection.test(candidate)) {
-        current = { title: candidate, lines: [] };
-        sections.push(current);
-        return;
+  function splitLabeledLines(lines) {
+    const output = [];
+    let current = '';
+    for (const raw of lines) {
+      const line = clean(String(raw || '').replace(/^\s*[•●▪◦]\s*/, '- '));
+      if (!line) {
+        if (current) {
+          output.push(current);
+          current = '';
+        }
+        output.push('');
+        continue;
       }
-      if (!current) {
-        current = { title: '', lines: [] };
-        sections.push(current);
+      const startsNew = /^(?:Attributes?|Stats?|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Notes?|Description|Pace|Parry|Toughness)\s*:/i.test(line)
+        || /^[-*]\s+/.test(line)
+        || /^#{1,6}\s+/.test(line);
+      if (!current || startsNew) {
+        if (current) output.push(current);
+        current = line;
+      } else {
+        current += ' ' + line;
+      }
+    }
+    if (current) output.push(current);
+    return output;
+  }
+
+  function parseSpecialAbilities(lines) {
+    const abilities = [];
+    let current = '';
+    for (const raw of lines) {
+      const line = clean(String(raw || '').replace(/^\s*(?:[-*•●▪◦])\s+/, ''));
+      if (!line) continue;
+      const startsAbility = /^[-*•●▪◦]\s+/.test(line) || /^[^:]{1,80}:\s*/.test(line);
+      if (startsAbility) {
+        if (current) abilities.push(current);
+        current = line;
+      } else if (current) {
+        current += ' ' + line;
+      } else {
+        current = line;
+      }
+    }
+    if (current) abilities.push(current);
+    return abilities;
+  }
+
+  function formatKnownReferenceLabel(label) {
+    const index = window.GM.referenceIndex?.getIndex?.() || {};
+    const target = clean(label);
+    const categories = ['abilities', 'edges', 'powers', 'items', 'rules', 'other'];
+    for (const category of categories) {
+      const bucket = index[category] || {};
+      for (const entry of Object.values(bucket)) {
+        if (!entry?.label || !entry?.source) continue;
+        const aliases = Array.isArray(entry.aliases) ? entry.aliases : [];
+        if ([entry.label, ...aliases].some((x) => clean(x).toLowerCase() === target.toLowerCase())) {
+          return `[[${entry.source}|${label}]]`;
+        }
+      }
+    }
+    return label;
+  }
+
+  function formatSpecialAbility(line) {
+    const match = line.match(/^([^:]{1,80}):\s*(.*)$/);
+    if (!match) return `- ${line}`;
+    const name = clean(match[1]);
+    const description = clean(match[2]);
+    const linkedName = formatKnownReferenceLabel(name);
+    return `- **${linkedName}:** ${description}`;
+  }
+
+  function parseStatBlock(text) {
+    const raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const rawLines = raw.split('\n').map((line) => line.trim()).filter((line, i, arr) => line || (i > 0 && arr[i - 1]));
+    if (!rawLines.length) throw new Error('The stat block is empty.');
+
+    const name = clean(rawLines[0].replace(/^#+\s*/, '').replace(/^\s*[•●▪◦]\s*/, ''));
+    const body = rawLines.slice(1);
+    const knownSections = /^(attributes?|stats?|skills?|hindrances?|edges?(?:\s*&\s*abilities)?|special abilities?|weapons?|armor|gear|equipment|powers?|notes?|description)$/i;
+    const sections = [];
+    let current = { title: '', lines: [] };
+
+    for (const rawLine of body) {
+      const line = clean(rawLine);
+      if (!line) {
+        if (current.lines.length) current.lines.push('');
+        continue;
+      }
+
+      const heading = line.match(/^#{1,6}\s+(.+)$/);
+      const label = line.match(/^([A-Za-z][A-Za-z &'/-]{1,40}):\s*(.*)$/);
+      const headingText = heading?.[1] || label?.[1];
+      if (headingText && knownSections.test(headingText)) {
+        if (current.title || current.lines.length) sections.push(current);
+        current = { title: clean(headingText), lines: [] };
+        if (label?.[2]) current.lines.push(label[2]);
+        continue;
       }
       current.lines.push(line);
-    });
+    }
+    if (current.title || current.lines.length) sections.push(current);
 
     const out = [`# ${name}`, ''];
-    sections.forEach((section) => {
-      const title = clean(section.title);
-      const content = section.lines.filter(Boolean);
-      if (!content.length) return;
-      if (title) out.push(`## ${title}`, '');
-      content.forEach((line) => out.push(line));
-      out.push('');
-    });
+    const specialSectionNames = /special abilities?/i;
 
-    // If the source is a compact stat line, preserve it rather than forcing a rigid schema.
+    for (const section of sections) {
+      const title = clean(section.title);
+      const content = splitLabeledLines(section.lines).filter((line) => line !== '');
+      if (!content.length) continue;
+
+      if (title && specialSectionNames.test(title)) {
+        out.push(`## ${title}`, '');
+        parseSpecialAbilities(content).forEach((ability) => out.push(formatSpecialAbility(ability)));
+        out.push('');
+        continue;
+      }
+
+      if (title) out.push(`## ${title}`, '');
+      for (const line of content) {
+        const normalized = line
+          .replace(/^(Attributes?|Stats?|Skills?|Hindrances?|Edges?|Powers?|Pace|Parry|Toughness)\s*:\s*/i, (m, label) => `**${label}:** `)
+          .replace(/;\s*(Parry|Toughness)\s*:/gi, '; **$1:** ');
+        out.push(normalized);
+        out.push('');
+      }
+    }
+
+    // Link any remaining known references (items, powers, abilities, etc.) without disturbing links already present.
     let markdown = out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
     markdown = linkKnownReferences(markdown);
     return { name, markdown, slug: slug(name) };

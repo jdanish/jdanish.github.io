@@ -2868,3 +2868,55 @@ html[data-theme="light"] .sidebar-tracker-input {
 .gm-workspace-tab.drag-over-after { box-shadow: inset -3px 0 0 var(--accent, #6ea8fe); }
 .gm-workspace-tab { cursor: grab; }
 .gm-workspace-tab:active { cursor: grabbing; }
+
+/* Reference index save state in Sidebar Data */
+.sidebar-index-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #666);
+  border-radius: 8px;
+  background: var(--panel-bg, rgba(255,255,255,.04));
+  color: var(--text-color, inherit);
+  line-height: 1.25;
+}
+.sidebar-index-status-icon {
+  font-size: 1rem;
+  line-height: 1.1;
+  margin-top: 1px;
+}
+.sidebar-index-status strong,
+.sidebar-index-status small {
+  display: block;
+}
+.sidebar-index-status small {
+  margin-top: 3px;
+  opacity: .78;
+}
+.sidebar-index-status.is-dirty {
+  border-color: #b7791f;
+}
+.sidebar-index-status.is-dirty .sidebar-index-status-icon {
+  color: #b7791f;
+}
+.sidebar-index-status.is-saved {
+  border-color: #3b8c5a;
+}
+.sidebar-index-status.is-saved .sidebar-index-status-icon {
+  color: #3b8c5a;
+}
+html[data-theme="light"] .sidebar-index-status {
+  background: #f7f8fa;
+  color: #1f2937;
+  border-color: #cbd5e1;
+}
+html[data-theme="light"] .sidebar-index-status.is-dirty {
+  background: #fff8eb;
+  border-color: #d69e2e;
+}
+html[data-theme="light"] .sidebar-index-status.is-saved {
+  background: #effaf3;
+  border-color: #68a982;
+}

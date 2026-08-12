@@ -1,5 +1,5 @@
-# Temp items
+# Scratchpad
 
-Not sure what I'd put here but I like the option
+Jean Grayson is stored separately in `characters/Jean-Grayson.md`.
 
-# Key players
+Use **Browse Characters / Monsters / Notes** to open the character file.

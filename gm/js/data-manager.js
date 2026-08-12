@@ -109,14 +109,38 @@
     }
   }
 
-  async function writeFile(path, text) {
+  function isStaleHandleError(err) {
+    const message = String(err?.message || err || '').toLowerCase();
+    return err?.name === 'InvalidStateError' || /state cached in an interface object|state had changed since it was read from disk|invalid state/.test(message);
+  }
+
+  async function refreshStoredFolderHandle() {
+    const stored = await loadHandle();
+    if (!stored) return false;
+    const ok = await verifyPermission(stored, true);
+    if (!ok) return false;
+    state.directoryHandle = stored;
+    state.connected = true;
+    state.lastError = '';
+    return true;
+  }
+
+  async function writeFile(path, text, _retried = false) {
     if (!state.directoryHandle) throw new Error('No data folder is connected.');
-    await verifyPermission(state.directoryHandle, true);
-    const handle = await getFileHandle(path, { create: true });
-    const writable = await handle.createWritable();
-    await writable.write(String(text || ''));
-    await writable.close();
-    return normalizePath(path);
+    try {
+      await verifyPermission(state.directoryHandle, true);
+      const handle = await getFileHandle(path, { create: true });
+      const writable = await handle.createWritable();
+      await writable.write(String(text || ''));
+      await writable.close();
+      return normalizePath(path);
+    } catch (err) {
+      if (!_retried && isStaleHandleError(err) && await refreshStoredFolderHandle()) {
+        return writeFile(path, text, true);
+      }
+      state.lastError = err?.message || String(err);
+      throw err;
+    }
   }
 
   async function removeFile(path) {
@@ -249,6 +273,7 @@
   }
 
   async function writeTextDocument(type, name, markdown) {
+    await refreshStoredFolderHandle();
     const safeType = ['character', 'monster', 'note'].includes(type) ? type : 'note';
     const folder = safeType === 'character' ? 'characters' : safeType === 'monster' ? 'monsters' : 'notes';
     const slug = String(name || 'untitled')
@@ -389,6 +414,7 @@
     disconnect,
     getStatus,
     ensureStructure,
+    refreshStoredFolderHandle,
     readFile,
     writeFile,
     removeFile,

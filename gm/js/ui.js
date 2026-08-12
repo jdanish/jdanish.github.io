@@ -1414,7 +1414,9 @@
     const panelBody = dom.sidebarCurrentPanelBodyEl;
     if (!panelBody || panelBody.dataset.rendered === 'true') return;
 
-    const sections = getCurrentSections();
+    const activeDocument = window.GM.sidebarData?.getActiveDocument?.() || { path: 'current.md', markdown: '' };
+    const liveSections = window.GM.sidebarData?.getActiveSections?.();
+    const sections = Array.isArray(liveSections) && liveSections.length ? liveSections : getCurrentSections();
     panelBody.replaceChildren();
     panelBody.appendChild(renderWorkspaceTabs());
 
@@ -1432,7 +1434,6 @@
 
     const tabs = document.createElement('div');
     tabs.className = 'current-subtabs';
-    const activeDocument = window.GM.sidebarData?.getActiveDocument?.() || { path: 'current.md' };
     const entityDocument = /^(characters|monsters|notes)\//i.test(String(activeDocument.path || ''));
     const showSectionTabs = sections.length > 1 || !entityDocument;
     if (!showSectionTabs) tabs.hidden = true;
@@ -1960,6 +1961,9 @@
     const activeDoc = kind === 'current' ? (window.GM.sidebarData?.getActiveDocument?.() || null) : null;
     const label = kind === 'current' ? (activeDoc?.name || 'Current') : 'Rules';
     const initialMarkdown = kind === 'current' ? String(activeDoc?.markdown || '') : (window.GM.sidebarData?.getRulesMarkdown?.() || '');
+    const activeSectionKind = kind === 'current'
+      ? (String(activeDoc?.path || '').match(/^(characters|monsters|notes)\//i) ? 'entity' : 'current')
+      : kind;
 
     const wrap = document.createElement('div');
     wrap.className = 'sidebar-md-editor';
@@ -2013,7 +2017,7 @@
     const saveMarkdown = async () => {
       const markdown = readMarkdown();
       if (kind === 'current') {
-        window.GM.sidebarData?.importMarkdownFromText?.('current', markdown);
+        window.GM.sidebarData?.importMarkdownFromText?.('current', markdown, activeSectionKind);
         await window.GM.sidebarData?.saveActiveDocument?.();
       } else {
         window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
@@ -2254,6 +2258,20 @@
       : 'Connect a data folder to manage character, monster, note, current, and index files.';
     wrap.appendChild(intro);
 
+    const indexStatus = document.createElement('div');
+    indexStatus.className = 'sidebar-index-status';
+    const updateIndexStatus = () => {
+      const status = window.GM.referenceIndex?.getSaveStatus?.() || {};
+      indexStatus.className = `sidebar-index-status ${status.dirty ? 'is-dirty' : 'is-saved'}`;
+      indexStatus.innerHTML = status.dirty
+        ? '<span class=\"sidebar-index-status-icon\">●</span><span><strong>Reference Index: Unsaved changes</strong><small>Save it to the connected data folder.</small></span>'
+        : '<span class=\"sidebar-index-status-icon\">✓</span><span><strong>Reference Index: Saved</strong><small>index.json matches the current index.</small></span>';
+    };
+    updateIndexStatus();
+    wrap.appendChild(indexStatus);
+    window.addEventListener('gm-reference-index-changed', updateIndexStatus);
+    window.addEventListener('gm-reference-index-saved', updateIndexStatus);
+
     const folderActions = document.createElement('div');
     folderActions.className = 'sidebar-data-actions';
     const connectBtn = document.createElement('button'); connectBtn.type='button'; connectBtn.textContent=dataStatus.connected ? 'Reconnect Folder' : 'Connect Data Folder';
@@ -2286,7 +2304,17 @@
     downloadFolderBtn.addEventListener('click', async () => { try { await window.GM.data.downloadFolder(); } catch(err) { alert(`Could not download the data folder: ${err?.message || err}`); } });
     const docsBtn = document.createElement('button'); docsBtn.type='button'; docsBtn.textContent='Browse Characters / Monsters / Notes'; docsBtn.addEventListener('click', () => openDocumentBrowser());
     const indexBtn = document.createElement('button'); indexBtn.type='button'; indexBtn.textContent='Open Reference Index'; indexBtn.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
-    folderActions.append(connectBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn);
+    const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder'; indexSaveBtn.disabled = !dataStatus.connected;
+    indexSaveBtn.addEventListener('click', async () => {
+      try {
+        indexSaveBtn.disabled = true;
+        const saved = await window.GM.referenceIndex?.saveIndexToConnectedFolder?.();
+        if (!saved) { window.alert('Connect a writable data folder first.'); return; }
+        updateIndexStatus();
+      } catch (err) { window.alert(`Could not save index.json: ${err?.message || err}`); }
+      finally { indexSaveBtn.disabled = !window.GM.data?.getStatus?.().connected; }
+    });
+    folderActions.append(connectBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn, indexSaveBtn);
     wrap.appendChild(folderActions);
 
     const makeGroup = (title, kind) => {
