@@ -238,9 +238,10 @@
       closeOnOutsidePointerDown: options.closeOnOutsidePointerDown !== false,
       closeOnEscape: options.closeOnEscape !== false,
       resizable: options.resizable === true,
+      modal: options.modal !== false,
     };
 
-    state.rootEl.className = `gm-popup-root${options.rootClass ? ` ${options.rootClass}` : ''}`;
+    state.rootEl.className = `gm-popup-root${options.rootClass ? ` ${options.rootClass}` : ''}${options.modal === false ? ' gm-popup-root-nonmodal' : ''}`;
     state.panelEl.className = `gm-popup${options.className ? ` ${options.className}` : ''}${options.resizable ? ' gm-popup-resizable' : ''}`;
     state.titleEl.textContent = options.title || '';
 

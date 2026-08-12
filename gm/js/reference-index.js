@@ -10,6 +10,7 @@
     pdfjsLib: null,
     lastCandidates: [],
     persistedSignature: null,
+    browserViewState: null,
   };
 
   function indexSignature(index) {
@@ -31,9 +32,14 @@
     window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
   }
 
+  // Capture the script URL while this IIFE is executing. `document.currentScript`
+  // can be null later, especially inside async callbacks, so it must be saved
+  // now. This makes ../libs/pdfjs resolve from /gm/js -> /gm/libs on hosted copies.
+  const scriptSourceUrl = document.currentScript?.src || '';
+
   function getScriptBaseUrl() {
-    const current = document.currentScript?.src;
-    return current ? new URL('.', current) : new URL('./', window.location.href);
+    if (scriptSourceUrl) return new URL('./', scriptSourceUrl);
+    return new URL('./js/', document.baseURI || window.location.href);
   }
 
   const scriptBase = getScriptBaseUrl();
@@ -42,13 +48,29 @@
   async function loadPdfJs() {
     if (state.pdfjsLib) return state.pdfjsLib;
     if (state.pdfjsPromise) return state.pdfjsPromise;
-    state.pdfjsPromise = import(resolvePath('../libs/pdfjs/build/pdf.mjs')).then((mod) => {
-      if (mod?.GlobalWorkerOptions) {
-        mod.GlobalWorkerOptions.workerSrc = resolvePath('../libs/pdfjs/build/pdf.worker.mjs');
+
+    state.pdfjsPromise = (async () => {
+      const localUrl = resolvePath('../libs/pdfjs/build/pdf.mjs');
+      const cdnUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.mjs';
+      let mod;
+
+      try {
+        mod = await import(localUrl);
+        if (mod?.GlobalWorkerOptions) {
+          mod.GlobalWorkerOptions.workerSrc = resolvePath('../libs/pdfjs/build/pdf.worker.mjs');
+        }
+      } catch (localError) {
+        console.warn('Local PDF.js module unavailable; using the pinned CDN build.', localError);
+        mod = await import(cdnUrl);
+        if (mod?.GlobalWorkerOptions) {
+          mod.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.worker.mjs';
+        }
       }
+
       state.pdfjsLib = mod;
       return mod;
-    });
+    })();
+
     return state.pdfjsPromise;
   }
 
@@ -539,7 +561,7 @@
       <label>Page<input data-ref="page" type="number" min="1" step="1"></label>
       <label>Highlight<textarea data-ref="highlight" rows="3"></textarea></label>
       <label>Aliases<input data-ref="aliases" placeholder="Optional, comma-separated"></label>
-      <div class="reference-entry-actions"><button type="button" data-action="pdf">Open in Book</button><button type="button" data-action="save" class="primary">Save to local index</button><button type="button" data-action="cancel">Cancel</button></div>
+      <div class="reference-entry-actions"><button type="button" data-action="pdf">Open in Book</button><button type="button" data-action="save" class="primary">Save to local index</button><button type="button" data-action="back">Back to Index</button><button type="button" data-action="cancel">Cancel</button></div>
     `;
     const bookSelect = root.querySelector('[data-ref="book"]');
     Object.entries(window.BOOKS || {}).sort((a,b) => (Number(a[1]?.order)||999)-(Number(b[1]?.order)||999)).forEach(([key, book]) => {
@@ -569,12 +591,17 @@
     root.addEventListener('click', async (event) => {
       const action = event.target.closest('[data-action]')?.dataset.action;
       if (action === 'cancel') { window.GM.popup?.hide?.(); return; }
+      if (action === 'back') {
+        window.GM.popup?.hide?.();
+        window.setTimeout(() => openBrowser(state.browserViewState || null), 0);
+        return;
+      }
       if (action === 'pdf') {
         const name = root.querySelector('[data-ref="name"]')?.value?.trim() || seed.label || '';
-        const sourceValue = `${root.querySelector('[data-ref="book"]')?.value || ''}/${Math.max(1, Number(root.querySelector('[data-ref="page"]')?.value) || 1)}`;
-        const target = source?.book ? { source: seed.source } : { source: sourceValue };
-        const entryToOpen = seed.source ? { ...seed, source: seed.source } : { label: name, source: target.source };
-        window.GM.popup?.hide?.();
+        const book = root.querySelector('[data-ref="book"]')?.value || '';
+        const page = Math.max(1, Number(root.querySelector('[data-ref="page"]')?.value) || 1);
+        const highlight = root.querySelector('[data-ref="highlight"]')?.value?.trim() || name;
+        const entryToOpen = { label: name, source: `${book}/${page}${highlight ? `?highlight=${encodeURIComponent(highlight)}` : ''}` };
         window.setTimeout(() => jumpToEntry(entryToOpen), 0);
         return;
       }
@@ -612,7 +639,7 @@
     return root;
   }
 
-  function openBrowser() {
+  function openBrowser(restoreState = null) {
     const wrap = document.createElement('div');
     wrap.className = 'reference-index-browser';
     wrap.innerHTML = `
@@ -643,6 +670,18 @@
     const search = wrap.querySelector('[data-index-search]');
     const sortSelect = wrap.querySelector('[data-index-sort]');
     const list = wrap.querySelector('[data-index-list]');
+    if (restoreState) {
+      search.value = restoreState.search || '';
+      typeSelect.value = restoreState.type || '';
+      sortSelect.value = restoreState.sort || 'label';
+      const desiredBooks = Array.isArray(restoreState.books) ? restoreState.books : [];
+      if (desiredBooks.length) {
+        allBooksOption.selected = false;
+        Array.from(bookSelect.options).forEach((option) => {
+          option.selected = desiredBooks.includes(option.value);
+        });
+      }
+    }
     const summary = wrap.querySelector('[data-index-summary]');
 
     function render() {
@@ -673,10 +712,20 @@
         main.type = 'button';
         main.className = 'reference-index-row-main';
         main.innerHTML = `<strong>${escapeHtml(entry.label)}</strong><span>${escapeHtml(entry.category)} · ${escapeHtml(entry.source)}</span><small>Click to view or edit this reference</small>`;
-        main.addEventListener('click', () => openEntryEditor(entry));
+        main.addEventListener('click', () => {
+          state.browserViewState = {
+            search: search.value,
+            type: typeSelect.value,
+            books: Array.from(bookSelect.selectedOptions).map((option) => option.value),
+            sort: sortSelect.value,
+            scrollTop: list.scrollTop,
+          };
+          openEntryEditor(entry);
+        });
         const jump = document.createElement('button');
         jump.type = 'button';
-        jump.textContent = 'Open in Book';
+        jump.textContent = 'Show in Book';
+        jump.className = 'reference-index-row-jump primary';
         jump.addEventListener('click', () => jumpToEntry(entry));
         const remove = document.createElement('button');
         remove.type = 'button';
@@ -745,9 +794,12 @@
       input.addEventListener('change', async () => { const file=input.files?.[0]; if(!file) return; try { setIndex(JSON.parse(await file.text())); render(); } catch(err) { alert(`Could not import index: ${err?.message || err}`); } }, { once:true }); input.click();
     });
 
-    window.GM.popup?.show?.({ title: 'Reference Index', content: wrap, className: 'reference-index-browser-popup', width: 920, resizable: true, closeOnScroll: false });
+    window.GM.popup?.show?.({ title: 'Reference Index', content: wrap, className: 'reference-index-browser-popup', width: 920, resizable: true, modal: false, closeOnScroll: false, closeOnOutsidePointerDown: false });
     window.addEventListener('gm-reference-index-changed', render);
     render();
+    if (restoreState && Number.isFinite(restoreState.scrollTop)) {
+      window.setTimeout(() => { list.scrollTop = restoreState.scrollTop; }, 0);
+    }
     return wrap;
   }
 

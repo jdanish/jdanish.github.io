@@ -2569,6 +2569,30 @@ html[data-theme="dark"] .editor-preview-side pre {
 .reference-index-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .reference-index-page { opacity: .65; font-variant-numeric: tabular-nums; }
 .reference-index-empty { padding: 18px; opacity: .7; font-size: 12px; }
+/* Builder scan results: keep checkbox, name, and page number aligned as a
+   simple left-to-right list. The browser also uses .reference-index-row, so
+   scope this rule to the builder results container. */
+.reference-index-results .reference-index-row {
+  grid-template-columns: 24px minmax(0, 1fr) 64px;
+  justify-items: start;
+  text-align: left;
+}
+.reference-index-results .reference-index-row input[type="checkbox"] {
+  justify-self: start;
+  margin: 0;
+}
+.reference-index-results .reference-index-label {
+  justify-self: start;
+  min-width: 0;
+  width: 100%;
+  text-align: left;
+}
+.reference-index-results .reference-index-page {
+  justify-self: start;
+  text-align: left;
+  width: 64px;
+}
+
 .reference-index-footer { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
 .reference-index-footer > div { display: flex; gap: 8px; }
 .reference-index-counts { font-size: 11px; opacity: .7; }
@@ -2947,3 +2971,34 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
   max-width: 260px;
   min-height: 72px;
 }
+
+.gm-popup-root.gm-popup-root-nonmodal {
+  pointer-events: none;
+}
+.gm-popup-root.gm-popup-root-nonmodal .gm-popup {
+  pointer-events: auto;
+}
+.reference-index-row-jump.primary {
+  white-space: nowrap;
+}
+
+.reference-index-builder-popup .gm-popup-body {
+  max-height: calc(100vh - 90px);
+  overflow: auto;
+}
+.reference-index-builder-popup .reference-index-builder-intro p {
+  margin: 0;
+  opacity: .75;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.reference-index-builder .reference-index-row {
+  grid-template-columns: 22px minmax(180px, 1fr) 64px auto !important;
+}
+.reference-index-builder .reference-index-candidate-open {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.reference-entry-actions [data-action="back"] { margin-left: auto; }

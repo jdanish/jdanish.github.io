@@ -1,49 +1,405 @@
 {
   "version": 1,
   "entries": {
+    "abilities": {},
+    "ancestries": {},
+    "armor": {},
     "edges": {
-      "fleet-footed": {
-        "label": "Fleet-Footed",
-        "source": "swade/38?highlight=FLEET-FOOTED"
+      "ace": {
+        "label": "Ace",
+        "source": "swade/46?highlight=Ace"
       },
-      "arcane background (psy commando)": {
-        "label": "Arcane Background (Psy Commando)",
-        "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
-      },
-      "basic psychic loadout": {
-        "label": "Basic Psychic Loadout",
-        "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
-      },
-      "psyfocus loadout": {
-        "label": "PsyFocus Loadout",
-        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
+      "acrobat": {
+        "label": "Acrobat",
+        "source": "swade/47?highlight=Acrobat"
       },
       "advanced psyfocus loadout": {
         "label": "Advanced PsyFocus Loadout",
         "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
       },
-      "living weapon": {
-        "label": "Living Weapon",
-        "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
+      "alertness": {
+        "label": "Alertness",
+        "source": "swade/37?highlight=Alertness"
+      },
+      "arcane background": {
+        "label": "Arcane Background",
+        "source": "swade/37?highlight=Arcane%20Background"
+      },
+      "arcane background (psy commando)": {
+        "label": "Arcane Background (Psy Commando)",
+        "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
+      },
+      "arcane resistance": {
+        "label": "Arcane Resistance",
+        "source": "swade/37?highlight=Arcane%20Resistance"
+      },
+      "artificer": {
+        "label": "Artificer",
+        "source": "swade/44?highlight=Artificer"
+      },
+      "assassin": {
+        "label": "Assassin",
+        "source": "swade/47?highlight=Assassin"
+      },
+      "basic psychic loadout": {
+        "label": "Basic Psychic Loadout",
+        "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
+      },
+      "beast bond": {
+        "label": "Beast Bond",
+        "source": "swade/50?highlight=Beast%20Bond"
+      },
+      "beast master": {
+        "label": "Beast Master",
+        "source": "swade/50?highlight=Beast%20Master"
+      },
+      "block": {
+        "label": "Block",
+        "source": "swade/39?highlight=Block"
+      },
+      "bolster": {
+        "label": "Bolster",
+        "source": "swade/49?highlight=Bolster"
+      },
+      "brave": {
+        "label": "Brave",
+        "source": "swade/37?highlight=Brave"
+      },
+      "brawler dead shot": {
+        "label": "Brawler Dead Shot",
+        "source": "swade/40?highlight=Brawler%20Dead%20Shot"
+      },
+      "brawny": {
+        "label": "Brawny",
+        "source": "swade/37?highlight=Brawny"
+      },
+      "bruiser": {
+        "label": "Bruiser",
+        "source": "swade/40?highlight=Bruiser"
+      },
+      "brute": {
+        "label": "Brute",
+        "source": "swade/37?highlight=Brute"
+      },
+      "champion healer": {
+        "label": "Champion Healer",
+        "source": "swade/51?highlight=Champion%20Healer"
+      },
+      "channeling": {
+        "label": "Channeling",
+        "source": "swade/45?highlight=Channeling"
+      },
+      "charismatic": {
+        "label": "Charismatic",
+        "source": "swade/38?highlight=Charismatic"
+      },
+      "chi": {
+        "label": "Chi",
+        "source": "swade/51?highlight=Chi"
+      },
+      "combat acrobat": {
+        "label": "Combat Acrobat",
+        "source": "swade/47?highlight=Combat%20Acrobat"
+      },
+      "combat reflexes": {
+        "label": "Combat Reflexes",
+        "source": "swade/40?highlight=Combat%20Reflexes"
+      },
+      "command": {
+        "label": "Command",
+        "source": "swade/44?highlight=Command"
+      },
+      "command presence": {
+        "label": "Command Presence",
+        "source": "swade/44?highlight=Command%20Presence"
+      },
+      "common bond": {
+        "label": "Common Bond",
+        "source": "swade/49?highlight=Common%20Bond"
+      },
+      "concentration": {
+        "label": "Concentration",
+        "source": "swade/45?highlight=Concentration"
+      },
+      "connections": {
+        "label": "Connections",
+        "source": "swade/49?highlight=Connections"
+      },
+      "counterattack": {
+        "label": "Counterattack",
+        "source": "swade/40?highlight=Counterattack"
+      },
+      "dodge": {
+        "label": "Dodge",
+        "source": "swade/40?highlight=Dodge"
+      },
+      "double tap": {
+        "label": "Double Tap",
+        "source": "swade/40?highlight=Double%20Tap"
+      },
+      "elan": {
+        "label": "Elan",
+        "source": "swade/38?highlight=Elan"
+      },
+      "expert": {
+        "label": "Expert",
+        "source": "swade/52?highlight=Expert"
+      },
+      "extra effort": {
+        "label": "Extra Effort",
+        "source": "swade/45?highlight=Extra%20Effort"
+      },
+      "fame": {
+        "label": "Fame",
+        "source": "swade/38?highlight=Fame"
+      },
+      "famous": {
+        "label": "Famous",
+        "source": "swade/38?highlight=Famous"
+      },
+      "fast healer": {
+        "label": "Fast Healer",
+        "source": "swade/38?highlight=Fast%20Healer"
+      },
+      "feint": {
+        "label": "Feint",
+        "source": "swade/41?highlight=Feint"
+      },
+      "fervor": {
+        "label": "Fervor",
+        "source": "swade/44?highlight=Fervor"
+      },
+      "filthy rich": {
+        "label": "Filthy Rich",
+        "source": "swade/39?highlight=Filthy%20Rich"
+      },
+      "fleet-footed": {
+        "label": "Fleet-Footed",
+        "source": "swade/38?highlight=FLEET-FOOTED"
+      },
+      "followers": {
+        "label": "Followers",
+        "source": "swade/52?highlight=Followers"
+      },
+      "frenzy": {
+        "label": "Frenzy",
+        "source": "swade/41?highlight=Frenzy"
+      },
+      "gadgeteer": {
+        "label": "Gadgeteer",
+        "source": "swade/45?highlight=Gadgeteer"
+      },
+      "giant killer": {
+        "label": "Giant Killer",
+        "source": "swade/41?highlight=Giant%20Killer"
+      },
+      "great luck": {
+        "label": "Great Luck",
+        "source": "swade/39?highlight=Great%20Luck"
       },
       "heavy hitters squad edge": {
         "label": "Heavy Hitters Squad Edge",
         "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
+      },
+      "humiliate": {
+        "label": "Humiliate",
+        "source": "swade/49?highlight=Humiliate"
+      },
+      "improved arcane resistance": {
+        "label": "Improved Arcane Resistance",
+        "source": "swade/37?highlight=Improved%20Arcane%20Resistance"
+      },
+      "improved block": {
+        "label": "Improved Block",
+        "source": "swade/39?highlight=Improved%20Block"
+      },
+      "improved counterattack": {
+        "label": "Improved Counterattack",
+        "source": "swade/40?highlight=Improved%20Counterattack"
+      },
+      "improved dodge": {
+        "label": "Improved Dodge",
+        "source": "swade/40?highlight=Improved%20Dodge"
+      },
+      "improved first strike": {
+        "label": "Improved First Strike",
+        "source": "swade/41?highlight=Improved%20First%20Strike"
+      },
+      "improved rapid fire": {
+        "label": "Improved Rapid Fire",
+        "source": "swade/42?highlight=Improved%20Rapid%20Fire"
+      },
+      "improved sweep": {
+        "label": "Improved Sweep",
+        "source": "swade/43?highlight=Improved%20Sweep"
+      },
+      "improvisational fighter": {
+        "label": "Improvisational Fighter",
+        "source": "swade/41?highlight=Improvisational%20Fighter"
+      },
+      "inspire": {
+        "label": "Inspire",
+        "source": "swade/44?highlight=Inspire"
+      },
+      "investigator": {
+        "label": "Investigator",
+        "source": "swade/47?highlight=Investigator"
+      },
+      "iron jaw": {
+        "label": "Iron Jaw",
+        "source": "swade/41?highlight=Iron%20Jaw"
+      },
+      "iron will": {
+        "label": "Iron Will",
+        "source": "swade/50?highlight=Iron%20Will"
+      },
+      "killer instinct mighty blow": {
+        "label": "Killer Instinct Mighty Blow",
+        "source": "swade/42?highlight=Killer%20Instinct%20Mighty%20Blow"
+      },
+      "legendary edges": {
+        "label": "Legendary Edges",
+        "source": "swade/52?highlight=Legendary%20Edges"
+      },
+      "level headed": {
+        "label": "Level Headed",
+        "source": "swade/42?highlight=Level%20Headed"
+      },
+      "linguist": {
+        "label": "Linguist",
+        "source": "swade/39?highlight=Linguist"
+      },
+      "liquid courage": {
+        "label": "Liquid Courage",
+        "source": "swade/51?highlight=Liquid%20Courage"
+      },
+      "living weapon": {
+        "label": "Living Weapon",
+        "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
+      },
+      "luck": {
+        "label": "Luck",
+        "source": "swade/39?highlight=Luck"
+      },
+      "marksman no mercy": {
+        "label": "Marksman No Mercy",
+        "source": "swade/42?highlight=Marksman%20No%20Mercy"
+      },
+      "martial warrior": {
+        "label": "Martial Warrior",
+        "source": "swade/42?highlight=Martial%20Warrior"
+      },
+      "master": {
+        "label": "Master",
+        "source": "swade/52?highlight=Master"
+      },
+      "master tactician": {
+        "label": "Master Tactician",
+        "source": "swade/44?highlight=Master%20Tactician"
+      },
+      "mcgyver": {
+        "label": "McGyver",
+        "source": "swade/48?highlight=McGyver"
+      },
+      "mentalist": {
+        "label": "Mentalist",
+        "source": "swade/45?highlight=Mentalist"
+      },
+      "natural leader": {
+        "label": "Natural Leader",
+        "source": "swade/44?highlight=Natural%20Leader"
+      },
+      "new powers": {
+        "label": "New Powers",
+        "source": "swade/46?highlight=New%20Powers"
+      },
+      "power surge": {
+        "label": "Power Surge",
+        "source": "swade/46?highlight=Power%20Surge"
+      },
+      "professional edges": {
+        "label": "Professional Edges",
+        "source": "swade/46?highlight=Professional%20Edges"
+      },
+      "provoke": {
+        "label": "Provoke",
+        "source": "swade/49?highlight=Provoke"
+      },
+      "psyfocus loadout": {
+        "label": "PsyFocus Loadout",
+        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
+      },
+      "quick": {
+        "label": "Quick",
+        "source": "swade/39?highlight=Quick"
+      },
+      "rapid fire": {
+        "label": "Rapid Fire",
+        "source": "swade/42?highlight=Rapid%20Fire"
+      },
+      "rapid recharge": {
+        "label": "Rapid Recharge",
+        "source": "swade/46?highlight=Rapid%20Recharge"
+      },
+      "rich": {
+        "label": "Rich",
+        "source": "swade/39?highlight=Rich"
+      },
+      "room": {
+        "label": "Room",
+        "source": "swade/50?highlight=Room"
+      },
+      "scholar": {
+        "label": "Scholar",
+        "source": "swade/48?highlight=Scholar"
+      },
+      "social edges menacing": {
+        "label": "Social Edges Menacing",
+        "source": "swade/49?highlight=Social%20Edges%20Menacing"
+      },
+      "soldier": {
+        "label": "Soldier",
+        "source": "swade/48?highlight=Soldier"
+      },
+      "soul drain": {
+        "label": "Soul Drain",
+        "source": "swade/46?highlight=Soul%20Drain"
+      },
+      "strong willed": {
+        "label": "Strong Willed",
+        "source": "swade/50?highlight=Strong%20Willed"
+      },
+      "sweep": {
+        "label": "Sweep",
+        "source": "swade/43?highlight=Sweep"
+      },
+      "tactician c": {
+        "label": "Tactician C",
+        "source": "swade/44?highlight=Tactician%20C"
+      },
+      "thief": {
+        "label": "Thief",
+        "source": "swade/48?highlight=Thief"
+      },
+      "tougher than nails": {
+        "label": "Tougher Than Nails",
+        "source": "swade/52?highlight=Tougher%20Than%20Nails"
+      },
+      "trademark weapon": {
+        "label": "Trademark Weapon",
+        "source": "swade/43?highlight=Trademark%20Weapon"
+      },
+      "weapon": {
+        "label": "Weapon",
+        "source": "swade/43?highlight=Weapon"
+      },
+      "wizard": {
+        "label": "Wizard",
+        "source": "swade/46?highlight=Wizard"
       }
     },
+    "hindrances": {},
     "items": {
-      "psyfocus loadout & advanced": {
-        "label": "PsyFocus Loadout & Advanced",
-        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
-      },
-      "psyfocus": {
-        "label": "PsyFocus",
-        "source": "starbreaker_core/120?highlight=PsyFocus"
-      },
-      "gatling laser": {
-        "label": "Gatling Laser",
-        "source": "sfc/54?highlight=Gatling%20Laser"
-      },
       "blackout grenades": {
         "label": "Blackout Grenades",
         "source": "starbreaker_core/91?highlight=Blackout%20Grenades"
@@ -52,39 +408,54 @@
         "label": "Blackout Smoke Grenade",
         "source": "starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade"
       },
-      "flechette grenades": {
-        "label": "Flechette Grenades",
-        "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
+      "emp grenade": {
+        "label": "EMP Grenade",
+        "source": "starbreaker_core/91?highlight=EMP%20Grenade"
       },
       "flechette disk": {
         "label": "Flechette Disk",
         "source": "starbreaker_core/91?highlight=Flechette%20Disk"
       },
-      "emp grenade": {
-        "label": "EMP Grenade",
-        "source": "starbreaker_core/91?highlight=EMP%20Grenade"
+      "flechette grenades": {
+        "label": "Flechette Grenades",
+        "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
       },
-      "gravity grenades": {
-        "label": "Gravity Grenades",
-        "source": "starbreaker_core/91?highlight=Gravity%20Grenades"
+      "gatling laser": {
+        "label": "Gatling Laser",
+        "source": "sfc/54?highlight=Gatling%20Laser"
       },
       "gravity grenade": {
         "label": "Gravity Grenade",
         "source": "starbreaker_core/91?highlight=Gravity%20Grenade"
       },
-      "web grenades": {
-        "label": "Web Grenades",
-        "source": "starbreaker_core/91?highlight=Web%20Grenades"
+      "gravity grenades": {
+        "label": "Gravity Grenades",
+        "source": "starbreaker_core/91?highlight=Gravity%20Grenades"
+      },
+      "psyfocus": {
+        "label": "PsyFocus",
+        "source": "starbreaker_core/120?highlight=PsyFocus"
+      },
+      "psyfocus loadout & advanced": {
+        "label": "PsyFocus Loadout & Advanced",
+        "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
+      },
+      "star marine armor (+6*)": {
+        "label": "Star Marine Armor (+6*)",
+        "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
       },
       "web grenade": {
         "label": "Web Grenade",
         "source": "starbreaker_core/91?highlight=Web%20Grenade"
       },
-      "star marine armor (+6*)": {
-        "label": "Star Marine Armor (+6*)",
-        "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
+      "web grenades": {
+        "label": "Web Grenades",
+        "source": "starbreaker_core/91?highlight=Web%20Grenades"
       }
     },
+    "monsters": {},
+    "npcs": {},
+    "other": {},
     "powers": {
       "arcane protection": {
         "label": "Arcane Protection",
@@ -130,6 +501,9 @@
         "label": "Wall Walker",
         "source": "swade/169?highlight=Wall%20Walker"
       }
-    }
+    },
+    "rules": {},
+    "skills": {},
+    "weapons": {}
   }
 }

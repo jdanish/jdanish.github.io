@@ -528,16 +528,34 @@
     await waitForPageRender(app, pdfPage);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-    app.eventBus.dispatch('find', {
-      source: app,
-      type: '',
-      query: cleaned,
-      caseSensitive: false,
-      entireWord: false,
-      phraseSearch: true,
-      highlightAll: true,
-      findPrevious: false,
-      matchDiacritics: false,
+    // PDF.js processes the find request asynchronously. Wait for that cycle
+    // to settle before setTabAndPage restores the target page.
+    await new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        app.eventBus.off?.('updatefindmatchescount', finish);
+        app.eventBus.off?.('updatefindcontrolstate', finish);
+        resolve();
+      };
+      const timer = window.setTimeout(finish, 1200);
+
+      app.eventBus.on?.('updatefindmatchescount', finish);
+      app.eventBus.on?.('updatefindcontrolstate', finish);
+
+      app.eventBus.dispatch('find', {
+        source: app,
+        type: '',
+        query: cleaned,
+        caseSensitive: false,
+        entireWord: false,
+        phraseSearch: true,
+        highlightAll: true,
+        findPrevious: false,
+        matchDiacritics: false,
+      });
     });
   }
 

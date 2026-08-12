@@ -1067,23 +1067,21 @@
     return null;
   }
   function closeReferenceIndexBuilder(dialog) {
+    if (window.GM.popup?.isOpen?.() && window.GM.popup?.getBodyEl?.()?.contains?.(dialog)) {
+      window.GM.popup.hide();
+      return;
+    }
     dialog?.remove?.();
   }
 
   function openReferenceIndexBuilder(initialBookKey = '') {
-    if (document.querySelector('.reference-index-dialog')) return;
-    const dialog = document.createElement('dialog');
-    dialog.className = 'reference-index-dialog';
+    if (document.querySelector('.reference-index-builder')) return;
 
     const form = document.createElement('div');
     form.className = 'reference-index-builder';
     form.innerHTML = `
-      <div class="reference-index-header">
-        <div>
-          <h2>Reference Index Builder</h2>
-          <p>Give each list a printed-page range. The builder scans those pages for heading-like entries and lets you select what to add.</p>
-        </div>
-        <button type="button" class="reference-index-close" aria-label="Close">×</button>
+      <div class="reference-index-builder-intro">
+        <p>Give each list a printed-page range. The builder scans those pages for heading-like entries and lets you select what to add.</p>
       </div>
       <div class="reference-index-controls">
         <label>Book<select class="reference-index-book"></select></label>
@@ -1107,9 +1105,6 @@
         </div>
       </div>
     `;
-    dialog.appendChild(form);
-    document.body.appendChild(dialog);
-
     const bookSelect = form.querySelector('.reference-index-book');
     const kindSelect = form.querySelector('.reference-index-kind');
     const rangeInput = form.querySelector('.reference-index-ranges');
@@ -1162,7 +1157,22 @@
         const page = document.createElement('span');
         page.className = 'reference-index-page';
         page.textContent = `p. ${candidate.displayPage}`;
-        row.append(checkbox, label, page);
+        const open = document.createElement('button');
+        open.type = 'button';
+        open.className = 'reference-index-candidate-open';
+        open.textContent = 'Open in Book';
+        open.title = `Show ${candidate.label} in the PDF`;
+        open.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const source = `${bookSelect.value}/${candidate.displayPage}?highlight=${encodeURIComponent(candidate.label || '')}`;
+          try {
+            await window.GM.referenceIndex?.jumpToEntry?.({ label: candidate.label, source });
+          } catch (err) {
+            console.error('Could not open index candidate in book', err);
+          }
+        });
+        row.append(checkbox, label, page, open);
         row.dataset.index = String(idx);
         table.appendChild(row);
       });
@@ -1209,14 +1219,20 @@
       statusEl.textContent = 'Exported index.json with the current reference index.';
     });
 
-    form.querySelector('.reference-index-browser-button').addEventListener('click', () => { closeReferenceIndexBuilder(dialog); window.setTimeout(() => window.GM.referenceIndex?.openBrowser?.(), 0); });
-    form.querySelector('.reference-index-close').addEventListener('click', () => closeReferenceIndexBuilder(dialog));
-    dialog.addEventListener('click', (event) => {
-      if (event.target === dialog) closeReferenceIndexBuilder(dialog);
+    form.querySelector('.reference-index-browser-button').addEventListener('click', () => {
+      closeReferenceIndexBuilder(form);
+      window.setTimeout(() => window.GM.referenceIndex?.openBrowser?.(), 0);
     });
-    dialog.addEventListener('cancel', () => closeReferenceIndexBuilder(dialog));
-    if (typeof dialog.showModal === 'function') dialog.showModal();
-    else dialog.setAttribute('open', '');
+
+    window.GM.popup?.show?.({
+      title: 'Reference Index Builder',
+      content: form,
+      className: 'reference-index-builder-popup',
+      width: 900,
+      resizable: true,
+      closeOnScroll: false,
+      closeOnOutsidePointerDown: false,
+    });
   }
 
   function createMonsterImportButton() {
