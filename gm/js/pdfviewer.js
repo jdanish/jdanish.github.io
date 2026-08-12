@@ -589,6 +589,33 @@
     return app;
   }
 
+  async function restoreTargetPageAfterFind(tab, displayPage) {
+    const viewer = createViewer(tab);
+    const app = await ensureViewerLoaded(tab);
+    if (!app) return;
+
+    const book = viewer.book;
+    const pdfPage = toPdfPage(book, displayPage);
+    const restore = () => {
+      try {
+        if (app.pdfViewer) {
+          app.pdfViewer.currentPageNumber = pdfPage;
+          if (typeof app.pdfViewer.scrollPageIntoView === 'function') {
+            app.pdfViewer.scrollPageIntoView({ pageNumber: pdfPage });
+          }
+        }
+        if (app.page !== pdfPage) app.page = pdfPage;
+        viewer.pendingDisplayPage = Number(displayPage) || 1;
+      } catch {
+        /* PDF.js may still be initializing; later retries handle it. */
+      }
+    };
+
+    [0, 120, 300, 650, 1000].forEach((delay) => {
+      window.setTimeout(restore, delay);
+    });
+  }
+
   async function setTabAndPage(tab, displayPage, options = {}) {
     const book = getBook(tab);
     if (!book) return null;
@@ -625,6 +652,7 @@
 
     if (options.highlightText) {
       await highlightTextInActiveViewer(tab, options.highlightText, resolvedDisplayPage);
+      await restoreTargetPageAfterFind(tab, resolvedDisplayPage);
     }
 
     return app;

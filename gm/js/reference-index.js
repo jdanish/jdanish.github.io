@@ -639,6 +639,29 @@
     return root;
   }
 
+  function getIndexWindowState() {
+    try {
+      return JSON.parse(localStorage.getItem('gmReferenceIndexWindow') || 'null') || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveIndexWindowState(panel) {
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    try {
+      localStorage.setItem('gmReferenceIndexWindow', JSON.stringify({
+        left: Math.round(rect.left),
+        top: Math.round(rect.top),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      }));
+    } catch {
+      /* ignore storage failures */
+    }
+  }
+
   function openBrowser(restoreState = null) {
     const wrap = document.createElement('div');
     wrap.className = 'reference-index-browser';
@@ -647,7 +670,7 @@
         <input data-index-search type="search" placeholder="Search name, type, alias, book...">
         <select data-index-type><option value="">All types</option></select>
         <select data-index-book multiple size="3" aria-label="Filter by book"></select>
-        <select data-index-sort><option value="label">Name</option><option value="type">Type</option><option value="source">Book / page</option></select>
+        <select data-index-sort><option value="label">Name</option><option value="type">Type</option><option value="bookPage">Book / page</option></select>
         <button type="button" data-index-add class="primary">Add Entry</button><button type="button" data-index-save ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Save to Data Folder</button><button type="button" data-index-reload ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Reload from Data Folder</button><button type="button" data-index-import>Import Index</button><button type="button" data-index-export>Export Index</button>
       </div>
       <div class="reference-index-summary" data-index-summary></div>
@@ -701,7 +724,17 @@
         });
       });
       const sort = sortSelect.value;
-      entries.sort((a,b) => String(a[sort] || '').localeCompare(String(b[sort] || '')) || a.label.localeCompare(b.label));
+      if (sort === 'bookPage') {
+        entries.sort((a, b) => {
+          const sa = parseSource(a.source || '');
+          const sb = parseSource(b.source || '');
+          return String(sa.book || '').localeCompare(String(sb.book || ''))
+            || (Number(sa.page) || 0) - (Number(sb.page) || 0)
+            || a.label.localeCompare(b.label);
+        });
+      } else {
+        entries.sort((a,b) => String(a[sort] || '').localeCompare(String(b[sort] || '')) || a.label.localeCompare(b.label));
+      }
       summary.textContent = `${entries.length} result${entries.length === 1 ? '' : 's'} · ${getPendingHint()}`;
       list.replaceChildren();
       if (!entries.length) { list.textContent = 'No matching references.'; return; }
@@ -794,9 +827,39 @@
       input.addEventListener('change', async () => { const file=input.files?.[0]; if(!file) return; try { setIndex(JSON.parse(await file.text())); render(); } catch(err) { alert(`Could not import index: ${err?.message || err}`); } }, { once:true }); input.click();
     });
 
-    window.GM.popup?.show?.({ title: 'Reference Index', content: wrap, className: 'reference-index-browser-popup', width: 920, resizable: true, modal: false, closeOnScroll: false, closeOnOutsidePointerDown: false });
+    const savedWindow = getIndexWindowState();
+    window.GM.popup?.show?.({
+      title: 'Reference Index',
+      content: wrap,
+      className: 'reference-index-browser-popup',
+      width: savedWindow?.width || 920,
+      x: Number.isFinite(savedWindow?.left) ? savedWindow.left : undefined,
+      y: Number.isFinite(savedWindow?.top) ? savedWindow.top : undefined,
+      resizable: true,
+      modal: false,
+      closeOnScroll: false,
+      closeOnOutsidePointerDown: false,
+      beforeClose: () => {
+        saveIndexWindowState(window.GM.popup?.getPanelEl?.());
+        return true;
+      },
+    });
     window.addEventListener('gm-reference-index-changed', render);
     render();
+    if (savedWindow) {
+      window.setTimeout(() => {
+        const panel = window.GM.popup?.getPanelEl?.();
+        if (!panel) return;
+        if (savedWindow.width) panel.style.width = `${savedWindow.width}px`;
+        if (savedWindow.height) panel.style.height = `${savedWindow.height}px`;
+        if (Number.isFinite(savedWindow.left) && Number.isFinite(savedWindow.top)) {
+          panel.style.left = `${savedWindow.left}px`;
+          panel.style.top = `${savedWindow.top}px`;
+          panel.style.right = 'auto';
+          panel.style.bottom = 'auto';
+        }
+      }, 0);
+    }
     if (restoreState && Number.isFinite(restoreState.scrollTop)) {
       window.setTimeout(() => { list.scrollTop = restoreState.scrollTop; }, 0);
     }
