@@ -2920,3 +2920,30 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
   background: #effaf3;
   border-color: #68a982;
 }
+
+.gm-popup.gm-popup-resizable {
+  min-width: 520px;
+  min-height: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  resize: both;
+  overflow: hidden;
+}
+.gm-popup.gm-popup-resizable .gm-popup-body {
+  min-height: 0;
+  overflow: auto;
+}
+.reference-index-browser-popup .reference-index-browser {
+  min-height: 0;
+}
+.reference-index-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+.reference-index-toolbar [data-index-book] {
+  min-width: 190px;
+  max-width: 260px;
+  min-height: 72px;
+}

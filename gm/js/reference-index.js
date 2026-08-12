@@ -617,7 +617,10 @@
     wrap.className = 'reference-index-browser';
     wrap.innerHTML = `
       <div class="reference-index-toolbar">
-        <input data-index-search type="search" placeholder="Search name, type, alias, book..."><select data-index-type><option value="">All types</option></select><select data-index-sort><option value="label">Name</option><option value="type">Type</option><option value="source">Book / page</option></select>
+        <input data-index-search type="search" placeholder="Search name, type, alias, book...">
+        <select data-index-type><option value="">All types</option></select>
+        <select data-index-book multiple size="3" aria-label="Filter by book"></select>
+        <select data-index-sort><option value="label">Name</option><option value="type">Type</option><option value="source">Book / page</option></select>
         <button type="button" data-index-add class="primary">Add Entry</button><button type="button" data-index-save ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Save to Data Folder</button><button type="button" data-index-reload ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Reload from Data Folder</button><button type="button" data-index-import>Import Index</button><button type="button" data-index-export>Export Index</button>
       </div>
       <div class="reference-index-summary" data-index-summary></div>
@@ -625,6 +628,18 @@
     `;
     const typeSelect = wrap.querySelector('[data-index-type]');
     typesForBrowser(types => { types.forEach((type) => { const o=document.createElement('option'); o.value=type; o.textContent=type; typeSelect.appendChild(o); }); });
+    const bookSelect = wrap.querySelector('[data-index-book]');
+    const allBooksOption = document.createElement('option');
+    allBooksOption.value = '';
+    allBooksOption.textContent = 'All Books';
+    bookSelect.appendChild(allBooksOption);
+    Object.entries(window.BOOKS || {}).sort((a,b) => (Number(a[1]?.order)||999)-(Number(b[1]?.order)||999)).forEach(([key, book]) => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = book.title || key;
+      bookSelect.appendChild(option);
+    });
+    allBooksOption.selected = true;
     const search = wrap.querySelector('[data-index-search]');
     const sortSelect = wrap.querySelector('[data-index-sort]');
     const list = wrap.querySelector('[data-index-list]');
@@ -634,10 +649,13 @@
       const index = ensureIndex();
       const query = search.value.trim().toLowerCase();
       const type = typeSelect.value;
+      const selectedBooks = Array.from(bookSelect.selectedOptions).map((option) => option.value).filter(Boolean);
       const entries = [];
       Object.entries(index).forEach(([category, bucket]) => {
         if (type && category !== type) return;
         Object.entries(bucket || {}).forEach(([key, entry]) => {
+          const entryBook = String(parseSource(entry.source)?.book || '');
+          if (selectedBooks.length && !selectedBooks.includes(entryBook)) return;
           const haystack = [entry.label, category, entry.source, ...(entry.aliases || [])].join(' ').toLowerCase();
           if (query && !haystack.includes(query)) return;
           entries.push({ category, key, ...entry });
@@ -677,6 +695,18 @@
 
     search.addEventListener('input', render);
     typeSelect.addEventListener('change', render);
+    bookSelect.addEventListener('change', () => {
+      const selected = Array.from(bookSelect.selectedOptions);
+      if (!selected.length) {
+        allBooksOption.selected = true;
+      } else if (selected.some((option) => option.value === '')) {
+        selected.forEach((option) => { if (option.value) option.selected = false; });
+        allBooksOption.selected = true;
+      } else {
+        allBooksOption.selected = false;
+      }
+      render();
+    });
     sortSelect.addEventListener('change', render);
     wrap.querySelector('[data-index-add]').addEventListener('click', () => openEntryEditor());
     wrap.querySelector('[data-index-reload]').addEventListener('click', async () => {
@@ -715,7 +745,7 @@
       input.addEventListener('change', async () => { const file=input.files?.[0]; if(!file) return; try { setIndex(JSON.parse(await file.text())); render(); } catch(err) { alert(`Could not import index: ${err?.message || err}`); } }, { once:true }); input.click();
     });
 
-    window.GM.popup?.show?.({ title: 'Reference Index', content: wrap, className: 'reference-index-browser-popup', width: 860, closeOnScroll: false });
+    window.GM.popup?.show?.({ title: 'Reference Index', content: wrap, className: 'reference-index-browser-popup', width: 920, resizable: true, closeOnScroll: false });
     window.addEventListener('gm-reference-index-changed', render);
     render();
     return wrap;
