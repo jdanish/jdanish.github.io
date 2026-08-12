@@ -273,6 +273,14 @@
         "label": "Improved Frenzy",
         "source": "swade/41?highlight=Improved%20Frenzy"
       },
+      "improved level headed": {
+        "label": "Improved Level Headed",
+        "source": "swade/42?highlight=Improved%20Level%20Headed"
+      },
+      "improved nerves of steel": {
+        "label": "Improved Nerves of Steel",
+        "source": "swade/42?highlight=Improved%20Nerves%20of%20Steel"
+      },
       "improved rapid fire": {
         "label": "Improved Rapid Fire",
         "source": "swade/42?highlight=Improved%20Rapid%20Fire"
@@ -329,9 +337,13 @@
         "label": "Luck",
         "source": "swade/39?highlight=Luck"
       },
-      "marksman no mercy": {
-        "label": "Marksman No Mercy",
-        "source": "swade/42?highlight=Marksman%20No%20Mercy"
+      "marksman": {
+        "label": "Marksman",
+        "source": "swade/42?highlight=Marksman"
+      },
+      "martial artist": {
+        "label": "Martial Artist",
+        "source": "swade/42?highlight=Martial%20Artist"
       },
       "martial warrior": {
         "label": "Martial Warrior",
@@ -361,9 +373,17 @@
         "label": "Natural Leader",
         "source": "swade/44?highlight=Natural%20Leader"
       },
+      "nerves of steel": {
+        "label": "Nerves of Steel",
+        "source": "swade/42?highlight=Nerves%20of%20Steel"
+      },
       "new powers": {
         "label": "New Powers",
         "source": "swade/46?highlight=New%20Powers"
+      },
+      "no mercy": {
+        "label": "No Mercy",
+        "source": "swade/42?highlight=No%20Mercy"
       },
       "power points": {
         "label": "Power Points",
