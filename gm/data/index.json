@@ -441,6 +441,10 @@
         "label": "Soul Drain",
         "source": "swade/46?highlight=Soul%20Drain"
       },
+      "steady hands": {
+        "label": "Steady Hands",
+        "source": "swade/43?highlight=Steady%20Hands"
+      },
       "strong willed": {
         "label": "Strong Willed",
         "source": "swade/50?highlight=Strong%20Willed"
@@ -535,35 +539,167 @@
     },
     "monsters": {},
     "npcs": {},
-    "other": {},
+    "other": {
+      "rock and roll!": {
+        "label": "Rock and Roll!",
+        "source": "swade/43?highlight=Rock%20and%20Roll!"
+      }
+    },
     "powers": {
       "arcane protection": {
         "label": "Arcane Protection",
-        "source": "swade/153?highlight=arcane%20protection"
+        "source": "swade/154?highlight=Arcane%20Protection"
+      },
+      "armor": {
+        "label": "Armor",
+        "source": "swade/154?highlight=Armor"
+      },
+      "banish": {
+        "label": "Banish",
+        "source": "swade/154?highlight=Banish"
       },
       "barrier": {
         "label": "Barrier",
-        "source": "swade/153?highlight=Barrier"
+        "source": "swade/154?highlight=Barrier"
+      },
+      "beast friend": {
+        "label": "Beast Friend",
+        "source": "swade/154?highlight=Beast%20Friend"
       },
       "blast": {
         "label": "Blast",
         "source": "swade/155?highlight=Blast"
       },
+      "blind": {
+        "label": "Blind",
+        "source": "swade/155?highlight=Blind"
+      },
       "bolt": {
         "label": "Bolt",
         "source": "swade/155?highlight=bolt"
       },
-      "boost/lower trait": {
-        "label": "Boost/Lower Trait",
-        "source": "swade/155?highlight=Boost%2FLower%20Trait"
+      "boost / lower trait": {
+        "label": "Boost / Lower Trait",
+        "source": "swade/155?highlight=Boost%20%2F%20Lower%20Trait",
+        "aliases": [
+          "Boost/Lower Trait"
+        ]
+      },
+      "burst": {
+        "label": "Burst",
+        "source": "swade/156?highlight=Burst"
+      },
+      "detect / conceal arcana": {
+        "label": "Detect / Conceal Arcana",
+        "source": "swade/157?highlight=Detect%20%2F%20Conceal%20Arcana"
+      },
+      "disguise": {
+        "label": "Disguise",
+        "source": "swade/157?highlight=Disguise"
+      },
+      "dispel": {
+        "label": "Dispel",
+        "source": "swade/157?highlight=Dispel"
+      },
+      "drain power points": {
+        "label": "Drain Power Points",
+        "source": "swade/159?highlight=Drain%20Power%20Points"
+      },
+      "elemental manipulation": {
+        "label": "Elemental Manipulation",
+        "source": "swade/159?highlight=Elemental%20Manipulation"
+      },
+      "empathy": {
+        "label": "Empathy",
+        "source": "swade/159?highlight=Empathy"
+      },
+      "environmental protection": {
+        "label": "Environmental Protection",
+        "source": "swade/160?highlight=Environmental%20Protection"
+      },
+      "farsight": {
+        "label": "Farsight",
+        "source": "swade/160?highlight=Farsight"
+      },
+      "fear": {
+        "label": "Fear",
+        "source": "swade/161?highlight=Fear"
+      },
+      "fly": {
+        "label": "Fly",
+        "source": "swade/161?highlight=Fly"
+      },
+      "growth / shrink": {
+        "label": "Growth / Shrink",
+        "source": "swade/161?highlight=Growth%20%2F%20Shrink"
+      },
+      "havoc": {
+        "label": "Havoc",
+        "source": "swade/161?highlight=Havoc"
+      },
+      "healing": {
+        "label": "Healing",
+        "source": "swade/161?highlight=Healing"
+      },
+      "illusion": {
+        "label": "Illusion",
+        "source": "swade/162?highlight=Illusion"
+      },
+      "intangibility": {
+        "label": "Intangibility",
+        "source": "swade/162?highlight=Intangibility"
       },
       "invisibility": {
         "label": "Invisibility",
         "source": "swade/163?highlight=Invisibility"
       },
+      "light / darkness": {
+        "label": "Light / Darkness",
+        "source": "swade/163?highlight=Light%20%2F%20Darkness"
+      },
       "mind link": {
         "label": "Mind Link",
         "source": "swade/163?highlight=Mind%20Link"
+      },
+      "mind reading": {
+        "label": "Mind Reading",
+        "source": "swade/163?highlight=Mind%20Reading"
+      },
+      "mind wipe": {
+        "label": "Mind Wipe",
+        "source": "swade/164?highlight=Mind%20Wipe"
+      },
+      "object reading": {
+        "label": "Object Reading",
+        "source": "swade/164?highlight=Object%20Reading"
+      },
+      "protection": {
+        "label": "Protection",
+        "source": "swade/164?highlight=Protection"
+      },
+      "puppet": {
+        "label": "Puppet",
+        "source": "swade/164?highlight=Puppet"
+      },
+      "quickness": {
+        "label": "Quickness",
+        "source": "swade/165?highlight=Quickness"
+      },
+      "relief": {
+        "label": "Relief",
+        "source": "swade/165?highlight=Relief"
+      },
+      "resurrection": {
+        "label": "Resurrection",
+        "source": "swade/165?highlight=Resurrection"
+      },
+      "shape change": {
+        "label": "Shape Change",
+        "source": "swade/166?highlight=Shape%20Change"
+      },
+      "sloth / speed": {
+        "label": "Sloth / Speed",
+        "source": "swade/166?highlight=Sloth%20%2F%20Speed"
       },
       "smite": {
         "label": "Smite",
@@ -571,15 +707,39 @@
       },
       "sound / silence": {
         "label": "Sound / Silence",
-        "source": "swade/167?highlight=Sound%2FSilence"
+        "source": "swade/167?highlight=Sound%20%2F%20Silence"
+      },
+      "speak language": {
+        "label": "Speak Language",
+        "source": "swade/167?highlight=Speak%20Language"
+      },
+      "stun": {
+        "label": "Stun",
+        "source": "swade/167?highlight=Stun"
+      },
+      "summon ally": {
+        "label": "Summon Ally",
+        "source": "swade/168?highlight=Summon%20Ally"
       },
       "telekinesis": {
         "label": "Telekinesis",
         "source": "swade/169?highlight=Telekinesis"
       },
+      "teleport": {
+        "label": "Teleport",
+        "source": "swade/169?highlight=Teleport"
+      },
       "wall walker": {
         "label": "Wall Walker",
         "source": "swade/169?highlight=Wall%20Walker"
+      },
+      "warrior’s gift": {
+        "label": "Warrior’s Gift",
+        "source": "swade/169?highlight=Warrior%E2%80%99s%20Gift"
+      },
+      "zombie": {
+        "label": "Zombie",
+        "source": "swade/170?highlight=Zombie"
       }
     },
     "rules": {},
