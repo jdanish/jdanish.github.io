@@ -1,4 +1,4 @@
-## Combat
+# Combat
 
 [[swade/90|Summary]] ([[combat_ref/1|reference]])
 
@@ -22,7 +22,7 @@
     - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace)
     - [[swade/99?highlight=Fatigue|Fatigue]]
 
-## Other Rules
+# Other Rules
 
 - [Dice Roller App](https://immaterialplane.com/apps/swdr/)
 - [[swade/89|Bennies]]

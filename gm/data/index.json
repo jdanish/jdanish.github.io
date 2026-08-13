@@ -582,6 +582,46 @@
       "heroic": {
         "label": "Heroic",
         "source": "swade/23?highlight=Heroic"
+      },
+      "hesitant": {
+        "label": "Hesitant",
+        "source": "swade/24?highlight=Hesitant"
+      },
+      "illiterate": {
+        "label": "Illiterate",
+        "source": "swade/24?highlight=Illiterate"
+      },
+      "impulsive": {
+        "label": "Impulsive",
+        "source": "swade/24?highlight=Impulsive"
+      },
+      "jealous": {
+        "label": "Jealous",
+        "source": "swade/24?highlight=Jealous"
+      },
+      "loyal": {
+        "label": "Loyal",
+        "source": "swade/24?highlight=Loyal"
+      },
+      "mean": {
+        "label": "Mean",
+        "source": "swade/24?highlight=Mean"
+      },
+      "mild mannered": {
+        "label": "Mild Mannered",
+        "source": "swade/24?highlight=Mild%20Mannered"
+      },
+      "mute": {
+        "label": "Mute",
+        "source": "swade/24?highlight=Mute"
+      },
+      "obese": {
+        "label": "Obese",
+        "source": "swade/24?highlight=Obese"
+      },
+      "obligation": {
+        "label": "Obligation",
+        "source": "swade/24?highlight=Obligation"
       }
     },
     "items": {
