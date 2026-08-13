@@ -421,6 +421,10 @@
         "label": "Rich",
         "source": "swade/39?highlight=Rich"
       },
+      "rock and roll!": {
+        "label": "Rock and Roll!",
+        "source": "swade/43?highlight=Rock%20and%20Roll!"
+      },
       "room": {
         "label": "Room",
         "source": "swade/50?highlight=Room"
@@ -482,7 +486,104 @@
         "source": "swade/46?highlight=Wizard"
       }
     },
-    "hindrances": {},
+    "hindrances": {
+      "all thumbs": {
+        "label": "All Thumbs",
+        "source": "swade/21?highlight=All%20Thumbs"
+      },
+      "anemic": {
+        "label": "Anemic",
+        "source": "swade/21?highlight=Anemic"
+      },
+      "arrogant": {
+        "label": "Arrogant",
+        "source": "swade/21?highlight=Arrogant"
+      },
+      "bad eyes": {
+        "label": "Bad Eyes",
+        "source": "swade/21?highlight=Bad%20Eyes"
+      },
+      "bad luck": {
+        "label": "Bad Luck",
+        "source": "swade/21?highlight=Bad%20Luck"
+      },
+      "big mouth": {
+        "label": "Big Mouth",
+        "source": "swade/21?highlight=Big%20Mouth"
+      },
+      "blind (major)": {
+        "label": "Blind (Major)",
+        "source": "swade/22?highlight=Blind%20(Major)"
+      },
+      "bloodthirsty": {
+        "label": "Bloodthirsty",
+        "source": "swade/22?highlight=Bloodthirsty"
+      },
+      "can’t swim": {
+        "label": "Can’t Swim",
+        "source": "swade/22?highlight=Can%E2%80%99t%20Swim"
+      },
+      "cautious": {
+        "label": "Cautious",
+        "source": "swade/22?highlight=Cautious"
+      },
+      "clueless": {
+        "label": "Clueless",
+        "source": "swade/22?highlight=Clueless"
+      },
+      "clumsy": {
+        "label": "Clumsy",
+        "source": "swade/21?highlight=Clumsy"
+      },
+      "code of honor": {
+        "label": "Code of Honor",
+        "source": "swade/21?highlight=Code%20of%20Honor"
+      },
+      "curious": {
+        "label": "Curious",
+        "source": "swade/22?highlight=Curious"
+      },
+      "death wish": {
+        "label": "Death Wish",
+        "source": "swade/22?highlight=Death%20Wish"
+      },
+      "delusional": {
+        "label": "Delusional",
+        "source": "swade/22?highlight=Delusional"
+      },
+      "doubting thomas": {
+        "label": "Doubting Thomas",
+        "source": "swade/20?highlight=Doubting%20Thomas"
+      },
+      "driven": {
+        "label": "Driven",
+        "source": "swade/20?highlight=Driven"
+      },
+      "elderly": {
+        "label": "Elderly",
+        "source": "swade/23?highlight=Elderly"
+      },
+      "enemy": {
+        "label": "Enemy",
+        "source": "swade/23?highlight=Enemy"
+      },
+      "greedy": {
+        "label": "Greedy",
+        "source": "swade/23?highlight=Greedy"
+      },
+      "habit": {
+        "label": "Habit",
+        "source": "swade/23?highlight=Habit"
+      },
+      "hard of hearing": {
+        "label": "Hard of Hearing",
+        "source": "swade/23?highlight=Hard%20of%20Hearing"
+      },
+      "heroic": {
+        "label": "Heroic",
+        "source": "swade/23?highlight=Heroic"
+      }
+    },
     "items": {
       "blackout grenades": {
         "label": "Blackout Grenades",
@@ -539,12 +640,7 @@
     },
     "monsters": {},
     "npcs": {},
-    "other": {
-      "rock and roll!": {
-        "label": "Rock and Roll!",
-        "source": "swade/43?highlight=Rock%20and%20Roll!"
-      }
-    },
+    "other": {},
     "powers": {
       "arcane protection": {
         "label": "Arcane Protection",
