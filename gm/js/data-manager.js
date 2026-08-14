@@ -468,9 +468,14 @@
 
   async function init() {
     try {
-      if (await reconnectServerFolder()) return;
-      const connected = await reconnect();
-      if (connected) await ensureStructure();
+      const connectedLocal = await reconnect();
+      if (connectedLocal) {
+        await ensureStructure();
+        return;
+      }
+
+      const savedServer = localStorage.getItem(SERVER_STORAGE_KEY) || '';
+      await connectServerFolder(savedServer || DEFAULT_SERVER_URL);
     } catch (err) {
       state.lastError = err?.message || String(err);
       state.connected = false;

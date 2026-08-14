@@ -3128,3 +3128,174 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
 .sidebar-data-mode-badge.is-disconnected {
   opacity: 0.75;
 }
+
+
+/* Mobile / iPhone layout */
+.mobile-sidebar-toggle { display: none; }
+.mobile-sidebar-backdrop { display: none; }
+
+@media (max-width: 760px) {
+  html, body {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body {
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+  }
+
+  .app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    min-height: 0;
+    padding: 0;
+    display: block;
+  }
+
+  .sidebar,
+  .main {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .main {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(88vw, 420px);
+    min-width: 0;
+    max-width: 420px;
+    height: 100%;
+    height: 100dvh;
+    z-index: 1001;
+    transform: translateX(-105%);
+    transition: transform 180ms ease;
+    border-radius: 0 14px 14px 0;
+  }
+
+  .app.mobile-sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-resizer { display: none !important; }
+
+  .mobile-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: block;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+
+  .mobile-sidebar-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 44px;
+    width: 44px;
+    height: 44px !important;
+    padding: 0;
+    margin-right: 4px;
+    font-size: 22px;
+    touch-action: manipulation;
+  }
+
+  .panel-header {
+    padding: 10px 12px;
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
+
+  .panel-header-row {
+    gap: 8px;
+  }
+
+  .panel-header-row h1 {
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tabs,
+  .gm-workspace-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .tabs { padding: 4px 2px; }
+
+  .tabs button,
+  .sidebar-tab-button,
+  .page-link,
+  .gm-workspace-tab {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .gm-workspace-tabs { flex-wrap: nowrap !important; }
+  .gm-workspace-tab { flex: 0 0 auto; }
+
+  .sidebar-tools {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .sidebar-content,
+  .sidebar-body,
+  .sidebar-panel-body {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .viewer-shell,
+  .viewer {
+    min-width: 0;
+  }
+
+  .viewer-shell { height: 100%; }
+
+  .pdf-toolbar,
+  .viewer-toolbar,
+  .toolbar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .popup-panel,
+  .gm-popup-panel {
+    width: min(96vw, 960px) !important;
+    max-width: 96vw !important;
+    max-height: 88dvh !important;
+  }
+
+  .reference-index-browser-popup .reference-index-row,
+  .reference-index-browser-popup .reference-index-table-head {
+    min-width: 680px;
+  }
+
+  .reference-index-browser-popup { overflow: auto; }
+}

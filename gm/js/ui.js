@@ -2678,6 +2678,84 @@
   }
 
 
+  function isMobileSidebarViewport() {
+    return window.matchMedia ? window.matchMedia('(max-width: 760px)').matches : window.innerWidth <= 760;
+  }
+
+  function setMobileSidebarOpen(open) {
+    const app = document.querySelector('.app');
+    if (!app) return;
+    const next = Boolean(open) && isMobileSidebarViewport();
+    app.classList.toggle('mobile-sidebar-open', next);
+    document.body.classList.toggle('mobile-sidebar-open', next);
+
+    const toggle = document.getElementById('mobileSidebarToggle');
+    if (toggle) {
+      toggle.textContent = next ? '×' : '☰';
+      toggle.setAttribute('aria-label', next ? 'Hide sidebar' : 'Show sidebar');
+      toggle.title = next ? 'Hide sidebar' : 'Show sidebar';
+      toggle.setAttribute('aria-expanded', next ? 'true' : 'false');
+    }
+
+    const backdrop = document.getElementById('mobileSidebarBackdrop');
+    if (backdrop) backdrop.hidden = !next;
+  }
+
+  function setupMobileSidebar() {
+    const app = document.querySelector('.app');
+    const main = document.querySelector('.main');
+    const headerRow = main?.querySelector('.panel-header-row');
+    if (!app || !main || !headerRow) return;
+
+    let toggle = document.getElementById('mobileSidebarToggle');
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.id = 'mobileSidebarToggle';
+      toggle.className = 'icon-button mobile-sidebar-toggle';
+      toggle.textContent = '☰';
+      toggle.setAttribute('aria-label', 'Show sidebar');
+      toggle.title = 'Show sidebar';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.addEventListener('click', () => {
+        setMobileSidebarOpen(!app.classList.contains('mobile-sidebar-open'));
+      });
+      headerRow.insertBefore(toggle, headerRow.firstChild);
+    }
+
+    let backdrop = document.getElementById('mobileSidebarBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'mobileSidebarBackdrop';
+      backdrop.className = 'mobile-sidebar-backdrop';
+      backdrop.hidden = true;
+      backdrop.addEventListener('click', () => setMobileSidebarOpen(false));
+      document.body.appendChild(backdrop);
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && sidebar.dataset.mobileSidebarBound !== 'true') {
+      sidebar.addEventListener('click', (event) => {
+        if (!isMobileSidebarViewport()) return;
+        const target = event.target.closest?.('button[data-tab], .sidebar-tab-button, .gm-workspace-tab, .page-link');
+        if (target) window.setTimeout(() => setMobileSidebarOpen(false), 0);
+      });
+      sidebar.dataset.mobileSidebarBound = 'true';
+    }
+
+    setMobileSidebarOpen(false);
+
+    const media = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
+    if (media && media.addEventListener && media.datasetBound !== 'true') {
+      media.datasetBound = 'true';
+      media.addEventListener('change', () => {
+        if (!media.matches) setMobileSidebarOpen(false);
+      });
+    }
+
+    window.GM.ui.setMobileSidebarOpen = setMobileSidebarOpen;
+  }
+
   function init() {
     dom = {
       sidebarContentEl: document.getElementById('sidebarContent'),
@@ -2708,6 +2786,7 @@
     renderSidebar();
     applySidebarWidthFromState();
     setupResizer();
+    setupMobileSidebar();
 
     if (dom.themeButtonEl && dom.themeButtonEl.dataset.bound !== 'true') {
       dom.themeButtonEl.addEventListener('click', cycleThemeMode);
