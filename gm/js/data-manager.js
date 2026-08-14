@@ -14,7 +14,6 @@
     readOnly: false,
     serverBaseUrl: '',
     serverManifest: null,
-    serverBundle: null,
     lastError: '',
   };
 
@@ -116,24 +115,6 @@
     return new URL(encodedPath, state.serverBaseUrl).href;
   }
 
-  async function fetchServerBundle() {
-    if (!state.serverBaseUrl) return null;
-    if (state.serverBundle) return state.serverBundle;
-    try {
-      const response = await fetch(new URL('data-bundle.json', state.serverBaseUrl).href, {
-        cache: 'no-store',
-        credentials: 'same-origin',
-      });
-      if (!response.ok) return null;
-      const parsed = await response.json();
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
-      state.serverBundle = parsed;
-      return parsed;
-    } catch {
-      return null;
-    }
-  }
-
   async function readFile(path) {
     const normalized = normalizePath(path);
     if (state.readOnly) {
@@ -141,9 +122,19 @@
       const fileUrl = buildServerFileUrl(normalized);
       const response = await fetch(fileUrl, { cache: 'no-store', credentials: 'same-origin' });
       if (response.status === 404) {
-        const bundle = await fetchServerBundle();
-        if (bundle && Object.prototype.hasOwnProperty.call(bundle, normalized)) {
-          return String(bundle[normalized] ?? '');
+        // Server paths are case-sensitive. Resolve browser/local casing
+        // differences against the canonical manifest entry.
+        const canonical = (state.serverManifest || []).find(
+          (entry) => String(entry).toLowerCase() === normalized.toLowerCase()
+        );
+
+        if (canonical && canonical !== normalized) {
+          const canonicalUrl = buildServerFileUrl(canonical);
+          const canonicalResponse = await fetch(canonicalUrl, {
+            cache: 'no-store',
+            credentials: 'same-origin',
+          });
+          if (canonicalResponse.ok) return canonicalResponse.text();
         }
         return null;
       }
@@ -269,7 +260,6 @@
     const previous = { ...state };
     try {
       state.serverBaseUrl = normalized.href;
-      state.serverBundle = null;
       state.serverManifest = await fetchServerManifest();
       state.directoryHandle = null;
       state.readOnly = true;
@@ -299,7 +289,6 @@
     state.readOnly = false;
     state.serverBaseUrl = '';
     state.serverManifest = null;
-    state.serverBundle = null;
     localStorage.removeItem(SERVER_STORAGE_KEY);
     const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
     if (!handle) return false;
