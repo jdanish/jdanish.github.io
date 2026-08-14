@@ -8,11 +8,11 @@
         "source": "swade/17?highlight=Adaptable"
       },
       "additional action@@swade": {
-        "label": "Additional Action",
+        "label": "Additional action",
         "source": "swade/17?highlight=Additional%20Action"
       },
       "aquatic/semi-aquatic@@swade": {
-        "label": "Aquatic/Semi-Aquatic",
+        "label": "Aquatic/semi-aquatic",
         "source": "swade/17?highlight=Aquatic%2FSemi-Aquatic"
       },
       "burrowing@@swade": {
@@ -24,11 +24,11 @@
         "source": "swade/17?highlight=Claws"
       },
       "doesn’t breathe@@swade": {
-        "label": "Doesn’t Breathe",
+        "label": "Doesn’t breathe",
         "source": "swade/17?highlight=Doesn%E2%80%99t%20Breathe"
       },
       "environmental resistance@@swade": {
-        "label": "Environmental Resistance",
+        "label": "Environmental resistance",
         "source": "swade/17?highlight=Environmental%20Resistance"
       },
       "hardy@@swade": {
@@ -36,7 +36,7 @@
         "source": "swade/18?highlight=Hardy"
       },
       "immune to poison or disease@@swade": {
-        "label": "Immune to Poison or Disease",
+        "label": "Immune to poison or disease",
         "source": "swade/18?highlight=Immune%20to%20Poison%20or%20Disease"
       },
       "infravision@@swade": {
@@ -48,15 +48,15 @@
         "source": "swade/18?highlight=Leaper"
       },
       "low light vision@@swade": {
-        "label": "Low Light Vision",
+        "label": "Low light vision",
         "source": "swade/18?highlight=Low%20Light%20Vision"
       },
       "no vital organs@@swade": {
-        "label": "No Vital Organs",
+        "label": "No vital organs",
         "source": "swade/18?highlight=No%20Vital%20Organs"
       },
       "poisonous touch@@swade": {
-        "label": "Poisonous Touch",
+        "label": "Poisonous touch",
         "source": "swade/18?highlight=Poisonous%20Touch"
       },
       "reach@@swade": {
@@ -64,7 +64,7 @@
         "source": "swade/18?highlight=Reach"
       },
       "sleep reduction@@swade": {
-        "label": "Sleep Reduction",
+        "label": "Sleep reduction",
         "source": "swade/18?highlight=Sleep%20Reduction"
       },
       "toughness@@swade": {
@@ -88,7 +88,7 @@
         ]
       },
       "aurax@@sfc": {
-        "label": "AURAX",
+        "label": "Aurax",
         "source": "sfc/21?highlight=AURAX"
       },
       "avions@@swade": {
@@ -99,43 +99,43 @@
         ]
       },
       "celestials@@fantasy": {
-        "label": "CELESTIALS",
+        "label": "Celestials",
         "source": "fantasy/12?highlight=CELESTIALS",
         "aliases": [
-          "CELESTIAL"
+          "Celestial"
         ]
       },
       "centaurs@@fantasy": {
-        "label": "CENTAURS",
+        "label": "Centaurs",
         "source": "fantasy/12?highlight=CENTAURS",
         "aliases": [
-          "CENTAUR"
+          "Centaur"
         ]
       },
       "centaux@@sfc": {
-        "label": "CENTAUX",
+        "label": "Centaux",
         "source": "sfc/12?highlight=CENTAUX"
       },
       "deaders@@sfc": {
-        "label": "DEADERS",
+        "label": "Deaders",
         "source": "sfc/21?highlight=DEADERS",
         "aliases": [
-          "DEADER"
+          "Deader"
         ]
       },
       "dragonfolk@@fantasy": {
-        "label": "DRAGONFOLK",
+        "label": "Dragonfolk",
         "source": "fantasy/12?highlight=DRAGONFOLK",
         "aliases": [
-          "DRAGONFOLKs"
+          "Dragonfolks"
         ]
       },
       "draken@@sfc": {
-        "label": "DRAKEN",
+        "label": "Draken",
         "source": "sfc/12?highlight=DRAKEN"
       },
       "dwarves@@fantasy": {
-        "label": "DWARVES",
+        "label": "Dwarves",
         "source": "fantasy/12?highlight=DWARVES",
         "aliases": [
           "Dwarf"
@@ -149,18 +149,18 @@
         ]
       },
       "elemental scions@@fantasy": {
-        "label": "ELEMENTAL SCIONS",
+        "label": "Elemental scions",
         "source": "fantasy/13?highlight=ELEMENTAL%20SCIONS",
         "aliases": [
-          "ELEMENTAL SCION"
+          "Elemental scion"
         ]
       },
       "elementals@@sfc": {
-        "label": "ELEMENTALS",
+        "label": "Elementals",
         "source": "sfc/12?highlight=ELEMENTALS"
       },
       "elves@@fantasy": {
-        "label": "ELVES",
+        "label": "Elves",
         "source": "fantasy/14?highlight=ELVES",
         "aliases": [
           "Elf"
@@ -171,113 +171,113 @@
         "source": "swade/13?highlight=Elves"
       },
       "fairies@@fantasy": {
-        "label": "FAIRIES",
+        "label": "Fairies",
         "source": "fantasy/15?highlight=FAIRIES",
         "aliases": [
-          "FAIRY"
+          "Fairy"
         ]
       },
       "florans@@sfc": {
-        "label": "FLORANS",
+        "label": "Florans",
         "source": "sfc/12?highlight=FLORANS",
         "aliases": [
           "Floran"
         ]
       },
       "gelatinoids@@sfc": {
-        "label": "GELATINOIDS",
+        "label": "Gelatinoids",
         "source": "sfc/13?highlight=GELATINOIDS",
         "aliases": [
           "Gelatinoid"
         ]
       },
       "gen miners@@sfc": {
-        "label": "GEN MINERS",
+        "label": "Gen miners",
         "source": "sfc/13?highlight=GEN%20MINERS",
         "aliases": [
-          "GEN MINER"
+          "Gen miner"
         ]
       },
       "gen troopers@@sfc": {
-        "label": "GEN TROOPERS",
+        "label": "Gen troopers",
         "source": "sfc/14?highlight=GEN%20TROOPER"
       },
       "gnomes@@fantasy": {
-        "label": "GNOMES",
+        "label": "Gnomes",
         "source": "fantasy/15?highlight=GNOMES",
         "aliases": [
-          "GNOME"
+          "Gnome"
         ]
       },
       "goblins@@fantasy": {
-        "label": "GOBLINS",
+        "label": "Goblins",
         "source": "fantasy/16?highlight=GOBLINS",
         "aliases": [
-          "GOBLIN"
+          "Goblin"
         ]
       },
       "golems@@fantasy": {
-        "label": "GOLEMS",
+        "label": "Golems",
         "source": "fantasy/16?highlight=GOLEMS",
         "aliases": [
-          "GOLEM"
+          "Golem"
         ]
       },
       "graveborn@@fantasy": {
-        "label": "GRAVEBORN",
+        "label": "Graveborn",
         "source": "fantasy/17?highlight=GRAVEBORN",
         "aliases": [
-          "GRAVEBORNs"
+          "Graveborns"
         ]
       },
       "half-elves@@fantasy": {
-        "label": "HALF-ELVES",
+        "label": "Half-elves",
         "source": "fantasy/18?highlight=HALF-ELVES",
         "aliases": [
-          "HALF-ELF"
+          "Half-elf"
         ]
       },
       "half-elves@@swade": {
-        "label": "Half-Elves",
+        "label": "Half-elves",
         "source": "swade/14?highlight=Half-Elves",
         "aliases": [
-          "Half-Elf"
+          "Half-elf"
         ]
       },
       "half-folk@@fantasy": {
-        "label": "HALF-FOLK",
+        "label": "Half-folk",
         "source": "fantasy/18?highlight=HALF-FOLK",
         "aliases": [
-          "HALF-FOLKs"
+          "Half-folks"
         ]
       },
       "half-folk@@swade": {
-        "label": "Half-Folk",
+        "label": "Half-folk",
         "source": "swade/14?highlight=Half-Folk"
       },
       "half-giants@@fantasy": {
-        "label": "HALF-GIANTS",
+        "label": "Half-giants",
         "source": "fantasy/19?highlight=HALF-GIANTS",
         "aliases": [
-          "HALF-GIANT"
+          "Half-giant"
         ]
       },
       "half-orcs@@fantasy": {
-        "label": "HALF-ORCS",
+        "label": "Half-orcs",
         "source": "fantasy/19?highlight=HALF-ORCS",
         "aliases": [
-          "HALF-ORC"
+          "Half-orc"
         ]
       },
       "hosts@@sfc": {
-        "label": "HOSTS",
+        "label": "Hosts",
         "source": "sfc/17?highlight=HOSTS"
       },
       "humans@@fantasy": {
-        "label": "HUMANS",
+        "label": "Humans",
         "source": "fantasy/20?highlight=HUMANS",
         "aliases": [
-          "HUMAN"
+          "Human"
         ]
       },
       "humans@@swade": {
@@ -288,87 +288,87 @@
         ]
       },
       "infernals@@fantasy": {
-        "label": "INFERNALS",
+        "label": "Infernals",
         "source": "fantasy/20?highlight=INFERNALS",
         "aliases": [
-          "INFERNAL"
+          "Infernal"
         ]
       },
       "insectoids@@fantasy": {
-        "label": "INSECTOIDS",
+        "label": "Insectoids",
         "source": "fantasy/21?highlight=INSECTOIDS",
         "aliases": [
-          "INSECTOID"
+          "Insectoid"
         ]
       },
       "insectoids@@sfc": {
-        "label": "INSECTOIDS",
+        "label": "Insectoids",
         "source": "sfc/14?highlight=INSECTOIDS",
         "aliases": [
-          "INSECTOID"
+          "Insectoid"
         ]
       },
       "kalians@@sfc": {
-        "label": "KALIANS",
+        "label": "Kalians",
         "source": "sfc/21?highlight=KALIANS",
         "aliases": [
-          "KALIAN"
+          "Kalian"
         ]
       },
       "mimics@@sfc": {
-        "label": "MIMICS",
+        "label": "Mimics",
         "source": "sfc/15?highlight=MIMICS",
         "aliases": [
-          "MIMIC"
+          "Mimic"
         ]
       },
       "minotaurs@@fantasy": {
-        "label": "MINOTAURS",
+        "label": "Minotaurs",
         "source": "fantasy/21?highlight=MINOTAURS",
         "aliases": [
-          "MINOTAUR"
+          "Minotaur"
         ]
       },
       "mouselings@@fantasy": {
-        "label": "MOUSELINGS",
+        "label": "Mouselings",
         "source": "fantasy/22?highlight=MOUSELINGS",
         "aliases": [
-          "MOUSELING"
+          "Mouseling"
         ]
       },
       "ogres@@fantasy": {
-        "label": "OGRES",
+        "label": "Ogres",
         "source": "fantasy/23?highlight=OGRES",
         "aliases": [
-          "OGRE"
+          "Ogre"
         ]
       },
       "oracles@@sfc": {
-        "label": "ORACLES",
+        "label": "Oracles",
         "source": "sfc/15?highlight=ORACLES",
         "aliases": [
-          "ORACLE"
+          "Oracle"
         ]
       },
       "orcs@@fantasy": {
-        "label": "ORCS",
+        "label": "Orcs",
         "source": "fantasy/23?highlight=ORCS",
         "aliases": [
-          "ORC"
+          "Orc"
         ]
       },
       "quadroids@@sfc": {
-        "label": "QUADROIDS",
+        "label": "Quadroids",
         "source": "sfc/16?highlight=QUADROIDS",
         "aliases": [
-          "QUADROID"
+          "Quadroid"
         ]
       },
       "rakashans@@fantasy": {
-        "label": "RAKASHANS",
+        "label": "Rakashans",
         "source": "fantasy/24?highlight=RAKASHANS",
         "aliases": [
-          "RAKASHAN"
+          "Rakashan"
         ]
       },
       "rakashans@@swade": {
@@ -379,38 +379,38 @@
         ]
       },
       "rascals@@sfc": {
-        "label": "RASCALS",
+        "label": "Rascals",
         "source": "sfc/16?highlight=RASCALS",
         "aliases": [
-          "RASCAL"
+          "Rascal"
         ]
       },
       "ratlings@@fantasy": {
-        "label": "RATLINGS",
+        "label": "Ratlings",
         "source": "fantasy/25?highlight=RATLINGS",
         "aliases": [
-          "RATLING"
+          "Ratling"
         ]
       },
       "riders@@sfc": {
-        "label": "RIDERS",
+        "label": "Riders",
         "source": "sfc/17?highlight=RIDERS",
         "aliases": [
-          "RIDER"
+          "Rider"
         ]
       },
       "robots@@sfc": {
-        "label": "ROBOTS",
+        "label": "Robots",
         "source": "sfc/18?highlight=ROBOTS",
         "aliases": [
-          "ROBOT"
+          "Robot"
         ]
       },
       "saurians@@fantasy": {
-        "label": "SAURIANS",
+        "label": "Saurians",
         "source": "fantasy/25?highlight=SAURIANS",
         "aliases": [
-          "SAURIAN"
+          "Saurian"
         ]
       },
       "saurians@@swade": {
@@ -421,42 +421,42 @@
         ]
       },
       "serpentfolk@@fantasy": {
-        "label": "SERPENTFOLK",
+        "label": "Serpentfolk",
         "source": "fantasy/26?highlight=SERPENTFOLK",
         "aliases": [
-          "SERPENTFOLKs"
+          "Serpentfolks"
         ]
       },
       "serrans@@sfc": {
-        "label": "SERRANS",
+        "label": "Serrans",
         "source": "sfc/21?highlight=SERRANS"
       },
       "shapeshifters@@fantasy": {
-        "label": "SHAPESHIFTERS",
+        "label": "Shapeshifters",
         "source": "fantasy/27?highlight=SHAPESHIFTERS",
         "aliases": [
-          "SHAPESHIFTER"
+          "Shapeshifter"
         ]
       },
       "synthetic beings@@sfc": {
-        "label": "SYNTHETIC BEINGS",
+        "label": "Synthetic beings",
         "source": "sfc/18?highlight=SYNTHETIC%20BEINGS",
         "aliases": [
-          "SYNTHETIC BEING"
+          "Synthetic being"
         ]
       },
       "voidlings@@sfc": {
-        "label": "VOIDLINGS",
+        "label": "Voidlings",
         "source": "sfc/19?highlight=VOIDLINGS",
         "aliases": [
-          "VOIDLING"
+          "Voidling"
         ]
       },
       "yetis@@sfc": {
-        "label": "YETIS",
+        "label": "Yetis",
         "source": "sfc/20?highlight=YETIS",
         "aliases": [
-          "YETI"
+          "Yeti"
         ]
       }
     },
@@ -472,7 +472,7 @@
         "source": "swade/47?highlight=Acrobat"
       },
       "advanced psyfocus loadout@@starbreaker_core": {
-        "label": "Advanced PsyFocus Loadout",
+        "label": "Advanced psyfocus loadout",
         "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
       },
       "alertness@@swade": {
@@ -484,15 +484,15 @@
         "source": "swade/36?highlight=Ambidextrous"
       },
       "arcane background (psy commando)@@starbreaker_core": {
-        "label": "Arcane Background (Psy Commando)",
+        "label": "Arcane background (psy commando)",
         "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
       },
       "arcane background@@swade": {
-        "label": "Arcane Background",
+        "label": "Arcane background",
         "source": "swade/37?highlight=Arcane%20Background"
       },
       "arcane resistance@@swade": {
-        "label": "Arcane Resistance",
+        "label": "Arcane resistance",
         "source": "swade/37?highlight=Arcane%20Resistance"
       },
       "aristocrat@@swade": {
@@ -512,15 +512,15 @@
         "source": "swade/36?highlight=Attractive"
       },
       "basic psychic loadout@@starbreaker_core": {
-        "label": "Basic Psychic Loadout",
+        "label": "Basic psychic loadout",
         "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
       },
       "beast bond@@swade": {
-        "label": "Beast Bond",
+        "label": "Beast bond",
         "source": "swade/50?highlight=Beast%20Bond"
       },
       "beast master@@swade": {
-        "label": "Beast Master",
+        "label": "Beast master",
         "source": "swade/50?highlight=Beast%20Master"
       },
       "berserk@@swade": {
@@ -560,11 +560,11 @@
         "source": "swade/40?highlight=Calculating"
       },
       "captain@@sfc": {
-        "label": "CAPTAIN",
+        "label": "Captain",
         "source": "sfc/24?highlight=CAPTAIN"
       },
       "champion healer@@swade": {
-        "label": "Champion Healer",
+        "label": "Champion healer",
         "source": "swade/51?highlight=Champion%20Healer"
       },
       "channeling@@swade": {
@@ -580,15 +580,15 @@
         "source": "swade/51?highlight=Chi"
       },
       "combat acrobat@@swade": {
-        "label": "Combat Acrobat",
+        "label": "Combat acrobat",
         "source": "swade/47?highlight=Combat%20Acrobat"
       },
       "combat reflexes@@swade": {
-        "label": "Combat Reflexes",
+        "label": "Combat reflexes",
         "source": "swade/40?highlight=Combat%20Reflexes"
       },
       "command presence@@swade": {
-        "label": "Command Presence",
+        "label": "Command presence",
         "source": "swade/44?highlight=Command%20Presence"
       },
       "command@@swade": {
@@ -596,7 +596,7 @@
         "source": "swade/44?highlight=Command"
       },
       "common bond@@swade": {
-        "label": "Common Bond",
+        "label": "Common bond",
         "source": "swade/49?highlight=Common%20Bond"
       },
       "concentration@@swade": {
@@ -612,7 +612,7 @@
         "source": "swade/40?highlight=Counterattack"
       },
       "dead shot@@swade": {
-        "label": "Dead Shot",
+        "label": "Dead shot",
         "source": "swade/40?highlight=Dead%20Shot"
       },
       "dodge@@swade": {
@@ -620,7 +620,7 @@
         "source": "swade/40?highlight=Dodge"
       },
       "double tap@@swade": {
-        "label": "Double Tap",
+        "label": "Double tap",
         "source": "swade/40?highlight=Double%20Tap"
       },
       "elan@@swade": {
@@ -632,7 +632,7 @@
         "source": "swade/52?highlight=Expert"
       },
       "extra effort@@swade": {
-        "label": "Extra Effort",
+        "label": "Extra effort",
         "source": "swade/45?highlight=Extra%20Effort"
       },
       "extraction@@swade": {
@@ -648,7 +648,7 @@
         "source": "swade/38?highlight=Famous"
       },
       "fast healer@@swade": {
-        "label": "Fast Healer",
+        "label": "Fast healer",
         "source": "swade/38?highlight=Fast%20Healer"
       },
       "feint@@swade": {
@@ -660,15 +660,15 @@
         "source": "swade/44?highlight=Fervor"
       },
       "filthy rich@@swade": {
-        "label": "Filthy Rich",
+        "label": "Filthy rich",
         "source": "swade/39?highlight=Filthy%20Rich"
       },
       "first strike@@swade": {
-        "label": "First Strike",
+        "label": "First strike",
         "source": "swade/41?highlight=First%20Strike"
       },
       "fleet-footed@@swade": {
-        "label": "Fleet-Footed",
+        "label": "Fleet-footed",
         "source": "swade/38?highlight=FLEET-FOOTED"
       },
       "followers@@swade": {
@@ -676,7 +676,7 @@
         "source": "swade/52?highlight=Followers"
       },
       "free runner@@swade": {
-        "label": "Free Runner",
+        "label": "Free runner",
         "source": "swade/41?highlight=Free%20Runner"
       },
       "frenzy@@swade": {
@@ -688,23 +688,23 @@
         "source": "swade/45?highlight=Gadgeteer"
       },
       "giant killer@@swade": {
-        "label": "Giant Killer",
+        "label": "Giant killer",
         "source": "swade/41?highlight=Giant%20Killer"
       },
       "great luck@@swade": {
-        "label": "Great Luck",
+        "label": "Great luck",
         "source": "swade/39?highlight=Great%20Luck"
       },
       "hard to kill@@swade": {
-        "label": "Hard To Kill",
+        "label": "Hard to kill",
         "source": "swade/41?highlight=Hard%20To%20Kill"
       },
       "harder to kill@@swade": {
-        "label": "Harder to Kill",
+        "label": "Harder to kill",
         "source": "swade/41?highlight=Harder%20to%20Kill"
       },
       "heavy hitters squad edge@@starbreaker_star_marines": {
-        "label": "Heavy Hitters Squad Edge",
+        "label": "Heavy hitters squad edge",
         "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
       },
       "humiliate@@swade": {
@@ -712,51 +712,51 @@
         "source": "swade/49?highlight=Humiliate"
       },
       "improved arcane resistance@@swade": {
-        "label": "Improved Arcane Resistance",
+        "label": "Improved arcane resistance",
         "source": "swade/37?highlight=Improved%20Arcane%20Resistance"
       },
       "improved block@@swade": {
-        "label": "Improved Block",
+        "label": "Improved block",
         "source": "swade/39?highlight=Improved%20Block"
       },
       "improved counterattack@@swade": {
-        "label": "Improved Counterattack",
+        "label": "Improved counterattack",
         "source": "swade/40?highlight=Improved%20Counterattack"
       },
       "improved dodge@@swade": {
-        "label": "Improved Dodge",
+        "label": "Improved dodge",
         "source": "swade/40?highlight=Improved%20Dodge"
       },
       "improved extraction@@swade": {
-        "label": "Improved Extraction",
+        "label": "Improved extraction",
         "source": "swade/41?highlight=Improved%20Extraction"
       },
       "improved first strike@@swade": {
-        "label": "Improved First Strike",
+        "label": "Improved first strike",
         "source": "swade/41?highlight=Improved%20First%20Strike"
       },
       "improved frenzy@@swade": {
-        "label": "Improved Frenzy",
+        "label": "Improved frenzy",
         "source": "swade/41?highlight=Improved%20Frenzy"
       },
       "improved level headed@@swade": {
-        "label": "Improved Level Headed",
+        "label": "Improved level headed",
         "source": "swade/42?highlight=Improved%20Level%20Headed"
       },
       "improved nerves of steel@@swade": {
-        "label": "Improved Nerves of Steel",
+        "label": "Improved nerves of steel",
         "source": "swade/42?highlight=Improved%20Nerves%20of%20Steel"
       },
       "improved rapid fire@@swade": {
-        "label": "Improved Rapid Fire",
+        "label": "Improved rapid fire",
         "source": "swade/42?highlight=Improved%20Rapid%20Fire"
       },
       "improved sweep@@swade": {
-        "label": "Improved Sweep",
+        "label": "Improved sweep",
         "source": "swade/43?highlight=Improved%20Sweep"
       },
       "improvisational fighter@@swade": {
-        "label": "Improvisational Fighter",
+        "label": "Improvisational fighter",
         "source": "swade/41?highlight=Improvisational%20Fighter"
       },
       "inspire@@swade": {
@@ -768,23 +768,23 @@
         "source": "swade/47?highlight=Investigator"
       },
       "iron jaw@@swade": {
-        "label": "Iron Jaw",
+        "label": "Iron jaw",
         "source": "swade/41?highlight=Iron%20Jaw"
       },
       "iron will@@swade": {
-        "label": "Iron Will",
+        "label": "Iron will",
         "source": "swade/50?highlight=Iron%20Will"
       },
       "killer instinct@@swade": {
-        "label": "Killer Instinct",
+        "label": "Killer instinct",
         "source": "swade/42?highlight=Killer%20Instinct"
       },
       "legendary edges@@swade": {
-        "label": "Legendary Edges",
+        "label": "Legendary edges",
         "source": "swade/52?highlight=Legendary%20Edges"
       },
       "level headed@@swade": {
-        "label": "Level Headed",
+        "label": "Level headed",
         "source": "swade/42?highlight=Level%20Headed"
       },
       "linguist@@swade": {
@@ -792,11 +792,11 @@
         "source": "swade/39?highlight=Linguist"
       },
       "liquid courage@@swade": {
-        "label": "Liquid Courage",
+        "label": "Liquid courage",
         "source": "swade/51?highlight=Liquid%20Courage"
       },
       "living weapon@@starbreaker_star_marines": {
-        "label": "Living Weapon",
+        "label": "Living weapon",
         "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
       },
       "luck@@swade": {
@@ -808,15 +808,15 @@
         "source": "swade/42?highlight=Marksman"
       },
       "martial artist@@swade": {
-        "label": "Martial Artist",
+        "label": "Martial artist",
         "source": "swade/42?highlight=Martial%20Artist"
       },
       "martial warrior@@swade": {
-        "label": "Martial Warrior",
+        "label": "Martial warrior",
         "source": "swade/42?highlight=Martial%20Warrior"
       },
       "master tactician@@swade": {
-        "label": "Master Tactician",
+        "label": "Master tactician",
         "source": "swade/44?highlight=Master%20Tactician"
       },
       "master@@swade": {
@@ -824,7 +824,7 @@
         "source": "swade/52?highlight=Master"
       },
       "mcgyver@@swade": {
-        "label": "McGyver",
+        "label": "Mcgyver",
         "source": "swade/48?highlight=McGyver"
       },
       "mentalist@@swade": {
@@ -832,35 +832,35 @@
         "source": "swade/45?highlight=Mentalist"
       },
       "mighty blow@@swade": {
-        "label": "Mighty Blow",
+        "label": "Mighty blow",
         "source": "swade/42?highlight=Mighty%20Blow"
       },
       "natural leader@@swade": {
-        "label": "Natural Leader",
+        "label": "Natural leader",
         "source": "swade/44?highlight=Natural%20Leader"
       },
       "nerves of steel@@swade": {
-        "label": "Nerves of Steel",
+        "label": "Nerves of steel",
         "source": "swade/42?highlight=Nerves%20of%20Steel"
       },
       "new powers@@swade": {
-        "label": "New Powers",
+        "label": "New powers",
         "source": "swade/46?highlight=New%20Powers"
       },
       "no mercy@@swade": {
-        "label": "No Mercy",
+        "label": "No mercy",
         "source": "swade/42?highlight=No%20Mercy"
       },
       "power points@@swade": {
-        "label": "Power Points",
+        "label": "Power points",
         "source": "swade/46?highlight=Power%20Points"
       },
       "power surge@@swade": {
-        "label": "Power Surge",
+        "label": "Power surge",
         "source": "swade/46?highlight=Power%20Surge"
       },
       "professional edges@@swade": {
-        "label": "Professional Edges",
+        "label": "Professional edges",
         "source": "swade/46?highlight=Professional%20Edges"
       },
       "provoke@@swade": {
@@ -868,7 +868,7 @@
         "source": "swade/49?highlight=Provoke"
       },
       "psyfocus loadout@@starbreaker_core": {
-        "label": "PsyFocus Loadout",
+        "label": "Psyfocus loadout",
         "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
       },
       "quick@@swade": {
@@ -876,11 +876,11 @@
         "source": "swade/39?highlight=Quick"
       },
       "rapid fire@@swade": {
-        "label": "Rapid Fire",
+        "label": "Rapid fire",
         "source": "swade/42?highlight=Rapid%20Fire"
       },
       "rapid recharge@@swade": {
-        "label": "Rapid Recharge",
+        "label": "Rapid recharge",
         "source": "swade/46?highlight=Rapid%20Recharge"
       },
       "rich@@swade": {
@@ -888,7 +888,7 @@
         "source": "swade/39?highlight=Rich"
       },
       "rock and roll!@@swade": {
-        "label": "Rock and Roll!",
+        "label": "Rock and roll!",
         "source": "swade/43?highlight=Rock%20and%20Roll!"
       },
       "room@@swade": {
@@ -900,7 +900,7 @@
         "source": "swade/48?highlight=Scholar"
       },
       "social edges menacing@@swade": {
-        "label": "Social Edges Menacing",
+        "label": "Social edges menacing",
         "source": "swade/49?highlight=Social%20Edges%20Menacing"
       },
       "soldier@@swade": {
@@ -908,15 +908,15 @@
         "source": "swade/48?highlight=Soldier"
       },
       "soul drain@@swade": {
-        "label": "Soul Drain",
+        "label": "Soul drain",
         "source": "swade/46?highlight=Soul%20Drain"
       },
       "steady hands@@swade": {
-        "label": "Steady Hands",
+        "label": "Steady hands",
         "source": "swade/43?highlight=Steady%20Hands"
       },
       "strong willed@@swade": {
-        "label": "Strong Willed",
+        "label": "Strong willed",
         "source": "swade/50?highlight=Strong%20Willed"
       },
       "sweep@@swade": {
@@ -924,7 +924,7 @@
         "source": "swade/43?highlight=Sweep"
       },
       "tactician c@@swade": {
-        "label": "Tactician C",
+        "label": "Tactician c",
         "source": "swade/44?highlight=Tactician%20C"
       },
       "thief@@swade": {
@@ -932,23 +932,23 @@
         "source": "swade/48?highlight=Thief"
       },
       "tougher than nails@@swade": {
-        "label": "Tougher Than Nails",
+        "label": "Tougher than nails",
         "source": "swade/52?highlight=Tougher%20Than%20Nails"
       },
       "trademark weapon@@swade": {
-        "label": "Trademark Weapon",
+        "label": "Trademark weapon",
         "source": "swade/43?highlight=Trademark%20Weapon"
       },
       "two-fisted@@swade": {
-        "label": "Two-Fisted",
+        "label": "Two-fisted",
         "source": "swade/60?highlight=Two-Fisted"
       },
       "two-gun kid@@swade": {
-        "label": "Two-Gun Kid",
+        "label": "Two-gun kid",
         "source": "swade/43?highlight=Two-Gun%20Kid"
       },
       "very attractive@@swade": {
-        "label": "Very Attractive",
+        "label": "Very attractive",
         "source": "swade/37?highlight=Very%20Attractive"
       },
       "weapon@@swade": {
@@ -962,11 +962,11 @@
     },
     "hindrances": {
       "all thumbs@@swade": {
-        "label": "All Thumbs",
+        "label": "All thumbs",
         "source": "swade/21?highlight=All%20Thumbs"
       },
       "amorous@@sfc": {
-        "label": "AMOROUS",
+        "label": "Amorous",
         "source": "sfc/22?highlight=AMOROUS"
       },
       "anemic@@swade": {
@@ -978,23 +978,23 @@
         "source": "swade/21?highlight=Arrogant"
       },
       "atmospheric dependency@@sfc": {
-        "label": "ATMOSPHERIC DEPENDENCY",
+        "label": "Atmospheric dependency",
         "source": "sfc/22?highlight=ATMOSPHERIC%20DEPENDENCY"
       },
       "bad eyes@@swade": {
-        "label": "Bad Eyes",
+        "label": "Bad eyes",
         "source": "swade/21?highlight=Bad%20Eyes"
       },
       "bad luck@@swade": {
-        "label": "Bad Luck",
+        "label": "Bad luck",
         "source": "swade/21?highlight=Bad%20Luck"
       },
       "big mouth@@swade": {
-        "label": "Big Mouth",
+        "label": "Big mouth",
         "source": "swade/21?highlight=Big%20Mouth"
       },
       "blind (major)@@swade": {
-        "label": "Blind (Major)",
+        "label": "Blind (major)",
         "source": "swade/22?highlight=Blind%20(Major)"
       },
       "bloodthirsty@@swade": {
@@ -1002,11 +1002,11 @@
         "source": "swade/22?highlight=Bloodthirsty"
       },
       "bullet magnet@@sfc": {
-        "label": "BULLET MAGNET",
+        "label": "Bullet magnet",
         "source": "sfc/22?highlight=BULLET%20MAGNET"
       },
       "can’t swim@@swade": {
-        "label": "Can’t Swim",
+        "label": "Can’t swim",
         "source": "swade/22?highlight=Can%E2%80%99t%20Swim"
       },
       "cautious@@swade": {
@@ -1022,7 +1022,7 @@
         "source": "swade/21?highlight=Clumsy"
       },
       "code of honor@@swade": {
-        "label": "Code of Honor",
+        "label": "Code of honor",
         "source": "swade/21?highlight=Code%20of%20Honor"
       },
       "curious@@swade": {
@@ -1030,7 +1030,7 @@
         "source": "swade/22?highlight=Curious"
       },
       "death wish@@swade": {
-        "label": "Death Wish",
+        "label": "Death wish",
         "source": "swade/22?highlight=Death%20Wish"
       },
       "delusional@@swade": {
@@ -1038,11 +1038,11 @@
         "source": "swade/22?highlight=Delusional"
       },
       "dependent@@sfc": {
-        "label": "DEPENDENT",
+        "label": "Dependent",
         "source": "sfc/22?highlight=DEPENDENT"
       },
       "doubting thomas@@swade": {
-        "label": "Doubting Thomas",
+        "label": "Doubting thomas",
         "source": "swade/20?highlight=Doubting%20Thomas"
       },
       "driven@@swade": {
@@ -1058,11 +1058,11 @@
         "source": "swade/23?highlight=Enemy"
       },
       "ex-drone@@sfc": {
-        "label": "EX-DRONE",
+        "label": "Ex-drone",
         "source": "sfc/22?highlight=EX-DRONE"
       },
       "ftl sickness@@sfc": {
-        "label": "FTL SICKNESS",
+        "label": "Ftl sickness",
         "source": "sfc/23?highlight=FTL%20SICKNESS"
       },
       "greedy@@swade": {
@@ -1074,7 +1074,7 @@
         "source": "swade/23?highlight=Habit"
       },
       "hard of hearing@@swade": {
-        "label": "Hard of Hearing",
+        "label": "Hard of hearing",
         "source": "swade/23?highlight=Hard%20of%20Hearing"
       },
       "heroic@@swade": {
@@ -1098,11 +1098,11 @@
         "source": "swade/24?highlight=Jealous"
       },
       "low tech/high tech@@sfc": {
-        "label": "LOW TECH/HIGH TECH",
+        "label": "Low tech/high tech",
         "source": "sfc/23?highlight=LOW%20TECH%2FHIGH%20TECH"
       },
       "low/zero-g worlder@@sfc": {
-        "label": "LOW/ZERO-G WORLDER",
+        "label": "Low/zero-g worlder",
         "source": "sfc/23?highlight=LOW%2FZERO-G%20WORLDER"
       },
       "loyal@@swade": {
@@ -1114,7 +1114,7 @@
         "source": "swade/24?highlight=Mean"
       },
       "mild mannered@@swade": {
-        "label": "Mild Mannered",
+        "label": "Mild mannered",
         "source": "swade/24?highlight=Mild%20Mannered"
       },
       "mute@@swade": {
@@ -1130,11 +1130,11 @@
         "source": "swade/24?highlight=Obligation"
       },
       "one arm@@swade": {
-        "label": "One Arm",
+        "label": "One arm",
         "source": "swade/25?highlight=One%20Arm"
       },
       "one eye@@swade": {
-        "label": "One Eye",
+        "label": "One eye",
         "source": "swade/25?highlight=One%20Eye"
       },
       "outsider@@swade": {
@@ -1158,7 +1158,7 @@
         "source": "swade/25?highlight=Poverty"
       },
       "programmed@@sfc": {
-        "label": "PROGRAMMED",
+        "label": "Programmed",
         "source": "sfc/23?highlight=PROGRAMMED"
       },
       "quirk@@swade": {
@@ -1166,7 +1166,7 @@
         "source": "swade/25?highlight=Quirk"
       },
       "rebellious@@sfc": {
-        "label": "REBELLIOUS",
+        "label": "Rebellious",
         "source": "sfc/23?highlight=REBELLIOUS"
       },
       "ruthless@@swade": {
@@ -1178,7 +1178,7 @@
         "source": "swade/25?highlight=Secret"
       },
       "selfless@@sfc": {
-        "label": "SELFLESS",
+        "label": "Selfless",
         "source": "sfc/23?highlight=SELFLESS"
       },
       "shamed@@swade": {
@@ -1198,7 +1198,7 @@
         "source": "swade/26?highlight=Suspicious"
       },
       "thin skinned@@swade": {
-        "label": "Thin Skinned",
+        "label": "Thin skinned",
         "source": "swade/27?highlight=Thin%20Skinned"
       },
       "timid@@swade": {
@@ -1206,11 +1206,11 @@
         "source": "swade/27?highlight=Timid"
       },
       "tongue-tied@@swade": {
-        "label": "Tongue-Tied",
+        "label": "Tongue-tied",
         "source": "swade/27?highlight=Tongue-Tied"
       },
       "trouble magnet@@sfc": {
-        "label": "TROUBLE MAGNET",
+        "label": "Trouble magnet",
         "source": "sfc/23?highlight=TROUBLE%20MAGNET"
       },
       "ugly@@swade": {
@@ -1234,61 +1234,61 @@
         "source": "swade/27?highlight=Young"
       },
       "zero-g sickness@@sfc": {
-        "label": "ZERO-G SICKNESS",
+        "label": "Zero-g sickness",
         "source": "sfc/24?highlight=ZERO-G%20SICKNESS"
       }
     },
     "items": {
       "blackout grenades@@starbreaker_core": {
-        "label": "Blackout Grenades",
+        "label": "Blackout grenades",
         "source": "starbreaker_core/91?highlight=Blackout%20Grenades"
       },
       "blackout smoke grenade@@starbreaker_core": {
-        "label": "Blackout Smoke Grenade",
+        "label": "Blackout smoke grenade",
         "source": "starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade"
       },
       "emp grenade@@starbreaker_core": {
-        "label": "EMP Grenade",
+        "label": "Emp grenade",
         "source": "starbreaker_core/91?highlight=EMP%20Grenade"
       },
       "flechette disk@@starbreaker_core": {
-        "label": "Flechette Disk",
+        "label": "Flechette disk",
         "source": "starbreaker_core/91?highlight=Flechette%20Disk"
       },
       "flechette grenades@@starbreaker_core": {
-        "label": "Flechette Grenades",
+        "label": "Flechette grenades",
         "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
       },
       "gatling laser@@sfc": {
-        "label": "Gatling Laser",
+        "label": "Gatling laser",
         "source": "sfc/54?highlight=Gatling%20Laser"
       },
       "gravity grenade@@starbreaker_core": {
-        "label": "Gravity Grenade",
+        "label": "Gravity grenade",
         "source": "starbreaker_core/91?highlight=Gravity%20Grenade"
       },
       "gravity grenades@@starbreaker_core": {
-        "label": "Gravity Grenades",
+        "label": "Gravity grenades",
         "source": "starbreaker_core/91?highlight=Gravity%20Grenades"
       },
       "psyfocus loadout & advanced@@starbreaker_core": {
-        "label": "PsyFocus Loadout & Advanced",
+        "label": "Psyfocus loadout & advanced",
         "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
       },
       "psyfocus@@starbreaker_core": {
-        "label": "PsyFocus",
+        "label": "Psyfocus",
         "source": "starbreaker_core/120?highlight=PsyFocus"
       },
       "star marine armor (+6*)@@starbreaker_star_marines": {
-        "label": "Star Marine Armor (+6*)",
+        "label": "Star marine armor (+6*)",
         "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
       },
       "web grenade@@starbreaker_core": {
-        "label": "Web Grenade",
+        "label": "Web grenade",
         "source": "starbreaker_core/91?highlight=Web%20Grenade"
       },
       "web grenades@@starbreaker_core": {
-        "label": "Web Grenades",
+        "label": "Web grenades",
         "source": "starbreaker_core/91?highlight=Web%20Grenades"
       }
     },
@@ -1297,7 +1297,7 @@
     "other": {},
     "powers": {
       "arcane protection@@swade": {
-        "label": "Arcane Protection",
+        "label": "Arcane protection",
         "source": "swade/154?highlight=Arcane%20Protection"
       },
       "armor@@swade": {
@@ -1313,7 +1313,7 @@
         "source": "swade/154?highlight=Barrier"
       },
       "beast friend@@swade": {
-        "label": "Beast Friend",
+        "label": "Beast friend",
         "source": "swade/154?highlight=Beast%20Friend"
       },
       "blast@@swade": {
@@ -1329,10 +1329,10 @@
         "source": "swade/155?highlight=bolt"
       },
       "boost / lower trait@@swade": {
-        "label": "Boost / Lower Trait",
+        "label": "Boost / lower trait",
         "source": "swade/155?highlight=Boost%20%2F%20Lower%20Trait",
         "aliases": [
-          "Boost/Lower Trait"
+          "Boost/lower trait"
         ]
       },
       "burst@@swade": {
@@ -1340,7 +1340,7 @@
         "source": "swade/156?highlight=Burst"
       },
       "detect / conceal arcana@@swade": {
-        "label": "Detect / Conceal Arcana",
+        "label": "Detect / conceal arcana",
         "source": "swade/157?highlight=Detect%20%2F%20Conceal%20Arcana"
       },
       "disguise@@swade": {
@@ -1352,11 +1352,11 @@
         "source": "swade/157?highlight=Dispel"
       },
       "drain power points@@swade": {
-        "label": "Drain Power Points",
+        "label": "Drain power points",
         "source": "swade/159?highlight=Drain%20Power%20Points"
       },
       "elemental manipulation@@swade": {
-        "label": "Elemental Manipulation",
+        "label": "Elemental manipulation",
         "source": "swade/159?highlight=Elemental%20Manipulation"
       },
       "empathy@@swade": {
@@ -1364,7 +1364,7 @@
         "source": "swade/159?highlight=Empathy"
       },
       "environmental protection@@swade": {
-        "label": "Environmental Protection",
+        "label": "Environmental protection",
         "source": "swade/160?highlight=Environmental%20Protection"
       },
       "farsight@@swade": {
@@ -1380,7 +1380,7 @@
         "source": "swade/161?highlight=Fly"
       },
       "growth / shrink@@swade": {
-        "label": "Growth / Shrink",
+        "label": "Growth / shrink",
         "source": "swade/161?highlight=Growth%20%2F%20Shrink"
       },
       "havoc@@swade": {
@@ -1404,23 +1404,23 @@
         "source": "swade/163?highlight=Invisibility"
       },
       "light / darkness@@swade": {
-        "label": "Light / Darkness",
+        "label": "Light / darkness",
         "source": "swade/163?highlight=Light%20%2F%20Darkness"
       },
       "mind link@@swade": {
-        "label": "Mind Link",
+        "label": "Mind link",
         "source": "swade/163?highlight=Mind%20Link"
       },
       "mind reading@@swade": {
-        "label": "Mind Reading",
+        "label": "Mind reading",
         "source": "swade/163?highlight=Mind%20Reading"
       },
       "mind wipe@@swade": {
-        "label": "Mind Wipe",
+        "label": "Mind wipe",
         "source": "swade/164?highlight=Mind%20Wipe"
       },
       "object reading@@swade": {
-        "label": "Object Reading",
+        "label": "Object reading",
         "source": "swade/164?highlight=Object%20Reading"
       },
       "protection@@swade": {
@@ -1444,11 +1444,11 @@
         "source": "swade/165?highlight=Resurrection"
       },
       "shape change@@swade": {
-        "label": "Shape Change",
+        "label": "Shape change",
         "source": "swade/166?highlight=Shape%20Change"
       },
       "sloth / speed@@swade": {
-        "label": "Sloth / Speed",
+        "label": "Sloth / speed",
         "source": "swade/166?highlight=Sloth%20%2F%20Speed"
       },
       "smite@@swade": {
@@ -1456,11 +1456,11 @@
         "source": "swade/167?highlight=Smite"
       },
       "sound / silence@@swade": {
-        "label": "Sound / Silence",
+        "label": "Sound / silence",
         "source": "swade/167?highlight=Sound%20%2F%20Silence"
       },
       "speak language@@swade": {
-        "label": "Speak Language",
+        "label": "Speak language",
         "source": "swade/167?highlight=Speak%20Language"
       },
       "stun@@swade": {
@@ -1468,7 +1468,7 @@
         "source": "swade/167?highlight=Stun"
       },
       "summon ally@@swade": {
-        "label": "Summon Ally",
+        "label": "Summon ally",
         "source": "swade/168?highlight=Summon%20Ally"
       },
       "telekinesis@@swade": {
@@ -1480,11 +1480,11 @@
         "source": "swade/169?highlight=Teleport"
       },
       "wall walker@@swade": {
-        "label": "Wall Walker",
+        "label": "Wall walker",
         "source": "swade/169?highlight=Wall%20Walker"
       },
       "warrior’s gift@@swade": {
-        "label": "Warrior’s Gift",
+        "label": "Warrior’s gift",
         "source": "swade/169?highlight=Warrior%E2%80%99s%20Gift"
       },
       "zombie@@swade": {

@@ -364,7 +364,8 @@
 
       for (let i = 0; i < lines.length; i += 1) {
         if (!candidatePredicate(category, lines, i)) continue;
-        const label = category === 'items' ? extractItemLabel(lines[i].text) : normalizeLine(lines[i].text);
+        const rawLabel = category === 'items' ? extractItemLabel(lines[i].text) : normalizeLine(lines[i].text);
+        const label = normalizeIndexLabel(rawLabel);
         const key = normalizeKey(label);
         if (!key || seen.has(key)) continue;
         if (/^(requirements?|description|notes?|special|gear|edges?|powers?)$/i.test(label)) continue;
@@ -391,7 +392,7 @@
           // while character imports often provide the singular ("Human").
           // Keep the book's canonical label and add the simple counterpart
           // as an alias so imports resolve immediately.
-          const normalizedLabel = normalizeLine(label);
+          const normalizedLabel = normalizeIndexLabel(label);
           if (/s$/i.test(normalizedLabel) && normalizedLabel.length > 1) {
             aliases.push(normalizedLabel.slice(0, -1));
           } else if (normalizedLabel) {
@@ -405,7 +406,7 @@
           ...(aliases.length ? { aliases } : {}),
           displayPage: effectiveDisplayPage,
           pdfPage: data.pdfPage,
-          source: `${bookKey}/${effectiveDisplayPage}?highlight=${encodeURIComponent(label)}`,
+          source: `${bookKey}/${effectiveDisplayPage}?highlight=${encodeURIComponent(rawLabel)}`,
           key,
         });
       }
