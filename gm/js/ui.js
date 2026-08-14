@@ -695,6 +695,7 @@
     const name = fgCleanName(fgChildText(character, 'name', 'Imported Character')) || 'Imported Character';
     const race = fgCleanName(fgChildText(character, 'race'));
     const profession = fgCleanName(fgChildText(character, 'archetype'));
+    const ancestry = fgCleanName(fgChildText(character, 'race'));
 
     const attrNames = ['agility', 'smarts', 'spirit', 'strength', 'vigor'];
     const attrs = attrNames
@@ -808,10 +809,13 @@
     const summaryParts = [];
     if (attrs.length) summaryParts.push(`<p><strong>Attributes:</strong> ${fgXmlEscape(attrs.join(', '))}</p>`);
     if (skills.length) summaryParts.push(`<p><strong>Skills:</strong> ${fgXmlEscape(skills.join(', '))}</p>`);
+    if (ancestry) summaryParts.push(`<p><strong>Ancestry:</strong> ${fgReferenceHtml('ancestries', ancestry, ['ancestries', 'other'])}</p>`);
     if (pace || parry || toughness) {
       summaryParts.push(`<p><strong>Pace:</strong> ${fgXmlEscape(pace)}${runDie ? ` (${fgXmlEscape(runDie)})` : ''}; <strong>Parry:</strong> ${fgXmlEscape(parry)}; <strong>Toughness:</strong> ${fgXmlEscape(toughness)}${armor ? ` (${fgXmlEscape(armor)})` : ''}</p>`);
     }
-    if (hindrances.length) summaryParts.push(`<p><strong>Hindrances:</strong> ${fgXmlEscape(hindrances.join(', '))}</p>`);
+    if (hindrances.length) {
+      summaryParts.push(`<p><strong>Hindrances:</strong> ${hindrances.map((name) => fgReferenceHtml('hindrances', name, ['hindrances', 'other'])).join(', ')}</p>`);
+    }
 
     const blocks = [
       {
@@ -941,8 +945,12 @@
       lines.push(`**Power Points:** {{counter:${counterKey}|${powerPoints}|${powerPointsMax}|true}}`, '');
     }
     if (skills.length) lines.push(`**Skills:** ${skills.join(', ')}`, '');
+    if (ancestry) lines.push(`**Ancestry:** ${fgReferenceMarkdown('ancestries', ancestry, ['ancestries', 'other'])}`, '');
     if (pace || parry || toughness) lines.push(`**Pace:** ${pace || ''}${runDie ? ` (${runDie})` : ''}; **Parry:** ${parry || ''}; **Toughness:** ${toughness || ''}${armor ? ` (${armor})` : ''}`, '');
-    if (hindrances.length) lines.push(`**Hindrances:** ${hindrances.join(', ')}`, '');
+    if (hindrances.length) {
+      const hindranceRefs = hindrances.map((name) => fgReferenceMarkdown('hindrances', name, ['hindrances', 'other']));
+      lines.push(`**Hindrances:** ${hindranceRefs.join(', ')}`, '');
+    }
 
     if (weaponRows.length) {
       lines.push('### Weapons', '', '| Weapon | Range | AP | Damage | ROF | Shots | Notes |', '| --- | --- | --- | --- | --- | --- | --- |');
@@ -1087,6 +1095,8 @@
         <label>Book<select class="reference-index-book"></select></label>
         <label>List type<select class="reference-index-kind">
           <option value="edges">Edges</option>
+          <option value="hindrances">Hindrances</option>
+          <option value="ancestries">Ancestries</option>
           <option value="powers">Powers</option>
         </select></label>
         <label>Printed page ranges<input class="reference-index-ranges" placeholder="37-53, 60-61" /></label>

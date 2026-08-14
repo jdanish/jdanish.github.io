@@ -273,12 +273,48 @@
     return !!label && looksLikeEntryTitle(label.replace(/\s*\([^)]*\)\s*$/, ''));
   }
 
+  function looksLikeHindranceEntry(lines, index) {
+    const label = normalizeLine(lines[index]?.text);
+    if (!looksLikeEntryTitle(label)) return false;
+    if (/^(hindrances?|major|minor)$/i.test(label)) return false;
+
+    let hasMajorMinor = false;
+    let hasDescription = false;
+    for (let offset = 1; offset <= 12; offset += 1) {
+      const next = normalizeLine(lines[index + offset]?.text);
+      if (!next) continue;
+      if (/^(major|minor)\b/i.test(next)) hasMajorMinor = true;
+      if (/^(description|effects?|notes?)\s*:/i.test(next)) hasDescription = true;
+      if (hasMajorMinor && hasDescription) return true;
+      if (/^(hindrances?|edges?|powers?|skills?)$/i.test(next)) break;
+    }
+    return hasMajorMinor || hasDescription;
+  }
+
+  function looksLikeAncestryEntry(lines, index) {
+    const label = normalizeLine(lines[index]?.text);
+    if (!looksLikeEntryTitle(label)) return false;
+    if (/^(ancestries?|ancestry|species|races?)$/i.test(label)) return false;
+
+    let context = '';
+    for (let offset = 1; offset <= 18; offset += 1) {
+      const next = normalizeLine(lines[index + offset]?.text);
+      if (!next) continue;
+      context += ` ${next}`;
+      if (/^(ancestries?|ancestry|species|races?|edges?|hindrances?|powers?)$/i.test(next)) break;
+    }
+    return /racial abilities?|special abilities?|attribute modifiers?|starting skills?|languages?|size\b|pace\b/i.test(context)
+      || looksLikeHeading(lines[index]?.text, lines[index]?.items);
+  }
+
   function candidatePredicate(category, lines, index) {
     const rawLabel = normalizeLine(lines[index]?.text);
     if (isFieldLabel(rawLabel)) return false;
     if (category === 'edges') return looksLikeEdgeEntry(lines, index);
     if (category === 'powers') return looksLikePowerEntry(lines, index);
     if (category === 'items') return looksLikeItemEntry(lines, index);
+    if (category === 'hindrances') return looksLikeHindranceEntry(lines, index);
+    if (category === 'ancestries') return looksLikeAncestryEntry(lines, index);
     return looksLikeHeading(lines[index]?.text, lines[index]?.items);
   }
 

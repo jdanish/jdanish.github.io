@@ -2,7 +2,72 @@
   "version": 1,
   "entries": {
     "abilities": {},
-    "ancestries": {},
+    "ancestries": {
+      "androids": {
+        "label": "Androids",
+        "source": "swade/12?highlight=Androids",
+        "aliases": [
+          "Android"
+        ]
+      },
+      "aquarians": {
+        "label": "Aquarians",
+        "source": "swade/12?highlight=Aquarians",
+        "aliases": [
+          "Aquarian"
+        ]
+      },
+      "avions": {
+        "label": "Avions",
+        "source": "swade/12?highlight=Avions",
+        "aliases": [
+          "Avion"
+        ]
+      },
+      "dwarves": {
+        "label": "Dwarves",
+        "source": "swade/13?highlight=Dwarves",
+        "aliases": [
+          "Dwarf"
+        ]
+      },
+      "elves": {
+        "label": "Elves",
+        "source": "swade/13?highlight=Elves"
+      },
+      "half-elves": {
+        "label": "Half-Elves",
+        "source": "swade/14?highlight=Half-Elves",
+        "aliases": [
+          "Half-Elf"
+        ]
+      },
+      "half-folk": {
+        "label": "Half-Folk",
+        "source": "swade/14?highlight=Half-Folk"
+      },
+      "humans": {
+        "label": "Humans",
+        "source": "swade/15?highlight=Humans",
+        "aliases": [
+          "Human"
+        ]
+      },
+      "rakashans": {
+        "label": "Rakashans",
+        "source": "swade/15?highlight=Rakashans",
+        "aliases": [
+          "Rakashan"
+        ]
+      },
+      "saurians": {
+        "label": "Saurians",
+        "source": "swade/16?highlight=Saurians",
+        "aliases": [
+          "Saurian"
+        ]
+      }
+    },
     "armor": {},
     "edges": {
       "acrobat": {
