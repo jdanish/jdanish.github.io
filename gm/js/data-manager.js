@@ -14,6 +14,7 @@
     readOnly: false,
     serverBaseUrl: '',
     serverManifest: null,
+    serverBundle: null,
     lastError: '',
   };
 
@@ -115,13 +116,37 @@
     return new URL(encodedPath, state.serverBaseUrl).href;
   }
 
+  async function fetchServerBundle() {
+    if (!state.serverBaseUrl) return null;
+    if (state.serverBundle) return state.serverBundle;
+    try {
+      const response = await fetch(new URL('data-bundle.json', state.serverBaseUrl).href, {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      });
+      if (!response.ok) return null;
+      const parsed = await response.json();
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+      state.serverBundle = parsed;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
   async function readFile(path) {
     const normalized = normalizePath(path);
     if (state.readOnly) {
       if (!state.serverBaseUrl) return null;
       const fileUrl = buildServerFileUrl(normalized);
       const response = await fetch(fileUrl, { cache: 'no-store', credentials: 'same-origin' });
-      if (response.status === 404) return null;
+      if (response.status === 404) {
+        const bundle = await fetchServerBundle();
+        if (bundle && Object.prototype.hasOwnProperty.call(bundle, normalized)) {
+          return String(bundle[normalized] ?? '');
+        }
+        return null;
+      }
       if (!response.ok) throw new Error(`Could not read ${normalized} from the server (${response.status}).`);
       return response.text();
     }
@@ -244,6 +269,7 @@
     const previous = { ...state };
     try {
       state.serverBaseUrl = normalized.href;
+      state.serverBundle = null;
       state.serverManifest = await fetchServerManifest();
       state.directoryHandle = null;
       state.readOnly = true;
@@ -273,6 +299,7 @@
     state.readOnly = false;
     state.serverBaseUrl = '';
     state.serverManifest = null;
+    state.serverBundle = null;
     localStorage.removeItem(SERVER_STORAGE_KEY);
     const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
     if (!handle) return false;
