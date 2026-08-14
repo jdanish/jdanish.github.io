@@ -14,6 +14,7 @@
     readOnly: false,
     serverBaseUrl: '',
     serverManifest: null,
+    serverDataJson: null,
     lastError: '',
   };
 
@@ -115,32 +116,31 @@
     return new URL(encodedPath, state.serverBaseUrl).href;
   }
 
+  async function loadServerDataJson() {
+    if (!state.serverBaseUrl) return null;
+    if (state.serverDataJson) return state.serverDataJson;
+    const url = new URL('server-data.json', state.serverBaseUrl).href;
+    const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+    if (!response.ok) {
+      throw new Error(`Could not read server-data.json (${response.status}).`);
+    }
+    const parsed = await response.json();
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('server-data.json has an invalid format.');
+    }
+    state.serverDataJson = parsed;
+    return parsed;
+  }
+
   async function readFile(path) {
     const normalized = normalizePath(path);
-    if (state.readOnly) {
-      if (!state.serverBaseUrl) return null;
-      const fileUrl = buildServerFileUrl(normalized);
-      const response = await fetch(fileUrl, { cache: 'no-store', credentials: 'same-origin' });
-      if (response.status === 404) {
-        // Server paths are case-sensitive. Resolve browser/local casing
-        // differences against the canonical manifest entry.
-        const canonical = (state.serverManifest || []).find(
-          (entry) => String(entry).toLowerCase() === normalized.toLowerCase()
-        );
 
-        if (canonical && canonical !== normalized) {
-          const canonicalUrl = buildServerFileUrl(canonical);
-          const canonicalResponse = await fetch(canonicalUrl, {
-            cache: 'no-store',
-            credentials: 'same-origin',
-          });
-          if (canonicalResponse.ok) return canonicalResponse.text();
-        }
-        return null;
-      }
-      if (!response.ok) throw new Error(`Could not read ${normalized} from the server (${response.status}).`);
-      return response.text();
+    if (state.readOnly) {
+      const data = await loadServerDataJson();
+      if (!Object.prototype.hasOwnProperty.call(data, normalized)) return null;
+      return String(data[normalized] ?? '');
     }
+
     if (!state.directoryHandle) return null;
     try {
       const handle = await getFileHandle(normalized);
@@ -151,6 +151,7 @@
       throw err;
     }
   }
+
 
   function isStaleHandleError(err) {
     const message = String(err?.message || err || '').toLowerCase();
@@ -236,7 +237,7 @@
   }
 
   async function listFiles() {
-    if (state.readOnly) return (state.serverManifest || []).slice().sort((a, b) => a.localeCompare(b));
+    if (state.readOnly) return Object.keys(state.serverDataJson || {}).sort((a, b) => a.localeCompare(b));
     if (!state.directoryHandle) return [];
     const files = await walkDirectory(state.directoryHandle);
     return files.map(({ path }) => path).sort((a, b) => a.localeCompare(b));
@@ -260,7 +261,9 @@
     const previous = { ...state };
     try {
       state.serverBaseUrl = normalized.href;
-      state.serverManifest = await fetchServerManifest();
+      state.serverDataJson = null;
+      state.serverManifest = null;
+      await loadServerDataJson();
       state.directoryHandle = null;
       state.readOnly = true;
       state.connected = true;
@@ -289,6 +292,7 @@
     state.readOnly = false;
     state.serverBaseUrl = '';
     state.serverManifest = null;
+    state.serverDataJson = null;
     localStorage.removeItem(SERVER_STORAGE_KEY);
     const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
     if (!handle) return false;
@@ -330,6 +334,7 @@
     state.readOnly = false;
     state.serverBaseUrl = '';
     state.serverManifest = null;
+    state.serverDataJson = null;
     localStorage.removeItem(SERVER_STORAGE_KEY);
   }
 
