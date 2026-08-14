@@ -2609,7 +2609,8 @@
     // Keep book tabs inside the same collapsible navigation strip as pages/bookmarks.
     if (dom.tabsEl) {
       dom.tabsEl.classList.add('books-inside-navigation');
-      dom.pageLinksEl.appendChild(dom.tabsEl);
+      // Books first, then built-in pages/bookmarks.
+      dom.pageLinksEl.prepend(dom.tabsEl);
     }
 
     window.GM.bookmarks?.render?.(tab, dom.pageLinksEl);
@@ -2809,6 +2810,38 @@
       dom.bookVisibilityButtonEl.dataset.bound = 'true';
     }
 
+    // Separate control for expanding/collapsing the Books / Pages / Bookmarks strip.
+    if (dom.bookVisibilityButtonEl && dom.bookVisibilityButtonEl.parentElement) {
+      let navToggle = document.getElementById('booksNavigationToggle');
+      if (!navToggle) {
+        navToggle = document.createElement('button');
+        navToggle.type = 'button';
+        navToggle.id = 'booksNavigationToggle';
+        navToggle.className = 'books-navigation-toggle';
+        navToggle.addEventListener('click', () => {
+          const pageLinks = dom.pageLinksEl;
+          if (!pageLinks) return;
+          const expanded = !pageLinks.classList.contains('pages-bookmarks-collapsed');
+          pageLinks.classList.toggle('pages-bookmarks-collapsed', expanded);
+          pageLinks.classList.toggle('mobile-pages-collapsed', expanded);
+          pageLinks.dataset.navigationExpanded = expanded ? 'false' : 'true';
+          window.dispatchEvent(new CustomEvent('gm-navigation-state-changed'));
+        });
+        dom.bookVisibilityButtonEl.parentElement.insertBefore(navToggle, dom.bookVisibilityButtonEl.nextSibling);
+      }
+
+      const syncNavToggle = () => {
+        const expanded = !dom.pageLinksEl?.classList.contains('pages-bookmarks-collapsed');
+        navToggle.textContent = expanded ? '▣' : '▢';
+        navToggle.title = expanded ? 'Collapse books, pages and bookmarks' : 'Expand books, pages and bookmarks';
+        navToggle.setAttribute('aria-label', navToggle.title);
+        navToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      };
+      syncNavToggle();
+      window.addEventListener('gm-navigation-state-changed', syncNavToggle);
+    }
+
+    
     const initialTab = getCurrentTab();
     if (initialTab) {
       buildPageButtons(initialTab);

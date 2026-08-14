@@ -514,23 +514,6 @@
     wrap.dataset.totalCount = String(combinedCount);
     if (initiallyExpanded) wrap.classList.add('bookmark-ui-expanded');
 
-    const mobileToggle = document.createElement('button');
-    mobileToggle.type = 'button';
-    mobileToggle.className = 'bookmark-mobile-toggle';
-    mobileToggle.textContent = '📖';
-
-    mobileToggle.setAttribute('aria-expanded', initiallyExpanded ? 'true' : 'false');
-    mobileToggle.setAttribute('aria-label', `${initiallyExpanded ? 'Hide' : 'Show'} books, pages and bookmarks`);
-    mobileToggle.title = `${initiallyExpanded ? 'Hide' : 'Show'} books, pages and bookmarks`;
-
-    mobileToggle.dataset.action = 'bookmark-mobile-toggle';
-    wrap.appendChild(mobileToggle);
-
-    const divider = document.createElement('span');
-    divider.className = 'bookmark-divider';
-    divider.textContent = '|';
-    wrap.appendChild(divider);
-
     bookmarks.forEach((bm) => {
       const item = document.createElement('span');
       item.className = 'bookmark-item';
@@ -581,16 +564,12 @@
     if (shouldExpand) wrap.classList.add('bookmark-ui-expanded');
     else wrap.classList.remove('bookmark-ui-expanded');
 
-    mobileToggle.textContent = '📖';
-    mobileToggle.classList.toggle('is-expanded', shouldExpand);
-    mobileToggle.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
-    mobileToggle.setAttribute('aria-label', `${shouldExpand ? 'Hide' : 'Show'} books, pages and bookmarks`);
-    mobileToggle.title = `${shouldExpand ? 'Hide' : 'Show'} books, pages and bookmarks`;
 
     pageLinksEl.appendChild(wrap);
     pageLinksEl.classList.toggle('mobile-pages-collapsed', !shouldExpand);
     pageLinksEl.classList.toggle('pages-bookmarks-collapsed', !shouldExpand);
     pageLinksEl.dataset.navigationExpanded = shouldExpand ? 'true' : 'false';
+    window.dispatchEvent(new CustomEvent('gm-navigation-state-changed'));
 
     if (pageLinksEl.dataset.bookmarkEventsAttached === 'true') return;
 
@@ -600,22 +579,6 @@
 
       const action = target.dataset.action;
       const currentTab = getCurrentTab();
-
-      if (action === 'bookmark-mobile-toggle') {
-        event.preventDefault();
-        wrap.classList.toggle('bookmark-ui-expanded');
-        const expanded = wrap.classList.contains('bookmark-ui-expanded');
-        const container = pageLinksEl;
-        container.classList.toggle('mobile-pages-collapsed', !expanded);
-        container.classList.toggle('pages-bookmarks-collapsed', !expanded);
-        container.dataset.navigationExpanded = expanded ? 'true' : 'false';
-        target.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        target.textContent = '📖';
-        target.classList.toggle('is-expanded', expanded);
-        target.setAttribute('aria-label', `${expanded ? 'Hide' : 'Show'} books, pages and bookmarks`);
-        target.title = `${expanded ? 'Hide' : 'Show'} books, pages and bookmarks`;
-        return;
-      }
 
       if (action === 'bookmark-add') {
         event.preventDefault();
