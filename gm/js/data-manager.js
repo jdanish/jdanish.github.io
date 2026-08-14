@@ -102,11 +102,25 @@
     return dir.getFileHandle(fileName, { create });
   }
 
+  function buildServerFileUrl(path) {
+    const normalized = normalizePath(path);
+    if (!state.serverBaseUrl) return null;
+    // Encode each path segment explicitly. This avoids Safari treating
+    // characters such as spaces, #, ?, or non-ASCII text differently.
+    const encodedPath = normalized
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+    return new URL(encodedPath, state.serverBaseUrl).href;
+  }
+
   async function readFile(path) {
     const normalized = normalizePath(path);
     if (state.readOnly) {
       if (!state.serverBaseUrl) return null;
-      const response = await fetch(new URL(normalized, state.serverBaseUrl).href, { cache: 'no-store', credentials: 'same-origin' });
+      const fileUrl = buildServerFileUrl(normalized);
+      const response = await fetch(fileUrl, { cache: 'no-store', credentials: 'same-origin' });
       if (response.status === 404) return null;
       if (!response.ok) throw new Error(`Could not read ${normalized} from the server (${response.status}).`);
       return response.text();
@@ -197,7 +211,8 @@
 
   async function fetchServerManifest() {
     if (!state.serverBaseUrl) return [];
-    const response = await fetch(new URL('manifest.json', state.serverBaseUrl).href, { cache: 'no-store', credentials: 'same-origin' });
+    const manifestUrl = buildServerFileUrl('manifest.json');
+    const response = await fetch(manifestUrl, { cache: 'no-store', credentials: 'same-origin' });
     if (!response.ok) throw new Error('Server data folder requires a manifest.json file listing its files.');
     const parsed = await response.json();
     const files = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.files) ? parsed.files : [];
