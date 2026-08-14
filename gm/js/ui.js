@@ -1356,7 +1356,7 @@
       const edit = document.createElement('button');
       edit.type = 'button';
       edit.className = 'gm-workspace-tab-edit';
-      edit.textContent = '✎';
+      edit.textContent = '';
       edit.title = `Edit ${label.textContent}`;
       edit.setAttribute('aria-label', `Edit ${label.textContent}`);
       edit.addEventListener('click', async (event) => {
@@ -1791,7 +1791,7 @@
         editButton.className = 'sidebar-tab-button sidebar-data-button icon-button';
         editButton.setAttribute('aria-label', 'Edit sidebar Markdown');
         editButton.title = 'Edit sidebar Markdown';
-        editButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h4l10.5-10.5a2.25 2.25 0 0 0-3.18-3.18L4 16.82V20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.2 6.8l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+        editButton.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 20h4l10.5-10.5a2.25 2.25 0 0 0-3.18-3.18L4 16.82V20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.2 6.8l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
         editButton.addEventListener('click', () => toggleSidebarDataPopup());
         dom.sidebarTabsEl.appendChild(editButton);
       }
@@ -2745,15 +2745,9 @@
       document.body.appendChild(backdrop);
     }
 
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar && sidebar.dataset.mobileSidebarBound !== 'true') {
-      sidebar.addEventListener('click', (event) => {
-        if (!isMobileSidebarViewport()) return;
-        const target = event.target.closest?.('button[data-tab], .sidebar-tab-button, .gm-workspace-tab, .page-link');
-        if (target) window.setTimeout(() => setMobileSidebarOpen(false), 0);
-      });
-      sidebar.dataset.mobileSidebarBound = 'true';
-    }
+    // Keep the sidebar open while interacting with it in portrait mobile.
+    // The backdrop remains the explicit outside-the-sidebar close action.
+
 
     setMobileSidebarOpen(false);
 

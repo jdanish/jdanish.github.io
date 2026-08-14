@@ -529,7 +529,7 @@
       link.dataset.page = String(bm.page);
       link.dataset.tab = activeTab;
       if (bm.highlight) link.dataset.highlight = bm.highlight;
-      link.draggable = true;
+      link.draggable = window.matchMedia ? !window.matchMedia('(max-width: 760px)').matches : true;
 
       const edit = document.createElement('button');
       edit.type = 'button';

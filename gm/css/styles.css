@@ -3704,3 +3704,95 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
     height: 100%;
   }
 }
+
+/* Safari-safe sidebar data editor actions. */
+.sidebar-data-popup .sidebar-data-edit-button,
+.sidebar-data-root .sidebar-data-edit-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative;
+  z-index: 2;
+  min-height: 40px;
+  min-width: 110px;
+  width: auto !important;
+  flex: 0 0 auto !important;
+  pointer-events: auto !important;
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+.sidebar-data-popup .book-visibility-list > div,
+.sidebar-data-root .book-visibility-list > div {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .sidebar-data-popup .sidebar-data-edit-button,
+  .sidebar-data-root .sidebar-data-edit-button {
+    min-height: 44px;
+    width: 100% !important;
+  }
+}
+
+.gm-workspace-tab-edit {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  flex: 0 0 26px;
+  color: var(--text);
+}
+.gm-workspace-tab-edit::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 16.5V20h3.5L18.2 9.3l-3.5-3.5L4 16.5Zm15.7-9.9c.4-.4.4-1 0-1.4l-1.9-1.9c-.4-.4-1-.4-1.4 0l-1.1 1.1 3.5 3.5 1.1-1.3Z' fill='currentColor'/%3E%3C/svg%3E");
+}
+
+.sidebar-tab-button.sidebar-data-button svg {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+  color: var(--text) !important;
+  fill: none;
+  overflow: visible;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.sidebar-tab-button.sidebar-data-button svg path {
+  stroke: currentColor !important;
+  vector-effect: non-scaling-stroke;
+}
+
+
+@media (max-width: 760px) {
+  .page-links .bookmark-link,
+  .page-links .bookmark-edit,
+  .page-links .bookmark-add {
+    touch-action: manipulation !important;
+    -webkit-user-drag: none !important;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .page-links .bookmark-link {
+    cursor: pointer;
+  }
+
+  .page-links .bookmark-item {
+    touch-action: manipulation;
+  }
+
+  .page-links {
+    position: relative;
+    z-index: 2;
+  }
+}
