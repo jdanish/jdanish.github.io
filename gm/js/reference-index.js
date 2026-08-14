@@ -385,9 +385,24 @@
         if (!structurallyValid) continue;
 
         seen.add(key);
+        const aliases = [];
+        if (category === 'ancestries') {
+          // Most rules indexes use plural ancestry names (e.g. "Humans"),
+          // while character imports often provide the singular ("Human").
+          // Keep the book's canonical label and add the simple counterpart
+          // as an alias so imports resolve immediately.
+          const normalizedLabel = normalizeLine(label);
+          if (/s$/i.test(normalizedLabel) && normalizedLabel.length > 1) {
+            aliases.push(normalizedLabel.slice(0, -1));
+          } else if (normalizedLabel) {
+            aliases.push(`${normalizedLabel}s`);
+          }
+        }
+
         candidates.push({
           category,
           label,
+          ...(aliases.length ? { aliases } : {}),
           displayPage: effectiveDisplayPage,
           pdfPage: data.pdfPage,
           source: `${bookKey}/${effectiveDisplayPage}?highlight=${encodeURIComponent(label)}`,
@@ -432,7 +447,13 @@
     Object.keys(incoming).forEach((type) => {
       window.REFERENCE_INDEX[type] = {};
       Object.entries(incoming[type] || {}).forEach(([key, value]) => {
-        if (value?.label && value?.source) window.REFERENCE_INDEX[type][key] = { label: value.label, source: value.source, aliases: Array.isArray(value.aliases) ? value.aliases.slice() : undefined };
+        if (!value?.label || !value?.source) return;
+        const identityKey = entryIdentityKey(value.label, value.source);
+        window.REFERENCE_INDEX[type][identityKey] = {
+          label: value.label,
+          source: value.source,
+          aliases: Array.isArray(value.aliases) ? value.aliases.slice() : undefined,
+        };
       });
     });
     ensureIndex();
@@ -449,13 +470,50 @@
     return INDEX_TYPES.includes(value) ? value : 'other';
   }
 
+  function entryBook(source) {
+    return parseSource(source || '').book || '';
+  }
+
+  function entryIdentityKey(label, sourceOrBook) {
+    const nameKey = normalizeKey(label);
+    const book = String(sourceOrBook || '').includes('/')
+      ? entryBook(sourceOrBook)
+      : String(sourceOrBook || '').trim();
+    return `${nameKey}@@${normalizeKey(book) || 'unknown'}`;
+  }
+
+  function matchingEntries(name, preferredTypes = [], preferredBook = '') {
+    const index = ensureIndex();
+    const nameKey = normalizeKey(name);
+    if (!nameKey) return [];
+    const preferred = Array.from(new Set(preferredTypes.map(normalizeType)));
+    const types = [...preferred, ...INDEX_TYPES.filter((type) => !preferred.includes(type))];
+    const matches = [];
+    for (const category of types) {
+      for (const [candidateKey, candidate] of Object.entries(index[category] || {})) {
+        const labelMatch = normalizeKey(candidate.label) === nameKey;
+        const aliasMatch = Array.isArray(candidate.aliases)
+          && candidate.aliases.some((alias) => normalizeKey(alias) === nameKey);
+        if (!labelMatch && !aliasMatch) continue;
+        matches.push({ category, key: candidateKey, ...cloneIndex(candidate) });
+      }
+      if (matches.length && preferred.includes(category)) break;
+    }
+    const book = String(preferredBook || '').trim();
+    if (book) {
+      const bookMatches = matches.filter((entry) => entryBook(entry.source) === book);
+      if (bookMatches.length) return bookMatches;
+    }
+    return matches;
+  }
+
   function addEntry(entry) {
     const index = ensureIndex();
     const category = normalizeType(entry?.category || entry?.type);
     const label = normalizeLine(entry?.label || entry?.name);
     const source = String(entry?.source || '').trim();
     if (!label || !source) return null;
-    const key = normalizeKey(label);
+    const key = entryIdentityKey(label, source);
     const previous = index[category][key] || null;
     index[category][key] = {
       label,
@@ -477,9 +535,11 @@
   function removeEntry(category, key) {
     const index = ensureIndex();
     const bucket = index[normalizeType(category)];
-    const normalized = normalizeKey(key);
-    if (!bucket?.[normalized]) return false;
-    delete bucket[normalized];
+    const exact = String(key || '');
+    const legacy = normalizeKey(key);
+    const target = bucket?.[exact] ? exact : (bucket?.[legacy] ? legacy : '');
+    if (!target) return false;
+    delete bucket[target];
     markIndexDirty();
     return true;
   }
@@ -506,21 +566,11 @@
     return 'other';
   }
 
-  function findEntry(name, preferredTypes = []) {
-    const index = ensureIndex();
-    const key = normalizeKey(name);
-    if (!key) return null;
-    const types = [...preferredTypes.map(normalizeType), ...INDEX_TYPES.filter((t) => !preferredTypes.map(normalizeType).includes(t))];
-    for (const category of types) {
-      const direct = index[category]?.[key];
-      if (direct) return { category, key, ...cloneIndex(direct) };
-      for (const [candidateKey, candidate] of Object.entries(index[category] || {})) {
-        if (Array.isArray(candidate.aliases) && candidate.aliases.some((alias) => normalizeKey(alias) === key)) {
-          return { category, key: candidateKey, ...cloneIndex(candidate) };
-        }
-      }
-    }
-    return null;
+  function findEntry(name, preferredTypes = [], preferredBook = '') {
+    const matches = matchingEntries(name, preferredTypes, preferredBook);
+    if (!matches.length) return null;
+    if (matches.length === 1) return matches[0];
+    return { ...matches[0], ambiguous: true, matches };
   }
 
   async function loadIndexFile({ requireConnectedFolder = false } = {}) {
@@ -549,7 +599,7 @@
   }
 
   function buildIndexJson() {
-    return JSON.stringify({ version: 1, entries: sortedIndex(ensureIndex()) }, null, 2) + '\n';
+    return JSON.stringify({ version: 2, identity: 'type+name+book', entries: sortedIndex(ensureIndex()) }, null, 2) + '\n';
   }
 
   function downloadIndex() {
@@ -727,7 +777,7 @@
       const original = isExisting
         ? { category: normalizeType(seed.category || seed.type || existing.category), key: seed.key || existing.key }
         : null;
-      const targetKey = normalizeKey(name);
+      const targetKey = entryIdentityKey(name, sourceValue);
       const targetBucket = ensureIndex()[normalizeType(type)] || {};
       const conflicting = targetBucket[targetKey] || null;
       const sameRecord = original && original.category === normalizeType(type) && original.key === targetKey;
@@ -1167,6 +1217,7 @@
     addEntry,
     removeEntry,
     findEntry,
+    matchingEntries,
     guessCategory,
     getIndex,
     setIndex,
@@ -1181,6 +1232,7 @@
     downloadConfig,
     getStats,
     getSaveStatus,
+    markDirty: markIndexDirty,
     getCandidates: () => state.lastCandidates.slice(),
   };
 })();

@@ -613,18 +613,47 @@
     const label = fgCleanName(name);
     if (!label) return null;
     const types = [kind, ...preferredTypes].filter(Boolean);
-    const index = window.REFERENCE_INDEX || {};
-    const normalized = label.toLowerCase();
-    for (const type of types) {
-      const bucket = index[type];
-      const direct = bucket?.[normalized];
-      if (direct?.source) return { label: direct.label || label, source: direct.source };
-      for (const [key, candidate] of Object.entries(bucket || {})) {
-        if (Array.isArray(candidate?.aliases) && candidate.aliases.some((alias) => String(alias).trim().toLowerCase() === normalized) && candidate.source) {
-          return { label: candidate.label || label, source: candidate.source };
+    const variants = [label];
+    if (kind === 'ancestries') {
+      if (/s$/i.test(label) && label.length > 1) variants.push(label.slice(0, -1));
+      else variants.push(`${label}s`);
+    }
+
+    const matches = [];
+    const seen = new Set();
+    for (const variant of variants) {
+      const found = window.GM.referenceIndex?.matchingEntries?.(variant, types) || [];
+      found.forEach((entry) => {
+        const id = `${entry.category}:${entry.key}`;
+        if (!seen.has(id)) {
+          seen.add(id);
+          matches.push(entry);
+        }
+      });
+    }
+
+    if (matches.length === 1) {
+      const entry = matches[0];
+      // Preserve the import spelling as an alias on the chosen ancestry.
+      if (kind === 'ancestries') {
+        const bucket = window.REFERENCE_INDEX?.[entry.category];
+        const live = bucket?.[entry.key];
+        if (live) {
+          const aliases = Array.isArray(live.aliases) ? live.aliases.slice() : [];
+          if (!aliases.some((alias) => String(alias).trim().toLowerCase() === label.toLowerCase())
+              && String(live.label || '').trim().toLowerCase() !== label.toLowerCase()) {
+            aliases.push(label);
+            live.aliases = aliases;
+            window.GM.referenceIndex?.markDirty?.();
+          }
         }
       }
+      return { label: entry.label || label, source: entry.source };
     }
+
+    // Do not silently choose between same-named references in different books.
+    // Leaving the text unlinked makes the ambiguity visible and safe to resolve.
+    if (matches.length > 1) return { ambiguous: true, label, matches };
     return null;
   }
 
@@ -633,6 +662,7 @@
     if (!label) return '';
     const entry = fgReferenceEntry(kind, label, preferredTypes);
     if (!entry) return fgMarkdownEscape(label);
+    if (entry.ambiguous) return `${fgMarkdownEscape(label)} ⚠`;
     const safeLabel = fgMarkdownEscape(entry.label);
     return `[[${entry.source}|${safeLabel}]]`;
   }
@@ -642,6 +672,7 @@
     if (!label) return '';
     const entry = fgReferenceEntry(kind, label, preferredTypes);
     if (!entry) return fgXmlEscape(label);
+    if (entry.ambiguous) return `<span title="Multiple book references found; choose one in the Reference Index">${fgXmlEscape(label)} ⚠</span>`;
     const source = String(entry.source || '').trim();
     const jumpHref = /^jump:/i.test(source) ? source : `jump:${source.replace(/^\/+/, '')}`;
     const safeHref = jumpHref.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
