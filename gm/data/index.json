@@ -622,6 +622,94 @@
       "obligation": {
         "label": "Obligation",
         "source": "swade/24?highlight=Obligation"
+      },
+      "one arm": {
+        "label": "One Arm",
+        "source": "swade/25?highlight=One%20Arm"
+      },
+      "one eye": {
+        "label": "One Eye",
+        "source": "swade/25?highlight=One%20Eye"
+      },
+      "outsider": {
+        "label": "Outsider",
+        "source": "swade/25?highlight=Outsider"
+      },
+      "overconfident": {
+        "label": "Overconfident",
+        "source": "swade/25?highlight=Overconfident"
+      },
+      "pacifist": {
+        "label": "Pacifist",
+        "source": "swade/25?highlight=Pacifist"
+      },
+      "phobia": {
+        "label": "Phobia",
+        "source": "swade/24?highlight=Phobia"
+      },
+      "poverty": {
+        "label": "Poverty",
+        "source": "swade/25?highlight=Poverty"
+      },
+      "quirk": {
+        "label": "Quirk",
+        "source": "swade/25?highlight=Quirk"
+      },
+      "ruthless": {
+        "label": "Ruthless",
+        "source": "swade/25?highlight=Ruthless"
+      },
+      "secret": {
+        "label": "Secret",
+        "source": "swade/25?highlight=Secret"
+      },
+      "shamed": {
+        "label": "Shamed",
+        "source": "swade/26?highlight=Shamed"
+      },
+      "slow": {
+        "label": "Slow",
+        "source": "swade/26?highlight=Slow"
+      },
+      "stubborn": {
+        "label": "Stubborn",
+        "source": "swade/26?highlight=Stubborn"
+      },
+      "suspicious": {
+        "label": "Suspicious",
+        "source": "swade/26?highlight=Suspicious"
+      },
+      "thin skinned": {
+        "label": "Thin Skinned",
+        "source": "swade/27?highlight=Thin%20Skinned"
+      },
+      "timid": {
+        "label": "Timid",
+        "source": "swade/27?highlight=Timid"
+      },
+      "tongue-tied": {
+        "label": "Tongue-Tied",
+        "source": "swade/27?highlight=Tongue-Tied"
+      },
+      "ugly": {
+        "label": "Ugly",
+        "source": "swade/27?highlight=Ugly"
+      },
+      "vengeful": {
+        "label": "Vengeful",
+        "source": "swade/27?highlight=Vengeful"
+      },
+      "vow": {
+        "label": "Vow",
+        "source": "swade/26?highlight=Vow"
+      },
+      "wanted": {
+        "label": "Wanted",
+        "source": "swade/27?highlight=Wanted"
+      },
+      "young": {
+        "label": "Young",
+        "source": "swade/27?highlight=Young"
       }
     },
     "items": {

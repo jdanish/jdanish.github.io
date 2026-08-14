@@ -549,6 +549,35 @@
     await window.GM.pdfviewer?.setTabAndPage?.(target.book, target.page, { highlightText: target.highlight || entry?.label || '' });
   }
 
+  function getReferenceEditorState() {
+    try {
+      return JSON.parse(localStorage.getItem('gmReferenceEditorState') || 'null') || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveReferenceEditorState(state) {
+    try {
+      localStorage.setItem('gmReferenceEditorState', JSON.stringify(state || {}));
+    } catch {
+      /* ignore storage failures */
+    }
+  }
+
+  function saveReferenceEditorWindow(panel) {
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    const state = getReferenceEditorState();
+    saveReferenceEditorState({
+      ...state,
+      left: Math.round(rect.left),
+      top: Math.round(rect.top),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+    });
+  }
+
   function openEntryEditor(seed = {}) {
     const types = INDEX_TYPES.slice();
     const source = parseSource(seed.source || '');
@@ -570,23 +599,64 @@
       option.textContent = book.title || key;
       bookSelect.appendChild(option);
     });
-    root.querySelector('[data-ref="name"]').value = seed.label || '';
-    root.querySelector('[data-ref="type"]').value = normalizeType(seed.category || seed.type || 'other');
-    if (source.book) bookSelect.value = source.book;
-    root.querySelector('[data-ref="page"]').value = source.page || Number(window.GM.pdfviewer?.getCurrentDisplayPage?.(source.book || window.GM.pdfviewer?.getActiveTab?.()) || 1);
-    root.querySelector('[data-ref="highlight"]').value = source.highlight || seed.label || '';
-    root.querySelector('[data-ref="aliases"]').value = Array.isArray(seed.aliases) ? seed.aliases.join(', ') : '';
+    const nameInput = root.querySelector('[data-ref="name"]');
+    const typeInput = root.querySelector('[data-ref="type"]');
+    const highlightInput = root.querySelector('[data-ref="highlight"]');
+    const aliasesInput = root.querySelector('[data-ref="aliases"]');
 
+    nameInput.value = seed.label || '';
     const existing = seed.label ? findEntry(seed.label) : null;
     const isExisting = Boolean(existing && (!seed.source || existing.source === seed.source || seed.key === existing.key));
+    const editorState = getReferenceEditorState();
+    const seededType = normalizeType(seed.category || seed.type || '');
+    const detectedType = !isExisting
+      ? normalizeType(guessCategory(seed.label || '', source.highlight || '', source.book || ''))
+      : '';
+    const initialType = isExisting
+      ? seededType || 'other'
+      : (detectedType && detectedType !== 'other' ? detectedType : (editorState.lastType || 'other'));
+
+    typeInput.value = initialType;
+    if (source.book) bookSelect.value = source.book;
+    root.querySelector('[data-ref="page"]').value = source.page || Number(window.GM.pdfviewer?.getCurrentDisplayPage?.(source.book || window.GM.pdfviewer?.getActiveTab?.()) || 1);
+    highlightInput.value = source.highlight || seed.label || '';
+    aliasesInput.value = Array.isArray(seed.aliases) ? seed.aliases.join(', ') : '';
+
+    typeInput.addEventListener('change', () => {
+      saveReferenceEditorState({ ...getReferenceEditorState(), lastType: normalizeType(typeInput.value) });
+    });
+
+    const savedWindow = editorState;
     window.GM.popup?.show?.({
       title: isExisting ? 'Edit Reference' : 'Add Reference to Index',
       content: root,
       className: 'reference-entry-editor-popup',
-      width: 460,
+      width: savedWindow?.width || 460,
+      x: Number.isFinite(savedWindow?.left) ? savedWindow.left : undefined,
+      y: Number.isFinite(savedWindow?.top) ? savedWindow.top : undefined,
+      resizable: true,
       closeOnScroll: false,
       closeOnOutsidePointerDown: false,
+      beforeClose: () => {
+        saveReferenceEditorWindow(window.GM.popup?.getPanelEl?.());
+        return true;
+      },
+      onResize: (panel) => saveReferenceEditorWindow(panel),
     });
+    if (savedWindow) {
+      window.setTimeout(() => {
+        const panel = window.GM.popup?.getPanelEl?.();
+        if (!panel) return;
+        if (savedWindow.width) panel.style.width = `${savedWindow.width}px`;
+        if (savedWindow.height) panel.style.height = `${savedWindow.height}px`;
+        if (Number.isFinite(savedWindow.left) && Number.isFinite(savedWindow.top)) {
+          panel.style.left = `${savedWindow.left}px`;
+          panel.style.top = `${savedWindow.top}px`;
+          panel.style.right = 'auto';
+          panel.style.bottom = 'auto';
+        }
+      }, 0);
+    }
 
     root.addEventListener('click', async (event) => {
       const action = event.target.closest('[data-action]')?.dataset.action;
@@ -613,6 +683,7 @@
       const highlight = root.querySelector('[data-ref="highlight"]').value.trim();
       const aliases = root.querySelector('[data-ref="aliases"]').value.split(',').map((v) => v.trim()).filter(Boolean);
       if (!name || !book) { window.alert('Name and book are required.'); return; }
+      saveReferenceEditorState({ ...getReferenceEditorState(), lastType: normalizeType(type) });
       const sourceValue = `${book}/${page}${highlight ? `?highlight=${encodeURIComponent(highlight)}` : ''}`;
 
       // Editing an existing reference must update the original record rather
