@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": [
+    "characters/Jean-Grayson.md",
+    "config.js",
+    "current.md",
+    "index.json",
+    "monsters/bozrak-air-demon.md",
+    "rules.md",
+    "sidebar.js",
+    "workspace.json"
+  ]
+}

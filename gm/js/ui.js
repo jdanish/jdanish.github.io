@@ -2044,6 +2044,7 @@
     saveBtn.type = 'button';
     saveBtn.className = 'primary';
     saveBtn.textContent = 'Save';
+    saveBtn.disabled = !!window.GM.data?.getStatus?.().readOnly;
 
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
@@ -2059,7 +2060,9 @@
 
     const hint = document.createElement('p');
     hint.className = 'book-visibility-intro';
-    hint.textContent = 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and wiki links for PDF navigation.';
+    hint.textContent = window.GM.data?.getStatus?.().readOnly
+      ? 'Server data is read-only. You can inspect and edit this copy on this device, but it cannot be saved back to the server.'
+      : 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and wiki links for PDF navigation.';
 
     const frame = document.createElement('div');
     frame.className = 'sidebar-md-editor-frame';
@@ -2084,6 +2087,10 @@
     };
 
     const saveMarkdown = async () => {
+      if (window.GM.data?.getStatus?.().readOnly) {
+        statusEl.textContent = 'Read-only server data';
+        return;
+      }
       const markdown = readMarkdown();
       if (kind === 'current') {
         window.GM.sidebarData?.importMarkdownFromText?.('current', markdown, activeSectionKind);
@@ -2270,6 +2277,9 @@
     `;
     const list = wrap.querySelector('[data-doc-list]');
     const search = wrap.querySelector('[data-doc-search]');
+    const readonly = !!window.GM.data?.getStatus?.().readOnly;
+    wrap.querySelector('[data-doc-import-character]').disabled = readonly;
+    wrap.querySelector('[data-doc-import-monster]').disabled = readonly;
 
     async function renderDocuments() {
       list.textContent = 'Loading...';
@@ -2323,8 +2333,8 @@
     intro.className = 'book-visibility-intro';
     const dataStatus = window.GM.data?.getStatus?.() || {};
     intro.textContent = dataStatus.connected
-      ? `Connected data folder: ${dataStatus.name || 'folder'}`
-      : 'Connect a data folder to manage character, monster, note, current, and index files.';
+      ? (dataStatus.readOnly ? 'Connected to server data (read-only). Changes cannot be saved back to the server.' : `Connected data folder: ${dataStatus.name || 'folder'}`)
+      : 'Connect a data folder or server data source to manage character, monster, note, current, and index files.';
     wrap.appendChild(intro);
 
     const indexStatus = document.createElement('div');
@@ -2343,10 +2353,12 @@
 
     const folderActions = document.createElement('div');
     folderActions.className = 'sidebar-data-actions';
-    const connectBtn = document.createElement('button'); connectBtn.type='button'; connectBtn.textContent=dataStatus.connected ? 'Reconnect Folder' : 'Connect Data Folder';
+    const connectBtn = document.createElement('button'); connectBtn.type='button'; connectBtn.textContent = dataStatus.readOnly ? 'Reconnect Server Data' : (dataStatus.connected ? 'Reconnect Folder' : 'Connect Data Folder');
     connectBtn.addEventListener('click', async () => {
       try {
-        const ok = dataStatus.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder();
+        const ok = dataStatus.readOnly
+          ? await window.GM.data.reconnectServerFolder?.()
+          : (dataStatus.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder());
         if (ok) {
           await refreshFromConnectedFolder();
           await window.GM.referenceIndex?.loadIndexFile?.();
@@ -2354,6 +2366,22 @@
           window.GM.popup?.hide?.();
         }
       } catch (err) { alert(`Could not connect to the data folder: ${err?.message || err}`); }
+    });
+    const serverBtn = document.createElement('button');
+    serverBtn.type='button';
+    serverBtn.textContent='Connect Server Data (Read-only)';
+    serverBtn.addEventListener('click', async () => {
+      const current = window.GM.data?.getStatus?.().serverBaseUrl || '';
+      const defaultUrl = current || new URL('./data/', window.location.href).href;
+      const url = window.prompt('Server data folder URL (must contain manifest.json):', defaultUrl);
+      if (url === null) return;
+      try {
+        await window.GM.data?.connectServerFolder?.(url);
+        await refreshFromConnectedFolder();
+        await window.GM.referenceIndex?.loadIndexFile?.();
+        window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+        window.GM.popup?.hide?.();
+      } catch (err) { alert(`Could not connect to server data: ${err?.message || err}`); }
     });
     const newFolderBtn = document.createElement('button');
     newFolderBtn.type='button';
@@ -2373,7 +2401,7 @@
     downloadFolderBtn.addEventListener('click', async () => { try { await window.GM.data.downloadFolder(); } catch(err) { alert(`Could not download the data folder: ${err?.message || err}`); } });
     const docsBtn = document.createElement('button'); docsBtn.type='button'; docsBtn.textContent='Browse Characters / Monsters / Notes'; docsBtn.addEventListener('click', () => openDocumentBrowser());
     const indexBtn = document.createElement('button'); indexBtn.type='button'; indexBtn.textContent='Open Reference Index'; indexBtn.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
-    const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder'; indexSaveBtn.disabled = !dataStatus.connected;
+    const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder'; indexSaveBtn.disabled = !dataStatus.connected || dataStatus.readOnly;
     indexSaveBtn.addEventListener('click', async () => {
       try {
         indexSaveBtn.disabled = true;
@@ -2381,9 +2409,9 @@
         if (!saved) { window.alert('Connect a writable data folder first.'); return; }
         updateIndexStatus();
       } catch (err) { window.alert(`Could not save index.json: ${err?.message || err}`); }
-      finally { indexSaveBtn.disabled = !window.GM.data?.getStatus?.().connected; }
+      finally { const s = window.GM.data?.getStatus?.() || {}; indexSaveBtn.disabled = !s.connected || s.readOnly; }
     });
-    folderActions.append(connectBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn, indexSaveBtn);
+    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn, indexSaveBtn);
     wrap.appendChild(folderActions);
 
     const makeGroup = (title, kind) => {
@@ -2428,7 +2456,7 @@
         const saveFolderBtn = document.createElement('button');
         saveFolderBtn.type = 'button';
         saveFolderBtn.textContent = 'Save Active Document to Data Folder';
-        saveFolderBtn.disabled = !window.GM.data?.getStatus?.().connected;
+        { const s = window.GM.data?.getStatus?.() || {}; saveFolderBtn.disabled = !s.connected || s.readOnly; }
         saveFolderBtn.addEventListener('click', async () => {
           try { await window.GM.sidebarData.saveActiveDocument?.(); window.GM.popup?.hide?.(); }
           catch (err) { alert(`Could not save the active document: ${err?.message || err}`); }
@@ -2438,7 +2466,7 @@
         const renameBtn = document.createElement('button');
         renameBtn.type = 'button';
         renameBtn.textContent = 'Rename Active Document';
-        renameBtn.disabled = !window.GM.data?.getStatus?.().connected;
+        { const s = window.GM.data?.getStatus?.() || {}; renameBtn.disabled = !s.connected || s.readOnly; }
         renameBtn.addEventListener('click', async () => {
           const currentName = window.GM.sidebarData?.getDocumentDisplayName?.() || 'Current';
           const nextName = window.prompt('New file name (without .md):', currentName);

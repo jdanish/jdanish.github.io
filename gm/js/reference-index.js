@@ -616,7 +616,8 @@
   }
 
   async function saveIndexToConnectedFolder() {
-    if (!window.GM.data?.getStatus?.().connected) return false;
+    const dataStatus = window.GM.data?.getStatus?.() || {};
+    if (!dataStatus.connected || dataStatus.readOnly) return false;
     await window.GM.data.writeFile('index.json', buildIndexJson());
     markIndexClean();
     return true;
@@ -842,7 +843,7 @@
         <select data-index-type><option value="">All types</option></select>
         <select data-index-book multiple size="3" aria-label="Filter by book"></select>
         <button type="button" data-index-reset-view>Reset View</button>
-        <button type="button" data-index-add class="primary">Add Entry</button><button type="button" data-index-save ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Save to Data Folder</button><button type="button" data-index-reload ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Reload from Data Folder</button><button type="button" data-index-import>Import Index</button><button type="button" data-index-export>Export Index</button>
+        <button type="button" data-index-add class="primary">Add Entry</button><button type="button" data-index-save ${window.GM.data?.getStatus?.().connected && !window.GM.data?.getStatus?.().readOnly ? '' : 'disabled'}>Save to Data Folder</button><button type="button" data-index-reload ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Reload from Data Folder</button><button type="button" data-index-import>Import Index</button><button type="button" data-index-export>Export Index</button>
       </div>
       <div class="reference-index-summary" data-index-summary></div>
       <div class="reference-index-table-head" data-index-table-head></div>
@@ -1083,7 +1084,7 @@
       } catch (err) {
         alert(`Could not reload index.json: ${err?.message || err}`);
       } finally {
-        btn.disabled = !window.GM.data?.getStatus?.().connected;
+        { const s = window.GM.data?.getStatus?.() || {}; btn.disabled = !s.connected || s.readOnly; }
       }
     });
     wrap.querySelector('[data-index-save]').addEventListener('click', async () => {
@@ -1096,7 +1097,7 @@
       } catch (err) {
         alert(`Could not save index.json: ${err?.message || err}`);
       } finally {
-        btn.disabled = !window.GM.data?.getStatus?.().connected;
+        { const s = window.GM.data?.getStatus?.() || {}; btn.disabled = !s.connected || s.readOnly; }
       }
     });
     wrap.querySelector('[data-index-export]').addEventListener('click', () => downloadIndex());

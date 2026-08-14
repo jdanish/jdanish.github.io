@@ -5,10 +5,15 @@
   const STORE_NAME = 'handles';
   const HANDLE_KEY = 'data-directory';
   const DATA_ROOT = '';
-  const DEFAULT_FILES = ['current.md', 'rules.md', 'workspace.json'];
+  const DEFAULT_FILES = ['current.md', 'rules.md', 'workspace.json', 'index.json'];
+  const SERVER_STORAGE_KEY = 'gm_server_data_url_v1';
+  const DEFAULT_SERVER_URL = new URL('../data/', import.meta.url).href;
   const state = {
     directoryHandle: null,
     connected: false,
+    readOnly: false,
+    serverBaseUrl: '',
+    serverManifest: null,
     lastError: '',
   };
 
@@ -98,9 +103,17 @@
   }
 
   async function readFile(path) {
+    const normalized = normalizePath(path);
+    if (state.readOnly) {
+      if (!state.serverBaseUrl) return null;
+      const response = await fetch(new URL(normalized, state.serverBaseUrl).href, { cache: 'no-store', credentials: 'same-origin' });
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error(`Could not read ${normalized} from the server (${response.status}).`);
+      return response.text();
+    }
     if (!state.directoryHandle) return null;
     try {
-      const handle = await getFileHandle(path);
+      const handle = await getFileHandle(normalized);
       const file = await handle.getFile();
       return file.text();
     } catch (err) {
@@ -126,6 +139,7 @@
   }
 
   async function writeFile(path, text, _retried = false) {
+    if (state.readOnly) throw new Error('The connected server data folder is read-only.');
     if (!state.directoryHandle) throw new Error('No data folder is connected.');
     try {
       await verifyPermission(state.directoryHandle, true);
@@ -144,6 +158,7 @@
   }
 
   async function removeFile(path) {
+    if (state.readOnly) throw new Error('The connected server data folder is read-only.');
     if (!state.directoryHandle) throw new Error('No data folder is connected.');
     await verifyPermission(state.directoryHandle, true);
     const normalized = normalizePath(path);
@@ -156,6 +171,7 @@
 
 
   async function renameFile(oldPath, newPath) {
+    if (state.readOnly) throw new Error('The connected server data folder is read-only.');
     if (!state.directoryHandle) throw new Error('No data folder is connected.');
     const oldNormalized = normalizePath(oldPath);
     const newNormalized = normalizePath(newPath);
@@ -179,25 +195,70 @@
     return files;
   }
 
+  async function fetchServerManifest() {
+    if (!state.serverBaseUrl) return [];
+    const response = await fetch(new URL('manifest.json', state.serverBaseUrl).href, { cache: 'no-store', credentials: 'same-origin' });
+    if (!response.ok) throw new Error('Server data folder requires a manifest.json file listing its files.');
+    const parsed = await response.json();
+    const files = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.files) ? parsed.files : [];
+    return files.map((entry) => typeof entry === 'string' ? entry : entry?.path).filter(Boolean).map(normalizePath).filter(Boolean);
+  }
+
   async function listFiles() {
+    if (state.readOnly) return (state.serverManifest || []).slice().sort((a, b) => a.localeCompare(b));
     if (!state.directoryHandle) return [];
     const files = await walkDirectory(state.directoryHandle);
     return files.map(({ path }) => path).sort((a, b) => a.localeCompare(b));
   }
 
   async function readAllFiles() {
-    if (!state.directoryHandle) return [];
-    const files = await walkDirectory(state.directoryHandle);
+    const paths = await listFiles();
     const out = [];
-    for (const { path, handle } of files) {
-      const file = await handle.getFile();
-      out.push({ path, text: await file.text(), file });
+    for (const path of paths) {
+      const text = await readFile(path);
+      if (text === null) continue;
+      out.push({ path, text, file: null });
     }
     return out;
   }
 
+  async function connectServerFolder(baseUrl = '') {
+    const raw = String(baseUrl || '').trim() || DEFAULT_SERVER_URL;
+    const normalized = new URL(raw, window.location.href);
+    if (!normalized.pathname.endsWith('/')) normalized.pathname += '/';
+    const previous = { ...state };
+    try {
+      state.serverBaseUrl = normalized.href;
+      state.serverManifest = await fetchServerManifest();
+      state.directoryHandle = null;
+      state.readOnly = true;
+      state.connected = true;
+      state.lastError = '';
+      localStorage.setItem(SERVER_STORAGE_KEY, normalized.href);
+      return true;
+    } catch (err) {
+      state.serverBaseUrl = previous.serverBaseUrl || '';
+      state.serverManifest = previous.serverManifest || null;
+      state.directoryHandle = previous.directoryHandle || null;
+      state.readOnly = previous.readOnly || false;
+      state.connected = previous.connected || false;
+      state.lastError = err?.message || String(err);
+      throw err;
+    }
+  }
+
+  async function reconnectServerFolder() {
+    const saved = localStorage.getItem(SERVER_STORAGE_KEY) || '';
+    if (!saved) return false;
+    return connectServerFolder(saved);
+  }
+
   async function chooseFolder({ forceNew = false } = {}) {
     if (!supportsAccess()) throw new Error('This browser does not support connected folders.');
+    state.readOnly = false;
+    state.serverBaseUrl = '';
+    state.serverManifest = null;
+    localStorage.removeItem(SERVER_STORAGE_KEY);
     const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
     if (!handle) return false;
     if (!(await verifyPermission(handle, true))) throw new Error('Permission to access the folder was not granted.');
@@ -235,18 +296,26 @@
   function disconnect() {
     state.directoryHandle = null;
     state.connected = false;
+    state.readOnly = false;
+    state.serverBaseUrl = '';
+    state.serverManifest = null;
+    localStorage.removeItem(SERVER_STORAGE_KEY);
   }
 
   function getStatus() {
     return {
       supported: supportsAccess(),
-      connected: !!state.connected && !!state.directoryHandle,
-      name: state.directoryHandle?.name || '',
+      connected: !!state.connected && (!!state.directoryHandle || state.readOnly),
+      readOnly: !!state.readOnly,
+      mode: state.readOnly ? 'server' : 'local',
+      serverBaseUrl: state.serverBaseUrl || '',
+      name: state.readOnly ? 'Server Data' : (state.directoryHandle?.name || ''),
       error: state.lastError,
     };
   }
 
   async function ensureStructure() {
+    if (state.readOnly) throw new Error('The connected server data folder is read-only.');
     if (!state.directoryHandle) throw new Error('No data folder is connected.');
     await verifyPermission(state.directoryHandle, true);
     for (const dir of ['characters', 'monsters', 'notes']) {
@@ -273,6 +342,7 @@
   }
 
   async function writeTextDocument(type, name, markdown) {
+    if (state.readOnly) throw new Error('The connected server data folder is read-only.');
     await refreshStoredFolderHandle();
     const safeType = ['character', 'monster', 'note'].includes(type) ? type : 'note';
     const folder = safeType === 'character' ? 'characters' : safeType === 'monster' ? 'monsters' : 'notes';
@@ -387,7 +457,7 @@
 
   async function loadFolderContents() {
     if (!state.connected) return null;
-    await ensureStructure();
+    if (!state.readOnly) await ensureStructure();
     const files = await readAllFiles();
     const byPath = new Map(files.map((file) => [file.path, file.text]));
     let workspace = {};
@@ -398,6 +468,7 @@
 
   async function init() {
     try {
+      if (await reconnectServerFolder()) return;
       const connected = await reconnect();
       if (connected) await ensureStructure();
     } catch (err) {
@@ -411,6 +482,8 @@
     init,
     chooseFolder,
     reconnect,
+    connectServerFolder,
+    reconnectServerFolder,
     disconnect,
     getStatus,
     ensureStructure,

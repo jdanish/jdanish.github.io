@@ -77,7 +77,7 @@
         }
       }
       await window.GM.referenceIndex?.loadIndexFile?.();
-      if (window.GM.referenceIndex && window.GM.data?.getStatus?.().connected) {
+      if (window.GM.referenceIndex && window.GM.data?.getStatus?.().connected && !window.GM.data?.getStatus?.().readOnly) {
         try { await window.GM.data.ensureStructure?.(); } catch { /* folder can remain read-only */ }
         try {
           const existingIndex = await window.GM.data.readFile('index.json');

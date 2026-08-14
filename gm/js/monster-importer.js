@@ -171,7 +171,9 @@
 
   async function importText(text) {
     const parsed = parseStatBlock(text);
-    if (!window.GM.data?.getStatus?.().connected) {
+    const dataStatus = window.GM.data?.getStatus?.() || {};
+    if (dataStatus.readOnly) throw new Error('Server data is read-only; imports cannot be saved there. Download the data folder first or connect a writable local folder.');
+    if (!dataStatus.connected) {
       window.GM.sidebarData?.importMarkdownFromText?.('current', parsed.markdown);
       return { ...parsed, path: null };
     }
