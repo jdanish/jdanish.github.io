@@ -413,7 +413,7 @@
         else if (action === 'copy') onCopy();
         else if (action === 'index') {
           const values = readValues();
-          const existing = window.GM.referenceIndex?.findEntry?.(values.name);
+          const existing = window.GM.referenceIndex?.findEntry?.(values.name, [], editorState.tab);
           const entry = {
             label: values.name,
             category: existing?.category || window.GM.referenceIndex?.guessCategory?.(values.name, values.highlight, editorState.tab) || 'other',

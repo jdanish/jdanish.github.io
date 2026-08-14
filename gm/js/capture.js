@@ -208,7 +208,7 @@
         }
 
         if (action === 'index') {
-          const existing = window.GM.referenceIndex?.findEntry?.(current.text);
+          const existing = window.GM.referenceIndex?.findEntry?.(current.text, [], current.tab);
           window.GM.popup?.hide?.();
           window.setTimeout(() => window.GM.referenceIndex?.openEntryEditor?.({
             label: existing?.label || truncate(current.text, 80),

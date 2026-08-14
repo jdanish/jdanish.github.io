@@ -502,7 +502,7 @@
         item.innerHTML = `
           <button type="button" class="btn search-result-main" data-search-hit="reference">
             <div class="search-result-title">${window.GM.utils.escapeHtml(hit.label)}</div>
-            <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.category)} · ${window.GM.utils.escapeHtml(hit.source)}</div>
+            <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.category)} · ${window.GM.utils.escapeHtml((window.BOOKS?.[String(hit.source || '').split('/')[0]]?.title) || String(hit.source || '').split('/')[0] || 'Book')} · p. ${window.GM.utils.escapeHtml(String((String(hit.source || '').split('/')[1] || '').split('?')[0] || '—'))}</div>
             <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
           </button>
           <div class="search-result-actions">
