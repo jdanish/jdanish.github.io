@@ -290,17 +290,54 @@
 
     const pdfjsLib = await loadPdfJsModule();
     const fileUrl = new URL(book.file, document.baseURI).href;
-    const doc = await pdfjsLib.getDocument({ url: fileUrl }).promise;
+
+    // Safari can fail inside PDF.js text extraction when the streaming/range
+    // transport path uses ReadableStream. Use the simpler full-file transport
+    // for Safari only; Chrome/desktop behavior remains unchanged.
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent || '');
+    const documentOptions = isSafari
+      ? {
+          url: fileUrl,
+          disableStream: true,
+          disableRange: true,
+          disableAutoFetch: true,
+          disableWorker: true,
+        }
+      : { url: fileUrl };
+
+    const doc = await pdfjsLib.getDocument(documentOptions).promise;
 
     const pages = [];
     for (let pageNum = 1; pageNum <= doc.numPages; pageNum += 1) {
       const page = await doc.getPage(pageNum);
-      const textContent = await page.getTextContent();
-      const text = (textContent.items || [])
-        .map((item) => item.str || '')
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+      let text = '';
+
+      if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent || '')) {
+        // Safari currently exposes the PDF.js text stream without the async
+        // iterator interface used by getTextContent(). Consume the reader
+        // directly instead (PDF.js issue #21557).
+        const reader = page.streamTextContent().getReader();
+        const chunks = [];
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) chunks.push(value);
+        }
+
+        text = chunks
+          .flatMap((chunk) => chunk.items || [])
+          .map((item) => item.str || '')
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      } else {
+        const textContent = await page.getTextContent();
+        text = (textContent.items || [])
+          .map((item) => item.str || '')
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
 
       pages.push({
         pdfPage: pageNum,
