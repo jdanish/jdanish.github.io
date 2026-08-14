@@ -73,6 +73,10 @@
       }
     },
     "ancestries": {
+      "alau@@starbreaker_core": {
+        "label": "Alau",
+        "source": "starbreaker_core/30?highlight=Alau"
+      },
       "androids@@swade": {
         "label": "Androids",
         "source": "swade/12?highlight=Androids",
@@ -85,6 +89,13 @@
         "source": "swade/12?highlight=Aquarians",
         "aliases": [
           "Aquarian"
+        ]
+      },
+      "arusans@@starbreaker_core": {
+        "label": "Arusans",
+        "source": "starbreaker_core/33?highlight=Arusans",
+        "aliases": [
+          "Arusan"
         ]
       },
       "aurax@@sfc": {
@@ -133,6 +144,10 @@
       "draken@@sfc": {
         "label": "Draken",
         "source": "sfc/12?highlight=DRAKEN"
+      },
+      "dunar@@starbreaker_core": {
+        "label": "Dunar",
+        "source": "starbreaker_core/35?highlight=Dunar"
       },
       "dwarves@@fantasy": {
         "label": "Dwarves",
@@ -202,6 +217,10 @@
         "label": "Gen troopers",
         "source": "sfc/14?highlight=GEN%20TROOPER"
       },
+      "gilgar@@starbreaker_core": {
+        "label": "Gilgar",
+        "source": "starbreaker_core/37?highlight=Gilgar"
+      },
       "gnomes@@fantasy": {
         "label": "Gnomes",
         "source": "fantasy/15?highlight=GNOMES",
@@ -269,13 +288,20 @@
           "Half-orc"
         ]
       },
+      "hopocs@@starbreaker_core": {
+        "label": "Hopocs",
+        "source": "starbreaker_core/38?highlight=Hopocs",
+        "aliases": [
+          "Hopoc"
+        ]
+      },
       "hosts@@sfc": {
         "label": "Hosts",
         "source": "sfc/17?highlight=HOSTS"
       },
-      "humans@@fantasy": {
+      "humans@@starbreaker_core": {
         "label": "Humans",
-        "source": "fantasy/20?highlight=HUMANS",
+        "source": "starbreaker_core/20?highlight=Humans",
         "aliases": [
           "Human"
         ]
@@ -315,6 +341,10 @@
           "Kalian"
         ]
       },
+      "mentis@@starbreaker_core": {
+        "label": "Mentis",
+        "source": "starbreaker_core/42?highlight=Mentis"
+      },
       "mimics@@sfc": {
         "label": "Mimics",
         "source": "sfc/15?highlight=MIMICS",
@@ -335,6 +365,10 @@
         "aliases": [
           "Mouseling"
         ]
+      },
+      "nahkyra@@starbreaker_core": {
+        "label": "Nahkyra",
+        "source": "starbreaker_core/44?highlight=Nahkyra"
       },
       "ogres@@fantasy": {
         "label": "Ogres",
@@ -420,6 +454,13 @@
           "Saurian"
         ]
       },
+      "septrids@@starbreaker_core": {
+        "label": "Septrids",
+        "source": "starbreaker_core/47?highlight=Septrids",
+        "aliases": [
+          "Septrid"
+        ]
+      },
       "serpentfolk@@fantasy": {
         "label": "Serpentfolk",
         "source": "fantasy/26?highlight=SERPENTFOLK",
@@ -445,6 +486,17 @@
           "Synthetic being"
         ]
       },
+      "synths@@starbreaker_core": {
+        "label": "Synths",
+        "source": "starbreaker_core/48?highlight=Synths",
+        "aliases": [
+          "Synth"
+        ]
+      },
+      "thovin@@starbreaker_core": {
+        "label": "Thovin",
+        "source": "starbreaker_core/50?highlight=Thovin"
+      },
       "voidlings@@sfc": {
         "label": "Voidlings",
         "source": "sfc/19?highlight=VOIDLINGS",
@@ -452,12 +504,20 @@
           "Voidling"
         ]
       },
+      "vulkolasi@@starbreaker_core": {
+        "label": "Vulkolasi",
+        "source": "starbreaker_core/52?highlight=Vulkolasi"
+      },
       "yetis@@sfc": {
         "label": "Yetis",
         "source": "sfc/20?highlight=YETIS",
         "aliases": [
           "Yeti"
         ]
+      },
+      "zaka@@starbreaker_core": {
+        "label": "Zaka",
+        "source": "starbreaker_core/54?highlight=Zaka"
       }
     },
     "armor": {
