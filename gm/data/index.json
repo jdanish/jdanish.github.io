@@ -97,6 +97,10 @@
         "label": "Calculating",
         "source": "swade/40?highlight=Calculating"
       },
+      "captain": {
+        "label": "CAPTAIN",
+        "source": "sfc/24?highlight=CAPTAIN"
+      },
       "champion healer": {
         "label": "Champion Healer",
         "source": "swade/51?highlight=Champion%20Healer"
@@ -499,6 +503,10 @@
         "label": "All Thumbs",
         "source": "swade/21?highlight=All%20Thumbs"
       },
+      "amorous": {
+        "label": "AMOROUS",
+        "source": "sfc/22?highlight=AMOROUS"
+      },
       "anemic": {
         "label": "Anemic",
         "source": "swade/21?highlight=Anemic"
@@ -506,6 +514,10 @@
       "arrogant": {
         "label": "Arrogant",
         "source": "swade/21?highlight=Arrogant"
+      },
+      "atmospheric dependency": {
+        "label": "ATMOSPHERIC DEPENDENCY",
+        "source": "sfc/22?highlight=ATMOSPHERIC%20DEPENDENCY"
       },
       "bad eyes": {
         "label": "Bad Eyes",
@@ -526,6 +538,10 @@
       "bloodthirsty": {
         "label": "Bloodthirsty",
         "source": "swade/22?highlight=Bloodthirsty"
+      },
+      "bullet magnet": {
+        "label": "BULLET MAGNET",
+        "source": "sfc/22?highlight=BULLET%20MAGNET"
       },
       "can’t swim": {
         "label": "Can’t Swim",
@@ -559,6 +575,10 @@
         "label": "Delusional",
         "source": "swade/22?highlight=Delusional"
       },
+      "dependent": {
+        "label": "DEPENDENT",
+        "source": "sfc/22?highlight=DEPENDENT"
+      },
       "doubting thomas": {
         "label": "Doubting Thomas",
         "source": "swade/20?highlight=Doubting%20Thomas"
@@ -574,6 +594,14 @@
       "enemy": {
         "label": "Enemy",
         "source": "swade/23?highlight=Enemy"
+      },
+      "ex-drone": {
+        "label": "EX-DRONE",
+        "source": "sfc/22?highlight=EX-DRONE"
+      },
+      "ftl sickness": {
+        "label": "FTL SICKNESS",
+        "source": "sfc/23?highlight=FTL%20SICKNESS"
       },
       "greedy": {
         "label": "Greedy",
@@ -606,6 +634,14 @@
       "jealous": {
         "label": "Jealous",
         "source": "swade/24?highlight=Jealous"
+      },
+      "low tech/high tech": {
+        "label": "LOW TECH/HIGH TECH",
+        "source": "sfc/23?highlight=LOW%20TECH%2FHIGH%20TECH"
+      },
+      "low/zero-g worlder": {
+        "label": "LOW/ZERO-G WORLDER",
+        "source": "sfc/23?highlight=LOW%2FZERO-G%20WORLDER"
       },
       "loyal": {
         "label": "Loyal",
@@ -659,9 +695,17 @@
         "label": "Poverty",
         "source": "swade/25?highlight=Poverty"
       },
+      "programmed": {
+        "label": "PROGRAMMED",
+        "source": "sfc/23?highlight=PROGRAMMED"
+      },
       "quirk": {
         "label": "Quirk",
         "source": "swade/25?highlight=Quirk"
+      },
+      "rebellious": {
+        "label": "REBELLIOUS",
+        "source": "sfc/23?highlight=REBELLIOUS"
       },
       "ruthless": {
         "label": "Ruthless",
@@ -670,6 +714,10 @@
       "secret": {
         "label": "Secret",
         "source": "swade/25?highlight=Secret"
+      },
+      "selfless": {
+        "label": "SELFLESS",
+        "source": "sfc/23?highlight=SELFLESS"
       },
       "shamed": {
         "label": "Shamed",
@@ -699,6 +747,10 @@
         "label": "Tongue-Tied",
         "source": "swade/27?highlight=Tongue-Tied"
       },
+      "trouble magnet": {
+        "label": "TROUBLE MAGNET",
+        "source": "sfc/23?highlight=TROUBLE%20MAGNET"
+      },
       "ugly": {
         "label": "Ugly",
         "source": "swade/27?highlight=Ugly"
@@ -718,6 +770,10 @@
       "young": {
         "label": "Young",
         "source": "swade/27?highlight=Young"
+      },
+      "zero-g sickness": {
+        "label": "ZERO-G SICKNESS",
+        "source": "sfc/24?highlight=ZERO-G%20SICKNESS"
       }
     },
     "items": {
