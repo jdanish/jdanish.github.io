@@ -2418,6 +2418,53 @@
     });
     const downloadFolderBtn = document.createElement('button'); downloadFolderBtn.type='button'; downloadFolderBtn.textContent='Download Data Folder';
     downloadFolderBtn.addEventListener('click', async () => { try { await window.GM.data.downloadFolder(); } catch(err) { alert(`Could not download the data folder: ${err?.message || err}`); } });
+
+    const generateServerDataBtn = document.createElement('button');
+    generateServerDataBtn.type = 'button';
+    generateServerDataBtn.textContent = 'Generate Server Data JSON';
+    generateServerDataBtn.title = 'Create server-data.json from the connected data folder';
+    const updateServerDataButtonState = () => {
+      const status = window.GM.data?.getStatus?.() || {};
+      generateServerDataBtn.disabled = !status.connected || status.readOnly;
+    };
+    updateServerDataButtonState();
+    generateServerDataBtn.addEventListener('click', async () => {
+      try {
+        generateServerDataBtn.disabled = true;
+        const status = window.GM.data?.getStatus?.() || {};
+        if (!status.connected || status.readOnly) {
+          window.alert('Connect an editable local data folder first.');
+          return;
+        }
+
+        const files = await window.GM.data.readAllFiles?.() || [];
+        const serverData = {};
+        for (const entry of files) {
+          const path = String(entry?.path || '').replace(/\\/g, '/').replace(/^\/+/, '');
+          if (!path || path === 'server-data.json') continue;
+          if (!/\.(md|json)$/i.test(path)) continue;
+          serverData[path] = String(entry?.text ?? '');
+        }
+
+        const payload = JSON.stringify(serverData, null, 2);
+        const blob = new Blob([payload], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = 'server-data.json';
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        window.alert(`Generated server-data.json with ${Object.keys(serverData).length} data files.`);
+      } catch (err) {
+        window.alert(`Could not generate server-data.json: ${err?.message || err}`);
+      } finally {
+        updateServerDataButtonState();
+      }
+    });
+    window.addEventListener('gm-data-connection-changed', updateServerDataButtonState);
     const docsBtn = document.createElement('button'); docsBtn.type='button'; docsBtn.textContent='Browse Characters / Monsters / Notes'; docsBtn.addEventListener('click', () => openDocumentBrowser());
     const indexBtn = document.createElement('button'); indexBtn.type='button'; indexBtn.textContent='Open Reference Index'; indexBtn.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
     const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder';
@@ -2438,7 +2485,7 @@
       indexSaveBtn.disabled = !status.connected || status.readOnly;
     };
 
-    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn, indexSaveBtn);
+    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn, indexBtn, indexSaveBtn);
     wrap.appendChild(folderActions);
 
     const makeGroup = (title, kind) => {
