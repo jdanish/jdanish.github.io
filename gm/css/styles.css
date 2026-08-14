@@ -3132,7 +3132,7 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
 
 /* Mobile / iPhone layout */
 .mobile-sidebar-toggle { display: none; }
-.mobile-sidebar-backdrop { display: none; }
+.mobile-sidebar-backdrop { display: none; pointer-events: none; }
 
 @media (max-width: 760px) {
   html, body {
@@ -3195,10 +3195,16 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    display: block;
+    display: none;
+    pointer-events: none;
     background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(1px);
     -webkit-backdrop-filter: blur(1px);
+  }
+
+  .mobile-sidebar-backdrop.is-active {
+    display: block;
+    pointer-events: auto;
   }
 
   .mobile-sidebar-toggle {

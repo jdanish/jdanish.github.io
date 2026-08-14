@@ -2700,7 +2700,10 @@
     }
 
     const backdrop = document.getElementById('mobileSidebarBackdrop');
-    if (backdrop) backdrop.hidden = !next;
+    if (backdrop) {
+      backdrop.classList.toggle('is-active', next);
+      backdrop.setAttribute('aria-hidden', next ? 'false' : 'true');
+    }
   }
 
   function setupMobileSidebar() {
