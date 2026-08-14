@@ -2606,6 +2606,12 @@
       dom.pageLinksEl.appendChild(btn);
     });
 
+    // Keep book tabs inside the same collapsible navigation strip as pages/bookmarks.
+    if (dom.tabsEl) {
+      dom.tabsEl.classList.add('books-inside-navigation');
+      dom.pageLinksEl.appendChild(dom.tabsEl);
+    }
+
     window.GM.bookmarks?.render?.(tab, dom.pageLinksEl);
   }
 
