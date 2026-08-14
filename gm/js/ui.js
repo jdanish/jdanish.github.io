@@ -2515,7 +2515,9 @@
       if (kind !== 'current') {
         const editBtn = document.createElement('button');
         editBtn.type = 'button';
+        editBtn.className = 'sidebar-data-edit-button';
         editBtn.textContent = `Edit ${title}`;
+        editBtn.setAttribute('aria-label', `Edit ${title}`);
         editBtn.addEventListener('click', () => openSidebarMarkdownEditor(kind));
         group.appendChild(editBtn);
       }
