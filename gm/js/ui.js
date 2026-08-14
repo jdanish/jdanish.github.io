@@ -2337,6 +2337,22 @@
       : 'Connect a data folder or server data source to manage character, monster, note, current, and index files.';
     wrap.appendChild(intro);
 
+    const modeBadge = document.createElement('div');
+    modeBadge.className = 'sidebar-data-mode-badge';
+    const updateModeBadge = () => {
+      const status = window.GM.data?.getStatus?.() || {};
+      const readOnly = Boolean(status.readOnly);
+      modeBadge.className = `sidebar-data-mode-badge ${readOnly ? 'is-readonly' : (status.connected ? 'is-editable' : 'is-disconnected')}`;
+      modeBadge.innerHTML = readOnly
+        ? '<span aria-hidden="true">🔒</span><strong>READ-ONLY</strong><span>Server data</span>'
+        : (status.connected
+          ? '<span aria-hidden="true">✎</span><strong>EDITABLE</strong><span>Local data folder</span>'
+          : '<span aria-hidden="true">○</span><strong>NOT CONNECTED</strong><span>No data source</span>');
+    };
+    updateModeBadge();
+    wrap.appendChild(modeBadge);
+    window.addEventListener('gm-data-connection-changed', updateModeBadge);
+
     const indexStatus = document.createElement('div');
     indexStatus.className = 'sidebar-index-status';
     const updateIndexStatus = () => {

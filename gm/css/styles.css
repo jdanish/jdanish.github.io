@@ -3100,3 +3100,31 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
   font-size: 1rem;
   line-height: 1;
 }
+
+.sidebar-data-mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 9px 11px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font-size: 0.88rem;
+}
+.sidebar-data-mode-badge strong {
+  letter-spacing: 0.04em;
+}
+.sidebar-data-mode-badge span:last-child {
+  margin-left: auto;
+  opacity: 0.75;
+  font-size: 0.8rem;
+}
+.sidebar-data-mode-badge.is-readonly {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.sidebar-data-mode-badge.is-editable {
+  background: color-mix(in srgb, currentColor 6%, transparent);
+}
+.sidebar-data-mode-badge.is-disconnected {
+  opacity: 0.75;
+}
