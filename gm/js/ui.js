@@ -2331,12 +2331,8 @@
 
     const intro = document.createElement('p');
     intro.className = 'book-visibility-intro';
-    wrap.appendChild(intro);
-
     const modeBadge = document.createElement('div');
     modeBadge.className = 'sidebar-data-mode-badge';
-    wrap.appendChild(modeBadge);
-
     const updateConnectionUi = () => {
       const status = window.GM.data?.getStatus?.() || {};
       intro.textContent = status.connected
@@ -2354,6 +2350,30 @@
     updateConnectionUi();
     window.addEventListener('gm-data-connection-changed', updateConnectionUi);
 
+    const makePopupSection = (title, className) => {
+      const section = document.createElement('section');
+      section.className = `sidebar-data-section ${className || ''}`.trim();
+
+      const heading = document.createElement('h3');
+      heading.className = 'sidebar-data-section-title';
+      heading.textContent = title;
+      section.appendChild(heading);
+
+      const body = document.createElement('div');
+      body.className = 'sidebar-data-section-body';
+      section.appendChild(body);
+      return { section, body };
+    };
+
+    const dataSection = makePopupSection('Data management', 'sidebar-data-section-management');
+    const indexSection = makePopupSection('Index viewing / editing', 'sidebar-data-section-index');
+    const rulesSection = makePopupSection('Rules document functions', 'sidebar-data-section-rules');
+
+    wrap.append(dataSection.section, indexSection.section, rulesSection.section);
+
+    dataSection.body.appendChild(intro);
+    dataSection.body.appendChild(modeBadge);
+
     const indexStatus = document.createElement('div');
     indexStatus.className = 'sidebar-index-status';
     const updateIndexStatus = () => {
@@ -2364,7 +2384,7 @@
         : '<span class=\"sidebar-index-status-icon\">✓</span><span><strong>Reference Index: Saved</strong><small>index.json matches the current index.</small></span>';
     };
     updateIndexStatus();
-    wrap.appendChild(indexStatus);
+    indexSection.body.appendChild(indexStatus);
     window.addEventListener('gm-reference-index-changed', updateIndexStatus);
     window.addEventListener('gm-reference-index-saved', updateIndexStatus);
 
@@ -2485,8 +2505,9 @@
       indexSaveBtn.disabled = !status.connected || status.readOnly;
     };
 
-    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn, indexBtn, indexSaveBtn);
-    wrap.appendChild(folderActions);
+    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn);
+    indexSection.body.append(indexBtn, indexSaveBtn);
+    dataSection.body.appendChild(folderActions);
 
     const makeGroup = (title, kind) => {
       const group = document.createElement('div');
@@ -2574,7 +2595,7 @@
       return group;
     };
 
-    wrap.appendChild(makeGroup('Rules', 'rules'));
+    rulesSection.body.appendChild(makeGroup('Rules', 'rules'));
     return wrap;
   }
 

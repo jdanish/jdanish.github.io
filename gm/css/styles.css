@@ -3968,3 +3968,93 @@ html:not([data-theme="light"]) .gm-workspace-tab-edit {
 html[data-theme="light"] .gm-workspace-tab-edit {
   color: #1f2937 !important;
 }
+
+
+/* Sidebar Data popup: consistent three-section layout. */
+.sidebar-data-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-data-section {
+  border: 1px solid var(--line, rgba(255,255,255,.12));
+  border-radius: 10px;
+  background: var(--panel-2, rgba(255,255,255,.03));
+  padding: 10px;
+}
+
+.sidebar-data-section-title {
+  margin: 0 0 8px;
+  padding: 0 0 7px;
+  border-bottom: 1px solid var(--line, rgba(255,255,255,.10));
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: .02em;
+  color: var(--text);
+}
+
+.sidebar-data-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sidebar-data-section-body .sidebar-data-actions,
+.sidebar-data-section-body .book-visibility-list {
+  margin: 0;
+}
+
+.sidebar-data-section-body .sidebar-data-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 7px;
+}
+
+.sidebar-data-section-body button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar-data-section-index .sidebar-index-status {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .sidebar-data-section-body .sidebar-data-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-data-section {
+    padding: 9px;
+  }
+}
+
+
+/* Rules section uses the same two-column action layout as Data management. */
+.sidebar-data-section-rules .book-visibility-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.sidebar-data-section-rules .book-visibility-item {
+  grid-column: 1 / -1;
+}
+
+.sidebar-data-section-rules .book-visibility-list > button {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .sidebar-data-section-rules .book-visibility-list {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-data-section-rules .book-visibility-item {
+    grid-column: auto;
+  }
+}

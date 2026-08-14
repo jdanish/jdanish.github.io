@@ -220,7 +220,7 @@
   function buildViewerSrc(book, displayPage, scaleValue) {
     const pdfPage = toPdfPage(book, displayPage);
     const zoom = isMobileViewerMode()
-      ? (serializeZoomValue(scaleValue) || 'page-width')
+      ? 'page-width'
       : serializeZoomValue(scaleValue);
 
     // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
