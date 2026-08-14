@@ -3627,3 +3627,80 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
   filter: grayscale(1);
   color: var(--text);
 }
+
+
+/* Phone landscape: keep the sidebar beside the book rather than overlaying it. */
+@media (max-width: 900px) and (orientation: landscape) {
+  html, body {
+    height: 100%;
+    height: 100dvh;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .app {
+    display: grid !important;
+    grid-template-columns: minmax(250px, 34vw) minmax(0, 1fr);
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .sidebar {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    transform: none !important;
+    transition: none !important;
+    z-index: auto !important;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .app.mobile-sidebar-open .sidebar {
+    transform: none !important;
+  }
+
+  .sidebar-resizer {
+    display: none !important;
+  }
+
+  .main {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .mobile-sidebar-toggle {
+    display: none !important;
+  }
+
+  #mobileSidebarBackdrop {
+    display: none !important;
+  }
+
+  .panel-header {
+    padding-top: max(6px, env(safe-area-inset-top));
+    padding-bottom: 6px;
+  }
+
+  .sidebar-content,
+  .sidebar-body,
+  .sidebar-panel-body,
+  .viewer-shell,
+  .viewer {
+    min-height: 0;
+  }
+
+  .viewer-shell {
+    height: 100%;
+  }
+}
