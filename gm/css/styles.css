@@ -3796,3 +3796,57 @@ html[data-theme="light"] .sidebar-index-status.is-saved {
     z-index: 2;
   }
 }
+
+@media (max-width: 760px) {
+  /* Portrait mobile: let all navigation controls flow onto additional lines. */
+  .page-links {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    align-content: flex-start;
+    gap: 6px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  .books-inside-navigation {
+    display: flex !important;
+    flex: 0 1 auto !important;
+    flex-wrap: wrap !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+
+  .books-inside-navigation button,
+  .page-links > .page-link,
+  .bookmark-ui {
+    flex: 0 1 auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .bookmark-ui {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center;
+    width: auto !important;
+    max-width: 100% !important;
+    gap: 4px;
+  }
+
+  .bookmark-item {
+    flex: 0 1 auto !important;
+    max-width: 100%;
+  }
+
+  .bookmark-link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
