@@ -123,12 +123,12 @@
       panel.className = 'sidebar-notes sidebar-md-editor-root';
       panel.innerHTML = `
         <summary class="sidebar-notes-header">
-          <div class="sidebar-notes-resizer" aria-hidden="true"></div>
           <div class="sidebar-notes-header-row">
             <span class="sidebar-notes-toggle">
               <span class="sidebar-notes-caret" aria-hidden="true"></span>
               <span class="sidebar-notes-title">Notes</span>
             </span>
+            <div class="sidebar-notes-resizer" aria-hidden="true"></div>
             <span class="sidebar-notes-meta">
               <span id="sidebarNotesCount">0 chars</span>
               <span id="sidebarNotesStatus">Saved</span>

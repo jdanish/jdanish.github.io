@@ -1390,6 +1390,9 @@
         if (path === active.path) return;
         try {
           await window.GM.sidebarData?.openDocument?.(path);
+          if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
+            setMobileSidebarOpen(true);
+          }
         } catch (err) {
           window.alert(`Could not open document: ${err?.message || err}`);
         }
@@ -1402,6 +1405,9 @@
         if (path === active.path) return;
         try {
           await window.GM.sidebarData?.openDocument?.(path);
+          if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
+            setMobileSidebarOpen(true);
+          }
         } catch (err) {
           window.alert(`Could not open document: ${err?.message || err}`);
         }
@@ -1501,6 +1507,19 @@
     }
     syncCurrentSubTabUi(activeId);
 
+    const mobileClose = document.createElement('button');
+    mobileClose.type = 'button';
+    mobileClose.className = 'mobile-document-close';
+    mobileClose.textContent = '×';
+    mobileClose.title = 'Return to reading view';
+    mobileClose.setAttribute('aria-label', 'Return to reading view');
+    mobileClose.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setMobileSidebarOpen(false);
+    });
+    panelBody.appendChild(mobileClose);
+
     const tabs = document.createElement('div');
     tabs.className = 'current-subtabs';
     const entityDocument = /^(characters|monsters|notes)\//i.test(String(activeDocument.path || ''));
@@ -1509,6 +1528,7 @@
 
     const panels = document.createElement('div');
     panels.className = 'current-subtab-panels';
+
 
     sections.forEach((section, sectionIndex) => {
       const sectionKey = normalizePersistKey(section, sectionIndex);
@@ -2302,6 +2322,7 @@
               await window.GM.sidebarData.openDocument(doc.path);
               window.GM.popup?.hide?.();
               setSidebarTab('current');
+              if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
             });
             const path = document.createElement('small'); path.textContent=doc.path;
             row.append(open, path); group.appendChild(row);
@@ -2763,8 +2784,29 @@
     const app = document.querySelector('.app');
     if (!app) return;
     const next = Boolean(open) && isMobileSidebarViewport();
+    const activeDocument = window.GM.sidebarData?.getActiveDocument?.();
+    const useDocumentFullscreen = next && !window.matchMedia?.('(orientation: landscape)').matches;
+
     app.classList.toggle('mobile-sidebar-open', next);
+    app.classList.toggle('mobile-entity-document-open', useDocumentFullscreen);
     document.body.classList.toggle('mobile-sidebar-open', next);
+
+    let readerClose = document.getElementById('mobileDocumentReaderClose');
+    if (!readerClose) {
+      readerClose = document.createElement('button');
+      readerClose.type = 'button';
+      readerClose.id = 'mobileDocumentReaderClose';
+      readerClose.className = 'mobile-document-reader-close';
+      readerClose.textContent = '×';
+      readerClose.setAttribute('aria-label', 'Close sidebar reader');
+      readerClose.title = 'Close sidebar reader';
+      readerClose.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setMobileSidebarOpen(false);
+      });
+      document.body.appendChild(readerClose);
+    }
 
     const toggle = document.getElementById('mobileSidebarToggle');
     if (toggle) {
@@ -2775,9 +2817,20 @@
     }
 
     const backdrop = document.getElementById('mobileSidebarBackdrop');
+    const readerCloseButton = document.getElementById('mobileDocumentReaderClose');
+    if (readerCloseButton) {
+      const fullReader = useDocumentFullscreen;
+      readerCloseButton.hidden = !fullReader;
+      readerCloseButton.setAttribute('aria-hidden', fullReader ? 'false' : 'true');
+    }
+
     if (backdrop) {
       backdrop.classList.toggle('is-active', next);
       backdrop.setAttribute('aria-hidden', next ? 'false' : 'true');
+    }
+
+    if (!next) {
+      app.classList.remove('mobile-entity-document-open');
     }
   }
 

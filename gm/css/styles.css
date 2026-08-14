@@ -4058,3 +4058,544 @@ html[data-theme="light"] .gm-workspace-tab-edit {
     grid-column: auto;
   }
 }
+
+
+/* Mobile entity documents (characters, monsters, notes): full-screen reader. */
+.mobile-document-close { display:none; }
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app.mobile-entity-document-open .sidebar {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    z-index: 1200 !important;
+    transform: none !important;
+    border-radius: 0 !important;
+  }
+
+  .app.mobile-entity-document-open .main {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-panel-current,
+  .app.mobile-entity-document-open .sidebar-panel-current .sidebar-panel-body {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .app.mobile-entity-document-open .sidebar-panel-current .sidebar-panel-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 24px;
+  }
+
+  .app.mobile-entity-document-open .mobile-document-close {
+    display: inline-flex !important;
+    position: sticky;
+    top: max(8px, env(safe-area-inset-top));
+    z-index: 20;
+    margin: 4px 4px 8px auto;
+    min-height: 42px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel-2);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel img,
+  .app.mobile-entity-document-open .current-subtab-panel pre,
+  .app.mobile-entity-document-open .current-subtab-panel .markdown-body {
+    max-width: 100%;
+  }
+}
+
+
+/* Mobile entity-document reader close control. */
+.mobile-document-close {
+  display: none;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app.mobile-entity-document-open .mobile-document-close {
+    display: inline-flex !important;
+    position: fixed !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+    z-index: 1300 !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .app.mobile-entity-document-open .sidebar {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    z-index: 1200 !important;
+    transform: none !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Mobile full-screen sidebar reader and native collapsible sections. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .app.mobile-entity-document-open .sidebar {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    z-index: 1200 !important;
+    transform: none !important;
+    border-radius: 0 !important;
+  }
+
+  .app.mobile-entity-document-open .main {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-panel-current,
+  .app.mobile-entity-document-open .sidebar-panel-current .sidebar-panel-body,
+  .app.mobile-entity-document-open .sidebar-panel-rules,
+  .app.mobile-entity-document-open .sidebar-panel-rules .sidebar-panel-body {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .app.mobile-entity-document-open .sidebar-panel-current .sidebar-panel-body,
+  .app.mobile-entity-document-open .sidebar-panel-rules .sidebar-panel-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 32px;
+  }
+
+  .app.mobile-entity-document-open .mobile-document-close {
+    display: inline-flex !important;
+    position: fixed !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+    z-index: 1300 !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  /* Do not let mobile reader styling interfere with native details/summary toggling. */
+  .app.mobile-entity-document-open details > summary {
+    display: list-item !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .app.mobile-entity-document-open details > summary::marker {
+    color: currentColor;
+  }
+
+  .app.mobile-entity-document-open .nested-block details,
+  .app.mobile-entity-document-open details {
+    overflow: visible;
+  }
+}
+
+
+/* Mobile sidebar full-reader close button and larger Details hit targets. */
+.mobile-document-reader-close {
+  display: none;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .mobile-document-reader-close:not([hidden]) {
+    display: inline-flex !important;
+    position: fixed !important;
+    top: max(10px, env(safe-area-inset-top)) !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+    z-index: 1500 !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--panel-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 24px;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,.24);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app.mobile-entity-document-open details > summary {
+    display: flex !important;
+    align-items: center;
+    width: 100% !important;
+    min-height: 48px !important;
+    box-sizing: border-box;
+    padding: 12px 14px !important;
+    margin: 0 !important;
+    gap: 8px;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app.mobile-entity-document-open details > summary::before {
+    flex: 0 0 auto;
+    display: inline-block;
+    width: 1.1em;
+    content: '▸';
+    font-size: 1.05em;
+  }
+
+  .app.mobile-entity-document-open details[open] > summary::before {
+    content: '▾';
+  }
+
+  .app.mobile-entity-document-open details > summary::marker {
+    content: none;
+  }
+
+  .app.mobile-entity-document-open details > summary::-webkit-details-marker {
+    display: none !important;
+  }
+}
+
+
+/* Final mobile reader polish. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .mobile-document-reader-close:not([hidden]) {
+    top: max(58px, calc(env(safe-area-inset-top) + 50px)) !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+  }
+
+  .app.mobile-entity-document-open details > summary {
+    justify-content: flex-start !important;
+    text-align: left !important;
+    align-items: center !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .app.mobile-entity-document-open details > summary::before {
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+
+  .app.mobile-entity-document-open details > summary::after {
+    flex: 1 1 auto;
+    content: "";
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel table {
+    display: block !important;
+    width: max-content !important;
+    min-width: 720px !important;
+    max-width: none !important;
+    overflow-x: visible !important;
+    border-collapse: collapse;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel table thead,
+  .app.mobile-entity-document-open .current-subtab-panel table tbody {
+    width: 100%;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel .nested-body,
+  .app.mobile-entity-document-open .current-subtab-panel .subsection-body {
+    min-width: 0;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+
+/* Final mobile control positioning/alignment. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .mobile-document-reader-close:not([hidden]) {
+    top: max(8px, env(safe-area-inset-top)) !important;
+    right: max(8px, env(safe-area-inset-right)) !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    border-radius: 7px !important;
+    font-size: 20px !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-content {
+    padding-top: 46px !important;
+  }
+
+  .app.mobile-entity-document-open details > summary {
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 14px !important;
+    text-align: left !important;
+    text-align-last: left !important;
+    box-sizing: border-box !important;
+    flex-direction: row !important;
+  }
+
+  .app.mobile-entity-document-open details > summary::before {
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    margin-right: 8px !important;
+    text-align: center !important;
+  }
+
+  .app.mobile-entity-document-open details > summary::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-toolbar,
+  .app.mobile-entity-document-open .sidebar-tools {
+    padding-top: 8px !important;
+  }
+}
+
+
+@media (max-width: 760px) and (orientation: portrait) {
+  /* Notes header: Notes | drag handle | chars | Saved */
+  .app.mobile-entity-document-open .sidebar-notes-header {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-header-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0 12px !important;
+    gap: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-toggle {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-resizer {
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 24px !important;
+    margin: 0 4px !important;
+    cursor: ns-resize !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-resizer::before {
+    width: 36px !important;
+    margin: 9px auto 0 !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-meta {
+    flex: 0 0 auto !important;
+    margin-left: 0 !important;
+    margin-right: 40px !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 10px !important;
+    white-space: nowrap !important;
+  }
+}
+
+
+@media (max-width: 760px) and (orientation: portrait) {
+  .app.mobile-entity-document-open .sidebar-notes-header {
+    position: relative !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-header::before,
+  .app.mobile-entity-document-open .sidebar-notes[open] .sidebar-notes-header::before,
+  .app.mobile-entity-document-open .sidebar-notes-header-row::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-header-row {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 1fr 44px 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 0 12px !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-toggle {
+    grid-column: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 8px 0 !important;
+    text-align: left !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-resizer {
+    grid-column: 2 !important;
+    justify-self: center !important;
+    align-self: center !important;
+    width: 44px !important;
+    height: 24px !important;
+    margin: 0 !important;
+  }
+
+  .app.mobile-entity-document-open .sidebar-notes-meta {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    align-self: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+}
+
+
+/* Desktop Notes header: left title, centered drag handle, right metadata. */
+@media (min-width: 761px) {
+  .sidebar-notes-header-row {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 1fr 44px 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .sidebar-notes-toggle {
+    grid-column: 1 !important;
+    justify-self: start !important;
+  }
+
+  .sidebar-notes-resizer {
+    grid-column: 2 !important;
+    justify-self: center !important;
+    width: 44px !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-notes-meta {
+    grid-column: 3 !important;
+    justify-self: end !important;
+    margin: 0 !important;
+    text-align: right !important;
+  }
+}
+
+
+@media (max-width: 760px) and (orientation: portrait) {
+  /* Wide tables should make their reader surface feel intentional rather than
+     spilling out of a narrow card. */
+  .app.mobile-entity-document-open .sidebar-panel-current,
+  .app.mobile-entity-document-open .sidebar-panel-current .sidebar-panel-body,
+  .app.mobile-entity-document-open .current-subtab-panel {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel {
+    overflow-x: auto !important;
+    padding-right: 0 !important;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel table {
+    min-width: 720px !important;
+    width: max-content !important;
+    max-width: none !important;
+  }
+
+  .app.mobile-entity-document-open .current-subtab-panel .nested-body:has(table),
+  .app.mobile-entity-document-open .current-subtab-panel .subsection-body:has(table) {
+    width: max-content;
+    min-width: 720px;
+  }
+}
