@@ -54,6 +54,12 @@
     return getBooks()[tab] || null;
   }
 
+  function isMobileViewerMode() {
+    return window.matchMedia
+      ? window.matchMedia('(max-width: 760px)').matches
+      : window.innerWidth <= 760;
+  }
+
   function getBookOrderMap() {
     const books = getBooks();
     const map = new Map();
@@ -213,7 +219,9 @@
 
   function buildViewerSrc(book, displayPage, scaleValue) {
     const pdfPage = toPdfPage(book, displayPage);
-    const zoom = serializeZoomValue(scaleValue);
+    const zoom = isMobileViewerMode()
+      ? (serializeZoomValue(scaleValue) || 'page-width')
+      : serializeZoomValue(scaleValue);
 
     // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
     const filePath = `../../../${book.file}`;
@@ -241,6 +249,7 @@
     const iframe = document.createElement('iframe');
     iframe.className = 'pdf-frame';
     iframe.title = book.title;
+    if ('loading' in iframe) iframe.loading = 'lazy';
 
     wrapper.appendChild(iframe);
     frame.appendChild(wrapper);
@@ -281,6 +290,37 @@
     viewer.loading = next;
     viewer.wrapper.classList.toggle('loading', next);
     window.GM.ui?.setTabLoading?.(tab, next);
+  }
+
+  function disposeViewer(tab) {
+    const viewer = viewerState.viewers.get(tab);
+    if (!viewer) return;
+
+    try {
+      const timers = viewerState.pageSyncTimers.get(tab);
+      if (timers) {
+        timers.forEach((timer) => clearTimeout(timer));
+      }
+      viewerState.pageSyncTimers.delete(tab);
+    } catch {}
+
+    try {
+      if (viewer.app?.eventBus?.off && viewer._eventHandlers) {
+        viewer._eventHandlers.forEach(([name, handler]) => {
+          try { viewer.app.eventBus.off(name, handler); } catch {}
+        });
+      }
+    } catch {}
+
+    try {
+      if (viewer.iframe) viewer.iframe.src = 'about:blank';
+    } catch {}
+
+    try {
+      viewer.wrapper?.remove();
+    } catch {}
+
+    viewerState.viewers.delete(tab);
   }
 
   function showViewer(tab) {
@@ -622,6 +662,9 @@
 
     if (viewerState.activeTab && viewerState.activeTab !== tab) {
       captureRuntimeScale(viewerState.activeTab);
+      if (isMobileViewerMode()) {
+        disposeViewer(viewerState.activeTab);
+      }
     }
 
     window.GM.ui?.ensureBookVisible?.(tab);
@@ -673,6 +716,15 @@
   }
 
   async function preloadAllViewers() {
+    if (isMobileViewerMode()) {
+      const tabs = Object.keys(getBooks());
+      if (!tabs.length) return;
+      const state = getState();
+      const active = tabs.includes(state.activeTab) ? state.activeTab : tabs[0];
+      if (active) await setTabAndPage(active, getDisplayPage(active));
+      return;
+    }
+
     const tabs = Object.keys(getBooks());
     if (!tabs.length) return;
 
