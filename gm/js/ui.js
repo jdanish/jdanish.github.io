@@ -2331,16 +2331,18 @@
 
     const intro = document.createElement('p');
     intro.className = 'book-visibility-intro';
-    const dataStatus = window.GM.data?.getStatus?.() || {};
-    intro.textContent = dataStatus.connected
-      ? (dataStatus.readOnly ? 'Connected to server data (read-only). Changes cannot be saved back to the server.' : `Connected data folder: ${dataStatus.name || 'folder'}`)
-      : 'Connect a data folder or server data source to manage character, monster, note, current, and index files.';
     wrap.appendChild(intro);
 
     const modeBadge = document.createElement('div');
     modeBadge.className = 'sidebar-data-mode-badge';
-    const updateModeBadge = () => {
+    wrap.appendChild(modeBadge);
+
+    const updateConnectionUi = () => {
       const status = window.GM.data?.getStatus?.() || {};
+      intro.textContent = status.connected
+        ? (status.readOnly ? 'Connected to server data (read-only). Changes cannot be saved back to the server.' : `Connected data folder: ${status.name || 'folder'}`)
+        : 'Connect a data folder or server data source to manage character, monster, note, current, and index files.';
+
       const readOnly = Boolean(status.readOnly);
       modeBadge.className = `sidebar-data-mode-badge ${readOnly ? 'is-readonly' : (status.connected ? 'is-editable' : 'is-disconnected')}`;
       modeBadge.innerHTML = readOnly
@@ -2349,9 +2351,8 @@
           ? '<span aria-hidden="true">✎</span><strong>EDITABLE</strong><span>Local data folder</span>'
           : '<span aria-hidden="true">○</span><strong>NOT CONNECTED</strong><span>No data source</span>');
     };
-    updateModeBadge();
-    wrap.appendChild(modeBadge);
-    window.addEventListener('gm-data-connection-changed', updateModeBadge);
+    updateConnectionUi();
+    window.addEventListener('gm-data-connection-changed', updateConnectionUi);
 
     const indexStatus = document.createElement('div');
     indexStatus.className = 'sidebar-index-status';
@@ -2369,17 +2370,19 @@
 
     const folderActions = document.createElement('div');
     folderActions.className = 'sidebar-data-actions';
-    const connectBtn = document.createElement('button'); connectBtn.type='button'; connectBtn.textContent = dataStatus.readOnly ? 'Reconnect Server Data' : (dataStatus.connected ? 'Reconnect Folder' : 'Connect Data Folder');
+    const connectBtn = document.createElement('button'); connectBtn.type='button';
+    { const status = window.GM.data?.getStatus?.() || {}; connectBtn.textContent = status.readOnly ? 'Reconnect Server Data' : (status.connected ? 'Reconnect Folder' : 'Connect Data Folder'); }
     connectBtn.addEventListener('click', async () => {
       try {
-        const ok = dataStatus.readOnly
+        const status = window.GM.data?.getStatus?.() || {};
+        const ok = status.readOnly
           ? await window.GM.data.reconnectServerFolder?.()
-          : (dataStatus.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder());
+          : (status.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder());
         if (ok) {
           await refreshFromConnectedFolder();
           await window.GM.referenceIndex?.loadIndexFile?.();
           window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
-          window.GM.popup?.hide?.();
+          updateDataPanelState();
         }
       } catch (err) { alert(`Could not connect to the data folder: ${err?.message || err}`); }
     });
@@ -2396,7 +2399,7 @@
         await refreshFromConnectedFolder();
         await window.GM.referenceIndex?.loadIndexFile?.();
         window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
-        window.GM.popup?.hide?.();
+        updateDataPanelState();
       } catch (err) { alert(`Could not connect to server data: ${err?.message || err}`); }
     });
     const newFolderBtn = document.createElement('button');
@@ -2409,7 +2412,7 @@
           await refreshFromConnectedFolder();
           await window.GM.referenceIndex?.loadIndexFile?.();
           window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
-          window.GM.popup?.hide?.();
+          updateDataPanelState();
         }
       } catch (err) { alert(`Could not connect to the new data folder: ${err?.message || err}`); }
     });
@@ -2417,7 +2420,8 @@
     downloadFolderBtn.addEventListener('click', async () => { try { await window.GM.data.downloadFolder(); } catch(err) { alert(`Could not download the data folder: ${err?.message || err}`); } });
     const docsBtn = document.createElement('button'); docsBtn.type='button'; docsBtn.textContent='Browse Characters / Monsters / Notes'; docsBtn.addEventListener('click', () => openDocumentBrowser());
     const indexBtn = document.createElement('button'); indexBtn.type='button'; indexBtn.textContent='Open Reference Index'; indexBtn.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
-    const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder'; indexSaveBtn.disabled = !dataStatus.connected || dataStatus.readOnly;
+    const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder';
+    { const status = window.GM.data?.getStatus?.() || {}; indexSaveBtn.disabled = !status.connected || status.readOnly; }
     indexSaveBtn.addEventListener('click', async () => {
       try {
         indexSaveBtn.disabled = true;
@@ -2427,6 +2431,13 @@
       } catch (err) { window.alert(`Could not save index.json: ${err?.message || err}`); }
       finally { const s = window.GM.data?.getStatus?.() || {}; indexSaveBtn.disabled = !s.connected || s.readOnly; }
     });
+    const updateDataPanelState = () => {
+      updateConnectionUi();
+      const status = window.GM.data?.getStatus?.() || {};
+      connectBtn.textContent = status.readOnly ? 'Reconnect Server Data' : (status.connected ? 'Reconnect Folder' : 'Connect Data Folder');
+      indexSaveBtn.disabled = !status.connected || status.readOnly;
+    };
+
     folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, docsBtn, indexBtn, indexSaveBtn);
     wrap.appendChild(folderActions);
 
@@ -2460,7 +2471,6 @@
           try {
             const text = await file.text();
             window.GM.sidebarData?.importMarkdownFromText?.(kind, text);
-            window.GM.popup?.hide?.();
           } catch (error) {
             window.alert(`Failed to load ${title}: ${error?.message || error}`);
           }
@@ -2489,7 +2499,6 @@
           if (nextName === null) return;
           try {
             await window.GM.sidebarData?.renameActiveDocument?.(nextName);
-            window.GM.popup?.hide?.();
           } catch (err) { alert(`Could not rename the document: ${err?.message || err}`); }
         });
         group.appendChild(renameBtn);
@@ -2501,7 +2510,6 @@
       resetBtn.addEventListener('click', async () => {
         if (!window.confirm(`Reset ${title} to its Markdown default?`)) return;
         await window.GM.sidebarData?.resetKind?.(kind);
-        window.GM.popup?.hide?.();
       });
 
       if (kind !== 'current') {
