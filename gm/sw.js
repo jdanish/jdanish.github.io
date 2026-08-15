@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20260815-1';
+const CACHE_NAME = 'gm-reference-shell-v20260815-1-v2';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

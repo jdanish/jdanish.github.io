@@ -15,6 +15,7 @@
     runtimePages: new Map(),
     appListenersInstalled: new WeakSet(),
     pageSyncTimers: new Map(),
+    pagePersistTimers: new Map(),
   };
 
   function getStorage() {
@@ -302,6 +303,9 @@
         timers.forEach((timer) => clearTimeout(timer));
       }
       viewerState.pageSyncTimers.delete(tab);
+      const persistTimer = viewerState.pagePersistTimers.get(tab);
+      if (persistTimer) window.clearTimeout(persistTimer);
+      viewerState.pagePersistTimers.delete(tab);
     } catch {}
 
     try {
@@ -378,10 +382,23 @@
     if (!book) return;
 
     const displayPage = toDisplayPage(book, Number(pdfPage) || 1);
-    setStoredPage(tab, displayPage);
-    setRuntimePage(tab, displayPage);
-    window.GM.ui?.setViewerTitle?.(tab, displayPage);
-    window.GM.ui?.updateTabButtonLabels?.();
+    const previous = getRuntimePage(tab);
+    if (Number(previous) === Number(displayPage)) return;
+
+    // PDF.js can briefly report the adjacent page when the user only nudges
+    // the scroll position. Do not persist that transient page immediately.
+    const existingTimer = viewerState.pagePersistTimers.get(tab);
+    if (existingTimer) window.clearTimeout(existingTimer);
+
+    const timer = window.setTimeout(() => {
+      viewerState.pagePersistTimers.delete(tab);
+      setStoredPage(tab, displayPage);
+      setRuntimePage(tab, displayPage);
+      window.GM.ui?.setViewerTitle?.(tab, displayPage);
+      window.GM.ui?.updateTabButtonLabels?.();
+    }, 600);
+
+    viewerState.pagePersistTimers.set(tab, timer);
   }
 
   function startPageSyncPolling(tab, app) {
@@ -458,7 +475,6 @@
 
     bus.on('pagechanging', updatePageFromEvent);
     bus.on('pagechange', updatePageFromEvent);
-    bus.on('updateviewarea', updatePageFromEvent);
 
     bus.on('scalechange', () => {
       const viewer = viewerState.viewers.get(tab);
