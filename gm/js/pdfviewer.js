@@ -13,9 +13,12 @@
     viewers: new Map(),
     runtimeScales: new Map(),
     runtimePages: new Map(),
+    displayPages: new Map(),
     appListenersInstalled: new WeakSet(),
     pageSyncTimers: new Map(),
     pagePersistTimers: new Map(),
+    expectedPdfPages: new Map(),
+    pageAuthorityUntil: new Map(),
   };
 
   function getStorage() {
@@ -95,6 +98,10 @@
     const book = getBook(tab);
     if (!book) return 1;
 
+    if (viewerState.displayPages.has(tab)) {
+      return Number(viewerState.displayPages.get(tab)) || 1;
+    }
+
     const runtimePage = getRuntimePage(tab);
     if (runtimePage !== null && runtimePage !== undefined && runtimePage !== '') {
       return Number(runtimePage) || 1;
@@ -111,7 +118,9 @@
 
   function setRuntimePage(tab, displayPage) {
     if (!tab) return;
-    viewerState.runtimePages.set(tab, Number(displayPage) || 1);
+    const page = Number(displayPage) || 1;
+    viewerState.runtimePages.set(tab, page);
+    viewerState.displayPages.set(tab, page);
   }
 
   function getRuntimePage(tab) {
@@ -272,6 +281,8 @@
       loaded: false,
       loading: false,
       ignoreScaleEvents: true,
+      programmaticDisplayPage: null,
+      programmaticPdfPage: null,
     };
 
     const activeTab = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
@@ -306,6 +317,10 @@
       const persistTimer = viewerState.pagePersistTimers.get(tab);
       if (persistTimer) window.clearTimeout(persistTimer);
       viewerState.pagePersistTimers.delete(tab);
+      viewerState.expectedPdfPages.delete(tab);
+      viewerState.pageAuthorityUntil.delete(tab);
+      viewer.programmaticDisplayPage = null;
+      viewer.programmaticPdfPage = null;
     } catch {}
 
     try {
@@ -356,25 +371,11 @@
   }
 
   function getCurrentDisplayPage(tab) {
-    const viewer = getCurrentViewer(tab);
-    const book = viewer?.book || getBook(tab);
+    const activeTab = tab || viewerState.activeTab || '';
+    const book = getBook(activeTab);
     if (!book) return 1;
 
-    const runtimePage = getRuntimePage(tab || viewerState.activeTab || '');
-    if (runtimePage !== null && runtimePage !== undefined && runtimePage !== '') {
-      return Number(runtimePage) || 1;
-    }
-
-    const app = viewer?.app;
-    const pdfPage = Number(
-      app?.page ||
-      app?.pdfViewer?.currentPageNumber ||
-      getState().pages?.[tab || viewerState.activeTab || ''] ||
-      book.defaultPage ||
-      1
-    );
-
-    return toDisplayPage(book, pdfPage);
+    return getDisplayPage(activeTab);
   }
 
   function syncCurrentPage(tab, pdfPage) {
@@ -382,18 +383,18 @@
     if (!book) return;
 
     const displayPage = toDisplayPage(book, Number(pdfPage) || 1);
-    const previous = getRuntimePage(tab);
+    const previous = getDisplayPage(tab);
     if (Number(previous) === Number(displayPage)) return;
 
-    // PDF.js can briefly report the adjacent page when the user only nudges
-    // the scroll position. Do not persist that transient page immediately.
+    viewerState.displayPages.set(tab, displayPage);
+    viewerState.runtimePages.set(tab, displayPage);
+
     const existingTimer = viewerState.pagePersistTimers.get(tab);
     if (existingTimer) window.clearTimeout(existingTimer);
 
     const timer = window.setTimeout(() => {
       viewerState.pagePersistTimers.delete(tab);
       setStoredPage(tab, displayPage);
-      setRuntimePage(tab, displayPage);
       window.GM.ui?.setViewerTitle?.(tab, displayPage);
       window.GM.ui?.updateTabButtonLabels?.();
     }, 600);
@@ -407,14 +408,34 @@
     if (!viewer || !book || !app) return;
 
     if (viewerState.pageSyncTimers.has(tab)) return;
+    return; // page synchronization is event-driven; polling is intentionally disabled.
 
     const syncNow = () => {
       const currentPdfPage = Number(
-        app?.page ||
         app?.pdfViewer?.currentPageNumber ||
+        app?.page ||
         1
       );
       if (!Number.isFinite(currentPdfPage) || currentPdfPage < 1) return;
+      const expected = viewerState.expectedPdfPages.get(tab);
+      if (Number.isFinite(expected)) {
+        if (currentPdfPage !== expected) return;
+        viewerState.expectedPdfPages.delete(tab);
+        viewerState.pageAuthorityUntil.set(tab, Date.now() + 1800);
+        viewer.pendingDisplayPage = null;
+      }
+
+      const authorityUntil = viewerState.pageAuthorityUntil.get(tab) || 0;
+      if (authorityUntil > Date.now()) {
+        const runtimeDisplay = getRuntimePage(tab);
+        const expectedPdf = runtimeDisplay !== null
+          ? toPdfPage(getBook(tab), runtimeDisplay)
+          : null;
+        if (Number.isFinite(expectedPdf) && currentPdfPage !== expectedPdf) return;
+      } else {
+        viewerState.pageAuthorityUntil.delete(tab);
+      }
+
       if (viewer.lastSyncedPdfPage === currentPdfPage) return;
       viewer.lastSyncedPdfPage = currentPdfPage;
       syncCurrentPage(tab, currentPdfPage);
@@ -470,11 +491,50 @@
         app?.pdfViewer?.currentPageNumber ||
         1
       );
+
+      const expected = viewerState.expectedPdfPages.get(tab);
+      if (Number.isFinite(expected)) {
+        if (pdfPage === expected) {
+          viewerState.expectedPdfPages.delete(tab);
+          viewerState.pageAuthorityUntil.set(tab, Date.now() + 1800);
+          { const v = viewerState.viewers.get(tab); if (v) v.pendingDisplayPage = null; }
+        } else {
+          return;
+        }
+      }
+
+      const viewer = viewerState.viewers.get(tab);
+      if (viewer?.programmaticPdfPage !== null && viewer?.programmaticPdfPage !== undefined) {
+        if (Number(pdfPage) === Number(viewer.programmaticPdfPage)) {
+          const displayPage = Number(viewer.programmaticDisplayPage) || 1;
+          viewer.programmaticPdfPage = null;
+          viewer.programmaticDisplayPage = null;
+          viewerState.displayPages.set(tab, displayPage);
+          viewerState.runtimePages.set(tab, displayPage);
+          setStoredPage(tab, displayPage);
+          window.GM.ui?.setViewerTitle?.(tab, displayPage);
+          window.GM.ui?.updateTabButtonLabels?.();
+          return;
+        }
+      }
+
+      const authorityUntil = viewerState.pageAuthorityUntil.get(tab) || 0;
+      if (authorityUntil > Date.now()) {
+        const runtimeDisplay = getRuntimePage(tab);
+        const expectedPdf = runtimeDisplay !== null
+          ? toPdfPage(getBook(tab), runtimeDisplay)
+          : null;
+        if (Number.isFinite(expectedPdf) && pdfPage !== expectedPdf) return;
+      } else {
+        viewerState.pageAuthorityUntil.delete(tab);
+      }
+
       syncCurrentPage(tab, pdfPage);
     };
 
     bus.on('pagechanging', updatePageFromEvent);
     bus.on('pagechange', updatePageFromEvent);
+    bus.on('updateviewarea', updatePageFromEvent);
 
     bus.on('scalechange', () => {
       const viewer = viewerState.viewers.get(tab);
@@ -487,14 +547,16 @@
     const viewer = viewerState.viewers.get(tab);
     if (viewer) {
       viewer.lastSyncedPdfPage = Number(
-        app?.page ||
         app?.pdfViewer?.currentPageNumber ||
+        app?.page ||
         viewer.lastSyncedPdfPage ||
         1
       );
     }
 
-    startPageSyncPolling(tab, app);
+    // Page state is synchronized from PDF.js's finalized `pagechange` event.
+    // Do not poll the viewer because its convenience properties can briefly
+    // report an adjacent page during navigation.
     viewerState.appListenersInstalled.add(app);
   }
 
@@ -523,7 +585,7 @@
 
         if (app) {
           installAppListeners(tab, app);
-          viewer.lastSyncedPdfPage = Number(app?.page || app?.pdfViewer?.currentPageNumber || 1);
+          viewer.lastSyncedPdfPage = Number(app?.pdfViewer?.currentPageNumber || app?.page || 1);
           if (viewer.pendingDisplayPage !== null && viewer.pendingDisplayPage !== undefined) {
             const pendingPage = Number(viewer.pendingDisplayPage) || getDisplayPage(tab);
             viewer.pendingDisplayPage = null;
@@ -633,14 +695,25 @@
       setStoredScale(tab, scaleValue);
     }
 
+    viewerState.expectedPdfPages.set(tab, Number(pdfPage) || 1);
+    viewerState.pageAuthorityUntil.delete(tab);
+    viewer.programmaticDisplayPage = Number(displayPage) || 1;
+    viewer.programmaticPdfPage = Number(pdfPage) || 1;
+
+    if (app.pdfViewer && app.pdfViewer.currentPageNumber !== pdfPage) {
+      app.pdfViewer.currentPageNumber = pdfPage;
+    }
     if (app.page !== pdfPage) {
       app.page = pdfPage;
     }
 
-    const currentDisplayPage = toDisplayPage(book, app.page || pdfPage);
     const viewerLast = viewerState.viewers.get(tab);
     if (viewerLast) viewerLast.lastSyncedPdfPage = Number(pdfPage) || 1;
-    syncCurrentPage(tab, currentDisplayPage);
+
+    // syncCurrentPage expects the underlying PDF page and performs the
+    // display-page conversion exactly once. Passing currentDisplayPage here
+    // would apply the book offset a second time.
+    syncCurrentPage(tab, pdfPage);
 
     return app;
   }
@@ -686,6 +759,7 @@
     window.GM.ui?.ensureBookVisible?.(tab);
 
     const resolvedDisplayPage = Number(displayPage || getDisplayPage(tab) || book.defaultPage || 1);
+    viewerState.displayPages.set(tab, resolvedDisplayPage);
     setStoredPage(tab, resolvedDisplayPage);
     setRuntimePage(tab, resolvedDisplayPage);
 
