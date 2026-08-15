@@ -379,6 +379,9 @@
 
       event.preventDefault();
       await activate(target);
+      if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
+        setMobileSidebarOpen(false);
+      }
     });
 
     dom.sidebarContentEl.addEventListener('keydown', async (event) => {
@@ -388,6 +391,9 @@
 
       event.preventDefault();
       await activate(target);
+      if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
+        setMobileSidebarOpen(false);
+      }
     });
 
     dom.sidebarContentEl.dataset.sidebarDelegationBound = 'true';
@@ -717,7 +723,7 @@
 
 
 
-  function fgXmlToCurrentMarkdown(xmlText) {
+  async function fgXmlToCurrentMarkdown(xmlText) {
     const doc = new DOMParser().parseFromString(String(xmlText || ''), 'application/xml');
     if (doc.querySelector('parsererror')) throw new Error('The selected file is not valid XML.');
     const character = doc.querySelector('root > character, character');
@@ -1052,7 +1058,9 @@
       blocks,
     }];
 
-    return { name, markdown, sections };
+    const importedResult = { name, markdown, sections };
+    fgImportReferenceSelections.clear();
+    return importedResult;
   }
 
 
@@ -1297,7 +1305,14 @@
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.xml,text/xml,application/xml';
-      input.hidden = true;
+      input.hidden = false;
+      input.setAttribute('aria-hidden', 'true');
+      input.style.position = 'fixed';
+      input.style.width = '1px';
+      input.style.height = '1px';
+      input.style.opacity = '0';
+      input.style.left = '-9999px';
+      input.style.top = '0';
       document.body.appendChild(input);
 
       input.addEventListener('change', async () => {
@@ -1305,7 +1320,7 @@
         input.remove();
         if (!file) return;
         try {
-          const imported = fgXmlToCurrentMarkdown(await file.text());
+          const imported = await fgXmlToCurrentMarkdown(await file.text());
           await upsertImportedCurrentCharacter(imported);
         } catch (err) {
           console.error('Fantasy Grounds character import failed', err);

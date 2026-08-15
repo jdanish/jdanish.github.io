@@ -4639,3 +4639,60 @@ html[data-theme="light"] .gm-workspace-tab-edit {
     overflow: visible !important;
   }
 }
+
+
+.fg-import-reference-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fg-import-reference-choice > p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.fg-import-reference-choice-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(180px, 1.2fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.fg-import-reference-choice-label {
+  min-width: 0;
+  font-weight: 600;
+}
+
+.fg-import-reference-choice-select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.fg-import-reference-choice-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+@media (max-width: 760px) {
+  .fg-import-reference-choice-popup .gm-popup {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+
+  .fg-import-reference-choice-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .fg-import-reference-choice-actions {
+    flex-direction: column-reverse;
+  }
+
+  .fg-import-reference-choice-actions button {
+    width: 100%;
+  }
+}
