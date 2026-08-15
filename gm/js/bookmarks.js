@@ -425,11 +425,13 @@
               );
           };
           const normalizedName = normalizeIndexLabel(values.name);
-          const existing = window.GM.referenceIndex?.findEntry?.(normalizedName, [], editorState.tab);
+          const sourceBook = editorState.tab;
+          const sourceValue = `${sourceBook}/${values.page}?highlight=${encodeURIComponent(values.highlight || values.name)}`;
+          const existing = window.GM.referenceIndex?.matchingEntries?.(normalizedName, [], sourceBook)?.[0] || null;
           const entry = {
             label: normalizedName,
-            category: existing?.category || window.GM.referenceIndex?.guessCategory?.(values.name, values.highlight, editorState.tab) || 'other',
-            source: existing?.source || `${editorState.tab}/${values.page}?highlight=${encodeURIComponent(values.highlight || values.name)}`,
+            category: existing?.category || window.GM.referenceIndex?.guessCategory?.(values.name, values.highlight, sourceBook) || 'other',
+            source: sourceValue,
             ...(existing?.aliases ? { aliases: existing.aliases } : {}),
           };
           closeEditor();
@@ -496,8 +498,12 @@
 
   function openBookmarkEditor(tab, bookmark, options = {}) {
     const editor = ensureEditor();
-    const activeTab = tab || bookmark?.tab || getCurrentTab();
-    editor.openBookmarkEditor(activeTab, bookmark || { tab: activeTab }, options);
+    // The bookmark's stored tab is authoritative. A caller can otherwise
+    // accidentally pass the currently active PDF tab and open the index editor
+    // against the wrong book.
+    const activeTab = bookmark?.tab || tab || getCurrentTab();
+    const bookmarkValue = bookmark ? { ...bookmark, tab: activeTab } : { tab: activeTab };
+    editor.openBookmarkEditor(activeTab, bookmarkValue, options);
     return editor;
   }
 

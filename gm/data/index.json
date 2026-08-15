@@ -1843,9 +1843,13 @@
         "label": "Summon ally",
         "source": "swade/168?highlight=Summon%20Ally"
       },
+      "telekinesis@@sfc": {
+        "label": "Telekinesis",
+        "source": "sfc/169?highlight=Telekinesis"
+      },
       "telekinesis@@swade": {
         "label": "Telekinesis",
-        "source": "swade/169?highlight=Telekinesis"
+        "source": "swade/168?highlight=Telekinesis"
       },
       "telekinetic squeeze@@sfc": {
         "label": "Telekinetic Squeeze",

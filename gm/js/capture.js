@@ -208,12 +208,14 @@
         }
 
         if (action === 'index') {
-          const existing = window.GM.referenceIndex?.findEntry?.(current.text, [], current.tab);
+          const book = current.tab;
+          const source = `${book}/${current.displayPage}?highlight=${encodeURIComponent(current.text)}`;
+          const existing = window.GM.referenceIndex?.matchingEntries?.(current.text, [], book)?.[0] || null;
           window.GM.popup?.hide?.();
           window.setTimeout(() => window.GM.referenceIndex?.openEntryEditor?.({
             label: existing?.label || truncate(current.text, 80),
-            category: existing?.category || window.GM.referenceIndex?.guessCategory?.(current.text, current.text, current.tab) || 'other',
-            source: existing?.source || `${current.tab}/${current.displayPage}?highlight=${encodeURIComponent(current.text)}`,
+            category: existing?.category || window.GM.referenceIndex?.guessCategory?.(current.text, current.text, book) || 'other',
+            source,
             ...(existing?.aliases ? { aliases: existing.aliases } : {}),
           }), 0);
           return;

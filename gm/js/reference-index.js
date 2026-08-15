@@ -710,10 +710,22 @@
     const highlightInput = root.querySelector('[data-ref="highlight"]');
     const aliasesInput = root.querySelector('[data-ref="aliases"]');
 
-    const existing = seed.label ? findEntry(seed.label) : null;
+    const seedSource = parseSource(seed.source || '');
+    const preferredBook = seedSource.book || '';
+    const existingMatches = seed.label
+      ? matchingEntries(seed.label, [], preferredBook)
+      : [];
+    const existing = existingMatches.length ? existingMatches[0] : null;
     const displayLabel = existing?.label || normalizeIndexLabel(seed.label || '');
     nameInput.value = displayLabel;
-    const isExisting = Boolean(existing && (!seed.source || existing.source === seed.source || seed.key === existing.key));
+    const isExisting = Boolean(
+      existing
+      && (
+        !seed.source
+        || existing.source === seed.source
+        || (seed.key && existing.key === seed.key)
+      )
+    );
     const editorState = getReferenceEditorState();
     const seededType = normalizeType(seed.category || seed.type || '');
     const detectedType = !isExisting
