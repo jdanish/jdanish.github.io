@@ -319,16 +319,21 @@
   }
 
   function normalizeIndexLabel(value) {
-    // Canonical index labels: trim, collapse whitespace, and use title case
-    // so ALL-CAPS book text becomes readable while preserving existing wording.
     const source = String(value || '')
       .replace(/\s+/g, ' ')
       .trim();
     if (!source) return '';
 
+    // Preserve mixed-case labels already supplied by the book/editor.
+    // Convert labels that are effectively ALL CAPS to readable title case.
+    const letters = source.replace(/[^A-Za-z]+/g, '');
+    if (!letters || letters !== letters.toUpperCase()) return source;
+
     return source
       .toLocaleLowerCase()
-      .replace(/(^|[\s\-/'&(])([a-z])/g, (match, prefix, letter) => `${prefix}${letter.toLocaleUpperCase()}`);
+      .replace(/(^|[\s\-/'&(])([a-z])/g, (match, prefix, letter) =>
+        `${prefix}${letter.toLocaleUpperCase()}`
+      );
   }
 
   async function scanBook(bookKey, category, rangeText) {
@@ -524,7 +529,7 @@
   function addEntry(entry) {
     const index = ensureIndex();
     const category = normalizeType(entry?.category || entry?.type);
-    const label = normalizeLine(entry?.label || entry?.name);
+    const label = normalizeIndexLabel(normalizeLine(entry?.label || entry?.name));
     const source = String(entry?.source || '').trim();
     if (!label || !source) return null;
     const key = entryIdentityKey(label, source);

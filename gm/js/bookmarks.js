@@ -413,9 +413,21 @@
         else if (action === 'copy') onCopy();
         else if (action === 'index') {
           const values = readValues();
-          const existing = window.GM.referenceIndex?.findEntry?.(values.name, [], editorState.tab);
+          const normalizeIndexLabel = (value) => {
+            const source = String(value || '').replace(/\s+/g, ' ').trim();
+            if (!source) return '';
+            const letters = source.replace(/[^A-Za-z]+/g, '');
+            if (!letters || letters !== letters.toUpperCase()) return source;
+            return source
+              .toLocaleLowerCase()
+              .replace(/(^|[\s\-/'&(])([a-z])/g, (match, prefix, letter) =>
+                `${prefix}${letter.toLocaleUpperCase()}`
+              );
+          };
+          const normalizedName = normalizeIndexLabel(values.name);
+          const existing = window.GM.referenceIndex?.findEntry?.(normalizedName, [], editorState.tab);
           const entry = {
-            label: values.name,
+            label: normalizedName,
             category: existing?.category || window.GM.referenceIndex?.guessCategory?.(values.name, values.highlight, editorState.tab) || 'other',
             source: existing?.source || `${editorState.tab}/${values.page}?highlight=${encodeURIComponent(values.highlight || values.name)}`,
             ...(existing?.aliases ? { aliases: existing.aliases } : {}),
