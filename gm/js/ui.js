@@ -611,6 +611,32 @@
     return String(value || '').replace(/\s+/g, ' ').trim();
   }
 
+  function fgNormalizeImportTitle(value) {
+    return fgCleanName(value)
+      .replace(/[’‘]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[–—]/g, '-')
+      .replace(/[*_`]+/g, '')
+      .trim()
+      .toLocaleLowerCase();
+  }
+
+  function fgStripRepeatedImportTitle(description, title) {
+    const desc = fgCleanName(description);
+    const wanted = fgNormalizeImportTitle(title);
+    if (!desc || !wanted) return desc;
+
+    const normalized = fgNormalizeImportTitle(desc);
+    if (normalized === wanted) return '';
+
+    const lowerDesc = desc.toLocaleLowerCase();
+    const lowerTitle = fgCleanName(title).toLocaleLowerCase();
+    if (!lowerDesc.startsWith(lowerTitle)) return desc;
+
+    const remainder = desc.slice(lowerTitle.length).replace(/^[\s:;,.\-–—]+/, '').trim();
+    return remainder || desc;
+  }
+
   function fgMarkdownEscape(value) {
     return String(value || '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ').trim();
   }
@@ -996,7 +1022,7 @@
       .map((item) => {
         const n = fgCleanName(fgChildText(item, 'name'));
         if (!n) return '';
-        const desc = fgCleanName(fgChildText(item, 'shortdescription'));
+        const desc = fgStripRepeatedImportTitle(fgChildText(item, 'shortdescription'), n);
         const prereq = fgCleanName(fgChildText(item, 'prerequisites'));
         const descHtml = fgXmlEscape(desc)
           .replace(/&lt;em&gt;(.*?)&lt;\/em&gt;/gi, '<em>$1</em>')
@@ -1160,6 +1186,8 @@
         // as the first detail node. Never preserve that redundant line.
         if (titleLinkMarkdown && detail === titleLinkMarkdown) return;
         if (detail === `**${title}**`) return;
+        if (fgNormalizeImportTitle(detail.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '$2')) === fgNormalizeImportTitle(title)) return;
+        if (fgNormalizeImportTitle(detail) === fgNormalizeImportTitle(title)) return;
         parts.push(`  - ${detail}`);
       });
       return parts.join('\n');

@@ -23,7 +23,7 @@
         "label": "Claws",
         "source": "swade/17?highlight=Claws"
       },
-      "doesn’t breathe@@swade": {
+      "doesn't breathe@@swade": {
         "label": "Doesn’t breathe",
         "source": "swade/17?highlight=Doesn%E2%80%99t%20Breathe"
       },
@@ -70,6 +70,10 @@
       "toughness@@swade": {
         "label": "Toughness",
         "source": "swade/18?highlight=Toughness"
+      },
+      "wilderness stride@@fantasy": {
+        "label": "Wilderness Stride",
+        "source": "fantasy/95?highlight=WILDERNESS%20STRIDE"
       }
     },
     "ancestries": {
@@ -1565,7 +1569,7 @@
         "label": "Bullet magnet",
         "source": "sfc/22?highlight=BULLET%20MAGNET"
       },
-      "can’t swim@@swade": {
+      "can't swim@@swade": {
         "label": "Can’t swim",
         "source": "swade/22?highlight=Can%E2%80%99t%20Swim"
       },
@@ -1697,6 +1701,10 @@
         "label": "One eye",
         "source": "swade/25?highlight=One%20Eye"
       },
+      "one with nature@@fantasy": {
+        "label": "One With Nature",
+        "source": "fantasy/95?highlight=ONE%20WITH%20NATURE"
+      },
       "outsider@@swade": {
         "label": "Outsider",
         "source": "swade/25?highlight=Outsider"
@@ -1780,6 +1788,10 @@
       "vengeful@@swade": {
         "label": "Vengeful",
         "source": "swade/27?highlight=Vengeful"
+      },
+      "vow@@fantasy": {
+        "label": "Vow",
+        "source": "fantasy/95?highlight=VOW"
       },
       "vow@@swade": {
         "label": "Vow",
@@ -2111,7 +2123,7 @@
         "label": "Wall walker",
         "source": "swade/169?highlight=Wall%20Walker"
       },
-      "warrior’s gift@@swade": {
+      "warrior's gift@@swade": {
         "label": "Warrior’s gift",
         "source": "swade/169?highlight=Warrior%E2%80%99s%20Gift"
       },
