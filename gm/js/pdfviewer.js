@@ -451,6 +451,22 @@
     viewerState.pageSyncTimers.set(tab, timer);
   }
 
+  function requestOfflinePdfCache(tab) {
+    const book = getBook(tab);
+    if (!book) return;
+    try {
+      const pdfUrl = new URL(book.file, document.baseURI).href;
+      if (navigator.serviceWorker?.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'CACHE_PDF',
+          url: pdfUrl,
+        });
+      }
+    } catch {
+      /* Offline warming is best-effort. */
+    }
+  }
+
   async function waitForViewerApp(iframe, timeoutMs = 20000) {
     const start = performance.now();
 
@@ -582,6 +598,7 @@
         const app = await waitForViewerApp(viewer.iframe);
         viewer.app = app || null;
         viewer.loaded = true;
+        requestOfflinePdfCache(tab);
 
         if (app) {
           installAppListeners(tab, app);
