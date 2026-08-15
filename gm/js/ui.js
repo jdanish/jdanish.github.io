@@ -5,6 +5,7 @@
   const blockEls = new Map();
   const sidebarSearchEntries = [];
   let activeSidebarHighlightRoot = null;
+  const fgImportReferenceSelections = new Map();
 
   let dom = {};
 
@@ -615,9 +616,9 @@
   }
 
 
-  function fgReferenceEntry(kind, name, preferredTypes = []) {
+  function fgReferenceMatches(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
-    if (!label) return null;
+    if (!label) return [];
     const types = [kind, ...preferredTypes].filter(Boolean);
     const variants = [label];
     if (kind === 'ancestries') {
@@ -637,10 +638,26 @@
         }
       });
     }
+    return matches;
+  }
+
+  function fgReferenceSelectionKey(kind, label) {
+    return `${String(kind || '').toLowerCase()}:${fgCleanName(label).toLowerCase()}`;
+  }
+
+  function fgReferenceEntry(kind, name, preferredTypes = []) {
+    const label = fgCleanName(name);
+    if (!label) return null;
+
+    const matches = fgReferenceMatches(kind, label, preferredTypes);
+    const chosenKey = fgImportReferenceSelections.get(fgReferenceSelectionKey(kind, label));
+    if (chosenKey) {
+      const selected = matches.find((entry) => entry.key === chosenKey);
+      if (selected) return { label: selected.label || label, source: selected.source };
+    }
 
     if (matches.length === 1) {
       const entry = matches[0];
-      // Preserve the import spelling as an alias on the chosen ancestry.
       if (kind === 'ancestries') {
         const bucket = window.REFERENCE_INDEX?.[entry.category];
         const live = bucket?.[entry.key];
@@ -657,11 +674,106 @@
       return { label: entry.label || label, source: entry.source };
     }
 
-    // Do not silently choose between same-named references in different books.
-    // Leaving the text unlinked makes the ambiguity visible and safe to resolve.
     if (matches.length > 1) return { ambiguous: true, label, matches };
     return null;
   }
+
+  async function chooseImportedReferences(choices) {
+    if (!choices.length) return true;
+
+    const unique = [];
+    const seen = new Set();
+    choices.forEach((choice) => {
+      const key = fgReferenceSelectionKey(choice.kind, choice.label);
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(choice);
+      }
+    });
+
+    const content = document.createElement('div');
+    content.className = 'fg-import-reference-choice';
+    content.innerHTML = '<p><strong>Multiple references found.</strong> Choose which book to use for each item.</p>';
+
+    const fields = [];
+    unique.forEach((choice) => {
+      const row = document.createElement('label');
+      row.className = 'fg-import-reference-choice-row';
+
+      const title = document.createElement('span');
+      title.className = 'fg-import-reference-choice-label';
+      title.textContent = `${choice.label} (${choice.kind})`;
+
+      const select = document.createElement('select');
+      select.className = 'fg-import-reference-choice-select';
+
+      choice.matches.slice().sort((a, b) => {
+        const ab = String(a.source || '').split('/')[0];
+        const bb = String(b.source || '').split('/')[0];
+        return ab.localeCompare(bb);
+      }).forEach((entry) => {
+        const option = document.createElement('option');
+        const bookKey = String(entry.source || '').split('/')[0];
+        option.value = entry.key;
+        option.textContent = window.BOOKS?.[bookKey]?.title || bookKey;
+        select.appendChild(option);
+      });
+
+      const currentBook = window.GM.pdfviewer?.getActiveTab?.() || window.GM.storage?.state?.activeTab || '';
+      const preferredOption = Array.from(select.options).find((option) => {
+        const entry = choice.matches.find((candidate) => candidate.key === option.value);
+        return String(entry?.source || '').split('/')[0] === currentBook;
+      });
+      if (preferredOption) select.value = preferredOption.value;
+
+      row.append(title, select);
+      content.appendChild(row);
+      fields.push({ choice, select });
+    });
+
+    const actions = document.createElement('div');
+    actions.className = 'fg-import-reference-choice-actions';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.textContent = 'Cancel Import';
+    const confirm = document.createElement('button');
+    confirm.type = 'button';
+    confirm.className = 'primary';
+    confirm.textContent = 'Use Selected References';
+    actions.append(cancel, confirm);
+    content.appendChild(actions);
+
+    return new Promise((resolve) => {
+      let finished = false;
+      const finish = (value) => {
+        if (finished) return;
+        finished = true;
+        window.GM.popup?.hide?.();
+        resolve(value);
+      };
+
+      cancel.addEventListener('click', () => finish(false));
+      confirm.addEventListener('click', () => {
+        fields.forEach(({ choice, select }) => {
+          fgImportReferenceSelections.set(
+            fgReferenceSelectionKey(choice.kind, choice.label),
+            select.value
+          );
+        });
+        finish(true);
+      });
+
+      window.GM.popup?.show?.({
+        title: 'Choose Reference Books',
+        content,
+        className: 'fg-import-reference-choice-popup',
+        width: 520,
+        modal: true,
+        closeOnOutsidePointerDown: false,
+      });
+    });
+  }
+
 
   function fgReferenceMarkdown(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
@@ -768,6 +880,32 @@
     const hasPowerPoints = fgMainHasValue(character, 'powerpoints');
     const hasPowerPointsMax = fgMainHasValue(character, 'powerpointsmax');
     const powerPoints = hasPowerPoints ? fgMainValue(character, 'powerpoints') : '';
+
+    const importChoices = [];
+    const considerImportReference = (kind, name, preferredTypes = []) => {
+      const label = fgCleanName(name);
+      if (!label) return;
+      const matches = fgReferenceMatches(kind, label, preferredTypes);
+      const selectionKey = fgReferenceSelectionKey(kind, label);
+      if (matches.length > 1 && !fgImportReferenceSelections.has(selectionKey)) {
+        importChoices.push({ kind, label, matches });
+      }
+    };
+
+    considerImportReference('ancestries', ancestry, ['ancestries', 'other']);
+    hindrances.forEach((name) => considerImportReference('hindrances', name, ['hindrances', 'other']));
+    fgList(character, 'edges').forEach((item) => considerImportReference('edges', fgChildText(item, 'name'), ['edges', 'other']));
+    fgList(character, 'special').forEach((item) => considerImportReference('abilities', fgChildText(item, 'name'), ['abilities', 'edges', 'other']));
+    fgList(character, 'powerlist').forEach((item) => considerImportReference('powers', fgChildText(item, 'name'), ['powers', 'other']));
+    fgList(character, 'weaponlist').forEach((item) => considerImportReference('items', fgChildText(item, 'name'), ['items', 'weapons', 'other']));
+    fgList(character, 'armorlist').forEach((item) => considerImportReference('items', fgChildText(item, 'name'), ['items', 'armor', 'other']));
+    fgList(character, 'invlist').forEach((item) => considerImportReference('items', fgChildText(item, 'name'), ['items', 'other']));
+
+    const importChoicesResolved = await chooseImportedReferences(importChoices);
+    if (!importChoicesResolved) {
+      fgImportReferenceSelections.clear();
+      throw new Error('Character import cancelled while choosing ambiguous references.');
+    }
     const powerPointsMax = hasPowerPointsMax ? fgMainValue(character, 'powerpointsmax') : '';
 
     const weaponRows = fgList(character, 'weaponlist')
@@ -1087,8 +1225,10 @@
   }
 
   async function upsertImportedCurrentCharacter(imported) {
-    const connected = !!window.GM.data?.getStatus?.().connected;
-    if (connected && window.GM.data?.writeTextDocument) {
+    const dataStatus = window.GM.data?.getStatus?.() || {};
+    const connected = !!dataStatus.connected;
+    const readOnly = !!dataStatus.readOnly;
+    if (connected && !readOnly && window.GM.data?.writeTextDocument) {
       const path = await window.GM.data.writeTextDocument('character', imported.name || 'Imported Character', imported.markdown || '');
       window.GM.ui?.showToast?.(`Imported ${imported.name || 'character'} as ${path}`);
       // A connected import is a new document: create it, open it, and make it active.
@@ -1111,6 +1251,9 @@
     window.GM.sidebarData?.importMarkdownFromText?.('current', nextMarkdown);
     const targetId = incomingSections[0]?.id || String(imported.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     window.GM.ui?.setCurrentSubTabBySectionKey?.(targetId);
+    if (readOnly) {
+      window.GM.ui?.showToast?.(`Imported ${imported.name || 'character'} for this read-only session; it was not saved to server data.`);
+    }
     return null;
   }
   function closeReferenceIndexBuilder(dialog) {
@@ -1294,43 +1437,51 @@
     return button;
   }
 
+  async function openFantasyGroundsCharacterImport() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xml,text/xml,application/xml';
+    input.setAttribute('aria-label', 'Choose Fantasy Grounds character XML file');
+    input.style.position = 'fixed';
+    input.style.width = '1px';
+    input.style.height = '1px';
+    input.style.opacity = '0';
+    input.style.left = '-9999px';
+    input.style.top = '0';
+    document.body.appendChild(input);
+
+    try {
+      const filePromise = new Promise((resolve) => {
+        input.addEventListener('change', () => resolve(input.files?.[0] || null), { once: true });
+      });
+
+      // This call must happen directly in the original user gesture.
+      input.click();
+
+      const file = await filePromise;
+      if (!file) return false;
+
+      const imported = await fgXmlToCurrentMarkdown(await file.text());
+      await upsertImportedCurrentCharacter(imported);
+      return true;
+    } catch (err) {
+      console.error('Fantasy Grounds character import failed', err);
+      window.alert(`Could not import Fantasy Grounds character: ${err?.message || err}`);
+      return false;
+    } finally {
+      input.remove();
+    }
+  }
+
   function createFantasyGroundsImportButton() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'sidebar-tab-button current-import-button';
     button.textContent = '＋ Import';
     button.title = 'Import a Fantasy Grounds character XML file';
-
     button.addEventListener('click', () => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.xml,text/xml,application/xml';
-      input.hidden = false;
-      input.setAttribute('aria-hidden', 'true');
-      input.style.position = 'fixed';
-      input.style.width = '1px';
-      input.style.height = '1px';
-      input.style.opacity = '0';
-      input.style.left = '-9999px';
-      input.style.top = '0';
-      document.body.appendChild(input);
-
-      input.addEventListener('change', async () => {
-        const file = input.files?.[0];
-        input.remove();
-        if (!file) return;
-        try {
-          const imported = await fgXmlToCurrentMarkdown(await file.text());
-          await upsertImportedCurrentCharacter(imported);
-        } catch (err) {
-          console.error('Fantasy Grounds character import failed', err);
-          window.alert(`Could not import Fantasy Grounds character: ${err?.message || err}`);
-        }
-      }, { once: true });
-
-      input.click();
+      openFantasyGroundsCharacterImport();
     });
-
     return button;
   }
 
@@ -2313,7 +2464,10 @@
     const list = wrap.querySelector('[data-doc-list]');
     const search = wrap.querySelector('[data-doc-search]');
     const readonly = !!window.GM.data?.getStatus?.().readOnly;
-    wrap.querySelector('[data-doc-import-character]').disabled = readonly;
+    // Importing a character can still be useful in a read-only connected
+    // session; it will be kept in the current session instead of being saved
+    // back to the server.
+    wrap.querySelector('[data-doc-import-character]').disabled = false;
     wrap.querySelector('[data-doc-import-monster]').disabled = readonly;
 
     async function renderDocuments() {
@@ -2350,7 +2504,7 @@
     wrap.querySelector('[data-doc-refresh]').addEventListener('click', renderDocuments);
     wrap.querySelector('[data-doc-import-character]').addEventListener('click', () => {
       window.GM.popup?.hide?.();
-      createFantasyGroundsImportButton().click();
+      openFantasyGroundsCharacterImport();
     });
     wrap.querySelector('[data-doc-import-monster]').addEventListener('click', () => {
       window.GM.popup?.hide?.();
