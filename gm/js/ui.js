@@ -616,21 +616,54 @@
   }
 
 
+  function fgCanonicalReferenceName(value, kind = '') {
+    let text = fgCleanName(value)
+      .replace(/[’‘]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[–—]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLocaleLowerCase();
+
+    if (String(kind || '').toLowerCase() === 'hindrances') {
+      text = text.replace(/\s*\((?:minor|major)\)\s*$/i, '').trim();
+    }
+    return text;
+  }
+
   function fgReferenceMatches(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return [];
+
     const types = [kind, ...preferredTypes].filter(Boolean);
+    const canonical = fgCanonicalReferenceName(label, kind);
     const variants = [label];
+
     if (kind === 'ancestries') {
       if (/s$/i.test(label) && label.length > 1) variants.push(label.slice(0, -1));
       else variants.push(`${label}s`);
     }
 
+    if (kind === 'hindrances') {
+      const baseLabel = label.replace(/\s*\((?:minor|major)\)\s*$/i, '').trim();
+      if (baseLabel && fgCanonicalReferenceName(baseLabel, kind) !== canonical) {
+        variants.push(baseLabel);
+      }
+    }
+
     const matches = [];
     const seen = new Set();
+
+    // Use the normal index matcher first.
     for (const variant of variants) {
       const found = window.GM.referenceIndex?.matchingEntries?.(variant, types) || [];
       found.forEach((entry) => {
+        const entryCanonical = fgCanonicalReferenceName(entry?.label || '', kind);
+        const aliasMatch = Array.isArray(entry?.aliases)
+          && entry.aliases.some((alias) => fgCanonicalReferenceName(alias, kind) === canonical);
+
+        if (entryCanonical !== canonical && !aliasMatch) return;
+
         const id = `${entry.category}:${entry.key}`;
         if (!seen.has(id)) {
           seen.add(id);
@@ -638,8 +671,30 @@
         }
       });
     }
+
+    // Fallback: scan the in-memory index directly. This catches punctuation or
+    // severity formatting differences that the generic matcher cannot see.
+    const index = window.GM.referenceIndex?.getIndex?.() || window.REFERENCE_INDEX || {};
+    for (const type of Array.from(new Set(types))) {
+      const bucket = index[type] || {};
+      Object.entries(bucket).forEach(([key, entry]) => {
+        const entryCanonical = fgCanonicalReferenceName(entry?.label || '', kind);
+        const aliasMatch = Array.isArray(entry?.aliases)
+          && entry.aliases.some((alias) => fgCanonicalReferenceName(alias, kind) === canonical);
+
+        if (entryCanonical !== canonical && !aliasMatch) return;
+
+        const id = `${type}:${key}`;
+        if (!seen.has(id)) {
+          seen.add(id);
+          matches.push({ category: type, key, ...entry });
+        }
+      });
+    }
+
     return matches;
   }
+
 
   function fgReferenceSelectionKey(kind, label) {
     return `${String(kind || '').toLowerCase()}:${fgCleanName(label).toLowerCase()}`;

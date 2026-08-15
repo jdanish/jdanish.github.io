@@ -52,7 +52,7 @@
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
         // Cache-bust the reference-index module so browser deployments cannot
         // keep an older copy whose helpers do not match the current scanner.
-        moduleUrl.searchParams.set('v', '20260815-import-reference-state-restored');
+        moduleUrl.searchParams.set('v', '20260815-global-search-reference-punctuation');
         await import(moduleUrl.href);
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);

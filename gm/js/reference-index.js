@@ -75,7 +75,18 @@
   }
 
   function normalizeKey(value) {
-    return String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    return String(value || '')
+      .replace(/[’‘]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[–—]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLocaleLowerCase();
+  }
+
+  function normalizeSearchText(value) {
+    return normalizeKey(value)
+      .replace(/['’‘]/g, '');
   }
 
   function parseRanges(input) {
@@ -948,7 +959,7 @@
     }
     function render() {
       const index = ensureIndex();
-      const query = search.value.trim().toLowerCase();
+      const query = normalizeSearchText(search.value);
       const type = typeSelect.value;
       const selectedBooks = Array.from(bookSelect.selectedOptions).map((option) => option.value).filter(Boolean);
       const entries = [];
@@ -957,7 +968,7 @@
         Object.entries(bucket || {}).forEach(([key, entry]) => {
           const entryBook = String(parseSource(entry.source)?.book || '');
           if (selectedBooks.length && !selectedBooks.includes(entryBook)) return;
-          const haystack = [entry.label, category, entry.source, ...(entry.aliases || [])].join(' ').toLowerCase();
+          const haystack = normalizeSearchText([entry.label, category, entry.source, ...(entry.aliases || [])].join(' '));
           if (query && !haystack.includes(query)) return;
           entries.push({ category, key, ...entry });
         });

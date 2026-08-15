@@ -141,6 +141,17 @@
     return searchState.pdfjsPromise;
   }
 
+  function normalizeSearchQuery(value) {
+    return String(value || '')
+      .replace(/[’‘]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[–—]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLocaleLowerCase()
+      .replace(/['’‘]/g, '');
+  }
+
   function stripHtml(value) {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = String(value || '');
@@ -209,14 +220,14 @@
   }
 
   function searchReferenceIndex(query) {
-    const q = String(query || '').trim().toLowerCase();
+    const q = normalizeSearchQuery(query);
     if (q.length < 2) return [];
     const index = window.GM.referenceIndex?.getIndex?.() || {};
     const results = [];
     Object.entries(index).forEach(([category, bucket]) => {
       Object.entries(bucket || {}).forEach(([key, entry]) => {
         const aliases = Array.isArray(entry?.aliases) ? entry.aliases : [];
-        const haystack = [entry?.label, category, entry?.source, ...aliases].join(' ').toLowerCase();
+        const haystack = normalizeSearchQuery([entry?.label, category, entry?.source, ...aliases].join(' '));
         const idx = haystack.indexOf(q);
         if (idx < 0) return;
         results.push({
@@ -237,7 +248,7 @@
   }
 
   function searchSidebar(query) {
-    const q = String(query || '').trim().toLowerCase();
+    const q = normalizeSearchQuery(query);
     if (q.length < 2) return [];
 
     const results = [];
@@ -372,7 +383,7 @@
   }
 
   async function searchBooks(query) {
-    const q = String(query || '').trim().toLowerCase();
+    const q = normalizeSearchQuery(query);
     if (q.length < 2) return [];
 
     const includeHiddenBooks = getSearchIncludeHiddenBooks();
