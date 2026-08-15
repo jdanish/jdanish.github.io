@@ -2731,6 +2731,25 @@
     });
     window.addEventListener('gm-data-connection-changed', updateServerDataButtonState);
     const docsBtn = document.createElement('button'); docsBtn.type='button'; docsBtn.textContent='Browse Characters / Monsters / Notes'; docsBtn.addEventListener('click', () => openDocumentBrowser());
+    const updateAppBtn = document.createElement('button');
+    updateAppBtn.type = 'button';
+    updateAppBtn.textContent = 'Check for App Updates';
+    updateAppBtn.title = 'Check GitHub Pages for a newer GM web app build';
+    updateAppBtn.addEventListener('click', async () => {
+      updateAppBtn.disabled = true;
+      updateAppBtn.textContent = 'Checking...';
+      try {
+        const result = await window.GM.app?.checkForUpdates?.();
+        if (!result?.reloading) {
+          updateAppBtn.textContent = 'Check for App Updates';
+          updateAppBtn.disabled = false;
+        }
+      } catch (err) {
+        updateAppBtn.textContent = 'Check for App Updates';
+        updateAppBtn.disabled = false;
+        window.alert(`Could not check for app updates: ${err?.message || err}`);
+      }
+    });
     const indexBtn = document.createElement('button'); indexBtn.type='button'; indexBtn.textContent='Open Reference Index'; indexBtn.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
     const indexSaveBtn = document.createElement('button'); indexSaveBtn.type='button'; indexSaveBtn.textContent='Save Index to Data Folder';
     { const status = window.GM.data?.getStatus?.() || {}; indexSaveBtn.disabled = !status.connected || status.readOnly; }
@@ -2750,7 +2769,7 @@
       indexSaveBtn.disabled = !status.connected || status.readOnly;
     };
 
-    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn);
+    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn, updateAppBtn);
     indexSection.body.append(indexBtn, indexSaveBtn);
     dataSection.body.appendChild(folderActions);
 

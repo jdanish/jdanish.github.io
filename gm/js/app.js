@@ -3,6 +3,48 @@
 
   const appScriptUrl = document.currentScript?.src ? new URL(document.currentScript.src) : null;
 
+  let pwaRegistration = null;
+  let pwaReloadPending = false;
+
+  async function registerPwa() {
+    if (!('serviceWorker' in navigator)) return null;
+    try {
+      pwaRegistration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!pwaReloadPending) return;
+        pwaReloadPending = false;
+        window.location.reload();
+      });
+      return pwaRegistration;
+    } catch (err) {
+      console.warn('PWA service worker registration failed', err);
+      return null;
+    }
+  }
+
+  async function checkForUpdates() {
+    const registration = pwaRegistration || await registerPwa();
+    if (!registration) {
+      window.location.reload();
+      return { updated: false, reloaded: true };
+    }
+
+    try {
+      await registration.update();
+    } catch (err) {
+      console.warn('Could not check for app updates', err);
+    }
+
+    if (registration.waiting) {
+      pwaReloadPending = true;
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      return { updated: true, reloading: true };
+    }
+
+    window.GM.ui?.showToast?.('GM is already up to date.');
+    return { updated: false };
+  }
+
   function debounce(fn, delay) {
     let timer = null;
     return function debounced(...args) {
@@ -38,6 +80,7 @@
 
   async function init() {
     window.GM.storage = window.GM.storage || {};
+    registerPwa().catch(() => {});
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
@@ -113,13 +156,23 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         window.GM.pdfviewer?.refreshActiveViewer?.().catch?.(console.error);
+        window.GM.app?.checkForUpdates?.().catch?.(() => {});
       }
     });
+
+    // Periodically check for a newer service worker while the app is open.
+    window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        window.GM.app?.checkForUpdates?.().catch?.(() => {});
+      }
+    }, 5 * 60 * 1000);
 
     window.addEventListener('beforeunload', () => {
       window.GM.storage?.saveState?.();
     });
   }
+
+  window.GM.app = { checkForUpdates, registerPwa };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {

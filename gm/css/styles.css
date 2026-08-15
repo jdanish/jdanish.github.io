@@ -4696,3 +4696,6 @@ html[data-theme="light"] .gm-workspace-tab-edit {
     width: 100%;
   }
 }
+
+.sidebar-data-actions > button { min-width: 0; }
+@media (max-width: 760px) { .sidebar-data-actions > button { width: 100%; } }
