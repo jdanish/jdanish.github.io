@@ -762,17 +762,38 @@
       },
       onResize: (panel) => saveReferenceEditorWindow(panel),
     });
-    if (savedWindow) {
+    if (savedWindow || isMobileViewport) {
       window.setTimeout(() => {
         const panel = window.GM.popup?.getPanelEl?.();
         if (!panel) return;
-        if (savedWindow.width) panel.style.width = `${savedWindow.width}px`;
-        if (savedWindow.height) panel.style.height = `${savedWindow.height}px`;
-        if (Number.isFinite(savedWindow.left) && Number.isFinite(savedWindow.top)) {
-          panel.style.left = `${savedWindow.left}px`;
-          panel.style.top = `${savedWindow.top}px`;
+
+        if (isMobileViewport) {
+          const width = Math.min(savedWindow?.width || initialWidth, mobileMaxWidth);
+          const height = Math.min(savedWindow?.height || initialHeight, mobileMaxHeight);
+          const left = Math.max(10, Math.min(
+            Number.isFinite(savedWindow?.left) ? savedWindow.left : initialLeft,
+            window.innerWidth - width - 10
+          ));
+          const top = Math.max(10, Math.min(
+            Number.isFinite(savedWindow?.top) ? savedWindow.top : initialTop,
+            window.innerHeight - height - 10
+          ));
+
+          panel.style.width = `${width}px`;
+          panel.style.height = `${height}px`;
+          panel.style.left = `${left}px`;
+          panel.style.top = `${top}px`;
           panel.style.right = 'auto';
           panel.style.bottom = 'auto';
+        } else if (savedWindow) {
+          if (savedWindow.width) panel.style.width = `${savedWindow.width}px`;
+          if (savedWindow.height) panel.style.height = `${savedWindow.height}px`;
+          if (Number.isFinite(savedWindow.left) && Number.isFinite(savedWindow.top)) {
+            panel.style.left = `${savedWindow.left}px`;
+            panel.style.top = `${savedWindow.top}px`;
+            panel.style.right = 'auto';
+            panel.style.bottom = 'auto';
+          }
         }
       }, 0);
     }
@@ -1138,13 +1159,29 @@
     });
 
     const savedWindow = getIndexWindowState();
+    const isMobileViewport = window.matchMedia?.('(max-width: 760px)')?.matches || window.innerWidth <= 760;
+    const mobileMaxWidth = Math.max(320, Math.floor(window.innerWidth - 20));
+    const mobileMaxHeight = Math.max(320, Math.floor(window.innerHeight - 24));
+    const initialWidth = isMobileViewport
+      ? Math.min(savedWindow?.width || 680, mobileMaxWidth)
+      : (savedWindow?.width || 920);
+    const initialHeight = isMobileViewport
+      ? Math.min(savedWindow?.height || Math.floor(window.innerHeight * 0.82), mobileMaxHeight)
+      : (savedWindow?.height || undefined);
+    const initialLeft = isMobileViewport
+      ? Math.max(10, Math.floor((window.innerWidth - initialWidth) / 2))
+      : (Number.isFinite(savedWindow?.left) ? savedWindow.left : undefined);
+    const initialTop = isMobileViewport
+      ? Math.max(10, Math.floor((window.innerHeight - initialHeight) / 2))
+      : (Number.isFinite(savedWindow?.top) ? savedWindow.top : undefined);
+
     window.GM.popup?.show?.({
       title: 'Reference Index',
       content: wrap,
       className: 'reference-index-browser-popup',
-      width: savedWindow?.width || 920,
-      x: Number.isFinite(savedWindow?.left) ? savedWindow.left : undefined,
-      y: Number.isFinite(savedWindow?.top) ? savedWindow.top : undefined,
+      width: initialWidth,
+      x: initialLeft,
+      y: initialTop,
       resizable: true,
       modal: false,
       closeOnScroll: false,

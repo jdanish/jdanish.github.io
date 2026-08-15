@@ -4599,3 +4599,43 @@ html[data-theme="light"] .gm-workspace-tab-edit {
     min-width: 720px;
   }
 }
+
+
+/* Mobile Reference Index: fit the popup to the viewport while allowing the
+   wide table to scroll horizontally instead of forcing the popup itself wide. */
+@media (max-width: 760px) {
+  .reference-index-browser-popup {
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    min-width: 0 !important;
+    max-height: calc(100dvh - 24px) !important;
+  }
+
+  .reference-index-browser-popup .gm-popup-body {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .reference-index-browser-popup .reference-index-browser {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .reference-index-browser-popup .reference-index-toolbar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .reference-index-browser-popup .reference-index-table-head,
+  .reference-index-browser-popup .reference-index-row {
+    min-width: 680px;
+  }
+
+  .reference-index-browser-popup .reference-index-browser-list {
+    overflow: visible !important;
+  }
+}
