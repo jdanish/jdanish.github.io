@@ -710,13 +710,14 @@
     const highlightInput = root.querySelector('[data-ref="highlight"]');
     const aliasesInput = root.querySelector('[data-ref="aliases"]');
 
-    nameInput.value = seed.label || '';
     const existing = seed.label ? findEntry(seed.label) : null;
+    const displayLabel = existing?.label || normalizeIndexLabel(seed.label || '');
+    nameInput.value = displayLabel;
     const isExisting = Boolean(existing && (!seed.source || existing.source === seed.source || seed.key === existing.key));
     const editorState = getReferenceEditorState();
     const seededType = normalizeType(seed.category || seed.type || '');
     const detectedType = !isExisting
-      ? normalizeType(guessCategory(seed.label || '', source.highlight || '', source.book || ''))
+      ? normalizeType(guessCategory(displayLabel || '', source.highlight || '', source.book || ''))
       : '';
     const initialType = isExisting
       ? seededType || 'other'

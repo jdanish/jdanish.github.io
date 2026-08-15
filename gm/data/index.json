@@ -521,6 +521,14 @@
       }
     },
     "armor": {
+      "laser parry@@sfc": {
+        "label": "Laser Parry",
+        "source": "sfc/205?highlight=LASER%20PARRY"
+      },
+      "laser reflect@@sfc": {
+        "label": "Laser Reflect",
+        "source": "sfc/206?highlight=LASER%20REFLECT"
+      },
       "toughness@@swade": {
         "label": "Toughness",
         "source": "swade/18?highlight=Toughness"
@@ -539,9 +547,17 @@
         "label": "Alertness",
         "source": "swade/37?highlight=Alertness"
       },
+      "alone against the wolves@@sfc": {
+        "label": "Alone Against The Wolves",
+        "source": "sfc/203?highlight=ALONE%20AGAINST%20THE%20WOLVES"
+      },
       "ambidextrous@@swade": {
         "label": "Ambidextrous",
         "source": "swade/36?highlight=Ambidextrous"
+      },
+      "ammo counter@@sfc": {
+        "label": "Ammo Counter",
+        "source": "sfc/25?highlight=AMMO%20COUNTER"
       },
       "animal handling@@sfc": {
         "label": "Animal Handling",
@@ -579,6 +595,10 @@
         "label": "Attractive",
         "source": "swade/36?highlight=Attractive"
       },
+      "attuned@@sfc": {
+        "label": "Attuned",
+        "source": "sfc/201?highlight=ATTUNED"
+      },
       "basic psychic loadout@@starbreaker_core": {
         "label": "Basic psychic loadout",
         "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
@@ -615,6 +635,10 @@
         "label": "Brawny",
         "source": "swade/37?highlight=Brawny"
       },
+      "breaker@@sfc": {
+        "label": "Breaker",
+        "source": "sfc/207?highlight=BREAKER"
+      },
       "bruiser@@swade": {
         "label": "Bruiser",
         "source": "swade/40?highlight=Bruiser"
@@ -631,13 +655,25 @@
         "label": "Captain",
         "source": "sfc/24?highlight=CAPTAIN"
       },
+      "celestial symphony@@sfc": {
+        "label": "Celestial Symphony",
+        "source": "sfc/201?highlight=CELESTIAL%20SYMPHONY"
+      },
       "champion healer@@swade": {
         "label": "Champion healer",
         "source": "swade/51?highlight=Champion%20Healer"
       },
+      "channel the warp@@sfc": {
+        "label": "Channel The Warp",
+        "source": "sfc/208?highlight=CHANNEL%20THE%20WARP"
+      },
       "channeling@@swade": {
         "label": "Channeling",
         "source": "swade/45?highlight=Channeling"
+      },
+      "chaplain@@sfc": {
+        "label": "Chaplain",
+        "source": "sfc/196?highlight=CHAPLAIN"
       },
       "charismatic@@swade": {
         "label": "Charismatic",
@@ -646,6 +682,10 @@
       "chi@@swade": {
         "label": "Chi",
         "source": "swade/51?highlight=Chi"
+      },
+      "chronomancer@@sfc": {
+        "label": "Chronomancer",
+        "source": "sfc/197?highlight=CHRONOMANCER"
       },
       "combat acrobat@@swade": {
         "label": "Combat acrobat",
@@ -695,6 +735,14 @@
         "label": "Double tap",
         "source": "swade/40?highlight=Double%20Tap"
       },
+      "drones@@sfc": {
+        "label": "Drones",
+        "source": "sfc/207?highlight=DRONES"
+      },
+      "duct tape & bubble gum@@sfc": {
+        "label": "Duct Tape & Bubble Gum",
+        "source": "sfc/26?highlight=DUCT%20TAPE%20%26%20BUBBLE%20GUM"
+      },
       "elan@@swade": {
         "label": "Elan",
         "source": "swade/38?highlight=Elan"
@@ -702,6 +750,10 @@
       "evasive maneuvers@@sfc": {
         "label": "Evasive Maneuvers",
         "source": "sfc/26?highlight=EVASIVE%20MANEUVERS"
+      },
+      "exo scientist@@sfc": {
+        "label": "Exo Scientist",
+        "source": "sfc/26?highlight=EXO%20SCIENTIST"
       },
       "expert@@swade": {
         "label": "Expert",
@@ -775,6 +827,10 @@
         "label": "Geared Up",
         "source": "sfc/24?highlight=GEARED%20UP"
       },
+      "gelatinous@@sfc": {
+        "label": "Gelatinous",
+        "source": "sfc/204?highlight=GELATINOUS"
+      },
       "giant killer@@swade": {
         "label": "Giant killer",
         "source": "swade/41?highlight=Giant%20Killer"
@@ -782,6 +838,14 @@
       "gravitic acclimation@@sfc": {
         "label": "Gravitic Acclimation",
         "source": "sfc/26?highlight=GRAVITIC%20ACCLIMATION"
+      },
+      "gravity master@@sfc": {
+        "label": "Gravity Master",
+        "source": "sfc/199?highlight=GRAVITY%20MASTER"
+      },
+      "gravlock@@sfc": {
+        "label": "Gravlock",
+        "source": "sfc/198?highlight=GRAVLOCK"
       },
       "great luck@@swade": {
         "label": "Great luck",
@@ -791,9 +855,17 @@
         "label": "Hard to kill",
         "source": "swade/41?highlight=Hard%20To%20Kill"
       },
+      "hard-light controller@@sfc": {
+        "label": "Hard-Light Controller",
+        "source": "sfc/199?highlight=HARD-LIGHT%20CONTROLLER"
+      },
       "harder to kill@@swade": {
         "label": "Harder to kill",
         "source": "swade/41?highlight=Harder%20to%20Kill"
+      },
+      "hardware upgrade@@sfc": {
+        "label": "Hardware Upgrade",
+        "source": "sfc/200?highlight=HARDWARE%20UPGRADE"
       },
       "heavy hitters squad edge@@starbreaker_star_marines": {
         "label": "Heavy hitters squad edge",
@@ -839,6 +911,10 @@
         "label": "Improved frenzy",
         "source": "swade/41?highlight=Improved%20Frenzy"
       },
+      "improved laser reflect@@sfc": {
+        "label": "Improved Laser Reflect",
+        "source": "sfc/206?highlight=IMPROVED%20LASER%20REFLECT"
+      },
       "improved level headed@@swade": {
         "label": "Improved level headed",
         "source": "swade/42?highlight=Improved%20Level%20Headed"
@@ -863,6 +939,10 @@
         "label": "Improvisational fighter",
         "source": "swade/41?highlight=Improvisational%20Fighter"
       },
+      "infused@@sfc": {
+        "label": "Infused",
+        "source": "sfc/200?highlight=INFUSED"
+      },
       "inspire@@swade": {
         "label": "Inspire",
         "source": "swade/44?highlight=Inspire"
@@ -883,6 +963,10 @@
         "label": "Killer instinct",
         "source": "swade/42?highlight=Killer%20Instinct"
       },
+      "laser reflect@@sfc": {
+        "label": "Laser Reflect",
+        "source": "sfc/206?highlight=LASER%20REFLECT"
+      },
       "legendary edges@@swade": {
         "label": "Legendary edges",
         "source": "swade/52?highlight=Legendary%20Edges"
@@ -891,6 +975,10 @@
         "label": "Level headed",
         "source": "swade/42?highlight=Level%20Headed"
       },
+      "lifter@@sfc": {
+        "label": "Lifter",
+        "source": "sfc/199?highlight=LIFTER"
+      },
       "linguist@@swade": {
         "label": "Linguist",
         "source": "swade/39?highlight=Linguist"
@@ -898,6 +986,10 @@
       "liquid courage@@swade": {
         "label": "Liquid courage",
         "source": "swade/51?highlight=Liquid%20Courage"
+      },
+      "litany of fury@@sfc": {
+        "label": "Litany Of Fury",
+        "source": "sfc/196?highlight=LITANY%20OF%20FURY"
       },
       "living weapon@@starbreaker_star_marines": {
         "label": "Living weapon",
@@ -935,6 +1027,10 @@
         "label": "Mentalist",
         "source": "swade/45?highlight=Mentalist"
       },
+      "mercy@@sfc": {
+        "label": "Mercy",
+        "source": "sfc/203?highlight=MERCY"
+      },
       "mighty blow@@swade": {
         "label": "Mighty blow",
         "source": "swade/42?highlight=Mighty%20Blow"
@@ -943,9 +1039,17 @@
         "label": "Miracle Worker",
         "source": "sfc/27?highlight=MIRACLE%20WORKER"
       },
+      "morph@@sfc": {
+        "label": "Morph",
+        "source": "sfc/204?highlight=MORPH"
+      },
       "mystic powers@@sfc": {
         "label": "Mystic Powers",
         "source": "sfc/25?highlight=MYSTIC%20POWERS"
+      },
+      "mystic@@sfc": {
+        "label": "Mystic",
+        "source": "sfc/201?highlight=MYSTIC"
       },
       "natural leader@@swade": {
         "label": "Natural leader",
@@ -979,6 +1083,10 @@
         "label": "Power surge",
         "source": "swade/46?highlight=Power%20Surge"
       },
+      "premonition@@sfc": {
+        "label": "Premonition",
+        "source": "sfc/198?highlight=PREMONITION"
+      },
       "professional edges@@swade": {
         "label": "Professional edges",
         "source": "swade/46?highlight=Professional%20Edges"
@@ -990,6 +1098,10 @@
       "psyfocus loadout@@starbreaker_core": {
         "label": "Psyfocus loadout",
         "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
+      },
+      "psyker@@sfc": {
+        "label": "Psyker",
+        "source": "sfc/202?highlight=PSYKER"
       },
       "quick draw@@sfc": {
         "label": "Quick Draw",
@@ -1006,6 +1118,14 @@
       "rapid recharge@@swade": {
         "label": "Rapid recharge",
         "source": "swade/46?highlight=Rapid%20Recharge"
+      },
+      "rearrange time@@sfc": {
+        "label": "Rearrange Time",
+        "source": "sfc/198?highlight=REARRANGE%20TIME"
+      },
+      "reproach@@sfc": {
+        "label": "Reproach",
+        "source": "sfc/196?highlight=REPROACH"
       },
       "rich@@swade": {
         "label": "Rich",
@@ -1027,9 +1147,21 @@
         "label": "Savior Of The Universe",
         "source": "sfc/27?highlight=SAVIOR%20OF%20THE%20UNIVERSE"
       },
+      "scan@@sfc": {
+        "label": "Scan",
+        "source": "sfc/202?highlight=SCAN"
+      },
       "scholar@@swade": {
         "label": "Scholar",
         "source": "swade/48?highlight=Scholar"
+      },
+      "shepherd@@sfc": {
+        "label": "Shepherd",
+        "source": "sfc/203?highlight=SHEPHERD"
+      },
+      "shifter@@sfc": {
+        "label": "Shifter",
+        "source": "sfc/203?highlight=SHIFTER"
       },
       "sneak attack@@sfc": {
         "label": "Sneak Attack",
@@ -1051,9 +1183,25 @@
         "label": "Soul drain",
         "source": "swade/46?highlight=Soul%20Drain"
       },
+      "star knave@@sfc": {
+        "label": "Star Knave",
+        "source": "sfc/206?highlight=STAR%20KNAVE"
+      },
+      "star knight@@sfc": {
+        "label": "Star Knight",
+        "source": "sfc/205?highlight=STAR%20KNIGHT"
+      },
+      "star wizard@@sfc": {
+        "label": "Star Wizard",
+        "source": "sfc/205?highlight=STAR%20WIZARD"
+      },
       "steady hands@@swade": {
         "label": "Steady hands",
         "source": "swade/43?highlight=Steady%20Hands"
+      },
+      "stellar ascension@@sfc": {
+        "label": "Stellar Ascension",
+        "source": "sfc/206?highlight=STELLAR%20ASCENSION"
       },
       "strong willed@@swade": {
         "label": "Strong willed",
@@ -1071,13 +1219,25 @@
         "label": "Team Leader",
         "source": "sfc/25?highlight=TEAM%20LEADER"
       },
+      "technomancer@@sfc": {
+        "label": "Technomancer",
+        "source": "sfc/207?highlight=TECHNOMANCER"
+      },
       "thief@@swade": {
         "label": "Thief",
         "source": "swade/48?highlight=Thief"
       },
+      "time lord@@sfc": {
+        "label": "Time Lord",
+        "source": "sfc/198?highlight=TIME%20LORD"
+      },
       "tougher than nails@@swade": {
         "label": "Tougher than nails",
         "source": "swade/52?highlight=Tougher%20Than%20Nails"
+      },
+      "tower of will@@sfc": {
+        "label": "Tower Of Will",
+        "source": "sfc/202?highlight=TOWER%20OF%20WILL"
       },
       "trademark weapon@@swade": {
         "label": "Trademark weapon",
@@ -1102,6 +1262,14 @@
       "very attractive@@swade": {
         "label": "Very attractive",
         "source": "swade/37?highlight=Very%20Attractive"
+      },
+      "warp surge@@sfc": {
+        "label": "Warp Surge",
+        "source": "sfc/208?highlight=WARP%20SURGE"
+      },
+      "warper@@sfc": {
+        "label": "Warper",
+        "source": "sfc/208?highlight=WARPER"
       },
       "weapon@@swade": {
         "label": "Weapon",
@@ -1456,6 +1624,10 @@
         "label": "Armor",
         "source": "swade/154?highlight=Armor"
       },
+      "backwash@@sfc": {
+        "label": "Backwash",
+        "source": "sfc/209?highlight=BACKWASH"
+      },
       "banish@@swade": {
         "label": "Banish",
         "source": "swade/154?highlight=Banish"
@@ -1467,6 +1639,10 @@
       "beast friend@@swade": {
         "label": "Beast friend",
         "source": "swade/154?highlight=Beast%20Friend"
+      },
+      "black hole@@sfc": {
+        "label": "Black Hole",
+        "source": "sfc/209?highlight=BLACK%20HOLE"
       },
       "blast@@swade": {
         "label": "Blast",
@@ -1490,6 +1666,14 @@
       "burst@@swade": {
         "label": "Burst",
         "source": "swade/156?highlight=Burst"
+      },
+      "control machine@@sfc": {
+        "label": "Control Machine",
+        "source": "sfc/209?highlight=CONTROL%20MACHINE"
+      },
+      "create item@@sfc": {
+        "label": "Create Item",
+        "source": "sfc/209?highlight=CREATE%20ITEM"
       },
       "detect / conceal arcana@@swade": {
         "label": "Detect / conceal arcana",
@@ -1531,6 +1715,14 @@
         "label": "Fly",
         "source": "swade/161?highlight=Fly"
       },
+      "ghost in the machine@@sfc": {
+        "label": "Ghost In The Machine",
+        "source": "sfc/211?highlight=GHOST%20IN%20THE%20MACHINE"
+      },
+      "gravitate@@sfc": {
+        "label": "Gravitate",
+        "source": "sfc/210?highlight=GRAVITATE"
+      },
       "growth / shrink@@swade": {
         "label": "Growth / shrink",
         "source": "swade/161?highlight=Growth%20%2F%20Shrink"
@@ -1538,6 +1730,10 @@
       "havoc@@swade": {
         "label": "Havoc",
         "source": "swade/161?highlight=Havoc"
+      },
+      "haywire@@sfc": {
+        "label": "Haywire",
+        "source": "sfc/211?highlight=HAYWIRE"
       },
       "healing@@swade": {
         "label": "Healing",
@@ -1559,6 +1755,14 @@
         "label": "Light / darkness",
         "source": "swade/163?highlight=Light%20%2F%20Darkness"
       },
+      "locate@@sfc": {
+        "label": "Locate",
+        "source": "sfc/211?highlight=LOCATE"
+      },
+      "lock/unlock@@sfc": {
+        "label": "Lock/Unlock",
+        "source": "sfc/211?highlight=LOCK%2FUNLOCK"
+      },
       "mind link@@swade": {
         "label": "Mind link",
         "source": "swade/163?highlight=Mind%20Link"
@@ -1574,6 +1778,10 @@
       "object reading@@swade": {
         "label": "Object reading",
         "source": "swade/164?highlight=Object%20Reading"
+      },
+      "prediction@@sfc": {
+        "label": "Prediction",
+        "source": "sfc/212?highlight=PREDICTION"
       },
       "protection@@swade": {
         "label": "Protection",
@@ -1594,6 +1802,14 @@
       "resurrection@@swade": {
         "label": "Resurrection",
         "source": "swade/165?highlight=Resurrection"
+      },
+      "scrying@@sfc": {
+        "label": "Scrying",
+        "source": "sfc/212?highlight=SCRYING"
+      },
+      "shape change@@sfc": {
+        "label": "Shape Change",
+        "source": "sfc/212?highlight=SHAPE%20CHANGE"
       },
       "shape change@@swade": {
         "label": "Shape change",
@@ -1619,6 +1835,10 @@
         "label": "Stun",
         "source": "swade/167?highlight=Stun"
       },
+      "summon ally@@sfc": {
+        "label": "Summon Ally",
+        "source": "sfc/213?highlight=SUMMON%20ALLY"
+      },
       "summon ally@@swade": {
         "label": "Summon ally",
         "source": "swade/168?highlight=Summon%20Ally"
@@ -1627,9 +1847,21 @@
         "label": "Telekinesis",
         "source": "swade/169?highlight=Telekinesis"
       },
+      "telekinetic squeeze@@sfc": {
+        "label": "Telekinetic Squeeze",
+        "source": "sfc/214?highlight=TELEKINETIC%20SQUEEZE"
+      },
+      "teleport@@sfc": {
+        "label": "Teleport",
+        "source": "sfc/215?highlight=TELEPORT"
+      },
       "teleport@@swade": {
         "label": "Teleport",
         "source": "swade/169?highlight=Teleport"
+      },
+      "time stop@@sfc": {
+        "label": "Time Stop",
+        "source": "sfc/215?highlight=TIME%20STOP"
       },
       "wall walker@@swade": {
         "label": "Wall walker",
