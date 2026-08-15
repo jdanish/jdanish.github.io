@@ -571,6 +571,10 @@
         "label": "Arcane background",
         "source": "swade/37?highlight=Arcane%20Background"
       },
+      "arcane resistance@@fantasy": {
+        "label": "Arcane Resistance",
+        "source": "fantasy/31?highlight=ARCANE%20RESISTANCE"
+      },
       "arcane resistance@@swade": {
         "label": "Arcane resistance",
         "source": "swade/37?highlight=Arcane%20Resistance"
@@ -578,6 +582,10 @@
       "aristocrat@@swade": {
         "label": "Aristocrat",
         "source": "swade/36?highlight=Aristocrat"
+      },
+      "artificer@@fantasy": {
+        "label": "Artificer",
+        "source": "fantasy/36?highlight=ARTIFICER"
       },
       "artificer@@swade": {
         "label": "Artificer",
@@ -599,9 +607,17 @@
         "label": "Attuned",
         "source": "sfc/201?highlight=ATTUNED"
       },
+      "aura of courage@@fantasy": {
+        "label": "Aura Of Courage",
+        "source": "fantasy/40?highlight=AURA%20OF%20COURAGE"
+      },
       "basic psychic loadout@@starbreaker_core": {
         "label": "Basic psychic loadout",
         "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
+      },
+      "battle magic@@fantasy": {
+        "label": "Battle Magic",
+        "source": "fantasy/36?highlight=BATTLE%20MAGIC"
       },
       "beast bond@@swade": {
         "label": "Beast bond",
@@ -611,6 +627,10 @@
         "label": "Beast master",
         "source": "swade/50?highlight=Beast%20Master"
       },
+      "beast talker@@fantasy": {
+        "label": "Beast Talker",
+        "source": "fantasy/40?highlight=BEAST%20TALKER"
+      },
       "berserk@@swade": {
         "label": "Berserk",
         "source": "swade/37?highlight=Berserk"
@@ -619,9 +639,17 @@
         "label": "Block",
         "source": "swade/39?highlight=Block"
       },
+      "blood magic@@fantasy": {
+        "label": "Blood Magic",
+        "source": "fantasy/36?highlight=BLOOD%20MAGIC"
+      },
       "bolster@@swade": {
         "label": "Bolster",
         "source": "swade/49?highlight=Bolster"
+      },
+      "born in the saddle@@fantasy": {
+        "label": "Born In The Saddle",
+        "source": "fantasy/38?highlight=BORN%20IN%20THE%20SADDLE"
       },
       "brave@@swade": {
         "label": "Brave",
@@ -675,6 +703,10 @@
         "label": "Chaplain",
         "source": "sfc/196?highlight=CHAPLAIN"
       },
+      "charge@@fantasy": {
+        "label": "Charge",
+        "source": "fantasy/33?highlight=CHARGE"
+      },
       "charismatic@@swade": {
         "label": "Charismatic",
         "source": "swade/38?highlight=Charismatic"
@@ -683,9 +715,17 @@
         "label": "Chi",
         "source": "swade/51?highlight=Chi"
       },
+      "chosen@@fantasy": {
+        "label": "Chosen",
+        "source": "fantasy/32?highlight=CHOSEN"
+      },
       "chronomancer@@sfc": {
         "label": "Chronomancer",
         "source": "sfc/197?highlight=CHRONOMANCER"
+      },
+      "close fighting@@fantasy": {
+        "label": "Close Fighting",
+        "source": "fantasy/33?highlight=CLOSE%20FIGHTING"
       },
       "combat acrobat@@swade": {
         "label": "Combat acrobat",
@@ -723,13 +763,29 @@
         "label": "Dead shot",
         "source": "swade/40?highlight=Dead%20Shot"
       },
+      "deceptive@@fantasy": {
+        "label": "Deceptive",
+        "source": "fantasy/40?highlight=DECEPTIVE"
+      },
       "deceptive@@sfc": {
         "label": "Deceptive",
         "source": "sfc/27?highlight=DECEPTIVE"
       },
+      "defender@@fantasy": {
+        "label": "Defender",
+        "source": "fantasy/33?highlight=DEFENDER"
+      },
+      "dirty fighter@@fantasy": {
+        "label": "Dirty Fighter",
+        "source": "fantasy/33?highlight=DIRTY%20FIGHTER"
+      },
       "dodge@@swade": {
         "label": "Dodge",
         "source": "swade/40?highlight=Dodge"
+      },
+      "double shot@@fantasy": {
+        "label": "Double Shot",
+        "source": "fantasy/33?highlight=DOUBLE%20SHOT"
       },
       "double tap@@swade": {
         "label": "Double tap",
@@ -747,6 +803,10 @@
         "label": "Elan",
         "source": "swade/38?highlight=Elan"
       },
+      "epic mastery@@fantasy": {
+        "label": "Epic Mastery",
+        "source": "fantasy/36?highlight=EPIC%20MASTERY"
+      },
       "evasive maneuvers@@sfc": {
         "label": "Evasive Maneuvers",
         "source": "sfc/26?highlight=EVASIVE%20MANEUVERS"
@@ -758,6 +818,10 @@
       "expert@@swade": {
         "label": "Expert",
         "source": "swade/52?highlight=Expert"
+      },
+      "explorer@@fantasy": {
+        "label": "Explorer",
+        "source": "fantasy/38?highlight=EXPLORER"
       },
       "extra effort@@swade": {
         "label": "Extra effort",
@@ -771,6 +835,10 @@
         "label": "Fame",
         "source": "swade/38?highlight=Fame"
       },
+      "familiar@@fantasy": {
+        "label": "Familiar",
+        "source": "fantasy/36?highlight=FAMILIAR"
+      },
       "famous@@swade": {
         "label": "Famous",
         "source": "swade/38?highlight=Famous"
@@ -779,9 +847,21 @@
         "label": "Fast healer",
         "source": "swade/38?highlight=Fast%20Healer"
       },
+      "favored enemy@@fantasy": {
+        "label": "Favored Enemy",
+        "source": "fantasy/32?highlight=FAVORED%20ENEMY"
+      },
+      "favored power@@fantasy": {
+        "label": "Favored Power",
+        "source": "fantasy/37?highlight=FAVORED%20POWER"
+      },
       "favored power@@sfc": {
         "label": "Favored Power",
         "source": "sfc/25?highlight=FAVORED%20POWER"
+      },
+      "favored terrain@@fantasy": {
+        "label": "Favored Terrain",
+        "source": "fantasy/32?highlight=FAVORED%20TERRAIN"
       },
       "favored terrain@@sfc": {
         "label": "Favored Terrain",
@@ -794,6 +874,10 @@
       "fervor@@swade": {
         "label": "Fervor",
         "source": "swade/44?highlight=Fervor"
+      },
+      "fey blood@@fantasy": {
+        "label": "Fey Blood",
+        "source": "fantasy/32?highlight=FEY%20BLOOD"
       },
       "filthy rich@@swade": {
         "label": "Filthy rich",
@@ -810,6 +894,10 @@
       "followers@@swade": {
         "label": "Followers",
         "source": "swade/52?highlight=Followers"
+      },
+      "formation fighter@@fantasy": {
+        "label": "Formation Fighter",
+        "source": "fantasy/34?highlight=FORMATION%20FIGHTER"
       },
       "free runner@@swade": {
         "label": "Free runner",
@@ -875,6 +963,14 @@
         "label": "Heavy/Super-Heavy-G Worlder",
         "source": "sfc/25?highlight=Heavy%2FSuper-Heavy-G%20Worlder"
       },
+      "heirloom@@fantasy": {
+        "label": "Heirloom",
+        "source": "fantasy/32?highlight=HEIRLOOM"
+      },
+      "home ground@@fantasy": {
+        "label": "Home Ground",
+        "source": "fantasy/41?highlight=HOME%20GROUND"
+      },
       "humiliate@@swade": {
         "label": "Humiliate",
         "source": "swade/49?highlight=Humiliate"
@@ -882,6 +978,10 @@
       "immortal@@sfc": {
         "label": "Immortal",
         "source": "sfc/27?highlight=IMMORTAL"
+      },
+      "improved arcane resistance@@fantasy": {
+        "label": "Improved Arcane Resistance",
+        "source": "fantasy/32?highlight=IMPROVED%20ARCANE%20RESISTANCE"
       },
       "improved arcane resistance@@swade": {
         "label": "Improved arcane resistance",
@@ -891,6 +991,10 @@
         "label": "Improved block",
         "source": "swade/39?highlight=Improved%20Block"
       },
+      "improved close fighting@@fantasy": {
+        "label": "Improved Close Fighting",
+        "source": "fantasy/33?highlight=IMPROVED%20CLOSE%20FIGHTING"
+      },
       "improved counterattack@@swade": {
         "label": "Improved counterattack",
         "source": "swade/40?highlight=Improved%20Counterattack"
@@ -898,6 +1002,10 @@
       "improved dodge@@swade": {
         "label": "Improved dodge",
         "source": "swade/40?highlight=Improved%20Dodge"
+      },
+      "improved double shot@@fantasy": {
+        "label": "Improved Double Shot",
+        "source": "fantasy/34?highlight=IMPROVED%20DOUBLE%20SHOT"
       },
       "improved extraction@@swade": {
         "label": "Improved extraction",
@@ -926,6 +1034,10 @@
       "improved rapid fire@@swade": {
         "label": "Improved rapid fire",
         "source": "swade/42?highlight=Improved%20Rapid%20Fire"
+      },
+      "improved sneak attack@@fantasy": {
+        "label": "Improved Sneak Attack",
+        "source": "fantasy/34?highlight=IMPROVED%20SNEAK%20ATTACK"
       },
       "improved sneak attack@@sfc": {
         "label": "Improved Sneak Attack",
@@ -962,6 +1074,10 @@
       "killer instinct@@swade": {
         "label": "Killer instinct",
         "source": "swade/42?highlight=Killer%20Instinct"
+      },
+      "knight@@fantasy": {
+        "label": "Knight",
+        "source": "fantasy/38?highlight=KNIGHT"
       },
       "laser reflect@@sfc": {
         "label": "Laser Reflect",
@@ -1007,9 +1123,17 @@
         "label": "Martial artist",
         "source": "swade/42?highlight=Martial%20Artist"
       },
+      "martial flexibility@@fantasy": {
+        "label": "Martial Flexibility",
+        "source": "fantasy/34?highlight=MARTIAL%20FLEXIBILITY"
+      },
       "martial warrior@@swade": {
         "label": "Martial warrior",
         "source": "swade/42?highlight=Martial%20Warrior"
+      },
+      "master artificer@@fantasy": {
+        "label": "Master Artificer",
+        "source": "fantasy/36?highlight=MASTER%20ARTIFICER"
       },
       "master tactician@@swade": {
         "label": "Master tactician",
@@ -1039,9 +1163,21 @@
         "label": "Miracle Worker",
         "source": "sfc/27?highlight=MIRACLE%20WORKER"
       },
+      "missile deflection@@fantasy": {
+        "label": "Missile Deflection",
+        "source": "fantasy/34?highlight=MISSILE%20DEFLECTION"
+      },
       "morph@@sfc": {
         "label": "Morph",
         "source": "sfc/204?highlight=MORPH"
+      },
+      "mount@@fantasy": {
+        "label": "Mount",
+        "source": "fantasy/38?highlight=MOUNT"
+      },
+      "mystic powers@@fantasy": {
+        "label": "Mystic Powers",
+        "source": "fantasy/37?highlight=MYSTIC%20POWERS"
       },
       "mystic powers@@sfc": {
         "label": "Mystic Powers",
@@ -1067,9 +1203,17 @@
         "label": "No mercy",
         "source": "swade/42?highlight=No%20Mercy"
       },
+      "opportunistic@@fantasy": {
+        "label": "Opportunistic",
+        "source": "fantasy/34?highlight=OPPORTUNISTIC"
+      },
       "opportunistic@@sfc": {
         "label": "Opportunistic",
         "source": "sfc/25?highlight=OPPORTUNISTIC"
+      },
+      "poisoner@@fantasy": {
+        "label": "Poisoner",
+        "source": "fantasy/39?highlight=POISONER"
       },
       "power hacker@@sfc": {
         "label": "Power Hacker",
@@ -1111,6 +1255,10 @@
         "label": "Quick",
         "source": "swade/39?highlight=Quick"
       },
+      "rapid change@@fantasy": {
+        "label": "Rapid Change",
+        "source": "fantasy/41?highlight=RAPID%20CHANGE"
+      },
       "rapid fire@@swade": {
         "label": "Rapid fire",
         "source": "swade/42?highlight=Rapid%20Fire"
@@ -1119,9 +1267,17 @@
         "label": "Rapid recharge",
         "source": "swade/46?highlight=Rapid%20Recharge"
       },
+      "really dirty fighter@@fantasy": {
+        "label": "Really Dirty Fighter",
+        "source": "fantasy/33?highlight=REALLY%20DIRTY%20FIGHTER"
+      },
       "rearrange time@@sfc": {
         "label": "Rearrange Time",
         "source": "sfc/198?highlight=REARRANGE%20TIME"
+      },
+      "relic@@fantasy": {
+        "label": "Relic",
+        "source": "fantasy/41?highlight=RELIC"
       },
       "reproach@@sfc": {
         "label": "Reproach",
@@ -1130,6 +1286,10 @@
       "rich@@swade": {
         "label": "Rich",
         "source": "swade/39?highlight=Rich"
+      },
+      "roar@@fantasy": {
+        "label": "Roar",
+        "source": "fantasy/34?highlight=ROAR"
       },
       "rock and roll!@@swade": {
         "label": "Rock and roll!",
@@ -1143,6 +1303,10 @@
         "label": "Room",
         "source": "swade/50?highlight=Room"
       },
+      "savagery@@fantasy": {
+        "label": "Savagery",
+        "source": "fantasy/34?highlight=SAVAGERY"
+      },
       "savior of the universe@@sfc": {
         "label": "Savior Of The Universe",
         "source": "sfc/27?highlight=SAVIOR%20OF%20THE%20UNIVERSE"
@@ -1155,13 +1319,33 @@
         "label": "Scholar",
         "source": "swade/48?highlight=Scholar"
       },
+      "scorch@@fantasy": {
+        "label": "Scorch",
+        "source": "fantasy/34?highlight=SCORCH"
+      },
+      "scout@@fantasy": {
+        "label": "Scout",
+        "source": "fantasy/39?highlight=SCOUT"
+      },
       "shepherd@@sfc": {
         "label": "Shepherd",
         "source": "sfc/203?highlight=SHEPHERD"
       },
+      "shield wall@@fantasy": {
+        "label": "Shield Wall",
+        "source": "fantasy/34?highlight=SHIELD%20WALL"
+      },
       "shifter@@sfc": {
         "label": "Shifter",
         "source": "sfc/203?highlight=SHIFTER"
+      },
+      "silent caster@@fantasy": {
+        "label": "Silent Caster",
+        "source": "fantasy/37?highlight=SILENT%20CASTER"
+      },
+      "sneak attack@@fantasy": {
+        "label": "Sneak Attack",
+        "source": "fantasy/34?highlight=SNEAK%20ATTACK"
       },
       "sneak attack@@sfc": {
         "label": "Sneak Attack",
@@ -1203,9 +1387,21 @@
         "label": "Stellar Ascension",
         "source": "sfc/206?highlight=STELLAR%20ASCENSION"
       },
+      "stonecunning@@fantasy": {
+        "label": "Stonecunning",
+        "source": "fantasy/40?highlight=STONECUNNING"
+      },
       "strong willed@@swade": {
         "label": "Strong willed",
         "source": "swade/50?highlight=Strong%20Willed"
+      },
+      "stunning blow@@fantasy": {
+        "label": "Stunning Blow",
+        "source": "fantasy/35?highlight=STUNNING%20BLOW"
+      },
+      "sunder@@fantasy": {
+        "label": "Sunder",
+        "source": "fantasy/35?highlight=SUNDER"
       },
       "sweep@@swade": {
         "label": "Sweep",
@@ -1215,6 +1411,10 @@
         "label": "Tactician c",
         "source": "swade/44?highlight=Tactician%20C"
       },
+      "take the hit@@fantasy": {
+        "label": "Take The Hit",
+        "source": "fantasy/35?highlight=TAKE%20THE%20HIT"
+      },
       "team leader@@sfc": {
         "label": "Team Leader",
         "source": "sfc/25?highlight=TEAM%20LEADER"
@@ -1222,6 +1422,10 @@
       "technomancer@@sfc": {
         "label": "Technomancer",
         "source": "sfc/207?highlight=TECHNOMANCER"
+      },
+      "the wizard edge@@fantasy": {
+        "label": "The Wizard Edge",
+        "source": "fantasy/35?highlight=THE%20WIZARD%20EDGE"
       },
       "thief@@swade": {
         "label": "Thief",
@@ -1243,9 +1447,29 @@
         "label": "Trademark weapon",
         "source": "swade/43?highlight=Trademark%20Weapon"
       },
+      "transfer@@fantasy": {
+        "label": "Transfer",
+        "source": "fantasy/38?highlight=TRANSFER"
+      },
+      "trap sense@@fantasy": {
+        "label": "Trap Sense",
+        "source": "fantasy/40?highlight=TRAP%20SENSE"
+      },
+      "treasure hunter@@fantasy": {
+        "label": "Treasure Hunter",
+        "source": "fantasy/40?highlight=TREASURE%20HUNTER"
+      },
+      "trick shot@@fantasy": {
+        "label": "Trick Shot",
+        "source": "fantasy/35?highlight=TRICK%20SHOT"
+      },
       "trick shot@@sfc": {
         "label": "Trick Shot",
         "source": "sfc/27?highlight=TRICK%20SHOT"
+      },
+      "troubadour@@fantasy": {
+        "label": "Troubadour",
+        "source": "fantasy/40?highlight=TROUBADOUR"
       },
       "two-fisted@@swade": {
         "label": "Two-fisted",
@@ -1255,13 +1479,25 @@
         "label": "Two-gun kid",
         "source": "swade/43?highlight=Two-Gun%20Kid"
       },
+      "uncanny reflexes@@fantasy": {
+        "label": "Uncanny Reflexes",
+        "source": "fantasy/35?highlight=UNCANNY%20REFLEXES"
+      },
       "uncanny reflexes@@sfc": {
         "label": "Uncanny Reflexes",
         "source": "sfc/27?highlight=UNCANNY%20REFLEXES"
       },
+      "unstoppable@@fantasy": {
+        "label": "Unstoppable",
+        "source": "fantasy/41?highlight=UNSTOPPABLE"
+      },
       "very attractive@@swade": {
         "label": "Very attractive",
         "source": "swade/37?highlight=Very%20Attractive"
+      },
+      "warband@@fantasy": {
+        "label": "Warband",
+        "source": "fantasy/41?highlight=WARBAND"
       },
       "warp surge@@sfc": {
         "label": "Warp Surge",
@@ -1274,6 +1510,10 @@
       "weapon@@swade": {
         "label": "Weapon",
         "source": "swade/43?highlight=Weapon"
+      },
+      "wing gust@@fantasy": {
+        "label": "Wing Gust",
+        "source": "fantasy/35?highlight=WING%20GUST"
       },
       "wizard@@swade": {
         "label": "Wizard",
