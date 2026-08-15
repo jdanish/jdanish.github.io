@@ -50,6 +50,9 @@
     if (!window.GM.referenceIndex) {
       try {
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
+        // Cache-bust the reference-index module so browser deployments cannot
+        // keep an older copy whose helpers do not match the current scanner.
+        moduleUrl.searchParams.set('v', '20260815-index');
         await import(moduleUrl.href);
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);

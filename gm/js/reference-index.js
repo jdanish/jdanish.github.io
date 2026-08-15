@@ -318,6 +318,19 @@
     return looksLikeHeading(lines[index]?.text, lines[index]?.items);
   }
 
+  function normalizeIndexLabel(value) {
+    // Canonical index labels: trim, collapse whitespace, and use title case
+    // so ALL-CAPS book text becomes readable while preserving existing wording.
+    const source = String(value || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!source) return '';
+
+    return source
+      .toLocaleLowerCase()
+      .replace(/(^|[\s\-/'&(])([a-z])/g, (match, prefix, letter) => `${prefix}${letter.toLocaleUpperCase()}`);
+  }
+
   async function scanBook(bookKey, category, rangeText) {
     const book = window.BOOKS?.[bookKey];
     if (!book) throw new Error(`Unknown book: ${bookKey}`);

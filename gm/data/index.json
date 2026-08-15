@@ -543,6 +543,10 @@
         "label": "Ambidextrous",
         "source": "swade/36?highlight=Ambidextrous"
       },
+      "animal handling@@sfc": {
+        "label": "Animal Handling",
+        "source": "sfc/24?highlight=ANIMAL%20HANDLING"
+      },
       "arcane background (psy commando)@@starbreaker_core": {
         "label": "Arcane background (psy commando)",
         "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
@@ -566,6 +570,10 @@
       "assassin@@swade": {
         "label": "Assassin",
         "source": "swade/47?highlight=Assassin"
+      },
+      "atmospheric acclimation@@sfc": {
+        "label": "Atmospheric Acclimation",
+        "source": "sfc/26?highlight=ATMOSPHERIC%20ACCLIMATION"
       },
       "attractive@@swade": {
         "label": "Attractive",
@@ -675,6 +683,10 @@
         "label": "Dead shot",
         "source": "swade/40?highlight=Dead%20Shot"
       },
+      "deceptive@@sfc": {
+        "label": "Deceptive",
+        "source": "sfc/27?highlight=DECEPTIVE"
+      },
       "dodge@@swade": {
         "label": "Dodge",
         "source": "swade/40?highlight=Dodge"
@@ -686,6 +698,10 @@
       "elan@@swade": {
         "label": "Elan",
         "source": "swade/38?highlight=Elan"
+      },
+      "evasive maneuvers@@sfc": {
+        "label": "Evasive Maneuvers",
+        "source": "sfc/26?highlight=EVASIVE%20MANEUVERS"
       },
       "expert@@swade": {
         "label": "Expert",
@@ -710,6 +726,14 @@
       "fast healer@@swade": {
         "label": "Fast healer",
         "source": "swade/38?highlight=Fast%20Healer"
+      },
+      "favored power@@sfc": {
+        "label": "Favored Power",
+        "source": "sfc/25?highlight=FAVORED%20POWER"
+      },
+      "favored terrain@@sfc": {
+        "label": "Favored Terrain",
+        "source": "sfc/24?highlight=FAVORED%20TERRAIN"
       },
       "feint@@swade": {
         "label": "Feint",
@@ -747,9 +771,17 @@
         "label": "Gadgeteer",
         "source": "swade/45?highlight=Gadgeteer"
       },
+      "geared up@@sfc": {
+        "label": "Geared Up",
+        "source": "sfc/24?highlight=GEARED%20UP"
+      },
       "giant killer@@swade": {
         "label": "Giant killer",
         "source": "swade/41?highlight=Giant%20Killer"
+      },
+      "gravitic acclimation@@sfc": {
+        "label": "Gravitic Acclimation",
+        "source": "sfc/26?highlight=GRAVITIC%20ACCLIMATION"
       },
       "great luck@@swade": {
         "label": "Great luck",
@@ -767,9 +799,17 @@
         "label": "Heavy hitters squad edge",
         "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
       },
+      "heavy/super-heavy-g worlder@@sfc": {
+        "label": "Heavy/Super-Heavy-G Worlder",
+        "source": "sfc/25?highlight=Heavy%2FSuper-Heavy-G%20Worlder"
+      },
       "humiliate@@swade": {
         "label": "Humiliate",
         "source": "swade/49?highlight=Humiliate"
+      },
+      "immortal@@sfc": {
+        "label": "Immortal",
+        "source": "sfc/27?highlight=IMMORTAL"
       },
       "improved arcane resistance@@swade": {
         "label": "Improved arcane resistance",
@@ -810,6 +850,10 @@
       "improved rapid fire@@swade": {
         "label": "Improved rapid fire",
         "source": "swade/42?highlight=Improved%20Rapid%20Fire"
+      },
+      "improved sneak attack@@sfc": {
+        "label": "Improved Sneak Attack",
+        "source": "sfc/27?highlight=IMPROVED%20SNEAK%20ATTACK"
       },
       "improved sweep@@swade": {
         "label": "Improved sweep",
@@ -895,6 +939,14 @@
         "label": "Mighty blow",
         "source": "swade/42?highlight=Mighty%20Blow"
       },
+      "miracle worker@@sfc": {
+        "label": "Miracle Worker",
+        "source": "sfc/27?highlight=MIRACLE%20WORKER"
+      },
+      "mystic powers@@sfc": {
+        "label": "Mystic Powers",
+        "source": "sfc/25?highlight=MYSTIC%20POWERS"
+      },
       "natural leader@@swade": {
         "label": "Natural leader",
         "source": "swade/44?highlight=Natural%20Leader"
@@ -910,6 +962,14 @@
       "no mercy@@swade": {
         "label": "No mercy",
         "source": "swade/42?highlight=No%20Mercy"
+      },
+      "opportunistic@@sfc": {
+        "label": "Opportunistic",
+        "source": "sfc/25?highlight=OPPORTUNISTIC"
+      },
+      "power hacker@@sfc": {
+        "label": "Power Hacker",
+        "source": "sfc/26?highlight=POWER%20HACKER"
       },
       "power points@@swade": {
         "label": "Power points",
@@ -931,6 +991,10 @@
         "label": "Psyfocus loadout",
         "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
       },
+      "quick draw@@sfc": {
+        "label": "Quick Draw",
+        "source": "sfc/25?highlight=QUICK%20DRAW"
+      },
       "quick@@swade": {
         "label": "Quick",
         "source": "swade/39?highlight=Quick"
@@ -951,17 +1015,33 @@
         "label": "Rock and roll!",
         "source": "swade/43?highlight=Rock%20and%20Roll!"
       },
+      "rocket jock@@sfc": {
+        "label": "Rocket Jock",
+        "source": "sfc/26?highlight=ROCKET%20JOCK"
+      },
       "room@@swade": {
         "label": "Room",
         "source": "swade/50?highlight=Room"
+      },
+      "savior of the universe@@sfc": {
+        "label": "Savior Of The Universe",
+        "source": "sfc/27?highlight=SAVIOR%20OF%20THE%20UNIVERSE"
       },
       "scholar@@swade": {
         "label": "Scholar",
         "source": "swade/48?highlight=Scholar"
       },
+      "sneak attack@@sfc": {
+        "label": "Sneak Attack",
+        "source": "sfc/26?highlight=SNEAK%20ATTACK"
+      },
       "social edges menacing@@swade": {
         "label": "Social edges menacing",
         "source": "swade/49?highlight=Social%20Edges%20Menacing"
+      },
+      "soft touch@@sfc": {
+        "label": "Soft Touch",
+        "source": "sfc/27?highlight=SOFT%20TOUCH"
       },
       "soldier@@swade": {
         "label": "Soldier",
@@ -987,6 +1067,10 @@
         "label": "Tactician c",
         "source": "swade/44?highlight=Tactician%20C"
       },
+      "team leader@@sfc": {
+        "label": "Team Leader",
+        "source": "sfc/25?highlight=TEAM%20LEADER"
+      },
       "thief@@swade": {
         "label": "Thief",
         "source": "swade/48?highlight=Thief"
@@ -999,6 +1083,10 @@
         "label": "Trademark weapon",
         "source": "swade/43?highlight=Trademark%20Weapon"
       },
+      "trick shot@@sfc": {
+        "label": "Trick Shot",
+        "source": "sfc/27?highlight=TRICK%20SHOT"
+      },
       "two-fisted@@swade": {
         "label": "Two-fisted",
         "source": "swade/60?highlight=Two-Fisted"
@@ -1006,6 +1094,10 @@
       "two-gun kid@@swade": {
         "label": "Two-gun kid",
         "source": "swade/43?highlight=Two-Gun%20Kid"
+      },
+      "uncanny reflexes@@sfc": {
+        "label": "Uncanny Reflexes",
+        "source": "sfc/27?highlight=UNCANNY%20REFLEXES"
       },
       "very attractive@@swade": {
         "label": "Very attractive",
