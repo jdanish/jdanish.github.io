@@ -36,3 +36,13 @@
 - [[swade/99?highlight=Fatigue|Fatigue]]
 - [[swade/123?highlight=Fear|Fear / Terror]]
 - [[swade/121?highlight=Dramatic+Tasks|Dramatic Tasks]]
+
+# Movement
+
+[[swade/9?highlight=Pace|Pace]] is how fast your character moves in tactical situations like combat. Standard Pace is 6, which means six tabletop inches per game round. **Each inch is two yards ** in the real world.
+
+[[swade/91?highlight=Movement|Movement]] In addition to their actions, characters can move a number of tabletop inches equal to their Pace each turn.
+
+Each inch of movement spent climbing, crawling, or swimming uses 2″ of Pace.
+
+**Running**: A hero can choose to “run”, increasing her Pace for the round by her Running die (a d6 by default) at the cost of a −2 penalty to all other actions that turn. Running dice never Ace.
