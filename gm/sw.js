@@ -1,9 +1,9 @@
-const CACHE_NAME = 'gm-reference-shell-v20260815-2';
+const CACHE_NAME = 'gm-reference-shell-v20260816-image-url-fallback';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 
-self.addEventListener('install', () => {
-  self.skipWaiting();
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', (event) => {
@@ -62,11 +62,35 @@ async function warmPdfCache(urlString) {
   }
 }
 
+
+// Local-development safety: this worker takes over once, then immediately
+// unregisters itself so an older cached worker cannot continue intercepting
+// localhost requests.
+if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+  self.addEventListener('activate', (event) => {
+    event.waitUntil((async () => {
+      try {
+        await self.registration.unregister();
+      } catch {}
+      const clients = await self.clients.matchAll({ type: 'window' });
+      clients.forEach((client) => {
+        try { client.navigate(client.url); } catch {}
+      });
+    })());
+  });
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+
+  // During local development (for example http://localhost:8000), let the
+  // dev server handle requests directly. This avoids the PWA cache layer
+  // masking server changes or turning a transient local fetch failure into
+  // an unhandled service-worker rejection.
+  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') return;
 
   if (isPdfUrl(url)) {
     event.respondWith((async () => {
@@ -107,7 +131,8 @@ self.addEventListener('fetch', (event) => {
     } catch (err) {
       const cached = await caches.match(event.request);
       if (cached) return cached;
-      throw err;
+      console.warn('[GM-SW] Network fetch failed and no cached response exists:', event.request.url, err);
+      return new Response('', { status: 504, statusText: 'Offline and not cached' });
     }
   })());
 });

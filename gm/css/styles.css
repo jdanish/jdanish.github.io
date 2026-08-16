@@ -4699,3 +4699,12 @@ html[data-theme="light"] .gm-workspace-tab-edit {
 
 .sidebar-data-actions > button { min-width: 0; }
 @media (max-width: 760px) { .sidebar-data-actions > button { width: 100%; } }
+
+
+.sidebar-markdown-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+}

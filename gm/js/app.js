@@ -8,6 +8,15 @@
 
   async function registerPwa() {
     if (!('serviceWorker' in navigator)) return null;
+
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+        return null;
+      } catch {}
+    }
+
     try {
       pwaRegistration = await navigator.serviceWorker.register('./sw.js', { scope: './' });
       navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -95,7 +104,7 @@
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
         // Cache-bust the reference-index module so browser deployments cannot
         // keep an older copy whose helpers do not match the current scanner.
-        moduleUrl.searchParams.set('v', '20260816-import-arcane-background-full-title');
+        moduleUrl.searchParams.set('v', '20260816-local-unregister-sw');
         await import(moduleUrl.href);
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);

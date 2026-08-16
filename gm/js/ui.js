@@ -555,7 +555,46 @@
       const nestedBody = document.createElement('div');
       nestedBody.className = collapsible ? 'subsection-body nested-body' : 'nested-body';
       nestedBody.innerHTML = block.html || (block.text ? `<div class="nested-text">${window.GM.utils.escapeHtml(block.text)}</div>` : '');
+
+      // Last-mile image recovery for the actual rendered DOM. The active
+      // document renderer currently emits: !<a href="...image...">Label</a>.
+      // Convert that exact shape into a real image before decoration.
+      nestedBody.querySelectorAll('a[href]').forEach((link) => {
+        const href = String(link.getAttribute('href') || '').trim();
+        if (!/\.(?:png|jpe?g|gif|webp|svg|avif)(?:[?#].*)?$/i.test(href)) return;
+        const prev = link.previousSibling;
+        if (!prev || prev.nodeType !== Node.TEXT_NODE || !String(prev.nodeValue || '').endsWith('!')) return;
+
+        prev.nodeValue = String(prev.nodeValue || '').slice(0, -1);
+
+        const img = document.createElement('img');
+        img.className = 'sidebar-markdown-image';
+        img.src = href;
+        img.alt = String(link.textContent || '').trim();
+        img.loading = 'lazy';
+        img.setAttribute('data-gm-image-source', href);
+
+        const next = link.nextSibling;
+        if (next && next.nodeType === Node.TEXT_NODE) {
+          const widthMatch = String(next.nodeValue || '').match(/^\s*\{\s*width\s*=\s*(\d+)\s*\}\s*$/i);
+          if (widthMatch) {
+            const width = Math.max(1, Math.min(2000, Number(widthMatch[1])));
+            img.style.width = `${width}px`;
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            next.remove();
+          }
+        }
+        link.replaceWith(img);
+      });
+
+      console.log('[GM-IMAGE]', 'ui:block-insert', {
+        html: nestedBody.innerHTML,
+        images: nestedBody.querySelectorAll?.('img').length,
+        links: nestedBody.querySelectorAll?.('a').length
+      });
       decorateJumpLinks(nestedBody);
+      window.GM.sidebarData?.resolveSidebarImages?.(nestedBody).catch?.(() => {});
       window.GM.sidebarData?.bindTrackerEvents?.(nestedBody);
       nested.appendChild(nestedBody);
       bodyEl.appendChild(nested);
@@ -2503,6 +2542,13 @@
       sidebarMarkdownEditorState.unbindKeydown = () => document.removeEventListener('keydown', handleEditorKeydown, true);
     };
 
+    const bindEditorPreviewImages = () => {
+      const previews = wrap.querySelectorAll?.('.editor-preview-side, .editor-preview');
+      previews?.forEach?.((preview) => {
+        window.GM.sidebarData?.resolveSidebarImages?.(preview).catch?.(() => {});
+      });
+    };
+
     const editorReady = () => {
       const ta = document.createElement('textarea');
       ta.className = 'sidebar-md-textarea';
@@ -2520,6 +2566,18 @@
             forceSync: true,
             autoDownloadFontAwesome: false,
             initialValue: initialMarkdown,
+            previewRender: (plainText) => {
+              console.log('[GM-IMAGE]', 'editor:preview-input', plainText);
+              try {
+                const renderer = window.GM.sidebarData?.renderMarkdownToHtml;
+                if (typeof renderer === 'function') {
+                  return renderer(plainText);
+                }
+              } catch (err) {
+                console.warn('Sidebar Markdown preview renderer failed', err);
+              }
+              return String(plainText || '');
+            },
             toolbar: [
               'bold',
               'italic',
@@ -2608,7 +2666,12 @@
       setDirty(false);
     };
 
-    requestAnimationFrame(editorReady);
+    requestAnimationFrame(() => {
+      editorReady();
+      window.setTimeout(bindEditorPreviewImages, 0);
+      window.setTimeout(bindEditorPreviewImages, 150);
+      window.setTimeout(bindEditorPreviewImages, 500);
+    });
 
     saveBtn.addEventListener('click', saveMarkdown);
     cancelBtn.addEventListener('click', () => {

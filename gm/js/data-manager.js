@@ -153,6 +153,43 @@
   }
 
 
+
+  const assetObjectUrls = new Map();
+
+  async function resolveAssetUrl(path) {
+    const normalized = normalizePath(path);
+    console.log('[GM-IMAGE]', 'resolveAssetUrl:input', { path, normalized, mode: state.readOnly ? 'server' : (state.directoryHandle ? 'local' : 'none'), serverBaseUrl: state.serverBaseUrl });
+    if (!normalized) return '';
+
+    // Remote/server data has a real HTTP base URL.
+    if (state.readOnly && state.serverBaseUrl) {
+      const result = buildServerFileUrl(normalized) || '';
+      console.log('[GM-IMAGE]', 'resolveAssetUrl:server', { normalized, result });
+      return result;
+    }
+
+    // A local connected folder has no public URL. Read the binary file and
+    // expose it through a Blob URL for the renderer.
+    if (state.directoryHandle) {
+      const existing = assetObjectUrls.get(normalized);
+      if (existing) return existing;
+      try {
+        const handle = await getFileHandle(normalized);
+        const file = await handle.getFile();
+        const url = URL.createObjectURL(file);
+        assetObjectUrls.set(normalized, url);
+        console.log('[GM-IMAGE]', 'resolveAssetUrl:local', { normalized, type: file.type, size: file.size, url });
+        return url;
+      } catch {
+        return '';
+      }
+    }
+
+    const result = new URL(normalized, window.location.href).href;
+    console.log('[GM-IMAGE]', 'resolveAssetUrl:web', { normalized, result });
+    return result;
+  }
+
   function isStaleHandleError(err) {
     const message = String(err?.message || err || '').toLowerCase();
     return err?.name === 'InvalidStateError' || /state cached in an interface object|state had changed since it was read from disk|invalid state/.test(message);
@@ -329,6 +366,10 @@
   }
 
   function disconnect() {
+    assetObjectUrls.forEach((url) => {
+      try { URL.revokeObjectURL(url); } catch {}
+    });
+    assetObjectUrls.clear();
     state.directoryHandle = null;
     state.connected = false;
     state.readOnly = false;
@@ -530,6 +571,7 @@
     ensureStructure,
     refreshStoredFolderHandle,
     readFile,
+    resolveAssetUrl,
     writeFile,
     removeFile,
     renameFile,

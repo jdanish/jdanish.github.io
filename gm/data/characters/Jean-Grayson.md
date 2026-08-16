@@ -5,6 +5,8 @@ name: Jean Grayson
 
 # Jean Grayson
 
+![Psy Commando](data/images/psycommando.jpeg){width=240}
+
 **Profession**: [[starbreaker_star_marines/33|Psy Commando]]
 
 **Attributes:** Agility d8, Smarts d8, Spirit d6, Strength d6, Vigor d8
