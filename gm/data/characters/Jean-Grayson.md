@@ -17,8 +17,8 @@ name: Jean Grayson
 
 |  |   |
 | -------- | -------- |
-|  **Power Points:** {{counter:jean-power-points|20|20|true}}       |   **Bennies** {{counter:jean-bennies|2|3|false}}     |
-|  **Wounds** {{counter:jean-wounds|0|4|true}}   |  **Fatigue** {{counter:jean-fatigue|0|4|true}} |
+|  🔥 **Power Points:** {{counter:jean-power-points|20|20|true}}       |  🪙 **Bennies** {{counter:jean-bennies|2|3|false}}     |
+|  🩸**Wounds** {{counter:jean-wounds|0|4|true}}   |  🪫 **Fatigue** {{counter:jean-fatigue|0|4|true}} |
 
 ### Weapons
 
