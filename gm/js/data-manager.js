@@ -158,13 +158,11 @@
 
   async function resolveAssetUrl(path) {
     const normalized = normalizePath(path);
-    console.log('[GM-IMAGE]', 'resolveAssetUrl:input', { path, normalized, mode: state.readOnly ? 'server' : (state.directoryHandle ? 'local' : 'none'), serverBaseUrl: state.serverBaseUrl });
     if (!normalized) return '';
 
     // Remote/server data has a real HTTP base URL.
     if (state.readOnly && state.serverBaseUrl) {
       const result = buildServerFileUrl(normalized) || '';
-      console.log('[GM-IMAGE]', 'resolveAssetUrl:server', { normalized, result });
       return result;
     }
 
@@ -178,7 +176,6 @@
         const file = await handle.getFile();
         const url = URL.createObjectURL(file);
         assetObjectUrls.set(normalized, url);
-        console.log('[GM-IMAGE]', 'resolveAssetUrl:local', { normalized, type: file.type, size: file.size, url });
         return url;
       } catch {
         return '';
@@ -186,7 +183,6 @@
     }
 
     const result = new URL(normalized, window.location.href).href;
-    console.log('[GM-IMAGE]', 'resolveAssetUrl:web', { normalized, result });
     return result;
   }
 

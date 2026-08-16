@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20260816-image-url-fallback';
+const CACHE_NAME = 'gm-reference-shell-v20260816-reconnect-clean';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

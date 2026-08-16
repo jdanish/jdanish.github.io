@@ -587,12 +587,6 @@
         }
         link.replaceWith(img);
       });
-
-      console.log('[GM-IMAGE]', 'ui:block-insert', {
-        html: nestedBody.innerHTML,
-        images: nestedBody.querySelectorAll?.('img').length,
-        links: nestedBody.querySelectorAll?.('a').length
-      });
       decorateJumpLinks(nestedBody);
       window.GM.sidebarData?.resolveSidebarImages?.(nestedBody).catch?.(() => {});
       window.GM.sidebarData?.bindTrackerEvents?.(nestedBody);
@@ -2567,7 +2561,6 @@
             autoDownloadFontAwesome: false,
             initialValue: initialMarkdown,
             previewRender: (plainText) => {
-              console.log('[GM-IMAGE]', 'editor:preview-input', plainText);
               try {
                 const renderer = window.GM.sidebarData?.renderMarkdownToHtml;
                 if (typeof renderer === 'function') {
@@ -2681,9 +2674,21 @@
   async function refreshFromConnectedFolder() {
     const folder = await window.GM.data?.loadFolderContents?.();
     if (!folder) return;
-    if (folder.rules) window.GM.sidebarData?.importMarkdownFromText?.('rules', folder.rules);
-    if (folder.current) window.GM.sidebarData?.importMarkdownFromText?.('current', folder.current);
+
+    if (folder.rules) {
+      window.GM.sidebarData?.importMarkdownFromText?.('rules', folder.rules);
+    }
+
+    if (window.GM.sidebarData?.loadActiveFromFolder) {
+      // Reconnect should always land on the Current document, even when a
+      // prior workspace state had a character document selected.
+      await window.GM.sidebarData.loadActiveFromFolder(folder);
+    } else if (folder.current) {
+      window.GM.sidebarData?.importMarkdownFromText?.('current', folder.current);
+    }
+
     await window.GM.referenceIndex?.loadIndexFile?.();
+    window.GM.ui?.setSidebarTab?.('current');
     renderSidebar();
     buildTabs();
   }
