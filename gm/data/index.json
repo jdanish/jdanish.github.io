@@ -551,6 +551,10 @@
         "label": "Advanced psyfocus loadout",
         "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
       },
+      "alchemist@@fantasy": {
+        "label": "Alchemist",
+        "source": "fantasy/89?highlight=ALCHEMIST"
+      },
       "alertness@@swade": {
         "label": "Alertness",
         "source": "swade/37?highlight=Alertness"
@@ -578,6 +582,10 @@
       "arcane background@@swade": {
         "label": "Arcane background",
         "source": "swade/37?highlight=Arcane%20Background"
+      },
+      "arcane barding@@fantasy": {
+        "label": "Arcane Barding",
+        "source": "fantasy/101?highlight=ARCANE%20BARDING"
       },
       "arcane resistance@@fantasy": {
         "label": "Arcane Resistance",
@@ -618,6 +626,10 @@
       "aura of courage@@fantasy": {
         "label": "Aura Of Courage",
         "source": "fantasy/40?highlight=AURA%20OF%20COURAGE"
+      },
+      "bard@@fantasy": {
+        "label": "Bard",
+        "source": "fantasy/91?highlight=BARD"
       },
       "basic psychic loadout@@starbreaker_core": {
         "label": "Basic psychic loadout",
@@ -719,6 +731,10 @@
         "label": "Charismatic",
         "source": "swade/38?highlight=Charismatic"
       },
+      "chemist@@fantasy": {
+        "label": "Chemist",
+        "source": "fantasy/91?highlight=CHEMIST"
+      },
       "chi@@swade": {
         "label": "Chi",
         "source": "swade/51?highlight=Chi"
@@ -730,6 +746,10 @@
       "chronomancer@@sfc": {
         "label": "Chronomancer",
         "source": "sfc/197?highlight=CHRONOMANCER"
+      },
+      "cleric@@fantasy": {
+        "label": "Cleric",
+        "source": "fantasy/93?highlight=CLERIC"
       },
       "close fighting@@fantasy": {
         "label": "Close Fighting",
@@ -763,6 +783,10 @@
         "label": "Connections",
         "source": "swade/49?highlight=Connections"
       },
+      "construct familiar@@fantasy": {
+        "label": "Construct Familiar",
+        "source": "fantasy/102?highlight=CONSTRUCT%20FAMILIAR"
+      },
       "counterattack@@swade": {
         "label": "Counterattack",
         "source": "swade/40?highlight=Counterattack"
@@ -770,6 +794,10 @@
       "dead shot@@swade": {
         "label": "Dead shot",
         "source": "swade/40?highlight=Dead%20Shot"
+      },
+      "deadly illusion@@fantasy": {
+        "label": "Deadly Illusion",
+        "source": "fantasy/97?highlight=DEADLY%20ILLUSION"
       },
       "deceptive@@fantasy": {
         "label": "Deceptive",
@@ -782,6 +810,18 @@
       "defender@@fantasy": {
         "label": "Defender",
         "source": "fantasy/33?highlight=DEFENDER"
+      },
+      "destroy undead@@fantasy": {
+        "label": "Destroy Undead",
+        "source": "fantasy/93?highlight=DESTROY%20UNDEAD"
+      },
+      "diabolist@@fantasy": {
+        "label": "Diabolist",
+        "source": "fantasy/93?highlight=DIABOLIST"
+      },
+      "dirge@@fantasy": {
+        "label": "Dirge",
+        "source": "fantasy/92?highlight=DIRGE"
       },
       "dirty fighter@@fantasy": {
         "label": "Dirty Fighter",
@@ -803,6 +843,10 @@
         "label": "Drones",
         "source": "sfc/207?highlight=DRONES"
       },
+      "druid@@fantasy": {
+        "label": "Druid",
+        "source": "fantasy/95?highlight=DRUID"
+      },
       "duct tape & bubble gum@@sfc": {
         "label": "Duct Tape & Bubble Gum",
         "source": "sfc/26?highlight=DUCT%20TAPE%20%26%20BUBBLE%20GUM"
@@ -810,6 +854,22 @@
       "elan@@swade": {
         "label": "Elan",
         "source": "swade/38?highlight=Elan"
+      },
+      "eldritch inspiration@@fantasy": {
+        "label": "Eldritch Inspiration",
+        "source": "fantasy/104?highlight=ELDRITCH%20INSPIRATION"
+      },
+      "elemental absorption@@fantasy": {
+        "label": "Elemental Absorption",
+        "source": "fantasy/96?highlight=ELEMENTAL%20ABSORPTION"
+      },
+      "elemental master@@fantasy": {
+        "label": "Elemental Master",
+        "source": "fantasy/96?highlight=ELEMENTAL%20MASTER"
+      },
+      "elementalist@@fantasy": {
+        "label": "Elementalist",
+        "source": "fantasy/96?highlight=ELEMENTALIST"
       },
       "epic mastery@@fantasy": {
         "label": "Epic Mastery",
@@ -879,6 +939,10 @@
         "label": "Feint",
         "source": "swade/41?highlight=Feint"
       },
+      "ferocious summoning@@fantasy": {
+        "label": "Ferocious Summoning",
+        "source": "fantasy/101?highlight=FEROCIOUS%20SUMMONING"
+      },
       "fervor@@swade": {
         "label": "Fervor",
         "source": "swade/44?highlight=Fervor"
@@ -947,6 +1011,14 @@
         "label": "Great luck",
         "source": "swade/39?highlight=Great%20Luck"
       },
+      "great power@@fantasy": {
+        "label": "Great Power",
+        "source": "fantasy/100?highlight=GREAT%20POWER"
+      },
+      "great summoning@@fantasy": {
+        "label": "Great Summoning",
+        "source": "fantasy/101?highlight=GREAT%20SUMMONING"
+      },
       "hard to kill@@swade": {
         "label": "Hard to kill",
         "source": "swade/41?highlight=Hard%20To%20Kill"
@@ -963,6 +1035,10 @@
         "label": "Hardware Upgrade",
         "source": "sfc/200?highlight=HARDWARE%20UPGRADE"
       },
+      "heartwood staff@@fantasy": {
+        "label": "Heartwood Staff",
+        "source": "fantasy/95?highlight=HEARTWOOD%20STAFF"
+      },
       "heavy hitters squad edge@@starbreaker_star_marines": {
         "label": "Heavy hitters squad edge",
         "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
@@ -975,6 +1051,10 @@
         "label": "Heirloom",
         "source": "fantasy/32?highlight=HEIRLOOM"
       },
+      "hell's wrath@@fantasy": {
+        "label": "Hell’s Wrath",
+        "source": "fantasy/94?highlight=HELL%E2%80%99S%20WRATH"
+      },
       "home ground@@fantasy": {
         "label": "Home Ground",
         "source": "fantasy/41?highlight=HOME%20GROUND"
@@ -982,6 +1062,10 @@
       "humiliate@@swade": {
         "label": "Humiliate",
         "source": "swade/49?highlight=Humiliate"
+      },
+      "illusionist@@fantasy": {
+        "label": "Illusionist",
+        "source": "fantasy/97?highlight=ILLUSIONIST"
       },
       "immortal@@sfc": {
         "label": "Immortal",
@@ -1063,9 +1147,17 @@
         "label": "Infused",
         "source": "sfc/200?highlight=INFUSED"
       },
+      "inspire heroics@@fantasy": {
+        "label": "Inspire Heroics",
+        "source": "fantasy/92?highlight=INSPIRE%20HEROICS"
+      },
       "inspire@@swade": {
         "label": "Inspire",
         "source": "swade/44?highlight=Inspire"
+      },
+      "instrument@@fantasy": {
+        "label": "Instrument",
+        "source": "fantasy/93?highlight=INSTRUMENT"
       },
       "investigator@@swade": {
         "label": "Investigator",
@@ -1139,6 +1231,10 @@
         "label": "Martial warrior",
         "source": "swade/42?highlight=Martial%20Warrior"
       },
+      "master alchemist@@fantasy": {
+        "label": "Master Alchemist",
+        "source": "fantasy/91?highlight=MASTER%20ALCHEMIST"
+      },
       "master artificer@@fantasy": {
         "label": "Master Artificer",
         "source": "fantasy/36?highlight=MASTER%20ARTIFICER"
@@ -1158,6 +1254,10 @@
       "mentalist@@swade": {
         "label": "Mentalist",
         "source": "swade/45?highlight=Mentalist"
+      },
+      "mercy@@fantasy": {
+        "label": "Mercy",
+        "source": "fantasy/93?highlight=MERCY"
       },
       "mercy@@sfc": {
         "label": "Mercy",
@@ -1199,6 +1299,10 @@
         "label": "Natural leader",
         "source": "swade/44?highlight=Natural%20Leader"
       },
+      "necromancer@@fantasy": {
+        "label": "Necromancer",
+        "source": "fantasy/97?highlight=NECROMANCER"
+      },
       "nerves of steel@@swade": {
         "label": "Nerves of steel",
         "source": "swade/42?highlight=Nerves%20of%20Steel"
@@ -1206,6 +1310,10 @@
       "new powers@@swade": {
         "label": "New powers",
         "source": "swade/46?highlight=New%20Powers"
+      },
+      "nfernal armor@@fantasy": {
+        "label": "Nfernal Armor",
+        "source": "fantasy/94?highlight=NFERNAL%20ARMOR"
       },
       "no mercy@@swade": {
         "label": "No mercy",
@@ -1218,6 +1326,10 @@
       "opportunistic@@sfc": {
         "label": "Opportunistic",
         "source": "sfc/25?highlight=OPPORTUNISTIC"
+      },
+      "phenomenal power@@fantasy": {
+        "label": "Phenomenal Power",
+        "source": "fantasy/100?highlight=PHENOMENAL%20POWER"
       },
       "poisoner@@fantasy": {
         "label": "Poisoner",
@@ -1238,6 +1350,10 @@
       "premonition@@sfc": {
         "label": "Premonition",
         "source": "sfc/198?highlight=PREMONITION"
+      },
+      "primal magic@@fantasy": {
+        "label": "Primal Magic",
+        "source": "fantasy/99?highlight=PRIMAL%20MAGIC"
       },
       "professional edges@@swade": {
         "label": "Professional edges",
@@ -1311,6 +1427,10 @@
         "label": "Room",
         "source": "swade/50?highlight=Room"
       },
+      "sacred fetish@@fantasy": {
+        "label": "Sacred Fetish",
+        "source": "fantasy/99?highlight=SACRED%20FETISH"
+      },
       "savagery@@fantasy": {
         "label": "Savagery",
         "source": "fantasy/34?highlight=SAVAGERY"
@@ -1334,6 +1454,10 @@
       "scout@@fantasy": {
         "label": "Scout",
         "source": "fantasy/39?highlight=SCOUT"
+      },
+      "shaman@@fantasy": {
+        "label": "Shaman",
+        "source": "fantasy/98?highlight=SHAMAN"
       },
       "shepherd@@sfc": {
         "label": "Shepherd",
@@ -1371,9 +1495,21 @@
         "label": "Soldier",
         "source": "swade/48?highlight=Soldier"
       },
+      "sorcerer@@fantasy": {
+        "label": "Sorcerer",
+        "source": "fantasy/99?highlight=SORCERER"
+      },
       "soul drain@@swade": {
         "label": "Soul drain",
         "source": "swade/46?highlight=Soul%20Drain"
+      },
+      "soul jar@@fantasy": {
+        "label": "Soul Jar",
+        "source": "fantasy/98?highlight=SOUL%20JAR"
+      },
+      "spellbooks@@fantasy": {
+        "label": "Spellbooks",
+        "source": "fantasy/104?highlight=SPELLBOOKS"
       },
       "star knave@@sfc": {
         "label": "Star Knave",
@@ -1407,6 +1543,10 @@
         "label": "Stunning Blow",
         "source": "fantasy/35?highlight=STUNNING%20BLOW"
       },
+      "summoner@@fantasy": {
+        "label": "Summoner",
+        "source": "fantasy/100?highlight=SUMMONER"
+      },
       "sunder@@fantasy": {
         "label": "Sunder",
         "source": "fantasy/35?highlight=SUNDER"
@@ -1431,6 +1571,14 @@
         "label": "Technomancer",
         "source": "sfc/207?highlight=TECHNOMANCER"
       },
+      "the evil eye@@fantasy": {
+        "label": "The Evil Eye",
+        "source": "fantasy/103?highlight=THE%20EVIL%20EYE"
+      },
+      "the witching hour@@fantasy": {
+        "label": "The Witching Hour",
+        "source": "fantasy/103?highlight=THE%20WITCHING%20HOUR"
+      },
       "the wizard edge@@fantasy": {
         "label": "The Wizard Edge",
         "source": "fantasy/35?highlight=THE%20WIZARD%20EDGE"
@@ -1442,6 +1590,14 @@
       "time lord@@sfc": {
         "label": "Time Lord",
         "source": "sfc/198?highlight=TIME%20LORD"
+      },
+      "tinkerer's armor@@fantasy": {
+        "label": "Tinkerer’s Armor",
+        "source": "fantasy/102?highlight=TINKERER%E2%80%99S%20ARMOR"
+      },
+      "tinkerer@@fantasy": {
+        "label": "Tinkerer",
+        "source": "fantasy/101?highlight=TINKERER"
       },
       "tougher than nails@@swade": {
         "label": "Tougher than nails",
@@ -1479,6 +1635,10 @@
         "label": "Troubadour",
         "source": "fantasy/40?highlight=TROUBADOUR"
       },
+      "true form@@fantasy": {
+        "label": "True Form",
+        "source": "fantasy/95?highlight=TRUE%20FORM"
+      },
       "two-fisted@@swade": {
         "label": "Two-fisted",
         "source": "swade/60?highlight=Two-Fisted"
@@ -1495,6 +1655,10 @@
         "label": "Uncanny Reflexes",
         "source": "sfc/27?highlight=UNCANNY%20REFLEXES"
       },
+      "undead familiar@@fantasy": {
+        "label": "Undead Familiar",
+        "source": "fantasy/98?highlight=UNDEAD%20FAMILIAR"
+      },
       "unstoppable@@fantasy": {
         "label": "Unstoppable",
         "source": "fantasy/41?highlight=UNSTOPPABLE"
@@ -1506,6 +1670,14 @@
       "warband@@fantasy": {
         "label": "Warband",
         "source": "fantasy/41?highlight=WARBAND"
+      },
+      "warlock/ witch@@fantasy": {
+        "label": "Warlock/ Witch",
+        "source": "fantasy/102?highlight=WARLOCK%2F%20WITCH"
+      },
+      "warlock@@fantasy": {
+        "label": "Warlock",
+        "source": "fantasy/102?highlight=WARLOCK"
       },
       "warp surge@@sfc": {
         "label": "Warp Surge",
@@ -1522,6 +1694,14 @@
       "wing gust@@fantasy": {
         "label": "Wing Gust",
         "source": "fantasy/35?highlight=WING%20GUST"
+      },
+      "witch@@fantasy": {
+        "label": "Witch",
+        "source": "fantasy/102?highlight=WITCH"
+      },
+      "wizard@@fantasy": {
+        "label": "Wizard",
+        "source": "fantasy/104?highlight=WIZARD"
       },
       "wizard@@swade": {
         "label": "Wizard",
