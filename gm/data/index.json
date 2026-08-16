@@ -1912,7 +1912,12 @@
         "source": "starbreaker_core/91?highlight=Web%20Grenades"
       }
     },
-    "monsters": {},
+    "monsters": {
+      "summon monster@@fantasy": {
+        "label": "Summon Monster",
+        "source": "fantasy/140?highlight=SUMMON%20MONSTER"
+      }
+    },
     "npcs": {},
     "other": {},
     "powers": {
@@ -2047,26 +2052,6 @@
         "label": "D Mystic Intervention",
         "source": "fantasy/131?highlight=D%20MYSTIC%20INTERVENTION"
       },
-      "d plane shift@@fantasy": {
-        "label": "D Plane Shift",
-        "source": "fantasy/133?highlight=D%20PLANE%20SHIFT"
-      },
-      "d sanctuary@@fantasy": {
-        "label": "D Sanctuary",
-        "source": "fantasy/135?highlight=D%20SANCTUARY"
-      },
-      "d summon undead elemental (elder)@@fantasy": {
-        "label": "D SUMMON UNDEAD Elemental (Elder)",
-        "source": "fantasy/141?highlight=D%20SUMMON%20UNDEAD%20Elemental%20(Elder)"
-      },
-      "d time stop@@fantasy": {
-        "label": "D Time Stop",
-        "source": "fantasy/143?highlight=D%20TIME%20STOP"
-      },
-      "d wish@@fantasy": {
-        "label": "D Wish",
-        "source": "fantasy/144?highlight=D%20WISH"
-      },
       "damage field@@fantasy": {
         "label": "Damage Field",
         "source": "fantasy/121?highlight=DAMAGE%20FIELD"
@@ -2151,26 +2136,6 @@
         "label": "Environmental protection",
         "source": "swade/160?highlight=Environmental%20Protection"
       },
-      "f object reading@@fantasy": {
-        "label": "F Object Reading",
-        "source": "fantasy/132?highlight=F%20OBJECT%20READING"
-      },
-      "f relief@@fantasy": {
-        "label": "F Relief",
-        "source": "fantasy/134?highlight=F%20RELIEF"
-      },
-      "f summon ally@@fantasy": {
-        "label": "F Summon Ally",
-        "source": "fantasy/138?highlight=F%20SUMMON%20ALLY"
-      },
-      "f telekinesis teleport@@fantasy": {
-        "label": "F Telekinesis Teleport",
-        "source": "fantasy/142?highlight=F%20TELEKINESIS%20TELEPORT"
-      },
-      "f zombie@@fantasy": {
-        "label": "F Zombie",
-        "source": "fantasy/145?highlight=F%20ZOMBIE"
-      },
       "farsight@@fantasy": {
         "label": "Farsight",
         "source": "fantasy/126?highlight=FARSIGHT"
@@ -2206,6 +2171,18 @@
       "greater blast@@fantasy": {
         "label": "Greater Blast",
         "source": "fantasy/118?highlight=GREATER%20BLAST"
+      },
+      "greater mind wipe@@fantasy": {
+        "label": "Greater Mind Wipe",
+        "source": "fantasy/131?highlight=GREATER%20MIND%20WIPE"
+      },
+      "greater smite@@fantasy": {
+        "label": "Greater Smite",
+        "source": "fantasy/137?highlight=GREATER%20SMITE"
+      },
+      "greater speak language@@fantasy": {
+        "label": "Greater Speak Language",
+        "source": "fantasy/138?highlight=GREATER%20SPEAK%20LANGUAGE"
       },
       "growth / shrink@@swade": {
         "label": "Growth / shrink",
@@ -2307,21 +2284,41 @@
         "label": "Mind wipe",
         "source": "swade/164?highlight=Mind%20Wipe"
       },
+      "mystic intervention@@fantasy": {
+        "label": "Mystic Intervention",
+        "source": "fantasy/131?highlight=MYSTIC%20INTERVENTION"
+      },
+      "object reading@@fantasy": {
+        "label": "Object Reading",
+        "source": "fantasy/132?highlight=OBJECT%20READING"
+      },
       "object reading@@swade": {
         "label": "Object reading",
         "source": "swade/164?highlight=Object%20Reading"
+      },
+      "planar binding@@fantasy": {
+        "label": "Planar Binding",
+        "source": "fantasy/132?highlight=PLANAR%20BINDING"
+      },
+      "plane shift@@fantasy": {
+        "label": "Plane Shift",
+        "source": "fantasy/133?highlight=PLANE%20SHIFT"
       },
       "prediction@@sfc": {
         "label": "Prediction",
         "source": "sfc/212?highlight=PREDICTION"
       },
+      "protection@@fantasy": {
+        "label": "Protection",
+        "source": "fantasy/134?highlight=PROTECTION"
+      },
       "protection@@swade": {
         "label": "Protection",
         "source": "swade/164?highlight=Protection"
       },
-      "puppet distracted, or vulnerable. a raise on the@@fantasy": {
-        "label": "PUPPET Distracted, or Vulnerable. A raise on the",
-        "source": "fantasy/134?highlight=PUPPET%20Distracted%2C%20or%20Vulnerable.%20A%20raise%20on%20the"
+      "puppet@@fantasy": {
+        "label": "Puppet",
+        "source": "fantasy/134?highlight=PUPPET"
       },
       "puppet@@swade": {
         "label": "Puppet",
@@ -2330,6 +2327,10 @@
       "quickness@@swade": {
         "label": "Quickness",
         "source": "swade/165?highlight=Quickness"
+      },
+      "relief@@fantasy": {
+        "label": "Relief",
+        "source": "fantasy/134?highlight=RELIEF"
       },
       "relief@@swade": {
         "label": "Relief",
@@ -2342,6 +2343,14 @@
       "resurrection@@swade": {
         "label": "Resurrection",
         "source": "swade/165?highlight=Resurrection"
+      },
+      "sanctuary@@fantasy": {
+        "label": "Sanctuary",
+        "source": "fantasy/135?highlight=SANCTUARY"
+      },
+      "scrying@@fantasy": {
+        "label": "Scrying",
+        "source": "fantasy/135?highlight=SCRYING"
       },
       "scrying@@sfc": {
         "label": "Scrying",
@@ -2411,6 +2420,18 @@
         "label": "Summon ally",
         "source": "swade/168?highlight=Summon%20Ally"
       },
+      "summon animal@@fantasy": {
+        "label": "Summon Animal",
+        "source": "fantasy/139?highlight=SUMMON%20ANIMAL"
+      },
+      "summon undead@@fantasy": {
+        "label": "Summon Undead",
+        "source": "fantasy/141?highlight=SUMMON%20UNDEAD"
+      },
+      "telekinesis@@fantasy": {
+        "label": "Telekinesis",
+        "source": "fantasy/142?highlight=TELEKINESIS"
+      },
       "telekinesis@@sfc": {
         "label": "Telekinesis",
         "source": "sfc/169?highlight=Telekinesis"
@@ -2423,6 +2444,10 @@
         "label": "Telekinetic Squeeze",
         "source": "sfc/214?highlight=TELEKINETIC%20SQUEEZE"
       },
+      "teleport@@fantasy": {
+        "label": "Teleport",
+        "source": "fantasy/141?highlight=TELEPORT"
+      },
       "teleport@@sfc": {
         "label": "Teleport",
         "source": "sfc/215?highlight=TELEPORT"
@@ -2431,13 +2456,13 @@
         "label": "Teleport",
         "source": "swade/169?highlight=Teleport"
       },
+      "time stop@@fantasy": {
+        "label": "Time Stop",
+        "source": "fantasy/143?highlight=TIME%20STOP"
+      },
       "time stop@@sfc": {
         "label": "Time Stop",
         "source": "sfc/215?highlight=TIME%20STOP"
-      },
-      "travel back through time: the caster@@fantasy": {
-        "label": "TRAVEL BACK THROUGH TIME: The caster",
-        "source": "fantasy/144?highlight=TRAVEL%20BACK%20THROUGH%20TIME%3A%20The%20caster"
       },
       "wall walker@@fantasy": {
         "label": "Wall Walker",
@@ -2447,29 +2472,25 @@
         "label": "Wall walker",
         "source": "swade/169?highlight=Wall%20Walker"
       },
+      "warrior's gift@@fantasy": {
+        "label": "Warrior’s gift",
+        "source": "fantasy/143?highlight=WARRIOR%E2%80%99S%20GIFT"
+      },
       "warrior's gift@@swade": {
         "label": "Warrior’s gift",
         "source": "swade/169?highlight=Warrior%E2%80%99s%20Gift"
       },
+      "wish@@fantasy": {
+        "label": "Wish",
+        "source": "fantasy/144?highlight=WISH"
+      },
+      "zombie@@fantasy": {
+        "label": "Zombie",
+        "source": "fantasy/145?highlight=ZOMBIE"
+      },
       "zombie@@swade": {
         "label": "Zombie",
         "source": "swade/170?highlight=Zombie"
-      },
-      "  greater mind wipe (+2): the effect@@fantasy": {
-        "label": "  GREATER MIND WIPE (+2): The effect",
-        "source": "fantasy/131?highlight=%C2%90%20%C2%90%20GREATER%20MIND%20WIPE%20(%2B2)%3A%20The%20effect"
-      },
-      "  greater smite (+2): the weapon's@@fantasy": {
-        "label": "  GREATER SMITE (+2): The weapon’s",
-        "source": "fantasy/137?highlight=%C2%90%20%C2%90%20GREATER%20SMITE%20(%2B2)%3A%20The%20weapon%E2%80%99s"
-      },
-      "  greater speak language (+2): the@@fantasy": {
-        "label": "  GREATER SPEAK LANGUAGE (+2): The",
-        "source": "fantasy/138?highlight=%C2%90%20%C2%90%20GREATER%20SPEAK%20LANGUAGE%20(%2B2)%3A%20The"
-      },
-      "  mass understanding (+5): t he@@fantasy": {
-        "label": "  MASS UNDERSTANDING (+5): T he",
-        "source": "fantasy/138?highlight=%C2%90%20%C2%90%20MASS%20UNDERSTANDING%20(%2B5)%3A%20T%20he"
       }
     },
     "rules": {},
