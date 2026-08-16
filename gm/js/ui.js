@@ -677,6 +677,20 @@
       }
     }
 
+    // Character-import exception: Fantasy Grounds names Arcane Background
+    // edges as "Arcane Background (Druid)", while the Reference Index may
+    // contain the actual edge as simply "Druid". Try the parenthesized
+    // specialization only for edge matching during character import.
+    if (kind === 'edges') {
+      const arcaneMatch = label.match(/^Arcane Background\s*\((.+)\)$/i);
+      if (arcaneMatch && arcaneMatch[1].trim()) {
+        const arcaneName = arcaneMatch[1].trim();
+        if (fgCanonicalReferenceName(arcaneName, kind) !== canonical) {
+          variants.push(arcaneName);
+        }
+      }
+    }
+
     const matches = [];
     const seen = new Set();
 
@@ -726,15 +740,46 @@
     return `${String(kind || '').toLowerCase()}:${fgCleanName(label).toLowerCase()}`;
   }
 
-  function fgReferenceEntry(kind, name, preferredTypes = []) {
+    function fgReferenceEntry(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return null;
 
+    // Character-import exception: for "Arcane Background (Druid)",
+    // prefer the actual indexed edge "Druid" over the literal FG label.
+    if (kind === 'edges') {
+      const arcaneMatch = label.match(/^Arcane Background\s*\((.+)\)$/i);
+      if (arcaneMatch && arcaneMatch[1].trim()) {
+        const arcaneLabel = arcaneMatch[1].trim();
+        const arcaneMatches = fgReferenceMatches('edges', arcaneLabel, preferredTypes);
+
+        if (arcaneMatches.length === 1) {
+          const entry = arcaneMatches[0];
+          return {
+            label: entry.label || arcaneLabel,
+            source: entry.source,
+          };
+        }
+
+        if (arcaneMatches.length > 1) {
+          return {
+            ambiguous: true,
+            label: arcaneLabel,
+            matches: arcaneMatches,
+          };
+        }
+      }
+    }
+
     const matches = fgReferenceMatches(kind, label, preferredTypes);
-    const chosenKey = fgImportReferenceSelections.get(fgReferenceSelectionKey(kind, label));
+    const chosenKey = fgImportReferenceSelections.get(
+      fgReferenceSelectionKey(kind, label)
+    );
+
     if (chosenKey) {
       const selected = matches.find((entry) => entry.key === chosenKey);
-      if (selected) return { label: selected.label || label, source: selected.source };
+      if (selected) {
+        return { label: selected.label || label, source: selected.source };
+      }
     }
 
     if (matches.length === 1) {
@@ -758,6 +803,7 @@
     if (matches.length > 1) return { ambiguous: true, label, matches };
     return null;
   }
+
 
   async function chooseImportedReferences(choices) {
     if (!choices.length) return true;
@@ -859,26 +905,60 @@
   function fgReferenceMarkdown(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return '';
+
     const entry = fgReferenceEntry(kind, label, preferredTypes);
     if (!entry) return fgMarkdownEscape(label);
     if (entry.ambiguous) return `${fgMarkdownEscape(label)} ⚠`;
-    const safeLabel = fgMarkdownEscape(entry.label);
-    return `[[${entry.source}|${safeLabel}]]`;
+
+    const source = String(entry.source || '').trim();
+
+    if (kind === 'edges') {
+      const arcaneMatch = label.match(/^Arcane Background\s*\((.+)\)$/i);
+      if (arcaneMatch && arcaneMatch[1].trim()) {
+        const prefix = fgMarkdownEscape(label.slice(0, label.lastIndexOf('(')));
+        const suffix = fgMarkdownEscape(label.slice(label.lastIndexOf(')') + 1));
+        const specialization = fgMarkdownEscape(arcaneMatch[1].trim());
+        return `${prefix}([[${source}|${specialization}]])${suffix}`;
+      }
+    }
+
+    const safeLabel = fgMarkdownEscape(label);
+    return `[[${source}|${safeLabel}]]`;
   }
+
 
   function fgReferenceHtml(kind, name, preferredTypes = []) {
     const label = fgCleanName(name);
     if (!label) return '';
+
     const entry = fgReferenceEntry(kind, label, preferredTypes);
     if (!entry) return fgXmlEscape(label);
-    if (entry.ambiguous) return `<span title="Multiple book references found; choose one in the Reference Index">${fgXmlEscape(label)} ⚠</span>`;
+    if (entry.ambiguous) {
+      return `<span title="Multiple book references found; choose one in the Reference Index">${fgXmlEscape(label)} ⚠</span>`;
+    }
+
     const source = String(entry.source || '').trim();
     const jumpHref = /^jump:/i.test(source) ? source : `jump:${source.replace(/^\/+/, '')}`;
     const safeHref = jumpHref.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const safeLabel = fgXmlEscape(entry.label || label);
+
+    // Preserve Fantasy Grounds' Arcane Background (Druid) label but make the
+    // extracted/indexed "Druid" part the clickable reference.
+    if (kind === 'edges') {
+      const arcaneMatch = label.match(/^Arcane Background\s*\((.+)\)$/i);
+      if (arcaneMatch && arcaneMatch[1].trim()) {
+        const prefix = fgXmlEscape(label.slice(0, label.lastIndexOf('(')));
+        const suffix = fgXmlEscape(label.slice(label.lastIndexOf(')') + 1));
+        const specialization = fgXmlEscape(arcaneMatch[1].trim());
+        const safeHighlight = specialization.replace(/"/g, '&quot;');
+        return `${prefix}(<a href="${safeHref}" data-highlight="${safeHighlight}">${specialization}</a>)${suffix}`;
+      }
+    }
+
     const safeHighlight = fgXmlEscape(label).replace(/"/g, '&quot;');
-    const safeLabel = fgXmlEscape(entry.label);
     return `<a href="${safeHref}" data-highlight="${safeHighlight}">${safeLabel}</a>`;
   }
+
 
   function fgXmlEscape(value) {
     return String(value || '')
@@ -966,10 +1046,19 @@
     const considerImportReference = (kind, name, preferredTypes = []) => {
       const label = fgCleanName(name);
       if (!label) return;
-      const matches = fgReferenceMatches(kind, label, preferredTypes);
-      const selectionKey = fgReferenceSelectionKey(kind, label);
+
+      let lookupLabel = label;
+      if (kind === 'edges') {
+        const arcaneMatch = label.match(/^Arcane Background\s*\((.+)\)$/i);
+        if (arcaneMatch && arcaneMatch[1].trim()) {
+          lookupLabel = arcaneMatch[1].trim();
+        }
+      }
+
+      const matches = fgReferenceMatches(kind, lookupLabel, preferredTypes);
+      const selectionKey = fgReferenceSelectionKey(kind, lookupLabel);
       if (matches.length > 1 && !fgImportReferenceSelections.has(selectionKey)) {
-        importChoices.push({ kind, label, matches });
+        importChoices.push({ kind, label: lookupLabel, matches });
       }
     };
 
@@ -1145,16 +1234,8 @@
       wrapper.innerHTML = String(html || '');
       const li = wrapper.querySelector('li') || wrapper.firstElementChild || wrapper;
       const titleStrong = li.querySelector(':scope > strong');
-      const titleLink = titleStrong?.querySelector(':scope > a');
       const title = fgCleanName(titleStrong?.textContent || '');
       const parts = [];
-      if (titleLink) {
-        const href = String(titleLink.getAttribute('href') || '').trim();
-        const label = fgCleanName(titleLink.textContent || title);
-        parts.push(href ? `- [[${href}|${label}]]` : `- **${label}**`);
-      } else if (title) {
-        parts.push(`- **${title}**`);
-      }
 
       const inlineToMarkdown = (node) => {
         if (!node) return '';
@@ -1174,24 +1255,36 @@
         }).join('').replace(/\s+/g, ' ').trim();
       };
 
-      const titleLinkMarkdown = titleLink
-        ? `[[${String(titleLink.getAttribute('href') || '').trim()}|${fgCleanName(titleLink.textContent || title)}]]`
+      const titleMarkdown = titleStrong ? inlineToMarkdown(titleStrong) : '';
+      if (titleMarkdown) {
+        // Preserve the complete imported title. For Arcane Background (Druid),
+        // this yields "Arcane Background ([[...|Druid]])" rather than reducing
+        // the title to just "Druid".
+        parts.push(`- ${titleMarkdown}`);
+      } else if (title) {
+        parts.push(`- **${title}**`);
+      }
+
+      const titleLinkMarkdown = titleStrong?.querySelector(':scope > a')
+        ? `[[${String(titleStrong.querySelector(':scope > a').getAttribute('href') || '').trim()}|${fgCleanName(titleStrong.querySelector(':scope > a').textContent || '')}]]`
         : '';
 
       Array.from(li.children || []).forEach((child) => {
         if (child.matches?.(':scope > strong')) return;
         const detail = inlineToMarkdown(child);
         if (!detail) return;
-        // Some imported Power blocks contain the linked title a second time
-        // as the first detail node. Never preserve that redundant line.
+
+        // Some imported blocks repeat the title as their first detail node.
         if (titleLinkMarkdown && detail === titleLinkMarkdown) return;
         if (detail === `**${title}**`) return;
         if (fgNormalizeImportTitle(detail.replace(/\[\[([^|]+)\|([^\]]+)\]\]/g, '$2')) === fgNormalizeImportTitle(title)) return;
         if (fgNormalizeImportTitle(detail) === fgNormalizeImportTitle(title)) return;
         parts.push(`  - ${detail}`);
       });
+
       return parts.join('\n');
     };
+
 
     const lines = [`# ${name}`, ''];
     if (attrs.length) lines.push(`**Attributes:** ${attrs.join(', ')}`, '');
