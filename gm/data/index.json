@@ -55,6 +55,10 @@
         "label": "No vital organs",
         "source": "swade/18?highlight=No%20Vital%20Organs"
       },
+      "one with nature@@fantasy": {
+        "label": "One With Nature",
+        "source": "fantasy/95?highlight=ONE%20WITH%20NATURE"
+      },
       "poisonous touch@@swade": {
         "label": "Poisonous touch",
         "source": "swade/18?highlight=Poisonous%20Touch"
@@ -1529,6 +1533,10 @@
         "label": "All thumbs",
         "source": "swade/21?highlight=All%20Thumbs"
       },
+      "amorous@@fantasy": {
+        "label": "Amorous",
+        "source": "fantasy/28?highlight=AMOROUS"
+      },
       "amorous@@sfc": {
         "label": "Amorous",
         "source": "sfc/22?highlight=AMOROUS"
@@ -1536,6 +1544,14 @@
       "anemic@@swade": {
         "label": "Anemic",
         "source": "swade/21?highlight=Anemic"
+      },
+      "arcane sensitivity@@fantasy": {
+        "label": "Arcane Sensitivity",
+        "source": "fantasy/28?highlight=ARCANE%20SENSITIVITY"
+      },
+      "armor interference@@fantasy": {
+        "label": "Armor Interference",
+        "source": "fantasy/28?highlight=ARMOR%20INTERFERENCE"
       },
       "arrogant@@swade": {
         "label": "Arrogant",
@@ -1565,6 +1581,10 @@
         "label": "Bloodthirsty",
         "source": "swade/22?highlight=Bloodthirsty"
       },
+      "blunderer@@fantasy": {
+        "label": "Blunderer",
+        "source": "fantasy/28?highlight=BLUNDERER"
+      },
       "bullet magnet@@sfc": {
         "label": "Bullet magnet",
         "source": "sfc/22?highlight=BULLET%20MAGNET"
@@ -1589,9 +1609,17 @@
         "label": "Code of honor",
         "source": "swade/21?highlight=Code%20of%20Honor"
       },
+      "corruption@@fantasy": {
+        "label": "Corruption",
+        "source": "fantasy/28?highlight=CORRUPTION"
+      },
       "curious@@swade": {
         "label": "Curious",
         "source": "swade/22?highlight=Curious"
+      },
+      "cursed@@fantasy": {
+        "label": "Cursed",
+        "source": "fantasy/28?highlight=CURSED"
       },
       "death wish@@swade": {
         "label": "Death wish",
@@ -1604,6 +1632,10 @@
       "dependent@@sfc": {
         "label": "Dependent",
         "source": "sfc/22?highlight=DEPENDENT"
+      },
+      "doomed@@fantasy": {
+        "label": "Doomed",
+        "source": "fantasy/28?highlight=DOOMED"
       },
       "doubting thomas@@swade": {
         "label": "Doubting thomas",
@@ -1633,6 +1665,10 @@
         "label": "Greedy",
         "source": "swade/23?highlight=Greedy"
       },
+      "grim@@fantasy": {
+        "label": "Grim",
+        "source": "fantasy/28?highlight=GRIM"
+      },
       "habit@@swade": {
         "label": "Habit",
         "source": "swade/23?highlight=Habit"
@@ -1649,6 +1685,10 @@
         "label": "Hesitant",
         "source": "swade/24?highlight=Hesitant"
       },
+      "idealistic@@fantasy": {
+        "label": "Idealistic",
+        "source": "fantasy/29?highlight=IDEALISTIC"
+      },
       "illiterate@@swade": {
         "label": "Illiterate",
         "source": "swade/24?highlight=Illiterate"
@@ -1661,6 +1701,10 @@
         "label": "Jealous",
         "source": "swade/24?highlight=Jealous"
       },
+      "jingoistic@@fantasy": {
+        "label": "Jingoistic",
+        "source": "fantasy/29?highlight=JINGOISTIC"
+      },
       "low tech/high tech@@sfc": {
         "label": "Low tech/high tech",
         "source": "sfc/23?highlight=LOW%20TECH%2FHIGH%20TECH"
@@ -1672,6 +1716,10 @@
       "loyal@@swade": {
         "label": "Loyal",
         "source": "swade/24?highlight=Loyal"
+      },
+      "material components@@fantasy": {
+        "label": "Material Components",
+        "source": "fantasy/29?highlight=MATERIAL%20COMPONENTS"
       },
       "mean@@swade": {
         "label": "Mean",
@@ -1700,10 +1748,6 @@
       "one eye@@swade": {
         "label": "One eye",
         "source": "swade/25?highlight=One%20Eye"
-      },
-      "one with nature@@fantasy": {
-        "label": "One With Nature",
-        "source": "fantasy/95?highlight=ONE%20WITH%20NATURE"
       },
       "outsider@@swade": {
         "label": "Outsider",
@@ -1764,6 +1808,10 @@
       "suspicious@@swade": {
         "label": "Suspicious",
         "source": "swade/26?highlight=Suspicious"
+      },
+      "talisman@@fantasy": {
+        "label": "Talisman",
+        "source": "fantasy/29?highlight=TALISMAN"
       },
       "thin skinned@@swade": {
         "label": "Thin skinned",
@@ -1868,6 +1916,10 @@
     "npcs": {},
     "other": {},
     "powers": {
+      "arcane protection@@fantasy": {
+        "label": "Arcane Protection",
+        "source": "fantasy/116?highlight=ARCANE%20PROTECTION"
+      },
       "arcane protection@@swade": {
         "label": "Arcane protection",
         "source": "swade/154?highlight=Arcane%20Protection"
@@ -1880,13 +1932,25 @@
         "label": "Backwash",
         "source": "sfc/209?highlight=BACKWASH"
       },
+      "banish@@fantasy": {
+        "label": "Banish",
+        "source": "fantasy/117?highlight=BANISH"
+      },
       "banish@@swade": {
         "label": "Banish",
         "source": "swade/154?highlight=Banish"
       },
+      "barrier@@fantasy": {
+        "label": "Barrier",
+        "source": "fantasy/117?highlight=BARRIER"
+      },
       "barrier@@swade": {
         "label": "Barrier",
         "source": "swade/154?highlight=Barrier"
+      },
+      "beast friend@@fantasy": {
+        "label": "Beast friend",
+        "source": "fantasy/117?highlight=BEAST%20FRIEND"
       },
       "beast friend@@swade": {
         "label": "Beast friend",
@@ -1896,13 +1960,29 @@
         "label": "Black Hole",
         "source": "sfc/209?highlight=BLACK%20HOLE"
       },
+      "blast@@fantasy": {
+        "label": "Blast",
+        "source": "fantasy/118?highlight=BLAST"
+      },
       "blast@@swade": {
         "label": "Blast",
         "source": "swade/155?highlight=Blast"
       },
+      "blessing@@fantasy": {
+        "label": "Blessing",
+        "source": "fantasy/118?highlight=BLESSING"
+      },
+      "blind@@fantasy": {
+        "label": "Blind",
+        "source": "fantasy/118?highlight=BLIND"
+      },
       "blind@@swade": {
         "label": "Blind",
         "source": "swade/155?highlight=Blind"
+      },
+      "bolt@@fantasy": {
+        "label": "Bolt",
+        "source": "fantasy/118?highlight=BOLT"
       },
       "bolt@@swade": {
         "label": "Bolt",
@@ -1915,9 +1995,37 @@
           "Boost/lower trait"
         ]
       },
+      "boost/lower trait@@fantasy": {
+        "label": "Boost/Lower Trait",
+        "source": "fantasy/119?highlight=BOOST%2FLOWER%20TRAIT"
+      },
+      "burrower@@fantasy": {
+        "label": "Burrower",
+        "source": "fantasy/141?highlight=Burrower"
+      },
+      "burst@@fantasy": {
+        "label": "Burst",
+        "source": "fantasy/120?highlight=BURST"
+      },
       "burst@@swade": {
         "label": "Burst",
         "source": "swade/156?highlight=Burst"
+      },
+      "chimera@@fantasy": {
+        "label": "Chimera",
+        "source": "fantasy/141?highlight=Chimera"
+      },
+      "cockatrice@@fantasy": {
+        "label": "Cockatrice",
+        "source": "fantasy/141?highlight=Cockatrice"
+      },
+      "confusion@@fantasy": {
+        "label": "Confusion",
+        "source": "fantasy/120?highlight=CONFUSION"
+      },
+      "conjure item@@fantasy": {
+        "label": "Conjure Item",
+        "source": "fantasy/119?highlight=CONJURE%20ITEM"
       },
       "control machine@@sfc": {
         "label": "Control Machine",
@@ -1927,41 +2035,161 @@
         "label": "Create Item",
         "source": "sfc/209?highlight=CREATE%20ITEM"
       },
+      "crocotta@@fantasy": {
+        "label": "Crocotta",
+        "source": "fantasy/141?highlight=Crocotta"
+      },
+      "curse@@fantasy": {
+        "label": "Curse",
+        "source": "fantasy/121?highlight=CURSE"
+      },
+      "d mystic intervention@@fantasy": {
+        "label": "D Mystic Intervention",
+        "source": "fantasy/131?highlight=D%20MYSTIC%20INTERVENTION"
+      },
+      "d plane shift@@fantasy": {
+        "label": "D Plane Shift",
+        "source": "fantasy/133?highlight=D%20PLANE%20SHIFT"
+      },
+      "d sanctuary@@fantasy": {
+        "label": "D Sanctuary",
+        "source": "fantasy/135?highlight=D%20SANCTUARY"
+      },
+      "d summon undead elemental (elder)@@fantasy": {
+        "label": "D SUMMON UNDEAD Elemental (Elder)",
+        "source": "fantasy/141?highlight=D%20SUMMON%20UNDEAD%20Elemental%20(Elder)"
+      },
+      "d time stop@@fantasy": {
+        "label": "D Time Stop",
+        "source": "fantasy/143?highlight=D%20TIME%20STOP"
+      },
+      "d wish@@fantasy": {
+        "label": "D Wish",
+        "source": "fantasy/144?highlight=D%20WISH"
+      },
+      "damage field@@fantasy": {
+        "label": "Damage Field",
+        "source": "fantasy/121?highlight=DAMAGE%20FIELD"
+      },
+      "darkmantle@@fantasy": {
+        "label": "Darkmantle",
+        "source": "fantasy/141?highlight=Darkmantle"
+      },
+      "darksight@@fantasy": {
+        "label": "Darksight",
+        "source": "fantasy/121?highlight=DARKSIGHT"
+      },
+      "deflection@@fantasy": {
+        "label": "Deflection",
+        "source": "fantasy/121?highlight=DEFLECTION"
+      },
       "detect / conceal arcana@@swade": {
         "label": "Detect / conceal arcana",
         "source": "swade/157?highlight=Detect%20%2F%20Conceal%20Arcana"
+      },
+      "detect/conceal arcana@@fantasy": {
+        "label": "Detect/Conceal Arcana",
+        "source": "fantasy/122?highlight=DETECT%2FCONCEAL%20ARCANA"
+      },
+      "disguise@@fantasy": {
+        "label": "Disguise",
+        "source": "fantasy/122?highlight=DISGUISE"
       },
       "disguise@@swade": {
         "label": "Disguise",
         "source": "swade/157?highlight=Disguise"
       },
+      "dispel@@fantasy": {
+        "label": "Dispel",
+        "source": "fantasy/123?highlight=DISPEL"
+      },
       "dispel@@swade": {
         "label": "Dispel",
         "source": "swade/157?highlight=Dispel"
+      },
+      "divination@@fantasy": {
+        "label": "Divination",
+        "source": "fantasy/123?highlight=DIVINATION"
+      },
+      "drain power points@@fantasy": {
+        "label": "Drain Power Points",
+        "source": "fantasy/124?highlight=DRAIN%20POWER%20POINTS"
       },
       "drain power points@@swade": {
         "label": "Drain power points",
         "source": "swade/159?highlight=Drain%20Power%20Points"
       },
+      "drake@@fantasy": {
+        "label": "Drake",
+        "source": "fantasy/141?highlight=Drake"
+      },
+      "elemental manipulation@@fantasy": {
+        "label": "Elemental manipulation",
+        "source": "fantasy/124?highlight=ELEMENTAL%20MANIPULATION"
+      },
       "elemental manipulation@@swade": {
         "label": "Elemental manipulation",
         "source": "swade/159?highlight=Elemental%20Manipulation"
+      },
+      "empathy@@fantasy": {
+        "label": "Empathy",
+        "source": "fantasy/125?highlight=EMPATHY"
       },
       "empathy@@swade": {
         "label": "Empathy",
         "source": "swade/159?highlight=Empathy"
       },
+      "entangle@@fantasy": {
+        "label": "Entangle",
+        "source": "fantasy/126?highlight=ENTANGLE"
+      },
+      "environmental protection@@fantasy": {
+        "label": "Environmental Protection",
+        "source": "fantasy/126?highlight=ENVIRONMENTAL%20PROTECTION"
+      },
       "environmental protection@@swade": {
         "label": "Environmental protection",
         "source": "swade/160?highlight=Environmental%20Protection"
+      },
+      "f object reading@@fantasy": {
+        "label": "F Object Reading",
+        "source": "fantasy/132?highlight=F%20OBJECT%20READING"
+      },
+      "f relief@@fantasy": {
+        "label": "F Relief",
+        "source": "fantasy/134?highlight=F%20RELIEF"
+      },
+      "f summon ally@@fantasy": {
+        "label": "F Summon Ally",
+        "source": "fantasy/138?highlight=F%20SUMMON%20ALLY"
+      },
+      "f telekinesis teleport@@fantasy": {
+        "label": "F Telekinesis Teleport",
+        "source": "fantasy/142?highlight=F%20TELEKINESIS%20TELEPORT"
+      },
+      "f zombie@@fantasy": {
+        "label": "F Zombie",
+        "source": "fantasy/145?highlight=F%20ZOMBIE"
+      },
+      "farsight@@fantasy": {
+        "label": "Farsight",
+        "source": "fantasy/126?highlight=FARSIGHT"
       },
       "farsight@@swade": {
         "label": "Farsight",
         "source": "swade/160?highlight=Farsight"
       },
+      "fear@@fantasy": {
+        "label": "Fear",
+        "source": "fantasy/126?highlight=FEAR"
+      },
       "fear@@swade": {
         "label": "Fear",
         "source": "swade/161?highlight=Fear"
+      },
+      "fly@@fantasy": {
+        "label": "Fly",
+        "source": "fantasy/127?highlight=FLY"
       },
       "fly@@swade": {
         "label": "Fly",
@@ -1975,9 +2203,21 @@
         "label": "Gravitate",
         "source": "sfc/210?highlight=GRAVITATE"
       },
+      "greater blast@@fantasy": {
+        "label": "Greater Blast",
+        "source": "fantasy/118?highlight=GREATER%20BLAST"
+      },
       "growth / shrink@@swade": {
         "label": "Growth / shrink",
         "source": "swade/161?highlight=Growth%20%2F%20Shrink"
+      },
+      "growth/shrink@@fantasy": {
+        "label": "Growth/Shrink",
+        "source": "fantasy/127?highlight=GROWTH%2FSHRINK"
+      },
+      "havoc@@fantasy": {
+        "label": "Havoc",
+        "source": "fantasy/127?highlight=HAVOC"
       },
       "havoc@@swade": {
         "label": "Havoc",
@@ -1987,17 +2227,33 @@
         "label": "Haywire",
         "source": "sfc/211?highlight=HAYWIRE"
       },
+      "healing@@fantasy": {
+        "label": "Healing",
+        "source": "fantasy/127?highlight=HEALING"
+      },
       "healing@@swade": {
         "label": "Healing",
         "source": "swade/161?highlight=Healing"
+      },
+      "illusion@@fantasy": {
+        "label": "Illusion",
+        "source": "fantasy/128?highlight=ILLUSION"
       },
       "illusion@@swade": {
         "label": "Illusion",
         "source": "swade/162?highlight=Illusion"
       },
+      "intangibility@@fantasy": {
+        "label": "Intangibility",
+        "source": "fantasy/128?highlight=INTANGIBILITY"
+      },
       "intangibility@@swade": {
         "label": "Intangibility",
         "source": "swade/162?highlight=Intangibility"
+      },
+      "invisibility@@fantasy": {
+        "label": "Invisibility",
+        "source": "fantasy/129?highlight=INVISIBILITY"
       },
       "invisibility@@swade": {
         "label": "Invisibility",
@@ -2007,21 +2263,45 @@
         "label": "Light / darkness",
         "source": "swade/163?highlight=Light%20%2F%20Darkness"
       },
+      "light/darkness@@fantasy": {
+        "label": "Light/Darkness",
+        "source": "fantasy/129?highlight=LIGHT%2FDARKNESS"
+      },
+      "locate@@fantasy": {
+        "label": "Locate",
+        "source": "fantasy/130?highlight=LOCATE"
+      },
       "locate@@sfc": {
         "label": "Locate",
         "source": "sfc/211?highlight=LOCATE"
+      },
+      "lock/unlock@@fantasy": {
+        "label": "Lock/Unlock",
+        "source": "fantasy/130?highlight=LOCK%2FUNLOCK"
       },
       "lock/unlock@@sfc": {
         "label": "Lock/Unlock",
         "source": "sfc/211?highlight=LOCK%2FUNLOCK"
       },
+      "mind link@@fantasy": {
+        "label": "Mind Link",
+        "source": "fantasy/130?highlight=MIND%20LINK"
+      },
       "mind link@@swade": {
         "label": "Mind link",
         "source": "swade/163?highlight=Mind%20Link"
       },
+      "mind reading@@fantasy": {
+        "label": "Mind Reading",
+        "source": "fantasy/131?highlight=MIND%20READING"
+      },
       "mind reading@@swade": {
         "label": "Mind reading",
         "source": "swade/163?highlight=Mind%20Reading"
+      },
+      "mind wipe@@fantasy": {
+        "label": "Mind Wipe",
+        "source": "fantasy/131?highlight=MIND%20WIPE"
       },
       "mind wipe@@swade": {
         "label": "Mind wipe",
@@ -2039,6 +2319,10 @@
         "label": "Protection",
         "source": "swade/164?highlight=Protection"
       },
+      "puppet distracted, or vulnerable. a raise on the@@fantasy": {
+        "label": "PUPPET Distracted, or Vulnerable. A raise on the",
+        "source": "fantasy/134?highlight=PUPPET%20Distracted%2C%20or%20Vulnerable.%20A%20raise%20on%20the"
+      },
       "puppet@@swade": {
         "label": "Puppet",
         "source": "swade/164?highlight=Puppet"
@@ -2051,6 +2335,10 @@
         "label": "Relief",
         "source": "swade/165?highlight=Relief"
       },
+      "resurrection@@fantasy": {
+        "label": "Resurrection",
+        "source": "fantasy/135?highlight=RESURRECTION"
+      },
       "resurrection@@swade": {
         "label": "Resurrection",
         "source": "swade/165?highlight=Resurrection"
@@ -2058,6 +2346,10 @@
       "scrying@@sfc": {
         "label": "Scrying",
         "source": "sfc/212?highlight=SCRYING"
+      },
+      "shape change@@fantasy": {
+        "label": "Shape Change",
+        "source": "fantasy/136?highlight=SHAPE%20CHANGE"
       },
       "shape change@@sfc": {
         "label": "Shape Change",
@@ -2071,6 +2363,18 @@
         "label": "Sloth / speed",
         "source": "swade/166?highlight=Sloth%20%2F%20Speed"
       },
+      "sloth/speed@@fantasy": {
+        "label": "Sloth/Speed",
+        "source": "fantasy/136?highlight=SLOTH%2FSPEED"
+      },
+      "slumber@@fantasy": {
+        "label": "Slumber",
+        "source": "fantasy/137?highlight=SLUMBER"
+      },
+      "smite@@fantasy": {
+        "label": "Smite",
+        "source": "fantasy/137?highlight=SMITE"
+      },
       "smite@@swade": {
         "label": "Smite",
         "source": "swade/167?highlight=Smite"
@@ -2079,13 +2383,25 @@
         "label": "Sound / silence",
         "source": "swade/167?highlight=Sound%20%2F%20Silence"
       },
+      "speak language@@fantasy": {
+        "label": "Speak Language",
+        "source": "fantasy/138?highlight=SPEAK%20LANGUAGE"
+      },
       "speak language@@swade": {
         "label": "Speak language",
         "source": "swade/167?highlight=Speak%20Language"
       },
+      "stun@@fantasy": {
+        "label": "Stun",
+        "source": "fantasy/138?highlight=STUN"
+      },
       "stun@@swade": {
         "label": "Stun",
         "source": "swade/167?highlight=Stun"
+      },
+      "summon ally@@fantasy": {
+        "label": "Summon Ally",
+        "source": "fantasy/138?highlight=SUMMON%20ALLY"
       },
       "summon ally@@sfc": {
         "label": "Summon Ally",
@@ -2119,6 +2435,14 @@
         "label": "Time Stop",
         "source": "sfc/215?highlight=TIME%20STOP"
       },
+      "travel back through time: the caster@@fantasy": {
+        "label": "TRAVEL BACK THROUGH TIME: The caster",
+        "source": "fantasy/144?highlight=TRAVEL%20BACK%20THROUGH%20TIME%3A%20The%20caster"
+      },
+      "wall walker@@fantasy": {
+        "label": "Wall Walker",
+        "source": "fantasy/143?highlight=WALL%20WALKER"
+      },
       "wall walker@@swade": {
         "label": "Wall walker",
         "source": "swade/169?highlight=Wall%20Walker"
@@ -2130,6 +2454,22 @@
       "zombie@@swade": {
         "label": "Zombie",
         "source": "swade/170?highlight=Zombie"
+      },
+      "  greater mind wipe (+2): the effect@@fantasy": {
+        "label": "  GREATER MIND WIPE (+2): The effect",
+        "source": "fantasy/131?highlight=%C2%90%20%C2%90%20GREATER%20MIND%20WIPE%20(%2B2)%3A%20The%20effect"
+      },
+      "  greater smite (+2): the weapon's@@fantasy": {
+        "label": "  GREATER SMITE (+2): The weapon’s",
+        "source": "fantasy/137?highlight=%C2%90%20%C2%90%20GREATER%20SMITE%20(%2B2)%3A%20The%20weapon%E2%80%99s"
+      },
+      "  greater speak language (+2): the@@fantasy": {
+        "label": "  GREATER SPEAK LANGUAGE (+2): The",
+        "source": "fantasy/138?highlight=%C2%90%20%C2%90%20GREATER%20SPEAK%20LANGUAGE%20(%2B2)%3A%20The"
+      },
+      "  mass understanding (+5): t he@@fantasy": {
+        "label": "  MASS UNDERSTANDING (+5): T he",
+        "source": "fantasy/138?highlight=%C2%90%20%C2%90%20MASS%20UNDERSTANDING%20(%2B5)%3A%20T%20he"
       }
     },
     "rules": {},
