@@ -2424,6 +2424,9 @@
   function openSidebarMarkdownEditor(kind) {
     const activeDoc = kind === 'current' ? (window.GM.sidebarData?.getActiveDocument?.() || null) : null;
     const label = kind === 'current' ? (activeDoc?.name || 'Current') : 'Rules';
+    const dataStatusAtOpen = window.GM.data?.getStatus?.() || {};
+    const readOnlyAtOpen = Boolean(dataStatusAtOpen.readOnly);
+    const connectedAtOpen = Boolean(dataStatusAtOpen.connected);
     const initialMarkdown = kind === 'current' ? String(activeDoc?.markdown || '') : (window.GM.sidebarData?.getRulesMarkdown?.() || '');
     const activeSectionKind = kind === 'current'
       ? (String(activeDoc?.path || '').match(/^(characters|monsters|notes)\//i) ? 'entity' : 'current')
@@ -2438,8 +2441,11 @@
     const saveBtn = document.createElement('button');
     saveBtn.type = 'button';
     saveBtn.className = 'primary';
-    saveBtn.textContent = 'Save';
-    saveBtn.disabled = !!window.GM.data?.getStatus?.().readOnly;
+    saveBtn.textContent = readOnlyAtOpen
+      ? 'Save (read-only)'
+      : (!connectedAtOpen ? 'Save (connect folder first)' : 'Save');
+    saveBtn.disabled = !connectedAtOpen || readOnlyAtOpen;
+    saveBtn.classList.toggle('is-disabled-state', saveBtn.disabled);
 
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
@@ -2452,6 +2458,27 @@
     actions.appendChild(saveBtn);
     actions.appendChild(cancelBtn);
     actions.appendChild(statusEl);
+
+    const saveHint = document.createElement('span');
+    saveHint.className = 'sidebar-md-save-hint';
+    saveHint.setAttribute('aria-live', 'polite');
+    actions.appendChild(saveHint);
+
+    const updateSaveButtonStateWithHint = () => {
+      const status = window.GM.data?.getStatus?.() || {};
+      saveBtn.disabled = !status.connected || !!status.readOnly;
+      saveBtn.classList.toggle('is-disabled-state', saveBtn.disabled);
+      if (!status.connected) {
+        saveBtn.textContent = 'Save (connect folder first)';
+        saveHint.textContent = 'Connect the data folder to save';
+      } else if (status.readOnly) {
+        saveBtn.textContent = 'Save (read-only)';
+        saveHint.textContent = 'Read-only data';
+      } else {
+        saveBtn.textContent = 'Save';
+        saveHint.textContent = '';
+      }
+    };
 
     const hint = document.createElement('p');
     hint.className = 'book-visibility-intro';
@@ -2482,19 +2509,39 @@
     };
 
     const saveMarkdown = async () => {
-      if (window.GM.data?.getStatus?.().readOnly) {
-        statusEl.textContent = 'Read-only server data';
+      const dataStatus = window.GM.data?.getStatus?.() || {};
+      if (!dataStatus.connected) {
+        statusEl.textContent = 'Not connected to a data folder';
+        statusEl.classList.add('unsaved');
         return;
       }
-      const markdown = readMarkdown();
-      if (kind === 'current') {
-        window.GM.sidebarData?.importMarkdownFromText?.('current', markdown, activeSectionKind);
-        await window.GM.sidebarData?.saveActiveDocument?.();
-      } else {
-        window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
+
+      if (dataStatus.readOnly) {
+        statusEl.textContent = 'Read-only server data';
+        statusEl.classList.add('unsaved');
+        return;
       }
-      setDirty(false);
-      window.GM.popup?.hide?.();
+
+      try {
+        const markdown = readMarkdown();
+
+        if (kind === 'current') {
+          window.GM.sidebarData?.importMarkdownFromText?.('current', markdown, activeSectionKind);
+          const saved = await window.GM.sidebarData?.saveActiveDocument?.();
+          if (saved === false) throw new Error('The document save function reported failure.');
+        } else {
+          window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
+        }
+
+        setDirty(false);
+        statusEl.textContent = 'Saved';
+        window.GM.ui?.showToast?.(`Saved ${window.GM.sidebarData?.getActiveDocument?.()?.name || label}`);
+        window.GM.popup?.hide?.();
+      } catch (err) {
+        console.error('Sidebar document save failed', err);
+        statusEl.textContent = `Save failed: ${err?.message || err}`;
+        statusEl.classList.add('unsaved');
+      }
     };
 
     const handleEditorKeydown = (event) => {
@@ -2514,7 +2561,9 @@
     };
 
     window.GM.popup?.show?.({
-      title: `Edit ${label} Markdown`,
+      title: connectedAtOpen
+        ? (readOnlyAtOpen ? `View ${label} (read-only)` : `Edit ${label}`)
+        : `View ${label} — connect data folder to edit`,
       content: wrap,
       className: 'sidebar-md-editor-popup',
       width: 960,
@@ -2658,6 +2707,17 @@
       }
       setDirty(false);
     };
+
+    const updateSaveButtonState = () => {
+      const status = window.GM.data?.getStatus?.() || {};
+      saveBtn.disabled = !status.connected || !!status.readOnly;
+      saveBtn.title = !status.connected
+        ? 'Connect a data folder before saving'
+        : (status.readOnly ? 'Server data is read-only' : 'Save changes');
+      updateSaveButtonStateWithHint();
+    };
+    updateSaveButtonState();
+    window.addEventListener('gm-data-connection-changed', updateSaveButtonState);
 
     requestAnimationFrame(() => {
       editorReady();

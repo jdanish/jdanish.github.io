@@ -4708,3 +4708,19 @@ html[data-theme="light"] .gm-workspace-tab-edit {
   margin: 0.5rem 0;
   border-radius: 4px;
 }
+
+.sidebar-md-save-hint {
+  font-size: 0.78rem;
+  opacity: 0.72;
+  align-self: center;
+}
+
+.sidebar-md-editor-actions .is-disabled-state {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.sidebar-md-save-hint {
+  font-size: 0.78rem;
+  opacity: 0.72;
+  align-self: center;
+}

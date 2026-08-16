@@ -9,6 +9,10 @@ name: Jean Grayson
 
 **Profession**: [[starbreaker_star_marines/33|Psy Commando]]
 
+**Ancestry**: Human
+
+**Rank**: Veteran
+
 **Attributes:** Agility d8, Smarts d8, Spirit d6, Strength d6, Vigor d8
 
 **Skills:** Athletics d8, Battle d4, Common Knowledge d4, Driving d6, Fighting d8, Hacking d4, Notice d6, Persuasion d4, Psionics d10, Repair d6, Shooting d10, Stealth d8, Thievery d4
@@ -148,3 +152,7 @@ name: Jean Grayson
   - **Range:** Smarts
   - **Duration:** 5
   - **Description:** Walk on vertical or horizontal surfaces. Success allows movement at half Pace; a raise allows full Pace and running. Gain +4 to Athletics rolls made to cling to a surface.
+
+### Advances
+
+Shooting d8 and Thievery d4, Vigor d8, Psionics d10, Advanced PsyFocus Loadout, added Living Weapon Edge, Shooting d10, power points edge, add battle + driving (now veteran), repair x 2
