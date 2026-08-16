@@ -1912,12 +1912,7 @@
         "source": "starbreaker_core/91?highlight=Web%20Grenades"
       }
     },
-    "monsters": {
-      "summon monster@@fantasy": {
-        "label": "Summon Monster",
-        "source": "fantasy/140?highlight=SUMMON%20MONSTER"
-      }
-    },
+    "monsters": {},
     "npcs": {},
     "other": {},
     "powers": {
@@ -2047,10 +2042,6 @@
       "curse@@fantasy": {
         "label": "Curse",
         "source": "fantasy/121?highlight=CURSE"
-      },
-      "d mystic intervention@@fantasy": {
-        "label": "D Mystic Intervention",
-        "source": "fantasy/131?highlight=D%20MYSTIC%20INTERVENTION"
       },
       "damage field@@fantasy": {
         "label": "Damage Field",
@@ -2423,6 +2414,10 @@
       "summon animal@@fantasy": {
         "label": "Summon Animal",
         "source": "fantasy/139?highlight=SUMMON%20ANIMAL"
+      },
+      "summon monster@@fantasy": {
+        "label": "Summon Monster",
+        "source": "fantasy/140?highlight=SUMMON%20MONSTER"
       },
       "summon undead@@fantasy": {
         "label": "Summon Undead",
