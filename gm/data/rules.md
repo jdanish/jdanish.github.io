@@ -26,28 +26,28 @@
 
 - [Dice Roller App](https://immaterialplane.com/apps/swdr/)
 - [[swade/89|Bennies]]
-		- Reroll trait
-		- Recover from shaken
-		- [[swade/95?highlight=Soak+Rolls|Soak Rolls]]
-		- Draw a new action card
-		- Reroll damage
-		- Regain power points
-		- Influence the story
+		1. 		Reroll trait
+		2. 		Recover from shaken
+		3. 		[[swade/95?highlight=Soak+Rolls|Soak Rolls]]
+		4. 		Draw a new action card
+		5. 		Reroll damage
+		6. 		Regain power points
+		7. 		Influence the story
 - [[swade/112?highlight=Chases%20%26%20Vehicles%20in%20SWADE|Chases & Vehicles]] ([[chase_ref/1|Chase Reference]])
 - [[swade/91?highlight=JOKERS|Jokers]]
-	- Side gains Bennies ([[swade/88?highlight=JOKER%E2%80%99S+WILD|JOKER’S WILD]])
-	- Player who drew it can hold and go whenever, interrupting
-	- Individual or group gets +2 to trait and damage rolls this turn
-	- Reshuffle
+		1. 	Side gains Bennies ([[swade/88?highlight=JOKER%E2%80%99S+WILD|JOKER’S WILD]])
+		2. 	Player who drew it can hold and go whenever, interrupting
+		3. 	Individual or group gets +2 to trait and damage rolls this turn
+		4. 	Reshuffle
 - [[swade/146?highlight=Powers|Powers]]
   - [[swade/149?highlight=Trappings|Trappings]]
   - [[swade/150?highlight=Activation|Activation]]
   - [[swade/151?highlight=Power%20Modifiers|Power Modifiers]]
   - [[swade/150?highlight=Recharging|Recharging]]: 5 Power Points per hour spent resting
 - [[swade/99?highlight=Fatigue|Fatigue]]
-	- FATIGUED: The victim subtracts 1 from all Trait rolls. One more Fatigue -> Exhausted.
-	- EXHAUSTED: The victim subtracts 2 from all Trait rolls. One more Fatigue -> Incapacitated.
-	- INCAPACITATED: The victim cannot perform actions and may be unconscious (GM’s call).
+		1. 	FATIGUED: The victim subtracts 1 from all Trait rolls. One more Fatigue -> Exhausted.
+		2. 	EXHAUSTED: The victim subtracts 2 from all Trait rolls. One more Fatigue -> Incapacitated.
+		3. 	INCAPACITATED: The victim cannot perform actions and may be unconscious (GM’s call).
 - [[swade/123?highlight=Fear|Fear / Terror]]
 	- The heroes make a Fear check (a Spirit roll as a free action) when they first spot a creature with the Fear ability.
 
