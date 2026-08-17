@@ -87,7 +87,54 @@
     }
   }
 
+  const GM_PAGE_PASSWORD = 'gmstellaluna24';
+  let gmPageUnlocked = false;
+
+  function requirePagePassword() {
+    if (gmPageUnlocked) return true;
+
+    document.documentElement.classList.add('gm-password-locked');
+    if (document.querySelector('.gm-password-overlay')) return false;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'gm-password-overlay';
+    overlay.innerHTML = `
+      <div class="gm-password-card" role="dialog" aria-modal="true" aria-labelledby="gm-password-title">
+        <h1 id="gm-password-title">Game Master</h1>
+        <p>Enter the password to open the GM tools.</p>
+        <form class="gm-password-form">
+          <input type="password" autocomplete="current-password" aria-label="Password" required>
+          <button type="submit">Unlock</button>
+          <div class="gm-password-error" aria-live="polite"></div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    const form = overlay.querySelector('.gm-password-form');
+    const input = form?.querySelector('input');
+    const error = overlay.querySelector('.gm-password-error');
+
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (input?.value === GM_PAGE_PASSWORD) {
+        gmPageUnlocked = true;
+        overlay.remove();
+        document.documentElement.classList.remove('gm-password-locked');
+        window.dispatchEvent(new CustomEvent('gm-page-unlocked'));
+        init().catch(console.error);
+        return;
+      }
+      if (error) error.textContent = 'Incorrect password.';
+      input?.select?.();
+    });
+
+    window.setTimeout(() => input?.focus?.(), 0);
+    return false;
+  }
+
   async function init() {
+    if (!requirePagePassword()) return;
     window.GM.storage = window.GM.storage || {};
     registerPwa().catch(() => {});
 

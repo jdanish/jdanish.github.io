@@ -4724,3 +4724,14 @@ html[data-theme="light"] .gm-workspace-tab-edit {
   opacity: 0.72;
   align-self: center;
 }
+
+html.gm-password-locked body > * { visibility: hidden; }
+html.gm-password-locked .gm-password-overlay { visibility: visible; }
+.gm-password-overlay { position: fixed; inset: 0; z-index: 2147483647; display: grid; place-items: center; padding: 1rem; background: rgba(0,0,0,.82); }
+.gm-password-card { width: min(92vw, 380px); padding: 1.4rem; border-radius: 12px; background: var(--sidebar-bg, #222); color: var(--sidebar-text, #fff); box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+.gm-password-card h1 { margin: 0 0 .4rem; font-size: 1.25rem; }
+.gm-password-card p { margin: 0 0 1rem; opacity: .8; }
+.gm-password-form { display: grid; gap: .65rem; }
+.gm-password-form input { width: 100%; box-sizing: border-box; padding: .7rem .8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,.2); }
+.gm-password-form button { padding: .7rem .8rem; border-radius: 8px; }
+.gm-password-error { min-height: 1.1rem; color: #ff8c8c; font-size: .85rem; }
