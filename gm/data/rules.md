@@ -42,7 +42,7 @@
 - [[swade/146?highlight=Powers|Powers]]
   - [[swade/149?highlight=Trappings|Trappings]]
   - [[swade/150?highlight=Activation|Activation]]
-  - [[swade/151?highlight=Power%20Modifiers|Power Modifiers]]
+  - [[swade/151?highlight=Power%20Modifiers|Power Modifiers]] (Armor piercing, fatigue, glow/shroud, heavy weapon, hinder/hurry, lingering damage, range, selective)
   - [[swade/150?highlight=Recharging|Recharging]]: 5 Power Points per hour spent resting
 - [[swade/99?highlight=Fatigue|Fatigue]]
 		1. 	FATIGUED: The victim subtracts 1 from all Trait rolls. One more Fatigue -> Exhausted.
