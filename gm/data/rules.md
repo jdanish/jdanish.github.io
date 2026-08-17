@@ -62,3 +62,9 @@
 Each inch of movement spent climbing, crawling, or swimming uses 2″ of Pace.
 
 **Running**: A hero can choose to “run”, increasing her Pace for the round by her Running die (a d6 by default) at the cost of a −2 penalty to all other actions that turn. Running dice never Ace.
+
+# My motivations for this tool
+
+This tool is intended to help me as both a player and GM of Savage Worlds games. In particular, I find I enjoy looking at / through the books and want to rely upon them. Therefore, the challenge is in tracking all of the books I have, and all of the information that might be relevant in them in one place. I decided to handle that by building an app that holds all the pdfs inside of it, and allows me to keep notes about the rules, current game, and specific characters in an environment where I can quickly and easily link to the spots in the books that describe them in detail. I hope to continue making it robust in this kind of usage to match how I like to read, learn, and play.
+
+I appreciate character builders like savaged.us or dicey.cc nad so want this to work with them by importing data. However, they already handle validation which is a huge task I don't want to mess with. I prefer rolling dice physically, and so have a link to a tool if I ever don't have my dice handy, but otherwise don't need / want to integrate it further since I'd rather use those nice dice I bought. Other tools handle maps, initiative, and other tracking. I might decide to integrate some of that better, but I like that those other tools also share that information over the web. I am still considering it, though. For now I handle player-level tracking and assume other players handle their own, but will reconsider. I want to focus primarily on things I like that are not already being built by others.
