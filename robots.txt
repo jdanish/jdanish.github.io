@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /gm/data/
+Disallow: /gm/server-data.json
