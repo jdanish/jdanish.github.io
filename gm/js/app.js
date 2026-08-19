@@ -93,6 +93,17 @@
   function requirePagePassword() {
     if (gmPageUnlocked) return true;
 
+    const isLocalDevelopment =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '[::1]';
+
+    if (isLocalDevelopment) {
+      gmPageUnlocked = true;
+      document.documentElement.classList.remove('gm-password-locked');
+      return true;
+    }
+
     document.documentElement.classList.add('gm-password-locked');
     if (document.querySelector('.gm-password-overlay')) return false;
 
@@ -151,7 +162,7 @@
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
         // Cache-bust the reference-index module so browser deployments cannot
         // keep an older copy whose helpers do not match the current scanner.
-        moduleUrl.searchParams.set('v', '20260816-save-readonly-title');
+        moduleUrl.searchParams.set('v', '20260818-local-password-clean-editor');
         await import(moduleUrl.href);
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);

@@ -2415,6 +2415,12 @@
     } catch {
       // ignore
     }
+    try {
+      sidebarMarkdownEditorState.editorPreviewObserver?.disconnect?.();
+    } catch {}
+    try { sidebarMarkdownEditorState.savedPreviewObserver?.disconnect?.(); } catch {}
+    sidebarMarkdownEditorState.savedPreviewObserver = null;
+    sidebarMarkdownEditorState.editorPreviewObserver = null;
     sidebarMarkdownEditorState.kind = null;
     sidebarMarkdownEditorState.editor = null;
     sidebarMarkdownEditorState.fallbackTextarea = null;
@@ -2457,6 +2463,7 @@
 
     actions.appendChild(saveBtn);
     actions.appendChild(cancelBtn);
+
     actions.appendChild(statusEl);
 
     const saveHint = document.createElement('span');
@@ -2585,10 +2592,61 @@
       sidebarMarkdownEditorState.unbindKeydown = () => document.removeEventListener('keydown', handleEditorKeydown, true);
     };
 
+    let editorPreviewObserver = null;
+
     const bindEditorPreviewImages = () => {
-      const previews = wrap.querySelectorAll?.('.editor-preview-side, .editor-preview');
-      previews?.forEach?.((preview) => {
-        window.GM.sidebarData?.resolveSidebarImages?.(preview).catch?.(() => {});
+      const previews = Array.from(wrap.querySelectorAll?.('.editor-preview-side, .editor-preview') || []);
+      previews.forEach((preview) => {
+        const savedRoot = preview.querySelector?.('[data-gm-saved-render-preview="true"]') || preview;
+        window.GM.sidebarData?.resolveSidebarImages?.(savedRoot).catch?.(() => {});
+      });
+
+      if (!editorPreviewObserver && previews.length) {
+        editorPreviewObserver = new MutationObserver(() => {
+          previews.forEach((preview) => {
+            const savedRoot = preview.querySelector?.('[data-gm-saved-render-preview="true"]') || preview;
+            window.GM.sidebarData?.resolveSidebarImages?.(savedRoot).catch?.(() => {});
+          });
+        });
+
+        previews.forEach((preview) => {
+          editorPreviewObserver.observe(preview, { childList: true, subtree: true });
+        });
+        sidebarMarkdownEditorState.editorPreviewObserver = editorPreviewObserver;
+      }
+    };
+
+
+
+
+    const renderSavedPreviewPane = () => {
+      const renderer = window.GM.renderSavedSidebarMarkdown;
+      if (typeof renderer !== 'function') return;
+
+      const previewRoots = Array.from(
+        wrap.querySelectorAll?.('.editor-preview-side, .editor-preview') || []
+      );
+      if (!previewRoots.length) return;
+
+      let markdown = '';
+      try {
+        markdown = readMarkdown();
+      } catch {
+        return;
+      }
+
+      previewRoots.forEach((root) => {
+        if (!root.classList.contains('editor-preview-active') &&
+            !root.closest('.editor-preview-active')) return;
+
+        try {
+          const rendered = renderer(markdown);
+          root.innerHTML = `<div class="gm-saved-render-preview" data-gm-saved-render-preview="true">${rendered}</div>`;
+          window.GM.sidebarData?.resolveSidebarImages?.(root).catch?.(() => {});
+        } catch (err) {
+          console.error('Saved Markdown preview renderer failed', err);
+          root.textContent = `Preview failed: ${err?.message || err}`;
+        }
       });
     };
 
@@ -2609,17 +2667,6 @@
             forceSync: true,
             autoDownloadFontAwesome: false,
             initialValue: initialMarkdown,
-            previewRender: (plainText) => {
-              try {
-                const renderer = window.GM.sidebarData?.renderMarkdownToHtml;
-                if (typeof renderer === 'function') {
-                  return renderer(plainText);
-                }
-              } catch (err) {
-                console.warn('Sidebar Markdown preview renderer failed', err);
-              }
-              return String(plainText || '');
-            },
             toolbar: [
               'bold',
               'italic',
@@ -2639,13 +2686,8 @@
               'image',
               'table',
               'code',
-              '|',
-              'preview',
-              'side-by-side',
-              'fullscreen',
               'guide',
-            ],
-          });
+            ]          });
 
           ta.style.display = 'none';
           const cm = sidebarMarkdownEditorState.editor.codemirror;
@@ -2718,7 +2760,6 @@
     };
     updateSaveButtonState();
     window.addEventListener('gm-data-connection-changed', updateSaveButtonState);
-
     requestAnimationFrame(() => {
       editorReady();
       window.setTimeout(bindEditorPreviewImages, 0);
