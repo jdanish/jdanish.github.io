@@ -4984,3 +4984,9 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
 .sidebar-md-editor .fullscreen {
   display: none !important;
 }
+
+@media (max-width: 760px) {
+  .pdf-frame {
+    touch-action: pan-x pan-y;
+  }
+}

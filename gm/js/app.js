@@ -87,7 +87,7 @@
     }
   }
 
-  const GM_PAGE_PASSWORD = 'gmstellaluna24';
+  const GM_PAGE_PASSWORD = 'gm';
   let gmPageUnlocked = false;
 
   function requirePagePassword() {

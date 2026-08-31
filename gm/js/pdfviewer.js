@@ -332,6 +332,9 @@
     } catch {}
 
     try {
+      viewer._pinchZoomCleanup?.();
+    } catch {}
+    try {
       if (viewer.iframe) viewer.iframe.src = 'about:blank';
     } catch {}
 
@@ -576,6 +579,93 @@
     viewerState.appListenersInstalled.add(app);
   }
 
+
+  function installMobilePinchZoom(tab, app) {
+    if (!isMobileViewerMode() || !app || !app.pdfViewer) return;
+
+    const viewer = viewerState.viewers.get(tab);
+    if (!viewer || viewer.pinchZoomInstalled) return;
+
+    const iframe = viewer.iframe;
+    const doc = iframe?.contentDocument;
+    if (!doc) return;
+
+    const container = doc.querySelector('#viewerContainer') || doc.querySelector('.pdfViewer');
+    if (!container) {
+      // PDF.js may not have created its viewer DOM yet.
+      window.setTimeout(() => installMobilePinchZoom(tab, app), 100);
+      return;
+    }
+
+    let startDistance = 0;
+    let startScale = 1;
+    let activePinch = false;
+
+    const distance = (touches) => {
+      const a = touches[0];
+      const b = touches[1];
+      const dx = Number(b.clientX) - Number(a.clientX);
+      const dy = Number(b.clientY) - Number(a.clientY);
+      return Math.hypot(dx, dy);
+    };
+
+    const getScale = () => {
+      const pdfViewer = app.pdfViewer;
+      const value = Number(pdfViewer.currentScale);
+      if (Number.isFinite(value) && value > 0) return value;
+
+      const valueFromString = Number.parseFloat(String(pdfViewer.currentScaleValue || '').replace('%', ''));
+      if (Number.isFinite(valueFromString) && valueFromString > 0) {
+        return valueFromString > 10 ? valueFromString / 100 : valueFromString;
+      }
+
+      return 1;
+    };
+
+    const onTouchStart = (event) => {
+      if (event.touches.length !== 2) return;
+      startDistance = distance(event.touches);
+      startScale = getScale();
+      activePinch = startDistance > 0;
+    };
+
+    const onTouchMove = (event) => {
+      if (!activePinch || event.touches.length !== 2 || startDistance <= 0) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const currentDistance = distance(event.touches);
+      if (!currentDistance) return;
+
+      const nextScale = Math.max(0.5, Math.min(4, startScale * (currentDistance / startDistance)));
+      try {
+        app.pdfViewer.currentScale = nextScale;
+      } catch (err) {
+        console.warn('Mobile PDF pinch zoom failed', err);
+      }
+    };
+
+    const endPinch = () => {
+      activePinch = false;
+      startDistance = 0;
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: false });
+    container.addEventListener('touchend', endPinch, { passive: true });
+    container.addEventListener('touchcancel', endPinch, { passive: true });
+
+    // Do not block normal one-finger PDF scrolling/panning.
+    viewer.pinchZoomInstalled = true;
+    viewer._pinchZoomCleanup = () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', endPinch);
+      container.removeEventListener('touchcancel', endPinch);
+    };
+  }
+
   async function ensureViewerLoaded(tab) {
     const viewer = createViewer(tab);
 
@@ -602,6 +692,7 @@
 
         if (app) {
           installAppListeners(tab, app);
+          installMobilePinchZoom(tab, app);
           viewer.lastSyncedPdfPage = Number(app?.pdfViewer?.currentPageNumber || app?.page || 1);
           if (viewer.pendingDisplayPage !== null && viewer.pendingDisplayPage !== undefined) {
             const pendingPage = Number(viewer.pendingDisplayPage) || getDisplayPage(tab);
