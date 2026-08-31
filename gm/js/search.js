@@ -770,7 +770,15 @@
         const tab = result.dataset.tab;
         const page = Number(result.dataset.page) || 1;
         const highlightText = result.dataset.highlight || '';
+
+        // On mobile, close the search/sidebar only after the PDF navigation has
+        // completed. Closing it first can interrupt the viewer transition.
         await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
+
+        if (window.GM.ui?.isMobileSidebarViewport?.()
+            && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
+          window.GM.ui?.setMobileSidebarOpen?.(false);
+        }
       });
       searchState.dom.sidebarContentEl.dataset.searchResultBound = 'true';
     }

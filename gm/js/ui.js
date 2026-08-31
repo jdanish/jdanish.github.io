@@ -3521,6 +3521,9 @@
     renderWorkspaceTabs,
     setCurrentSubTabBySectionKey,
     getSidebarTab,
+    isMobileSidebarViewport,
+    setMobileSidebarOpen,
+
     setSidebarTab,
     registerSidebarSearchEntry,
     clearSidebarSearchIndex,
