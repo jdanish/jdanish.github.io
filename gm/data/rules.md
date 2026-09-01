@@ -37,6 +37,7 @@
 - [[swade/91?highlight=JOKERS|Jokers]]
 		1. 	Side gains Bennies ([[swade/88?highlight=JOKER%E2%80%99S+WILD|JOKER’S WILD]])
 		2. 	Player who drew it can hold and go whenever, interrupting
+			- Note: [[swade/101?highlight=Interrupting+Actions%3A|Interrupting Actions]]
 		3. 	Individual or group gets +2 to trait and damage rolls this turn
 		4. 	Reshuffle
 - [[swade/146?highlight=Powers|Powers]]
