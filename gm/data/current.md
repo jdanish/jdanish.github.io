@@ -1,4 +1,4 @@
-# Siera Kilo
+# Sierra Kilo
 
 Today:
 - USS Madrid is our ship
