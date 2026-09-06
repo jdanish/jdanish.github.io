@@ -206,6 +206,12 @@
     window.GM.notes?.init?.();
     window.GM.search?.init?.();
     window.GM.ui?.init?.();
+    try {
+      const sharedConfig = await window.GM.data?.readFile?.('config.js');
+      if (sharedConfig) window.GM.ui?.loadSharedBookConfig?.(sharedConfig);
+    } catch (err) {
+      console.warn('Shared rulebook config could not be loaded:', err);
+    }
     await checkLocalLibraries();
     await window.GM.pdfviewer?.init?.();
     window.GM.capture?.init?.();

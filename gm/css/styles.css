@@ -5005,3 +5005,36 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
   font-weight: 600 !important;
   line-height: 1 !important;
 }
+
+.rulebook-manager-list { display:grid; gap:.6rem; max-height:55vh; overflow:auto; }
+.rulebook-manager-row { display:grid; grid-template-columns:minmax(90px,1fr) minmax(140px,1.5fr) minmax(150px,2fr) 80px auto auto; gap:.45rem; align-items:center; }
+.rulebook-manager-row input { min-width:0; }
+.rulebook-manager-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.8rem; }
+.rulebook-manager-visible { white-space:nowrap; }
+.rulebook-manager-status { margin-top:.7rem; opacity:.8; }
+@media (max-width:760px) { .rulebook-manager-row { grid-template-columns:1fr; } }
+
+.book-visibility-manager-actions {
+  margin-top: .8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.rulebook-manager-popup.gm-popup-resizable {
+  min-width: min(92vw, 760px);
+  min-height: 320px;
+}
+.rulebook-manager {
+  min-width: 0;
+}
+.rulebook-manager-list {
+  min-width: 760px;
+}
+@media (max-width: 760px) {
+  .rulebook-manager-popup.gm-popup-resizable {
+    width: 96vw !important;
+    max-width: 96vw;
+  }
+  .rulebook-manager {
+    overflow-x: auto;
+  }
+}
