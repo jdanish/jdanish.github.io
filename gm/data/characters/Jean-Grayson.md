@@ -3,7 +3,7 @@ type: character
 name: Jean Grayson
 ---
 
-# Jean Grayson
+# Jean Grayson (Phoenix)
 
 ![Psy Commando](data/images/psycommando.jpeg){width=240}
 
@@ -36,7 +36,7 @@ name: Jean Grayson
 | [[starbreaker_core/91?highlight=Flechette%20Disk|Flechette Disk]] | 5/10/20 | 4 | 3d4 |  |  | MBT Blast, 5 grenades |
 | [[starbreaker_core/91?highlight=Gravity%20Grenade|Gravity Grenade]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
 | [[starbreaker_core/91|Web Grenades]] | 5/10/20 |  |  |  |  | MBT Blast, 5 grenades |
-| [[starbreaker_core/91?highlight=EMP%20Grenade|EMP Grenade]] |  | 0 | 3d6 (nonlethal) |  | 0 |  |
+| [[starbreaker_core/91?highlight=EMP%20Grenade|EMP Grenade]] |  | 0 | 3d6 (nonlethal) |  | 0 |  5 Grenades|
 
 ### Armor
 
