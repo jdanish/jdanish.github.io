@@ -33,7 +33,9 @@ window.SIDEBAR_SECTIONS = [];
   function normalizeMarkdownText(value) {
     return String(value || '')
       .replace(/\r\n/g, '\n')
-      .replace(/[ \t]+\n/g, '\n')
+      // Preserve two trailing spaces because Markdown uses them for a hard
+      // line break. Only collapse runs of three or more spaces before EOL.
+      .replace(/[ \t]{3,}\n/g, '\n')
       .replace(/\n{3,}/g, '\n\n')
       .trim();
   }
@@ -328,6 +330,11 @@ window.SIDEBAR_SECTIONS = [];
 
   function renderInlineMarkdown(text) {
     let value = escapeHtml(String(text || ''));
+    value = value.replace(/\\\n/g, '\u0000GM_BR\u0000');
+    value = value.replace(/\\$/g, '\u0000GM_BR\u0000');
+    value = value.replace(/ {2,}\n/g, '\u0000GM_BR\u0000');
+    value = value.replace(/\n/g, ' ');
+    value = value.replace(/\u0000GM_BR\u0000/g, '<br>');
 
     value = value.replace(/\{\{counter\\?:([^{}|]+)\|(-?\d+)(?:\|(-?\d+))?(?:\|(true|false|1|0|yes|no))?\}\}/gi, (_, key, initial, max, enforce) => renderTracker(`${key}|${initial}|${max ?? ''}|${enforce ?? ''}`));
     value = value.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
@@ -479,6 +486,16 @@ window.SIDEBAR_SECTIONS = [];
 
     const renderInline = (text) => {
       let value = escapeHtml(String(text || ''));
+      value = value.replace(/\\\n/g, '\u0000GM_BR\u0000');
+      value = value.replace(/\\$/g, '\u0000GM_BR\u0000');
+      value = value.replace(/ {2,}\n/g, '\u0000GM_BR\u0000');
+      value = value.replace(/\n/g, ' ');
+      value = value.replace(/\u0000GM_BR\u0000/g, '<br>');
+      // Support both standard Markdown hard-break forms: two trailing spaces
+      // or a backslash immediately before the newline.
+      value = value.replace(/ {2,}\n/g, '<br>');
+      value = value.replace(/\\\n/g, '<br>');
+      value = value.replace(/\n/g, ' ');
       value = value.replace(/\{\{counter\\?:([^{}|]+)\|(-?\d+)(?:\|(-?\d+))?(?:\|(true|false|1|0|yes|no))?\}\}/gi, (_, key, initial, max, enforce) => renderTracker(`${key}|${initial}|${max ?? ''}|${enforce ?? ''}`));
       value = value.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
       value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
@@ -492,7 +509,7 @@ window.SIDEBAR_SECTIONS = [];
     };
 
     const flushParagraph = (buffer, target = output) => {
-      const text = buffer.join(' ').trim();
+      const text = buffer.join('\n').trim();
       if (text) target.push(`<p>${renderInline(text)}</p>`);
       buffer.length = 0;
     };
@@ -544,7 +561,12 @@ window.SIDEBAR_SECTIONS = [];
         const match = line.match(/^(\s*)([-*+]|\d+\.)\s+(.*)$/);
         if (!match) {
           const trimmedLine = line.trim();
-          if (/^(#{1,6})\s+/.test(trimmedLine) || /^```/.test(trimmedLine) || /^\|/.test(trimmedLine)) {
+          if (
+            /^(#{1,6})\s+/.test(trimmedLine) ||
+            /^```/.test(trimmedLine) ||
+            /^\|/.test(trimmedLine) ||
+            /^(?:---+|\*\*\*+|___+)$/.test(trimmedLine)
+          ) {
             break;
           }
           if (openItem) {
@@ -624,6 +646,13 @@ window.SIDEBAR_SECTIONS = [];
           }
 
           parts.push(`<h${level}>${renderInline(text)}</h${level}>`);
+          i += 1;
+          continue;
+        }
+
+        if (/^\s*(?:---+|\*\*\*+|___+)\s*$/.test(trimmed)) {
+          flush();
+          parts.push('<hr class="sidebar-markdown-hr">');
           i += 1;
           continue;
         }

@@ -2684,12 +2684,62 @@
               '|',
               'link',
               'image',
+              {
+                name: 'line-break',
+                action: (editor) => {
+                  const cm = editor.codemirror || editor;
+                  const doc = cm.getDoc?.();
+                  if (!doc) return;
+                  const cursor = doc.getCursor();
+                  // Use Markdown's backslash hard-break syntax instead of trailing
+                  // spaces. This survives the app's source normalization and is
+                  // reliably rendered as a line break by our local renderer.
+                  doc.replaceRange('\\\n', cursor);
+                  cm.focus?.();
+                },
+                className: 'easy-line-break-toolbar',
+                title: 'Insert line break',
+              },
+              {
+                name: 'horizontal-rule',
+                action: (editor) => {
+                  const cm = editor.codemirror || editor;
+                  const doc = cm.getDoc?.();
+                  if (!doc) return;
+                  const cursor = doc.getCursor();
+                  const line = doc.getLine(cursor.line);
+                  const before = line.slice(0, cursor.ch).trimEnd();
+                  const after = line.slice(cursor.ch).trimStart();
+                  const insert = before && after
+                    ? `${before}\n\n---\n\n${after}`
+                    : before
+                      ? `${before}\n\n---\n`
+                      : after
+                        ? `---\n\n${after}`
+                        : `---\n`;
+                  doc.replaceRange(insert, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+                  cm.focus?.();
+                },
+                className: 'easy-hr-toolbar',
+                title: 'Insert horizontal rule',
+              },
               'table',
               'code',
               'guide',
             ]          });
 
           ta.style.display = 'none';
+          const easyToolbar = wrap.querySelector('.editor-toolbar');
+          const lineBreakButton = easyToolbar?.querySelector('.easy-line-break-toolbar');
+          const hrButton = easyToolbar?.querySelector('.easy-hr-toolbar');
+          if (lineBreakButton) {
+            lineBreakButton.textContent = '↵';
+            lineBreakButton.setAttribute('aria-label', 'Insert line break');
+          }
+          if (hrButton) {
+            hrButton.textContent = '―';
+            hrButton.setAttribute('aria-label', 'Insert horizontal rule');
+          }
           const cm = sidebarMarkdownEditorState.editor.codemirror;
           cm?.getWrapperElement()?.classList.add('sidebar-md-codemirror');
           cm?.on('change', () => setDirty(true));

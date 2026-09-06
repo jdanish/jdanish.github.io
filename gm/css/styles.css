@@ -4990,3 +4990,18 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
     touch-action: pan-x pan-y;
   }
 }
+
+.sidebar-markdown-hr {
+  border: 0;
+  border-top: 1px solid currentColor;
+  opacity: .45;
+  margin: 1rem 0;
+}
+
+.easy-line-break-toolbar,
+.easy-hr-toolbar {
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}
