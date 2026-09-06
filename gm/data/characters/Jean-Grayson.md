@@ -62,6 +62,8 @@ name: Jean Grayson
   - By channeling psychic energies through their own flesh, psy commandos can enhance their natural capabilities. Once per encounter, as a limited free action, the psy-co may spend a Power Point to gain the benefits of one Combat Edge ([[swade/59|SWADE]]) of their Rank or less, regardless of its other requirements, until the end of the encounter. They cannot choose an Edge they already have, or one that is currently active.
 - [[starbreaker_star_marines/40|Heavy Hitters Squad Edge]]
   - The squad is equipped with experimental weapons that occasionally punch well above their weight class. When a squad member makes an attack with a firearm, they can spend a Benny to declare that it’s a “heavy” attack. If the attack hits, it has +4 AP and deals Heavy Damage.
+- [[starbreaker_star_marines/33?highlight=Psionic+Discipline|Psionic Discipline]]
+	- Wielding psychic energies requires an incredible force of will. When a psy-co focuses that will, he can achieve amazing feats of concentration, speed, and endurance. Before making a Trait roll, the psy commando can spend any number of Power Points. For each point he spends, he negates up to 2 points of penalties on that roll.
 
 ### Powers
 
@@ -155,4 +157,4 @@ name: Jean Grayson
 
 ### Advances
 
-Shooting d8 and Thievery d4, Vigor d8, Psionics d10, Advanced PsyFocus Loadout, added Living Weapon Edge, Shooting d10, power points edge, add battle + driving (now veteran), repair x 2
+Shooting d8 and Thievery d4, Vigor d8, Psionics d10, Advanced PsyFocus Loadout, added Living Weapon Edge, Shooting d10, power points edge, add battle + driving (now veteran), repair x 2, add psionic discipline

@@ -48,3 +48,7 @@ Today:
 - weapons depot - we know where it is (personal and vehicular weapons which are low on stores)
 - dropped warning that the blue kings would kidnap julia into their intranet
 - neutralized the black talons base on siera-kilo (they have 1 starship, 300 mercs)
+
+---------------------------------
+
+Call from Maya, Vizon facility is on auto-lockdown ... she got a frantic call from Yasha Chambers (hacker that helped with the lab), that she is in there and things are going badly ...
