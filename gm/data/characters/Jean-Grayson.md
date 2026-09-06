@@ -52,15 +52,15 @@ name: Jean Grayson
   - When sneaking behind enemy lines, it’s good to go fast. You have +2 Pace and a d8 Running die.
 - [[starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29|Arcane Background (Psy Commando)]]
   - As a psychic warrior, your mind is a weapon. Enemy powers used against you suffer a -2 penalty to their rolls and deal 2 less damage.
-- [[starbreaker_core/120|Basic Psychic Loadout]]
+- [[starbreaker_core/119?highlight=Basic+Psychic+Loadout|Basic Psychic Loadout]]
   - Even without your PsyFocus, you have the powers *arcane protection*, *boost/lower Trait* (boost only, self only), *smite* (self only), and *wall walker* (self only). You can also spend a Power Point to telepathically link up to 8 allies per the *mind link* power.
-- [[starbreaker_core/120|PsyFocus Loadout]]
+- [[starbreaker_core/120?highlight=PsyFocus|PsyFocus]]
   - While wielding a PsyFocus, you have 5 additional Power Points and the powers *bolt*, *invisibility*, and *sound/silence*.
-- [[starbreaker_core/120|Advanced PsyFocus Loadout]]
+- [[starbreaker_core/120?highlight=Advanced+PsyFocus+Loadout|Advanced PsyFocus Loadout]]
   - While wielding a PsyFocus, you have the powers *barrier*, *blast*, and *telekinesis*.
-- [[starbreaker_star_marines/33|Living Weapon]]
+- [[starbreaker_star_marines/33?highlight=Living+Weapon|Living Weapon]]
   - By channeling psychic energies through their own flesh, psy commandos can enhance their natural capabilities. Once per encounter, as a limited free action, the psy-co may spend a Power Point to gain the benefits of one Combat Edge ([[swade/59|SWADE]]) of their Rank or less, regardless of its other requirements, until the end of the encounter. They cannot choose an Edge they already have, or one that is currently active.
-- [[starbreaker_star_marines/40|Heavy Hitters Squad Edge]]
+- [[starbreaker_star_marines/40?highlight=Heavy+Hitters|Heavy Hitters Squad Edge]]
   - The squad is equipped with experimental weapons that occasionally punch well above their weight class. When a squad member makes an attack with a firearm, they can spend a Benny to declare that it’s a “heavy” attack. If the attack hits, it has +4 AP and deals Heavy Damage.
 - [[starbreaker_star_marines/33?highlight=Psionic+Discipline|Psionic Discipline]]
 	- Wielding psychic energies requires an incredible force of will. When a psy-co focuses that will, he can achieve amazing feats of concentration, speed, and endurance. Before making a Trait roll, the psy commando can spend any number of Power Points. For each point he spends, he negates up to 2 points of penalties on that roll.
