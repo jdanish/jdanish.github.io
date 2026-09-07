@@ -5038,3 +5038,80 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
     overflow-x: auto;
   }
 }
+
+/* Mobile sidebar text should wrap normally. Tables intentionally remain wide
+   and scroll horizontally for readability. */
+@media (max-width: 760px) {
+  .current-subtab-panel,
+  .current-subtab-panel .nested-body,
+  .current-subtab-panel .subsection-body,
+  .sidebar-panel-current .sidebar-panel-body,
+  .sidebar-panel-rules .sidebar-panel-body {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .current-subtab-panel p,
+  .current-subtab-panel li,
+  .current-subtab-panel .list-continuation,
+  .current-subtab-panel .nested-text,
+  .current-subtab-panel .subsection-body,
+  .sidebar-panel-current .sidebar-panel-body,
+  .sidebar-panel-rules .sidebar-panel-body {
+    overflow-wrap: anywhere;
+    word-break: normal;
+    white-space: normal;
+  }
+
+  .current-subtab-panel a,
+  .current-subtab-panel strong,
+  .current-subtab-panel em {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  /* Preserve the intentionally wide table behavior. */
+  .current-subtab-panel table,
+  .current-subtab-panel .nested-body:has(table),
+  .current-subtab-panel .subsection-body:has(table) {
+    min-width: 720px;
+    max-width: none;
+  }
+
+  .current-subtab-panel .nested-body:has(table),
+  .current-subtab-panel .subsection-body:has(table) {
+    width: max-content;
+  }
+}
+
+/* Mixed mobile documents (e.g. character sheets) may contain a wide table
+   alongside ordinary text. Keep only the table wide; the containing prose
+   remains constrained to the phone viewport. */
+@media (max-width: 760px) {
+  .current-subtab-panel .nested-body:has(table),
+  .current-subtab-panel .subsection-body:has(table) {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .current-subtab-panel .nested-body:has(table) > table,
+  .current-subtab-panel .subsection-body:has(table) > table {
+    min-width: 720px !important;
+    width: max-content !important;
+    max-width: none !important;
+  }
+
+  .current-subtab-panel .nested-body:has(table) p,
+  .current-subtab-panel .nested-body:has(table) li,
+  .current-subtab-panel .nested-body:has(table) .list-continuation,
+  .current-subtab-panel .subsection-body:has(table) p,
+  .current-subtab-panel .subsection-body:has(table) li,
+  .current-subtab-panel .subsection-body:has(table) .list-continuation {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+}
