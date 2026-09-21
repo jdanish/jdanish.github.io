@@ -42,7 +42,7 @@ name: Jean Grayson
 
 - [[starbreaker_star_marines/42|Star Marine Armor (+6*)]]
   - Targeting system
-  - Ignore 2 point penalties
+    - Ignore 2 point penalties
   - Life support (20 days)
 - Magnetic boots
 
@@ -154,6 +154,16 @@ name: Jean Grayson
   - **Range:** Smarts
   - **Duration:** 5
   - **Description:** Walk on vertical or horizontal surfaces. Success allows movement at half Pace; a raise allows full Pace and running. Gain +4 to Athletics rolls made to cling to a surface.
+
+### Other gear
+
+- Regeneration gel x 10
+- 2 Extra first aid kits
+- Water / cleaning jug
+- Canteen
+- Backpack
+- Bedroll
+- MRE x 5
 
 ### Advances
 
