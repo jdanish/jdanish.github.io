@@ -134,8 +134,21 @@ window.BOOKS = {
       { label: "TOC", page: 2 }
     ]
   },
-  "ne_invasion": {
+  "secret_world_na": {
     order: 10,
+    title: "Secret World North America",
+    file: "pdfs/secret_world_na.pdf",
+    pageOffset: -2,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 2 }
+    ]
+  },
+  "ne_invasion": {
+    order: 11,
     title: "Necessary Evil",
     file: "pdfs/ne_invasion.pdf",
     pageOffset: -2,
@@ -148,7 +161,7 @@ window.BOOKS = {
     ]
   },
   "doom_guard": {
-    order: 11,
+    order: 12,
     title: "Doom Guard",
     file: "pdfs/doom_guard.pdf",
     pageOffset: -2,
@@ -161,7 +174,7 @@ window.BOOKS = {
     ]
   },
   "occult_city": {
-    order: 12,
+    order: 13,
     title: "Occult City",
     file: "pdfs/occult_city.pdf",
     pageOffset: -1,
@@ -174,7 +187,7 @@ window.BOOKS = {
     ]
   },
   "chase_ref": {
-    order: 13,
+    order: 14,
     title: "Chase Reference",
     file: "pdfs/chase_ref.pdf",
     pageOffset: 0,
@@ -186,7 +199,7 @@ window.BOOKS = {
     ]
   },
   "combat_ref": {
-    order: 14,
+    order: 15,
     title: "Combat Reference",
     file: "pdfs/combat_ref.pdf",
     pageOffset: 0,
@@ -198,7 +211,7 @@ window.BOOKS = {
     ]
   },
   "combat_sg": {
-    order: 15,
+    order: 16,
     title: "Combat Survival Guide",
     file: "pdfs/combat_survival_guide.pdf",
     pageOffset: 0,
