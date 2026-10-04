@@ -1,3 +1,8 @@
+---
+type: note
+name: Sierra Kilo
+---
+
 # Sierra Kilo
 
 Call from Maya, Vizon Archology is on auto-lockdown ... she got a frantic call from Yasha Chambers (hacker that helped with the lab), that she is in there and things are going badly ... corporate citizens and others locked in there

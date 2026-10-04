@@ -5,7 +5,8 @@
   const STORE_NAME = 'handles';
   const HANDLE_KEY = 'data-directory';
   const DATA_ROOT = '';
-  const DEFAULT_FILES = ['current.md', 'rules.md', 'workspace.json', 'index.json'];
+  const DEFAULT_FILES = ['rules.md', 'workspace.json', 'index.json'];
+  const DEFAULT_NOTE_PATH = 'notes/sierrakilo.md';
   const SERVER_STORAGE_KEY = 'gm_server_data_url_v1';
   const DEFAULT_SERVER_URL = new URL('../data/', import.meta.url).href;
   const state = {
@@ -401,11 +402,24 @@
     } catch {
       workspace = {};
     }
-    for (const file of DEFAULT_FILES) {
-      if (file === 'current.md' && workspace.activePath && workspace.activePath !== 'current.md') {
-        const activeText = await readFile(workspace.activePath);
-        if (activeText !== null) continue;
+    // Migrate the legacy single Current document into an ordinary note.
+    // This keeps existing local data folders compatible without retaining a
+    // permanently pinned current.md file.
+    const legacyCurrent = await readFile('current.md');
+    if (legacyCurrent !== null) {
+      const migrated = await readFile(DEFAULT_NOTE_PATH);
+      if (migrated === null) {
+        const frontMatter = '---\ntype: note\nname: Sierra Kilo\n---\n\n';
+        await writeFile(DEFAULT_NOTE_PATH, `${frontMatter}${String(legacyCurrent).trim()}\n`);
       }
+      try { await removeFile('current.md'); } catch { /* leave a harmless legacy copy if removal fails */ }
+      if (/^(?:data\/)?current(?:\.md)?$/i.test(String(workspace.activePath || ''))) workspace.activePath = DEFAULT_NOTE_PATH;
+      if (Array.isArray(workspace.openPaths)) {
+        workspace.openPaths = workspace.openPaths.map((path) => /^(?:data\/)?current(?:\.md)?$/i.test(String(path || '')) ? DEFAULT_NOTE_PATH : path);
+      }
+      try { await writeFile('workspace.json', JSON.stringify(workspace)); } catch { /* continue with in-memory migration */ }
+    }
+    for (const file of DEFAULT_FILES) {
       try {
         await getFileHandle(file);
       } catch {
@@ -535,8 +549,11 @@
     const byPath = new Map(files.map((file) => [file.path, file.text]));
     let workspace = {};
     try { workspace = JSON.parse(byPath.get('workspace.json') || '{}') || {}; } catch { workspace = {}; }
-    const activePath = workspace.activePath || 'current.md';
-    return { files, current: byPath.get('current.md') || '', rules: byPath.get('rules.md') || '', index: byPath.get('index.json') || '', workspace, activePath, activeMarkdown: byPath.get(activePath) || byPath.get('current.md') || '' };
+    const markdownPaths = files.map((file) => file.path).filter((path) => /\.md$/i.test(path) && path !== 'rules.md');
+    const activePath = (workspace.activePath && byPath.has(workspace.activePath))
+      ? workspace.activePath
+      : (byPath.has(DEFAULT_NOTE_PATH) ? DEFAULT_NOTE_PATH : (markdownPaths[0] || ''));
+    return { files, current: '', rules: byPath.get('rules.md') || '', index: byPath.get('index.json') || '', workspace, activePath, activeMarkdown: activePath ? (byPath.get(activePath) || '') : '' };
   }
 
   async function init() {

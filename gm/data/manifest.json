@@ -3,9 +3,11 @@
   "files": [
     "characters/Jean-Grayson.md",
     "config.js",
-    "current.md",
+    "images/psycommando.jpeg",
     "index.json",
+    "manifest.json",
     "monsters/bozrak-air-demon.md",
+    "notes/sierrakilo.md",
     "rules.md",
     "sidebar.js",
     "workspace.json"

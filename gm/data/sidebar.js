@@ -940,7 +940,7 @@ window.SIDEBAR_SECTIONS = [];
   function getWorkspaceSectionKind(meta = activeDocumentMeta, path = activeDocumentPath) {
     const type = String(meta?.type || '').trim().toLowerCase();
     const documentPath = String(path || '').trim();
-    if (type === 'current' || !documentPath || documentPath.toLowerCase() === 'current.md') return 'current';
+    if (!documentPath) return 'current';
     if (/^(characters|monsters|notes)\//i.test(documentPath) || ['character', 'monster', 'note'].includes(type)) return 'entity';
     return 'entity';
   }
@@ -951,8 +951,8 @@ window.SIDEBAR_SECTIONS = [];
 
   let rulesMarkdown = loadStoredMarkdown('rules') || getDefaultMarkdown('rules');
   let currentMarkdown = loadStoredMarkdown('current') || getDefaultMarkdown('current');
-  let activeDocumentPath = 'current.md';
-  let activeDocumentMeta = { path: 'current.md', type: 'current', name: 'Current' };
+  let activeDocumentPath = '';
+  let activeDocumentMeta = { path: '', type: 'note', name: '' };
   let openDocumentPaths = [];
   const WORKSPACE_STORAGE_KEY = 'gm_workspace_v1';
   let rulesSections = markdownToSections(rulesMarkdown, 'rules');
@@ -976,7 +976,9 @@ window.SIDEBAR_SECTIONS = [];
 
   function downloadMarkdown(kind) {
     const markdown = cloneMarkdown(kind) || getDefaultMarkdown(kind);
-    const filename = kind === 'current' ? 'current.md' : 'rules.md';
+    const filename = kind === 'current'
+      ? ((activeDocumentPath.split('/').pop() || 'note.md').replace(/[^A-Za-z0-9._-]+/g, '-') || 'note.md')
+      : 'rules.md';
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -1039,17 +1041,28 @@ window.SIDEBAR_SECTIONS = [];
     return { path, type: meta.type || 'note', name: meta.name || fallbackName };
   }
 
+  function normalizeWorkspaceDocumentPath(path) {
+    const raw = String(path || '').trim();
+    if (!raw) return '';
+    const normalized = raw.replace(/^\.\//, '').replace(/^data\//i, '');
+    if (/^current(?:\.md)?$/i.test(normalized)) return 'notes/sierrakilo.md';
+    return normalized;
+  }
+
   function loadWorkspaceState() {
     try {
       const parsed = JSON.parse(localStorage.getItem(WORKSPACE_STORAGE_KEY) || '{}') || {};
-      activeDocumentPath = parsed.activePath || 'current.md';
-      openDocumentPaths = Array.isArray(parsed.openPaths) ? parsed.openPaths.filter(Boolean) : [];
+      activeDocumentPath = normalizeWorkspaceDocumentPath(parsed.activePath);
+      openDocumentPaths = Array.isArray(parsed.openPaths)
+        ? parsed.openPaths.map(normalizeWorkspaceDocumentPath).filter(Boolean)
+        : [];
+      openDocumentPaths = openDocumentPaths.filter((path, index) => openDocumentPaths.indexOf(path) === index);
       if (activeDocumentPath && !openDocumentPaths.includes(activeDocumentPath)) {
         openDocumentPaths.unshift(activeDocumentPath);
       }
     } catch {
-      activeDocumentPath = 'current.md';
-      openDocumentPaths = ['current.md'];
+      activeDocumentPath = '';
+      openDocumentPaths = [];
     }
   }
 
@@ -1078,7 +1091,7 @@ window.SIDEBAR_SECTIONS = [];
     const unique = order.filter((path, index) => order.indexOf(path) === index);
     if (!unique.length) return false;
     openDocumentPaths = unique;
-    if (!openDocumentPaths.includes(activeDocumentPath)) openDocumentPaths.unshift(activeDocumentPath);
+    if (activeDocumentPath && !openDocumentPaths.includes(activeDocumentPath)) openDocumentPaths.unshift(activeDocumentPath);
     await saveWorkspaceState();
     return true;
   }
@@ -1117,7 +1130,7 @@ window.SIDEBAR_SECTIONS = [];
       if (/^rules\.md$/i.test(path)) continue;
       const text = await window.GM.data.readFile(path);
       if (text === null) continue;
-      const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, text);
+      const meta = parseDocumentMeta(path, text);
       documents.push({ ...meta, markdown: stripFrontMatter(text) });
     }
     return documents.sort((a, b) => `${a.type}:${a.name}`.localeCompare(`${b.type}:${b.name}`));
@@ -1127,7 +1140,7 @@ window.SIDEBAR_SECTIONS = [];
     if (!window.GM.data?.getStatus?.().connected) throw new Error('Connect a data folder first.');
     const text = await window.GM.data.readFile(path);
     if (text === null) throw new Error(`Document not found: ${path}`);
-    const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, text);
+    const meta = parseDocumentMeta(path, text);
     activeDocumentPath = path;
     activeDocumentMeta = meta;
     if (!openDocumentPaths.includes(path)) openDocumentPaths.push(path);
@@ -1141,26 +1154,49 @@ window.SIDEBAR_SECTIONS = [];
   async function loadActiveFromFolder(folder) {
     if (!folder) return false;
     loadWorkspaceState();
-    if (folder.activePath) activeDocumentPath = folder.activePath;
-    const path = folder.activePath || 'current.md';
-    const raw = folder.activeMarkdown || folder.current || '';
-    const meta = path === 'current.md' ? { path, type: 'current', name: 'Current' } : parseDocumentMeta(path, raw);
+
+    // Browser-local workspace state can outlive files that were renamed or
+    // removed. Normalize legacy Current paths and discard orphaned tabs each
+    // time the connected folder is loaded.
+    const availablePaths = new Set((Array.isArray(folder.files) ? folder.files : [])
+      .map((file) => normalizeWorkspaceDocumentPath(file?.path))
+      .filter((path) => /\.md$/i.test(path) && !/^rules\.md$/i.test(path)));
+    openDocumentPaths = openDocumentPaths
+      .map(normalizeWorkspaceDocumentPath)
+      .filter((path, index, paths) => availablePaths.has(path) && paths.indexOf(path) === index);
+
+    const folderActivePath = normalizeWorkspaceDocumentPath(folder.activePath);
+    if (folderActivePath && availablePaths.has(folderActivePath)) activeDocumentPath = folderActivePath;
+    else if (!availablePaths.has(activeDocumentPath)) activeDocumentPath = openDocumentPaths[0] || '';
+    if (activeDocumentPath && !openDocumentPaths.includes(activeDocumentPath)) openDocumentPaths.unshift(activeDocumentPath);
+
+    const path = activeDocumentPath;
+    const activeFile = (Array.isArray(folder.files) ? folder.files : []).find((file) => normalizeWorkspaceDocumentPath(file?.path) === path);
+    const raw = activeFile?.text ?? (path === folderActivePath ? (folder.activeMarkdown || '') : '');
+    if (!path) {
+      activeDocumentPath = '';
+      activeDocumentMeta = { path: '', type: 'note', name: '' };
+      currentMarkdown = '';
+      currentSections = [];
+      openDocumentPaths = [];
+      applySections(true);
+      await saveWorkspaceState();
+      return true;
+    }
+    const meta = parseDocumentMeta(path, raw);
     activeDocumentMeta = meta;
-    if (path !== 'current.md' && raw) importMarkdownFromText('current', stripFrontMatter(raw), getWorkspaceSectionKind(meta, path));
-    else if (folder.current) importMarkdownFromText('current', folder.current, 'current');
+    if (raw) importMarkdownFromText('current', stripFrontMatter(raw), getWorkspaceSectionKind(meta, path));
     await saveWorkspaceState();
     return true;
   }
 
   async function saveActiveDocument() {
     if (!window.GM.data?.getStatus?.().connected) return false;
-    let body = currentMarkdown;
-    if (activeDocumentPath !== 'current.md') {
-      const raw = await window.GM.data.readFile(activeDocumentPath);
-      const match = String(raw || '').match(/^---\s*\n[\s\S]*?\n---\s*\n?/);
-      const prefix = match ? match[0] : '';
-      body = `${prefix}${currentMarkdown.trim()}\n`;
-    }
+    if (!activeDocumentPath) return false;
+    const raw = await window.GM.data.readFile(activeDocumentPath);
+    const match = String(raw || '').match(/^---\s*\n[\s\S]*?\n---\s*\n?/);
+    const prefix = match ? match[0] : '';
+    const body = `${prefix}${currentMarkdown.trim()}\n`;
     await window.GM.data.writeFile(activeDocumentPath, body);
     await saveWorkspaceState();
     return true;
@@ -1171,13 +1207,24 @@ window.SIDEBAR_SECTIONS = [];
   }
 
   async function closeDocument(path) {
-    if (!path || path === 'current.md') return false;
+    if (!path) return false;
     openDocumentPaths = openDocumentPaths.filter((entry) => entry !== path);
     if (activeDocumentPath === path) {
-      const next = openDocumentPaths[openDocumentPaths.length - 1] || 'current.md';
-      await openDocument(next);
+      const next = openDocumentPaths[openDocumentPaths.length - 1] || '';
+      if (next) {
+        await openDocument(next);
+      } else {
+        activeDocumentPath = '';
+        activeDocumentMeta = { path: '', type: 'note', name: '' };
+        currentMarkdown = '';
+        currentSections = [];
+        applySections(true);
+        await saveWorkspaceState();
+        window.GM.ui?.refreshSidebarFromData?.();
+      }
     } else {
       await saveWorkspaceState();
+      window.GM.ui?.renderWorkspaceTabs?.();
     }
     return true;
   }
@@ -1194,14 +1241,7 @@ window.SIDEBAR_SECTIONS = [];
     if (newPath === activeDocumentPath) return activeDocumentMeta;
 
     const oldPath = activeDocumentPath;
-    if (oldPath === 'current.md') {
-      const targetExists = await window.GM.data.readFile(newPath);
-      if (targetExists !== null) throw new Error(`A file already exists at ${newPath}.`);
-      await window.GM.data.writeFile(newPath, `${currentMarkdown.trim()}\n`);
-      await window.GM.data.removeFile(oldPath);
-    } else {
-      await window.GM.data.renameFile(oldPath, newPath);
-    }
+    await window.GM.data.renameFile(oldPath, newPath);
 
     activeDocumentPath = newPath;
     activeDocumentMeta = { ...activeDocumentMeta, path: newPath, name: cleaned, type: activeDocumentMeta.type || 'note' };
@@ -1227,7 +1267,8 @@ window.SIDEBAR_SECTIONS = [];
 
   async function tryLoadExternalMarkdown(kind, bust = false) {
     const suffix = bust ? `?v=${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
-    const url = `data/${kind}.md${suffix}`;
+    const sourcePath = kind === 'current' ? 'notes/sierrakilo.md' : `${kind}.md`;
+    const url = `data/${sourcePath}${suffix}`;
     try {
       const response = await fetch(url, {
         cache: bust ? 'reload' : 'no-store',

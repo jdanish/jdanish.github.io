@@ -1697,10 +1697,11 @@
   function renderWorkspaceTabs() {
     const tabs = document.createElement('div');
     tabs.className = 'gm-workspace-tabs';
-    const active = window.GM.sidebarData?.getActiveDocument?.() || { path: 'current.md', name: 'Current' };
+    const active = window.GM.sidebarData?.getActiveDocument?.() || { path: '', name: '' };
     let orderedPaths = window.GM.sidebarData?.getWorkspaceDocuments?.() || [];
-    if (!orderedPaths.includes(active.path)) orderedPaths = [active.path, ...orderedPaths];
-    if (!orderedPaths.length) orderedPaths = ['current.md'];
+    orderedPaths = orderedPaths.map(String).filter(Boolean);
+    if (active.path && !orderedPaths.includes(active.path)) orderedPaths = [active.path, ...orderedPaths];
+    if (!orderedPaths.length && active.path) orderedPaths = [active.path];
 
     let draggedPath = null;
     let dragMoved = false;
@@ -1724,8 +1725,8 @@
       const label = document.createElement('span');
       label.className = 'gm-workspace-tab-label';
       label.textContent = path === active.path
-        ? (active.name || (path === 'current.md' ? 'Current' : path.split('/').pop().replace(/\.md$/i, '')))
-        : (path === 'current.md' ? 'Current' : path.split('/').pop().replace(/\.md$/i, ''));
+        ? (active.name || path.split('/').pop().replace(/\.md$/i, ''))
+        : path.split('/').pop().replace(/\.md$/i, '');
       docButton.appendChild(label);
 
       const edit = document.createElement('button');
@@ -1746,19 +1747,17 @@
       });
       docButton.appendChild(edit);
 
-      if (path !== 'current.md') {
-        const close = document.createElement('span');
-        close.className = 'gm-workspace-tab-close';
-        close.textContent = '×';
-        close.title = 'Close document';
-        close.setAttribute('aria-label', `Close ${label.textContent}`);
-        close.addEventListener('click', async (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          try { await window.GM.sidebarData?.closeDocument?.(path); } catch (err) { window.alert(`Could not close document: ${err?.message || err}`); }
-        });
-        docButton.appendChild(close);
-      }
+      const close = document.createElement('span');
+      close.className = 'gm-workspace-tab-close';
+      close.textContent = '×';
+      close.title = 'Close document';
+      close.setAttribute('aria-label', `Close ${label.textContent}`);
+      close.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        try { await window.GM.sidebarData?.closeDocument?.(path); } catch (err) { window.alert(`Could not close document: ${err?.message || err}`); }
+      });
+      docButton.appendChild(close);
 
       docButton.addEventListener('click', async (event) => {
         if (dragMoved || event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-close')) return;
@@ -1864,7 +1863,7 @@
     const panelBody = dom.sidebarCurrentPanelBodyEl;
     if (!panelBody || panelBody.dataset.rendered === 'true') return;
 
-    const activeDocument = window.GM.sidebarData?.getActiveDocument?.() || { path: 'current.md', markdown: '' };
+    const activeDocument = window.GM.sidebarData?.getActiveDocument?.() || { path: '', markdown: '' };
     const liveSections = window.GM.sidebarData?.getActiveSections?.();
     const sections = Array.isArray(liveSections) && liveSections.length ? liveSections : getCurrentSections();
     panelBody.replaceChildren();
@@ -2868,6 +2867,7 @@
       <div class="gm-document-toolbar">
         <input type="search" data-doc-search placeholder="Search characters, monsters, notes...">
         <button type="button" data-doc-refresh>Refresh</button>
+        <button type="button" data-doc-new-note>＋ New Note</button>
         <button type="button" data-doc-import-character>＋ Import Character</button>
         <button type="button" data-doc-import-monster>＋ Import Monster</button>
       </div>
@@ -2879,6 +2879,7 @@
     // Importing a character can still be useful in a read-only connected
     // session; it will be kept in the current session instead of being saved
     // back to the server.
+    wrap.querySelector('[data-doc-new-note]').disabled = readonly;
     wrap.querySelector('[data-doc-import-character]').disabled = false;
     wrap.querySelector('[data-doc-import-monster]').disabled = readonly;
 
@@ -2914,6 +2915,20 @@
     }
     search.addEventListener('input', renderDocuments);
     wrap.querySelector('[data-doc-refresh]').addEventListener('click', renderDocuments);
+    wrap.querySelector('[data-doc-new-note]').addEventListener('click', async () => {
+      const name = window.prompt('Note name');
+      if (!name?.trim()) return;
+      try {
+        const path = await window.GM.data.writeTextDocument('note', name.trim(), `# ${name.trim()}`);
+        await window.GM.sidebarData.openDocument(path);
+        window.GM.popup?.hide?.();
+        setSidebarTab('current');
+        if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
+        openSidebarMarkdownEditor('current');
+      } catch (err) {
+        window.alert(`Could not create note: ${err?.message || err}`);
+      }
+    });
     wrap.querySelector('[data-doc-import-character]').addEventListener('click', () => {
       window.GM.popup?.hide?.();
       openFantasyGroundsCharacterImport();
