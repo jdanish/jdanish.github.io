@@ -1241,7 +1241,20 @@ window.SIDEBAR_SECTIONS = [];
     if (newPath === activeDocumentPath) return activeDocumentMeta;
 
     const oldPath = activeDocumentPath;
-    await window.GM.data.renameFile(oldPath, newPath);
+    const raw = await window.GM.data.readFile(oldPath);
+    if (raw === null) throw new Error(`Document not found: ${oldPath}`);
+    let renamedRaw = String(raw);
+    if (/^---\s*\n[\s\S]*?\n---/i.test(renamedRaw)) {
+      const headerMatch = renamedRaw.match(/^---\s*\n([\s\S]*?)\n---/);
+      if (headerMatch) {
+        let header = headerMatch[1];
+        if (/^name\s*:/mi.test(header)) header = header.replace(/^name\s*:.*$/mi, `name: ${cleaned.replace(/\n/g, ' ')}`);
+        else header += `\nname: ${cleaned.replace(/\n/g, ' ')}`;
+        renamedRaw = renamedRaw.replace(headerMatch[0], `---\n${header}\n---`);
+      }
+    }
+    await window.GM.data.writeFile(newPath, renamedRaw);
+    await window.GM.data.removeFile(oldPath);
 
     activeDocumentPath = newPath;
     activeDocumentMeta = { ...activeDocumentMeta, path: newPath, name: cleaned, type: activeDocumentMeta.type || 'note' };

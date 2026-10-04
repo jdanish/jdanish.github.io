@@ -10,6 +10,7 @@
     "notes/sierrakilo.md",
     "rules.md",
     "sidebar.js",
+    "templates/character.md",
     "workspace.json"
   ]
 }

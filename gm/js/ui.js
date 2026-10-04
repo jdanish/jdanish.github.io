@@ -1747,6 +1747,25 @@
       });
       docButton.appendChild(edit);
 
+      const rename = document.createElement('button');
+      rename.type = 'button';
+      rename.className = 'gm-workspace-tab-rename';
+      rename.textContent = 'Aa';
+      rename.title = `Rename ${label.textContent}`;
+      rename.setAttribute('aria-label', `Rename ${label.textContent}`);
+      rename.disabled = !!window.GM.data?.getStatus?.().readOnly;
+      rename.addEventListener('click', async (event) => {
+        event.preventDefault(); event.stopPropagation();
+        try {
+          if (path !== active.path) await window.GM.sidebarData?.openDocument?.(path);
+          const currentName = window.GM.sidebarData?.getActiveDocument?.()?.name || label.textContent;
+          const nextName = window.prompt('Rename document', currentName);
+          if (!nextName?.trim() || nextName.trim() === currentName) return;
+          await window.GM.sidebarData?.renameActiveDocument?.(nextName.trim());
+        } catch (err) { window.alert(`Could not rename document: ${err?.message || err}`); }
+      });
+      docButton.appendChild(rename);
+
       const close = document.createElement('span');
       close.className = 'gm-workspace-tab-close';
       close.textContent = '×';
@@ -1760,7 +1779,7 @@
       docButton.appendChild(close);
 
       docButton.addEventListener('click', async (event) => {
-        if (dragMoved || event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-close')) return;
+        if (dragMoved || event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-rename, .gm-workspace-tab-close')) return;
         if (path === active.path) return;
         try {
           await window.GM.sidebarData?.openDocument?.(path);
@@ -1774,7 +1793,7 @@
 
       docButton.addEventListener('keydown', async (event) => {
         if (event.key !== 'Enter' && event.key !== ' ') return;
-        if (event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-close')) return;
+        if (event.target.closest('.gm-workspace-tab-edit, .gm-workspace-tab-rename, .gm-workspace-tab-close')) return;
         event.preventDefault();
         if (path === active.path) return;
         try {
@@ -1848,6 +1867,37 @@
 
       tabs.appendChild(docButton);
     });
+
+    const createWorkspaceDocument = async (type) => {
+      const label = type === 'character' ? 'Character' : 'Note';
+      const name = window.prompt(`${label} name`);
+      if (!name?.trim()) return;
+      try {
+        let markdown = `# ${name.trim()}`;
+        if (type === 'character') {
+          let template = await window.GM.data.readFile('templates/character.md');
+          if (template === null) {
+            const response = await fetch('data/templates/character.md', { cache: 'no-store' });
+            if (!response.ok) throw new Error('Character template could not be loaded.');
+            template = await response.text();
+          }
+          const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'character';
+          markdown = String(template).replaceAll('{{NAME}}', name.trim()).replaceAll('{{SLUG}}', slug);
+        }
+        const path = await window.GM.data.writeTextDocument(type, name.trim(), markdown);
+        await window.GM.sidebarData.openDocument(path);
+        openSidebarMarkdownEditor('current');
+      } catch (err) { window.alert(`Could not create ${label.toLowerCase()}: ${err?.message || err}`); }
+    };
+    const writable = !!window.GM.data?.getStatus?.().connected && !window.GM.data?.getStatus?.().readOnly;
+    const newNote = document.createElement('button');
+    newNote.type = 'button'; newNote.className = 'gm-workspace-add'; newNote.textContent = '＋ Note'; newNote.title = 'Create a new note'; newNote.disabled = !writable;
+    newNote.addEventListener('click', () => createWorkspaceDocument('note'));
+    tabs.appendChild(newNote);
+    const newCharacter = document.createElement('button');
+    newCharacter.type = 'button'; newCharacter.className = 'gm-workspace-add'; newCharacter.textContent = '＋ Character'; newCharacter.title = 'Create a new character from the character template'; newCharacter.disabled = !writable;
+    newCharacter.addEventListener('click', () => createWorkspaceDocument('character'));
+    tabs.appendChild(newCharacter);
 
     const browse = document.createElement('button');
     browse.type = 'button';
@@ -2868,6 +2918,7 @@
         <input type="search" data-doc-search placeholder="Search characters, monsters, notes...">
         <button type="button" data-doc-refresh>Refresh</button>
         <button type="button" data-doc-new-note>＋ New Note</button>
+        <button type="button" data-doc-new-character>＋ New Character</button>
         <button type="button" data-doc-import-character>＋ Import Character</button>
         <button type="button" data-doc-import-monster>＋ Import Monster</button>
       </div>
@@ -2880,6 +2931,7 @@
     // session; it will be kept in the current session instead of being saved
     // back to the server.
     wrap.querySelector('[data-doc-new-note]').disabled = readonly;
+    wrap.querySelector('[data-doc-new-character]').disabled = readonly;
     wrap.querySelector('[data-doc-import-character]').disabled = false;
     wrap.querySelector('[data-doc-import-monster]').disabled = readonly;
 
@@ -2907,7 +2959,17 @@
               if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
             });
             const path = document.createElement('small'); path.textContent=doc.path;
-            row.append(open, path); group.appendChild(row);
+            const rename = document.createElement('button'); rename.type='button'; rename.textContent='Rename'; rename.disabled = readonly;
+            rename.addEventListener('click', async () => {
+              const nextName = window.prompt(`Rename ${doc.name}`, doc.name);
+              if (!nextName?.trim() || nextName.trim() === doc.name) return;
+              try {
+                await window.GM.sidebarData.openDocument(doc.path);
+                await window.GM.sidebarData.renameActiveDocument(nextName.trim());
+                await renderDocuments();
+              } catch (err) { window.alert(`Could not rename document: ${err?.message || err}`); }
+            });
+            row.append(open, path, rename); group.appendChild(row);
           });
           list.appendChild(group);
         });
@@ -2928,6 +2990,26 @@
       } catch (err) {
         window.alert(`Could not create note: ${err?.message || err}`);
       }
+    });
+    wrap.querySelector('[data-doc-new-character]').addEventListener('click', async () => {
+      const name = window.prompt('Character name');
+      if (!name?.trim()) return;
+      try {
+        let template = await window.GM.data.readFile('templates/character.md');
+        if (template === null) {
+          const response = await fetch('data/templates/character.md', { cache: 'no-store' });
+          if (!response.ok) throw new Error('Character template could not be loaded.');
+          template = await response.text();
+        }
+        const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'character';
+        const markdown = String(template).replaceAll('{{NAME}}', name.trim()).replaceAll('{{SLUG}}', slug);
+        const path = await window.GM.data.writeTextDocument('character', name.trim(), markdown);
+        await window.GM.sidebarData.openDocument(path);
+        window.GM.popup?.hide?.();
+        setSidebarTab('current');
+        if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
+        openSidebarMarkdownEditor('current');
+      } catch (err) { window.alert(`Could not create character: ${err?.message || err}`); }
     });
     wrap.querySelector('[data-doc-import-character]').addEventListener('click', () => {
       window.GM.popup?.hide?.();
