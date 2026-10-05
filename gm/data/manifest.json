@@ -1,16 +1,16 @@
 {
   "version": 1,
   "files": [
-    "characters/Jean-Grayson.md",
     "config.js",
-    "images/psycommando.jpeg",
     "index.json",
     "manifest.json",
-    "monsters/bozrak-air-demon.md",
-    "notes/sierrakilo.md",
     "rules.md",
     "sidebar.js",
-    "templates/character.md",
-    "workspace.json"
+    "workspace.json",
+    "characters/Jean-Grayson.md",
+    "images/psycommando.jpeg",
+    "monsters/bozrak-air-demon.md",
+    "notes/sierrakilo.md",
+    "templates/character.md"
   ]
 }

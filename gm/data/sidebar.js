@@ -1127,6 +1127,8 @@ window.SIDEBAR_SECTIONS = [];
     const documents = [];
     for (const path of files) {
       if (!/\.md$/i.test(path)) continue;
+      // Templates are internal creation assets, not user documents.
+      if (/^(?:data\/)?templates\//i.test(path)) continue;
       if (/^rules\.md$/i.test(path)) continue;
       const text = await window.GM.data.readFile(path);
       if (text === null) continue;
@@ -1241,20 +1243,7 @@ window.SIDEBAR_SECTIONS = [];
     if (newPath === activeDocumentPath) return activeDocumentMeta;
 
     const oldPath = activeDocumentPath;
-    const raw = await window.GM.data.readFile(oldPath);
-    if (raw === null) throw new Error(`Document not found: ${oldPath}`);
-    let renamedRaw = String(raw);
-    if (/^---\s*\n[\s\S]*?\n---/i.test(renamedRaw)) {
-      const headerMatch = renamedRaw.match(/^---\s*\n([\s\S]*?)\n---/);
-      if (headerMatch) {
-        let header = headerMatch[1];
-        if (/^name\s*:/mi.test(header)) header = header.replace(/^name\s*:.*$/mi, `name: ${cleaned.replace(/\n/g, ' ')}`);
-        else header += `\nname: ${cleaned.replace(/\n/g, ' ')}`;
-        renamedRaw = renamedRaw.replace(headerMatch[0], `---\n${header}\n---`);
-      }
-    }
-    await window.GM.data.writeFile(newPath, renamedRaw);
-    await window.GM.data.removeFile(oldPath);
+    await window.GM.data.renameFile(oldPath, newPath);
 
     activeDocumentPath = newPath;
     activeDocumentMeta = { ...activeDocumentMeta, path: newPath, name: cleaned, type: activeDocumentMeta.type || 'note' };

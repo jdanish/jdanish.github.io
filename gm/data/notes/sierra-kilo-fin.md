@@ -1,6 +1,6 @@
 ---
 type: note
-name: Sierra Kilo (fin)
+name: Sierra Kilo
 ---
 
 # Sierra Kilo

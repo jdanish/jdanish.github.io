@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261004-notes-tabs-v4';
+const CACHE_NAME = 'gm-reference-shell-v20261005-notes-tabs-v7';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

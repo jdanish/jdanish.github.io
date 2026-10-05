@@ -1914,10 +1914,18 @@
     if (!panelBody || panelBody.dataset.rendered === 'true') return;
 
     const activeDocument = window.GM.sidebarData?.getActiveDocument?.() || { path: '', markdown: '' };
-    const liveSections = window.GM.sidebarData?.getActiveSections?.();
-    const sections = Array.isArray(liveSections) && liveSections.length ? liveSections : getCurrentSections();
     panelBody.replaceChildren();
     panelBody.appendChild(renderWorkspaceTabs());
+
+    // With no active document, keep the workspace genuinely empty rather than
+    // falling back to the legacy Current section, which creates a phantom tab.
+    if (!String(activeDocument.path || '').trim()) {
+      panelBody.dataset.rendered = 'true';
+      return;
+    }
+
+    const liveSections = window.GM.sidebarData?.getActiveSections?.();
+    const sections = Array.isArray(liveSections) && liveSections.length ? liveSections : [];
 
     if (!sections.length) {
       panelBody.dataset.rendered = 'true';
