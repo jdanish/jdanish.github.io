@@ -651,6 +651,10 @@
         "label": "Animal Handling",
         "source": "sfc/24?highlight=ANIMAL%20HANDLING"
       },
+      "arcane background (bee)@@secret_world": {
+        "label": "Arcane Background (Bee)",
+        "source": "secret_world/41?highlight=ARCANE%20BACKGROUND%20(BEE)"
+      },
       "arcane background (cyborg)@@starbreaker_core": {
         "label": "Arcane Background (Cyborg)",
         "source": "starbreaker_core/78?highlight=Arcane%20Background%20(Cyborg)"
@@ -786,6 +790,10 @@
         "label": "Block",
         "source": "swade/39?highlight=Block"
       },
+      "blood magic specialist@@secret_world": {
+        "label": "Blood Magic Specialist",
+        "source": "secret_world/47?highlight=BLOOD%20MAGIC%20SPECIALIST"
+      },
       "blood magic@@fantasy": {
         "label": "Blood Magic",
         "source": "fantasy/36?highlight=BLOOD%20MAGIC"
@@ -797,6 +805,10 @@
       "born in the saddle@@fantasy": {
         "label": "Born In The Saddle",
         "source": "fantasy/38?highlight=BORN%20IN%20THE%20SADDLE"
+      },
+      "bound weapons@@secret_world": {
+        "label": "Bound Weapons",
+        "source": "secret_world/48?highlight=BOUND%20WEAPONS"
       },
       "brave@@swade": {
         "label": "Brave",
@@ -858,6 +870,10 @@
         "label": "Channeling",
         "source": "swade/45?highlight=Channeling"
       },
+      "chaos magic specialist@@secret_world": {
+        "label": "Chaos Magic Specialist",
+        "source": "secret_world/47?highlight=CHAOS%20MAGIC%20SPECIALIST"
+      },
       "chaplain@@sfc": {
         "label": "Chaplain",
         "source": "sfc/196?highlight=CHAPLAIN"
@@ -917,6 +933,10 @@
       "close fighting@@fantasy": {
         "label": "Close Fighting",
         "source": "fantasy/33?highlight=CLOSE%20FIGHTING"
+      },
+      "cold read@@secret_world": {
+        "label": "Cold Read",
+        "source": "secret_world/48?highlight=COLD%20READ"
       },
       "combat ace@@starbreaker_core": {
         "label": "Combat Ace",
@@ -1082,6 +1102,10 @@
         "label": "Double tap",
         "source": "swade/40?highlight=Double%20Tap"
       },
+      "drive back@@secret_world": {
+        "label": "Drive Back",
+        "source": "secret_world/47?highlight=DRIVE%20BACK"
+      },
       "drone combat specialist@@starbreaker_star_marines": {
         "label": "Drone Combat Specialist",
         "source": "starbreaker_star_marines/31?highlight=Drone%20Combat%20Specialist"
@@ -1121,6 +1145,10 @@
       "elemental absorption@@fantasy": {
         "label": "Elemental Absorption",
         "source": "fantasy/96?highlight=ELEMENTAL%20ABSORPTION"
+      },
+      "elemental magic specialist@@secret_world": {
+        "label": "Elemental Magic Specialist",
+        "source": "secret_world/47?highlight=ELEMENTAL%20MAGIC%20SPECIALIST"
       },
       "elemental master@@fantasy": {
         "label": "Elemental Master",
@@ -1277,6 +1305,10 @@
       "gallows humor@@horror": {
         "label": "Gallows Humor",
         "source": "horror/8?highlight=Gallows%20Humor"
+      },
+      "gaslighter@@secret_world": {
+        "label": "Gaslighter",
+        "source": "secret_world/48?highlight=GASLIGHTER"
       },
       "geared up@@sfc": {
         "label": "Geared Up",
@@ -1532,6 +1564,10 @@
       "knight@@fantasy": {
         "label": "Knight",
         "source": "fantasy/38?highlight=KNIGHT"
+      },
+      "know the signs@@secret_world": {
+        "label": "Know The Signs",
+        "source": "secret_world/47?highlight=KNOW%20THE%20SIGNS"
       },
       "laser reflect@@sfc": {
         "label": "Laser Reflect",
@@ -1981,6 +2017,10 @@
         "label": "Second Nature",
         "source": "starbreaker_star_marines/33?highlight=Second%20Nature"
       },
+      "secret identity@@secret_world": {
+        "label": "Secret Identity",
+        "source": "secret_world/47?highlight=SECRET%20IDENTITY"
+      },
       "sense supernatura l@@horror": {
         "label": "Sense Supernatura L",
         "source": "horror/13?highlight=SENSE%20SUPERNATURA%20L"
@@ -2265,6 +2305,10 @@
         "label": "Trick Shot",
         "source": "sfc/27?highlight=TRICK%20SHOT"
       },
+      "tricky fighter@@secret_world": {
+        "label": "Tricky Fighter",
+        "source": "secret_world/47?highlight=TRICKY%20FIGHTER"
+      },
       "troubadour@@fantasy": {
         "label": "Troubadour",
         "source": "fantasy/40?highlight=TROUBADOUR"
@@ -2308,6 +2352,10 @@
       "unstoppable@@fantasy": {
         "label": "Unstoppable",
         "source": "fantasy/41?highlight=UNSTOPPABLE"
+      },
+      "urban explorer@@secret_world": {
+        "label": "Urban Explorer",
+        "source": "secret_world/47?highlight=URBAN%20EXPLORER"
       },
       "very attractive@@swade": {
         "label": "Very attractive",
@@ -2595,6 +2643,10 @@
         "label": "Hard of hearing",
         "source": "swade/23?highlight=Hard%20of%20Hearing"
       },
+      "haunted@@secret_world": {
+        "label": "Haunted",
+        "source": "secret_world/41?highlight=HAUNTED"
+      },
       "heavy sleeper (minor)@@horror": {
         "label": "Heavy Sleeper (Minor)",
         "source": "horror/6?highlight=HEAVY%20SLEEPER%20(MINOR)"
@@ -2654,6 +2706,10 @@
       "mild mannered@@swade": {
         "label": "Mild mannered",
         "source": "swade/24?highlight=Mild%20Mannered"
+      },
+      "monster magnet@@secret_world": {
+        "label": "Monster Magnet",
+        "source": "secret_world/41?highlight=MONSTER%20MAGNET"
       },
       "mute@@swade": {
         "label": "Mute",
@@ -2747,6 +2803,10 @@
           "Smart Mouth (Major)"
         ]
       },
+      "smart mouth@@secret_world": {
+        "label": "Smart Mouth",
+        "source": "secret_world/41?highlight=SMART%20MOUTH"
+      },
       "snitch (major)@@starbreaker_core": {
         "label": "Snitch (Major)",
         "source": "starbreaker_core/78?highlight=Snitch%20(Major)"
@@ -2802,6 +2862,10 @@
       "unnatura l appetite (minor)@@horror": {
         "label": "Unnatura L Appetite (Minor)",
         "source": "horror/7?highlight=UNNATURA%20L%20APPETITE%20(MINOR)"
+      },
+      "unstable magic@@secret_world": {
+        "label": "Unstable Magic",
+        "source": "secret_world/41?highlight=UNSTABLE%20MAGIC"
       },
       "vengeful@@swade": {
         "label": "Vengeful",
