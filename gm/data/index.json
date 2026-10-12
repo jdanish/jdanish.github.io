@@ -606,6 +606,10 @@
           "Sabre"
         ]
       },
+      "arcane background (star marshal)@@starbreaker_star_marshals": {
+        "label": "Arcane Background (Star Marshal)",
+        "source": "starbreaker_star_marshals/8?highlight=Arcane%20Background%20(Star%20Marshal)"
+      },
       "arcane background@@swade": {
         "label": "Arcane background",
         "source": "swade/37?highlight=Arcane%20Background"
@@ -1086,6 +1090,10 @@
         "label": "Gelatinous",
         "source": "sfc/204?highlight=GELATINOUS"
       },
+      "get down, mr. president!@@starbreaker_star_marshals": {
+        "label": "Get Down, Mr. President!",
+        "source": "starbreaker_star_marshals/7?highlight=Get%20Down%2C%20Mr.%20President!"
+      },
       "giant killer@@swade": {
         "label": "Giant killer",
         "source": "swade/41?highlight=Giant%20Killer"
@@ -1324,6 +1332,10 @@
       "lifter@@sfc": {
         "label": "Lifter",
         "source": "sfc/199?highlight=LIFTER"
+      },
+      "lightning draw@@starbreaker_star_marshals": {
+        "label": "Lightning Draw",
+        "source": "starbreaker_star_marshals/8?highlight=Lightning%20Draw"
       },
       "linguist@@swade": {
         "label": "Linguist",
@@ -1677,6 +1689,10 @@
         "label": "Silent Caster",
         "source": "fantasy/37?highlight=SILENT%20CASTER"
       },
+      "skip tracer@@starbreaker_star_marshals": {
+        "label": "Skip Tracer",
+        "source": "starbreaker_star_marshals/8?highlight=Skip%20Tracer"
+      },
       "sneak attack@@fantasy": {
         "label": "Sneak Attack",
         "source": "fantasy/34?highlight=SNEAK%20ATTACK"
@@ -1728,6 +1744,14 @@
       "star knight@@sfc": {
         "label": "Star Knight",
         "source": "sfc/205?highlight=STAR%20KNIGHT"
+      },
+      "star marshal@@starbreaker_star_marshals": {
+        "label": "Star Marshal",
+        "source": "starbreaker_star_marshals/7?highlight=STAR%20MARSHAL"
+      },
+      "star shot arsenal@@starbreaker_star_marshals": {
+        "label": "Star Shot Arsenal",
+        "source": "starbreaker_star_marshals/8?highlight=Star%20Shot%20Arsenal"
       },
       "star wizard@@sfc": {
         "label": "Star Wizard",
@@ -2381,9 +2405,17 @@
         "label": "Psyfocus",
         "source": "starbreaker_core/120?highlight=PsyFocus"
       },
+      "solar battery@@starbreaker_star_marshals": {
+        "label": "Solar Battery",
+        "source": "starbreaker_star_marshals/11?highlight=SOLAR%20BATTERY"
+      },
       "star marine armor (+6*)@@starbreaker_star_marines": {
         "label": "Star marine armor (+6*)",
         "source": "starbreaker_star_marines/42?highlight=Star%20Marine%20Armor%20%28%2B6%2A%29"
+      },
+      "the badge@@starbreaker_star_marshals": {
+        "label": "The Badge",
+        "source": "starbreaker_star_marshals/11?highlight=THE%20BADGE"
       },
       "web grenade@@starbreaker_core": {
         "label": "Web grenade",
@@ -2423,6 +2455,14 @@
       "star marine dropship@@starbreaker_star_marines": {
         "label": "Star Marine DropShip",
         "source": "starbreaker_star_marines/47?highlight=Star%20Marine%20DropShip"
+      },
+      "star marshal hover bike@@starbreaker_star_marshals": {
+        "label": "Star Marshal Hover Bike",
+        "source": "starbreaker_star_marshals/11?highlight=STAR%20MARSHAL%20HOVER%20BIKE"
+      },
+      "star marshal robo-horse@@starbreaker_star_marshals": {
+        "label": "Star Marshal Robo-Horse",
+        "source": "starbreaker_star_marshals/12?highlight=STAR%20MARSHAL%20ROBO-HORSE"
       },
       "tank bike@@starbreaker_star_marines": {
         "label": "Tank Bike",
@@ -3030,6 +3070,23 @@
         "source": "starbreaker_core/78?highlight=Hypertech"
       }
     },
-    "weapons": {}
+    "weapons": {
+      "star shot assault rifle@@starbreaker_star_marshals": {
+        "label": "Star Shot Assault Rifle",
+        "source": "starbreaker_star_marshals/10?highlight=STAR%20SHOT%20ASSAULT%20RIFLE"
+      },
+      "star shot pistol@@starbreaker_star_marshals": {
+        "label": "Star Shot Pistol",
+        "source": "starbreaker_star_marshals/9?highlight=STAR%20SHOT%20PISTOL"
+      },
+      "star shot shotgun@@starbreaker_star_marshals": {
+        "label": "Star Shot Shotgun",
+        "source": "starbreaker_star_marshals/9?highlight=STAR%20SHOT%20SHOTGUN"
+      },
+      "star shot sniper rifle@@starbreaker_star_marshals": {
+        "label": "Star Shot Sniper Rifle",
+        "source": "starbreaker_star_marshals/10?highlight=STAR%20SHOT%20SNIPER%20RIFLE"
+      }
+    }
   }
 }
