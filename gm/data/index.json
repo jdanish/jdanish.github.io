@@ -23,6 +23,10 @@
         "label": "Claws",
         "source": "swade/17?highlight=Claws"
       },
+      "demonic immorta lity@@horror": {
+        "label": "Demonic Immorta Lity",
+        "source": "horror/14?highlight=DEMONIC%20IMMORTA%20LITY"
+      },
       "doesn't breathe@@swade": {
         "label": "Doesn’t breathe",
         "source": "swade/17?highlight=Doesn%E2%80%99t%20Breathe"
@@ -31,9 +35,17 @@
         "label": "Environmental resistance",
         "source": "swade/17?highlight=Environmental%20Resistance"
       },
+      "hardy@@horror": {
+        "label": "Hardy",
+        "source": "horror/17?highlight=HARDY"
+      },
       "hardy@@swade": {
         "label": "Hardy",
         "source": "swade/18?highlight=Hardy"
+      },
+      "hellfire@@horror": {
+        "label": "Hellfire",
+        "source": "horror/14?highlight=HELLFIRE"
       },
       "immune to poison or disease@@swade": {
         "label": "Immune to poison or disease",
@@ -92,6 +104,10 @@
           "Android"
         ]
       },
+      "angel@@horror": {
+        "label": "Angel",
+        "source": "horror/12?highlight=ANGEL"
+      },
       "aquarians@@swade": {
         "label": "Aquarians",
         "source": "swade/12?highlight=Aquarians",
@@ -141,6 +157,10 @@
         "aliases": [
           "Deader"
         ]
+      },
+      "demon@@horror": {
+        "label": "Demon",
+        "source": "horror/14?highlight=DEMON"
       },
       "dragonfolk@@fantasy": {
         "label": "Dragonfolk",
@@ -374,6 +394,10 @@
           "Mouseling"
         ]
       },
+      "mummy@@horror": {
+        "label": "Mummy",
+        "source": "horror/16?highlight=MUMMY"
+      },
       "nahkyra@@starbreaker_core": {
         "label": "Nahkyra",
         "source": "starbreaker_core/44?highlight=Nahkyra"
@@ -398,6 +422,14 @@
         "aliases": [
           "Orc"
         ]
+      },
+      "patchwork monster@@horror": {
+        "label": "Patchwork Monster",
+        "source": "horror/17?highlight=PATCHWORK%20MONSTER"
+      },
+      "phantom@@horror": {
+        "label": "Phantom",
+        "source": "horror/17?highlight=PHANTOM"
       },
       "quadroids@@sfc": {
         "label": "Quadroids",
@@ -433,6 +465,10 @@
         "aliases": [
           "Ratling"
         ]
+      },
+      "revenant@@horror": {
+        "label": "Revenant",
+        "source": "horror/18?highlight=REVENANT"
       },
       "riders@@sfc": {
         "label": "Riders",
@@ -505,6 +541,10 @@
         "label": "Thovin",
         "source": "starbreaker_core/50?highlight=Thovin"
       },
+      "vampire@@horror": {
+        "label": "Vampire",
+        "source": "horror/20?highlight=VAMPIRE"
+      },
       "voidlings@@sfc": {
         "label": "Voidlings",
         "source": "sfc/19?highlight=VOIDLINGS",
@@ -515,6 +555,10 @@
       "vulkolasi@@starbreaker_core": {
         "label": "Vulkolasi",
         "source": "starbreaker_core/52?highlight=Vulkolasi"
+      },
+      "werewolf@@horror": {
+        "label": "Werewolf",
+        "source": "horror/22?highlight=WEREWOLF"
       },
       "yetis@@sfc": {
         "label": "Yetis",
@@ -529,6 +573,10 @@
       }
     },
     "armor": {
+      "divine toughness@@horror": {
+        "label": "Divine Toughness",
+        "source": "horror/12?highlight=DIVINE%20TOUGHNESS"
+      },
       "laser parry@@sfc": {
         "label": "Laser Parry",
         "source": "sfc/205?highlight=LASER%20PARRY"
@@ -541,9 +589,17 @@
         "label": "Sabre Armor",
         "source": "starbreaker_star_marines/43?highlight=SABRE%20ARMOR"
       },
+      "toughness@@horror": {
+        "label": "Toughness",
+        "source": "horror/12?highlight=TOUGHNESS"
+      },
       "toughness@@swade": {
         "label": "Toughness",
         "source": "swade/18?highlight=Toughness"
+      },
+      "wing strike@@horror": {
+        "label": "Wing Strike",
+        "source": "horror/13?highlight=WING%20STRIKE"
       }
     },
     "edges": {
@@ -559,6 +615,10 @@
         "label": "Advanced psyfocus loadout",
         "source": "starbreaker_core/120?highlight=Advanced%20PsyFocus%20Loadout"
       },
+      "aggravated damage@@horror": {
+        "label": "Aggravated Damage",
+        "source": "horror/11?highlight=AGGRAVATED%20DAMAGE"
+      },
       "alchemist@@fantasy": {
         "label": "Alchemist",
         "source": "fantasy/89?highlight=ALCHEMIST"
@@ -571,6 +631,10 @@
         "label": "Alone Against The Wolves",
         "source": "sfc/203?highlight=ALONE%20AGAINST%20THE%20WOLVES"
       },
+      "alpha@@horror": {
+        "label": "Alpha",
+        "source": "horror/22?highlight=Alpha"
+      },
       "ambidextrous@@swade": {
         "label": "Ambidextrous",
         "source": "swade/36?highlight=Ambidextrous"
@@ -578,6 +642,10 @@
       "ammo counter@@sfc": {
         "label": "Ammo Counter",
         "source": "sfc/25?highlight=AMMO%20COUNTER"
+      },
+      "animal form@@horror": {
+        "label": "Animal Form",
+        "source": "horror/21?highlight=ANIMAL%20FORM"
       },
       "animal handling@@sfc": {
         "label": "Animal Handling",
@@ -630,6 +698,10 @@
         "label": "Aristocrat",
         "source": "swade/36?highlight=Aristocrat"
       },
+      "armored hide@@horror": {
+        "label": "Armored Hide",
+        "source": "horror/14?highlight=ARMORED%20HIDE"
+      },
       "artificer@@fantasy": {
         "label": "Artificer",
         "source": "fantasy/36?highlight=ARTIFICER"
@@ -657,6 +729,10 @@
       "aura of courage@@fantasy": {
         "label": "Aura Of Courage",
         "source": "fantasy/40?highlight=AURA%20OF%20COURAGE"
+      },
+      "aura of courage@@horror": {
+        "label": "Aura Of Courage",
+        "source": "horror/64?highlight=AURA%20OF%20COURAGE"
       },
       "bard@@fantasy": {
         "label": "Bard",
@@ -690,9 +766,21 @@
         "label": "Bedside Manner",
         "source": "starbreaker_star_marines/27?highlight=Bedside%20Manner"
       },
+      "been to the crossroads@@horror": {
+        "label": "Been To The Crossroads",
+        "source": "horror/67?highlight=BEEN%20TO%20THE%20CROSSROADS"
+      },
       "berserk@@swade": {
         "label": "Berserk",
         "source": "swade/37?highlight=Berserk"
+      },
+      "bite & claws@@horror": {
+        "label": "Bite & Claws",
+        "source": "horror/23?highlight=BITE%20%26%20CLAWS"
+      },
+      "bite@@horror": {
+        "label": "Bite",
+        "source": "horror/14?highlight=BITE"
       },
       "block@@swade": {
         "label": "Block",
@@ -742,6 +830,10 @@
         "label": "Bulletproof",
         "source": "starbreaker_star_marines/39?highlight=Bulletproof"
       },
+      "burrow@@horror": {
+        "label": "Burrow",
+        "source": "horror/16?highlight=BURROW"
+      },
       "calculating@@swade": {
         "label": "Calculating",
         "source": "swade/40?highlight=Calculating"
@@ -778,13 +870,29 @@
         "label": "Charismatic",
         "source": "swade/38?highlight=Charismatic"
       },
+      "charm@@horror": {
+        "label": "Charm",
+        "source": "horror/21?highlight=CHARM"
+      },
       "chemist@@fantasy": {
         "label": "Chemist",
         "source": "fantasy/91?highlight=CHEMIST"
       },
+      "chemist@@horror": {
+        "label": "Chemist",
+        "source": "horror/58?highlight=CHEMIST"
+      },
       "chi@@swade": {
         "label": "Chi",
         "source": "swade/51?highlight=Chi"
+      },
+      "children of the night@@horror": {
+        "label": "Children Of The Night",
+        "source": "horror/21?highlight=CHILDREN%20OF%20THE%20NIGHT"
+      },
+      "chilling touch@@horror": {
+        "label": "Chilling Touch",
+        "source": "horror/18?highlight=CHILLING%20TOUCH"
       },
       "chosen@@fantasy": {
         "label": "Chosen",
@@ -793,6 +901,14 @@
       "chronomancer@@sfc": {
         "label": "Chronomancer",
         "source": "sfc/197?highlight=CHRONOMANCER"
+      },
+      "claws (vampire)@@horror": {
+        "label": "Claws (vampire)",
+        "source": "horror/20?highlight=CLAWS"
+      },
+      "claws@@horror": {
+        "label": "Claws",
+        "source": "horror/14?highlight=CLAWS"
       },
       "cleric@@fantasy": {
         "label": "Cleric",
@@ -842,6 +958,10 @@
         "label": "Connections",
         "source": "swade/49?highlight=Connections"
       },
+      "consort@@horror": {
+        "label": "Consort",
+        "source": "horror/69?highlight=CONSORT"
+      },
       "construct familiar@@fantasy": {
         "label": "Construct Familiar",
         "source": "fantasy/102?highlight=CONSTRUCT%20FAMILIAR"
@@ -849,6 +969,10 @@
       "counterattack@@swade": {
         "label": "Counterattack",
         "source": "swade/40?highlight=Counterattack"
+      },
+      "courage@@horror": {
+        "label": "Courage",
+        "source": "horror/9?highlight=COURAGE"
       },
       "cover fire@@starbreaker_star_marines": {
         "label": "Cover Fire",
@@ -858,6 +982,10 @@
         "label": "Cover Story",
         "source": "starbreaker_core/79?highlight=Cover%20Story"
       },
+      "crossover@@horror": {
+        "label": "Crossover",
+        "source": "horror/17?highlight=CROSSOVER"
+      },
       "cunning plan@@starbreaker_core": {
         "label": "Cunning Plan",
         "source": "starbreaker_core/79?highlight=Cunning%20Plan"
@@ -866,6 +994,14 @@
         "label": "Cutting Edge",
         "source": "starbreaker_star_marines/39?highlight=Cutting%20Edge"
       },
+      "daywa lker@@horror": {
+        "label": "Daywa Lker",
+        "source": "horror/21?highlight=DAYWA%20LKER"
+      },
+      "daywalker@@horror": {
+        "label": "Daywalker",
+        "source": "horror/21?highlight=DAYWALKER"
+      },
       "dead shot@@swade": {
         "label": "Dead shot",
         "source": "swade/40?highlight=Dead%20Shot"
@@ -873,6 +1009,10 @@
       "deadly illusion@@fantasy": {
         "label": "Deadly Illusion",
         "source": "fantasy/97?highlight=DEADLY%20ILLUSION"
+      },
+      "death touch@@horror": {
+        "label": "Death Touch",
+        "source": "horror/19?highlight=DEATH%20TOUCH"
       },
       "death's door@@starbreaker_star_marines": {
         "label": "Death’s Door",
@@ -894,6 +1034,14 @@
         "label": "Destroy Undead",
         "source": "fantasy/93?highlight=DESTROY%20UNDEAD"
       },
+      "detachable parts (revenant)@@horror": {
+        "label": "Detachable Parts (Revenant)",
+        "source": "horror/19?highlight=DETACHABLE%20PARTS"
+      },
+      "detachable parts@@horror": {
+        "label": "Detachable Parts",
+        "source": "horror/17?highlight=DETACHABLE%20PARTS"
+      },
       "detect weakness@@starbreaker_star_marines": {
         "label": "Detect Weakness",
         "source": "starbreaker_star_marines/24?highlight=Detect%20Weakness"
@@ -909,6 +1057,18 @@
       "dirty fighter@@fantasy": {
         "label": "Dirty Fighter",
         "source": "fantasy/33?highlight=DIRTY%20FIGHTER"
+      },
+      "discerning@@horror": {
+        "label": "Discerning",
+        "source": "horror/58?highlight=DISCERNING"
+      },
+      "discharge@@horror": {
+        "label": "Discharge",
+        "source": "horror/17?highlight=DISCHARGE"
+      },
+      "divine blade@@horror": {
+        "label": "Divine Blade",
+        "source": "horror/12?highlight=DIVINE%20BLADE"
       },
       "dodge@@swade": {
         "label": "Dodge",
@@ -953,6 +1113,10 @@
       "eldritch inspiration@@fantasy": {
         "label": "Eldritch Inspiration",
         "source": "fantasy/104?highlight=ELDRITCH%20INSPIRATION"
+      },
+      "eldritch inspiration@@horror": {
+        "label": "Eldritch Inspiration",
+        "source": "horror/63?highlight=ELDRITCH%20INSPIRATION"
       },
       "elemental absorption@@fantasy": {
         "label": "Elemental Absorption",
@@ -1018,6 +1182,10 @@
         "label": "Favored Power",
         "source": "fantasy/37?highlight=FAVORED%20POWER"
       },
+      "favored power@@horror": {
+        "label": "Favored Power",
+        "source": "horror/9?highlight=FAVORED%20POWER"
+      },
       "favored power@@sfc": {
         "label": "Favored Power",
         "source": "sfc/25?highlight=FAVORED%20POWER"
@@ -1029,6 +1197,14 @@
       "favored terrain@@sfc": {
         "label": "Favored Terrain",
         "source": "sfc/24?highlight=FAVORED%20TERRAIN"
+      },
+      "favored@@horror": {
+        "label": "Favored",
+        "source": "horror/67?highlight=FAVORED"
+      },
+      "fear (-2)@@horror": {
+        "label": "Fear (-2)",
+        "source": "horror/11?highlight=FEAR%20(-2)"
       },
       "feint@@swade": {
         "label": "Feint",
@@ -1050,9 +1226,21 @@
         "label": "Filthy rich",
         "source": "swade/39?highlight=Filthy%20Rich"
       },
+      "final girl/guy@@horror": {
+        "label": "Final Girl/Guy",
+        "source": "horror/8?highlight=FINAL%20GIRL%2FGUY",
+        "aliases": [
+          "Final Guy",
+          "Final Girl"
+        ]
+      },
       "first strike@@swade": {
         "label": "First strike",
         "source": "swade/41?highlight=First%20Strike"
+      },
+      "flashbacks@@horror": {
+        "label": "Flashbacks",
+        "source": "horror/17?highlight=FLASHBACKS"
       },
       "fleet-footed@@swade": {
         "label": "Fleet-footed",
@@ -1061,6 +1249,10 @@
       "followers@@swade": {
         "label": "Followers",
         "source": "swade/52?highlight=Followers"
+      },
+      "forewarning@@horror": {
+        "label": "Forewarning",
+        "source": "horror/61?highlight=FOREWARNING"
       },
       "formation fighter@@fantasy": {
         "label": "Formation Fighter",
@@ -1082,6 +1274,10 @@
         "label": "Gadgeteer",
         "source": "swade/45?highlight=Gadgeteer"
       },
+      "gallows humor@@horror": {
+        "label": "Gallows Humor",
+        "source": "horror/8?highlight=Gallows%20Humor"
+      },
       "geared up@@sfc": {
         "label": "Geared Up",
         "source": "sfc/24?highlight=GEARED%20UP"
@@ -1097,6 +1293,10 @@
       "giant killer@@swade": {
         "label": "Giant killer",
         "source": "swade/41?highlight=Giant%20Killer"
+      },
+      "gorge@@horror": {
+        "label": "Gorge",
+        "source": "horror/21?highlight=GORGE"
       },
       "gravitic acclimation@@sfc": {
         "label": "Gravitic Acclimation",
@@ -1177,6 +1377,14 @@
         "label": "Hell’s Wrath",
         "source": "fantasy/94?highlight=HELL%E2%80%99S%20WRATH"
       },
+      "hell's wrath@@horror": {
+        "label": "Hell’s Wrath",
+        "source": "horror/60?highlight=HELL%E2%80%99S%20WRATH"
+      },
+      "holy light@@horror": {
+        "label": "Holy Light",
+        "source": "horror/12?highlight=HOLY%20LIGHT"
+      },
       "home ground@@fantasy": {
         "label": "Home Ground",
         "source": "fantasy/41?highlight=HOME%20GROUND"
@@ -1200,6 +1408,10 @@
       "immortal@@sfc": {
         "label": "Immortal",
         "source": "sfc/27?highlight=IMMORTAL"
+      },
+      "immortality@@horror": {
+        "label": "Immortality",
+        "source": "horror/12?highlight=IMMORTALITY"
       },
       "improved arcane resistance@@fantasy": {
         "label": "Improved Arcane Resistance",
@@ -1272,6 +1484,10 @@
       "improvisational fighter@@swade": {
         "label": "Improvisational fighter",
         "source": "swade/41?highlight=Improvisational%20Fighter"
+      },
+      "incorporea@@horror": {
+        "label": "Incorporea",
+        "source": "horror/15?highlight=INCORPOREA"
       },
       "infantry@@starbreaker_star_marines": {
         "label": "Infantry",
@@ -1425,6 +1641,10 @@
         "label": "Mercy",
         "source": "fantasy/93?highlight=MERCY"
       },
+      "mercy@@horror": {
+        "label": "Mercy",
+        "source": "horror/64?highlight=MERCY"
+      },
       "mercy@@sfc": {
         "label": "Mercy",
         "source": "sfc/203?highlight=MERCY"
@@ -1449,6 +1669,14 @@
         "label": "Mission Control",
         "source": "starbreaker_core/80?highlight=Mission%20Control"
       },
+      "mist form@@horror": {
+        "label": "Mist Form",
+        "source": "horror/21?highlight=MIST%20FORM"
+      },
+      "monster hunter@@horror": {
+        "label": "Monster Hunter",
+        "source": "horror/9?highlight=MONSTER%20HUNTER"
+      },
       "morph@@sfc": {
         "label": "Morph",
         "source": "sfc/204?highlight=MORPH"
@@ -1456,6 +1684,22 @@
       "mount@@fantasy": {
         "label": "Mount",
         "source": "fantasy/38?highlight=MOUNT"
+      },
+      "mummy rot@@horror": {
+        "label": "Mummy Rot",
+        "source": "horror/16?highlight=MUMMY%20ROT"
+      },
+      "mystic powers (angel)@@horror": {
+        "label": "Mystic Powers (Angel)",
+        "source": "horror/12?highlight=MYSTIC%20POWERS%20(ANGEL)"
+      },
+      "mystic powers (demon)@@horror": {
+        "label": "Mystic Powers (Demon)",
+        "source": "horror/15?highlight=MYSTIC%20POWERS%20(DEMON)"
+      },
+      "mystic powers (mummy)@@horror": {
+        "label": "Mystic Powers (Mummy)",
+        "source": "horror/15?highlight=MYSTIC%20POWERS%20(MUMMY)"
       },
       "mystic powers@@fantasy": {
         "label": "Mystic Powers",
@@ -1496,6 +1740,10 @@
       "officer@@starbreaker_star_marines": {
         "label": "Officer",
         "source": "starbreaker_star_marines/28?highlight=OFFICER"
+      },
+      "old@@horror": {
+        "label": "Old",
+        "source": "horror/11?highlight=OLD"
       },
       "opportunistic@@fantasy": {
         "label": "Opportunistic",
@@ -1593,6 +1841,30 @@
         "label": "Recon Report",
         "source": "starbreaker_star_marines/37?highlight=Recon%20Report"
       },
+      "regeneration (fast) (vampire)@@horror": {
+        "label": "Regeneration (Fast) (Vampire)",
+        "source": "horror/21?highlight=REGENERATION%20(FAST)"
+      },
+      "regeneration (fast) (werewolf)@@horror": {
+        "label": "Regeneration (Fast) (Werewolf)",
+        "source": "horror/23?highlight=REGENERATION%20(FAST)"
+      },
+      "regeneration (fast)@@horror": {
+        "label": "Regeneration (Fast)",
+        "source": "horror/16?highlight=REGENERATION%20(FAST)"
+      },
+      "regeneration (slow)@@horror": {
+        "label": "Regeneration (Slow)",
+        "source": "horror/15?highlight=REGENERATION%20(SLOW)"
+      },
+      "relentless tracker@@horror": {
+        "label": "Relentless Tracker",
+        "source": "horror/19?highlight=RELENTLESS%20TRACKER"
+      },
+      "relentless@@horror": {
+        "label": "Relentless",
+        "source": "horror/7?highlight=RELENTLESS"
+      },
       "relic@@fantasy": {
         "label": "Relic",
         "source": "fantasy/41?highlight=RELIC"
@@ -1604,6 +1876,18 @@
       "rich@@swade": {
         "label": "Rich",
         "source": "swade/39?highlight=Rich"
+      },
+      "roar (patchwork monster)@@horror": {
+        "label": "Roar (patchwork monster)",
+        "source": "horror/17?highlight=ROAR"
+      },
+      "roar (phantom)@@horror": {
+        "label": "Roar (phantom)",
+        "source": "horror/18?highlight=ROAR"
+      },
+      "roar (werewolf)@@horror": {
+        "label": "Roar (Werewolf)",
+        "source": "horror/23?highlight=ROAR"
       },
       "roar@@fantasy": {
         "label": "Roar",
@@ -1633,9 +1917,17 @@
         "label": "Savagery",
         "source": "fantasy/34?highlight=SAVAGERY"
       },
+      "savagery@@horror": {
+        "label": "Savagery",
+        "source": "horror/11?highlight=SAVAGERY"
+      },
       "savior of the universe@@sfc": {
         "label": "Savior Of The Universe",
         "source": "sfc/27?highlight=SAVIOR%20OF%20THE%20UNIVERSE"
+      },
+      "scan@@horror": {
+        "label": "Scan",
+        "source": "horror/65?highlight=SCAN"
       },
       "scan@@sfc": {
         "label": "Scan",
@@ -1653,6 +1945,10 @@
         "label": "Scorch",
         "source": "fantasy/34?highlight=SCORCH"
       },
+      "scorch@@horror": {
+        "label": "Scorch",
+        "source": "horror/15?highlight=SCORCH"
+      },
       "scout@@fantasy": {
         "label": "Scout",
         "source": "fantasy/39?highlight=SCOUT"
@@ -1665,9 +1961,29 @@
         "label": "Scrap Craft",
         "source": "starbreaker_star_marines/25?highlight=Scrap%20Craft"
       },
+      "scream queen/king@@horror": {
+        "label": "Scream Queen/King",
+        "source": "horror/9?highlight=SCREAM%20QUEEN%2FKING",
+        "aliases": [
+          "Scream Queen",
+          "Scream King"
+        ]
+      },
+      "searing blast@@horror": {
+        "label": "Searing Blast",
+        "source": "horror/12?highlight=SEARING%20BLAST"
+      },
       "second nature@@starbreaker_star_marines": {
         "label": "Second Nature",
         "source": "starbreaker_star_marines/33?highlight=Second%20Nature"
+      },
+      "sense supernatura l@@horror": {
+        "label": "Sense Supernatura L",
+        "source": "horror/13?highlight=SENSE%20SUPERNATURA%20L"
+      },
+      "sense supernatural@@horror": {
+        "label": "Sense Supernatural",
+        "source": "horror/15?highlight=SENSE%20SUPERNATURAL"
       },
       "shaman@@fantasy": {
         "label": "Shaman",
@@ -1688,6 +2004,14 @@
       "silent caster@@fantasy": {
         "label": "Silent Caster",
         "source": "fantasy/37?highlight=SILENT%20CASTER"
+      },
+      "silent caster@@horror": {
+        "label": "Silent Caster",
+        "source": "horror/9?highlight=SILENT%20CASTER"
+      },
+      "sire@@horror": {
+        "label": "Sire",
+        "source": "horror/22?highlight=SIRE"
       },
       "skip tracer@@starbreaker_star_marshals": {
         "label": "Skip Tracer",
@@ -1733,9 +2057,21 @@
         "label": "Specialist",
         "source": "starbreaker_star_marines/35?highlight=Specialist"
       },
+      "speech@@horror": {
+        "label": "Speech",
+        "source": "horror/22?highlight=SPEECH"
+      },
+      "speed@@horror": {
+        "label": "Speed",
+        "source": "horror/13?highlight=SPEED"
+      },
       "spellbooks@@fantasy": {
         "label": "Spellbooks",
         "source": "fantasy/104?highlight=SPELLBOOKS"
+      },
+      "spirit friend@@horror": {
+        "label": "Spirit Friend",
+        "source": "horror/62?highlight=SPIRIT%20FRIEND"
       },
       "star knave@@sfc": {
         "label": "Star Knave",
@@ -1765,6 +2101,10 @@
         "label": "Stellar Ascension",
         "source": "sfc/206?highlight=STELLAR%20ASCENSION"
       },
+      "stench@@horror": {
+        "label": "Stench",
+        "source": "horror/19?highlight=STENCH"
+      },
       "stonecunning@@fantasy": {
         "label": "Stonecunning",
         "source": "fantasy/40?highlight=STONECUNNING"
@@ -1788,6 +2128,18 @@
       "stunning blow@@fantasy": {
         "label": "Stunning Blow",
         "source": "fantasy/35?highlight=STUNNING%20BLOW"
+      },
+      "summon great swarm@@horror": {
+        "label": "Summon Great Swarm",
+        "source": "horror/16?highlight=SUMMON%20GREAT%20SWARM"
+      },
+      "summon storm@@horror": {
+        "label": "Summon Storm",
+        "source": "horror/16?highlight=SUMMON%20STORM"
+      },
+      "summon swarm@@horror": {
+        "label": "Summon Swarm",
+        "source": "horror/16?highlight=SUMMON%20SWARM"
       },
       "summoner@@fantasy": {
         "label": "Summoner",
@@ -1829,6 +2181,10 @@
         "label": "The Witching Hour",
         "source": "fantasy/103?highlight=THE%20WITCHING%20HOUR"
       },
+      "the witching hour@@horror": {
+        "label": "The Witching Hour",
+        "source": "horror/69?highlight=THE%20WITCHING%20HOUR"
+      },
       "the wizard edge@@fantasy": {
         "label": "The Wizard Edge",
         "source": "fantasy/35?highlight=THE%20WIZARD%20EDGE"
@@ -1836,6 +2192,18 @@
       "thief@@swade": {
         "label": "Thief",
         "source": "swade/48?highlight=Thief"
+      },
+      "this house is clean@@horror": {
+        "label": "This House Is Clean",
+        "source": "horror/62?highlight=THIS%20HOUSE%20IS%20CLEAN"
+      },
+      "thought eater@@horror": {
+        "label": "Thought Eater",
+        "source": "horror/19?highlight=THOUGHT%20EATER"
+      },
+      "thrall@@horror": {
+        "label": "Thrall",
+        "source": "horror/22?highlight=THRALL"
       },
       "time lord@@sfc": {
         "label": "Time Lord",
@@ -1849,9 +2217,21 @@
         "label": "Tinkerer",
         "source": "fantasy/101?highlight=TINKERER"
       },
+      "tongues@@horror": {
+        "label": "Tongues",
+        "source": "horror/12?highlight=TONGUES"
+      },
+      "tough@@horror": {
+        "label": "Tough",
+        "source": "horror/22?highlight=TOUGH"
+      },
       "tougher than nails@@swade": {
         "label": "Tougher than nails",
         "source": "swade/52?highlight=Tougher%20Than%20Nails"
+      },
+      "tower of will@@horror": {
+        "label": "Tower Of Will",
+        "source": "horror/65?highlight=TOWER%20OF%20WILL"
       },
       "tower of will@@sfc": {
         "label": "Tower Of Will",
@@ -1885,6 +2265,10 @@
         "label": "Troubadour",
         "source": "fantasy/40?highlight=TROUBADOUR"
       },
+      "true demon@@horror": {
+        "label": "True Demon",
+        "source": "horror/14?highlight=TRUE%20DEMON"
+      },
       "true form@@fantasy": {
         "label": "True Form",
         "source": "fantasy/95?highlight=TRUE%20FORM"
@@ -1913,6 +2297,10 @@
         "label": "Undercover",
         "source": "starbreaker_star_marines/40?highlight=Undercover"
       },
+      "universa l ward@@horror": {
+        "label": "Universa L Ward",
+        "source": "horror/63?highlight=UNIVERSA%20L%20WARD"
+      },
       "unstoppable@@fantasy": {
         "label": "Unstoppable",
         "source": "fantasy/41?highlight=UNSTOPPABLE"
@@ -1920,6 +2308,22 @@
       "very attractive@@swade": {
         "label": "Very attractive",
         "source": "swade/37?highlight=Very%20Attractive"
+      },
+      "veteran of the dark world@@horror": {
+        "label": "Veteran Of The Dark World",
+        "source": "horror/7?highlight=VETERAN%20OF%20THE%20DARK%20WORLD"
+      },
+      "visions@@horror": {
+        "label": "Visions",
+        "source": "horror/9?highlight=VISIONS"
+      },
+      "wall walker (werewolf)@@horror": {
+        "label": "Wall Walker (Werewolf)",
+        "source": "horror/22?highlight=Wall%20Walker"
+      },
+      "wall walker@@horror": {
+        "label": "Wall Walker",
+        "source": "horror/22?highlight=Wall%20Walker"
       },
       "warband@@fantasy": {
         "label": "Warband",
@@ -1948,6 +2352,10 @@
       "wing gust@@fantasy": {
         "label": "Wing Gust",
         "source": "fantasy/35?highlight=WING%20GUST"
+      },
+      "wings@@horror": {
+        "label": "Wings",
+        "source": "horror/15?highlight=WINGS"
       },
       "wired perspective@@starbreaker_star_marines": {
         "label": "Wired Perspective",
@@ -1980,12 +2388,20 @@
       "zero-g operator@@starbreaker_core": {
         "label": "Zero-G Operator",
         "source": "starbreaker_core/78?highlight=Zero-G%20Operator"
+      },
+      "zombie master@@horror": {
+        "label": "Zombie Master",
+        "source": "horror/19?highlight=ZOMBIE%20MASTER"
       }
     },
     "hindrances": {
       "all thumbs@@swade": {
         "label": "All thumbs",
         "source": "swade/21?highlight=All%20Thumbs"
+      },
+      "amorous (minor)@@horror": {
+        "label": "Amorous (Minor)",
+        "source": "horror/5?highlight=AMOROUS%20(MINOR)"
       },
       "amorous@@fantasy": {
         "label": "Amorous",
@@ -2027,6 +2443,10 @@
         "label": "Big mouth",
         "source": "swade/21?highlight=Big%20Mouth"
       },
+      "bleeder (major)@@horror": {
+        "label": "Bleeder (Major)",
+        "source": "horror/6?highlight=BLEEDER%20(MAJOR)"
+      },
       "blind (major)@@swade": {
         "label": "Blind (major)",
         "source": "swade/22?highlight=Blind%20(Major)"
@@ -2043,9 +2463,21 @@
         "label": "Branded (Minor)",
         "source": "starbreaker_core/77?highlight=Branded%20(Minor)"
       },
+      "bullet magnet (minor)@@horror": {
+        "label": "Bullet Magnet (Minor)",
+        "source": "horror/6?highlight=BULLET%20MAGNET%20(MINOR)"
+      },
       "bullet magnet@@sfc": {
         "label": "Bullet magnet",
         "source": "sfc/22?highlight=BULLET%20MAGNET"
+      },
+      "bully (minor/major)@@horror": {
+        "label": "Bully (Minor/Major)",
+        "source": "horror/6?highlight=BULLY%20(MINOR%2FMAJOR)",
+        "aliases": [
+          "Bully (Minor)",
+          "Bully (Major)"
+        ]
       },
       "can't swim@@swade": {
         "label": "Can’t swim",
@@ -2067,6 +2499,10 @@
         "label": "Code of honor",
         "source": "swade/21?highlight=Code%20of%20Honor"
       },
+      "corruption (major)@@horror": {
+        "label": "Corruption (Major)",
+        "source": "horror/6?highlight=CORRUPTION%20(MAJOR)"
+      },
       "corruption@@fantasy": {
         "label": "Corruption",
         "source": "fantasy/28?highlight=CORRUPTION"
@@ -2074,6 +2510,10 @@
       "curious@@swade": {
         "label": "Curious",
         "source": "swade/22?highlight=Curious"
+      },
+      "cursed (major)@@horror": {
+        "label": "Cursed (Major)",
+        "source": "horror/6?highlight=CURSED%20(MAJOR)"
       },
       "cursed@@fantasy": {
         "label": "Cursed",
@@ -2099,6 +2539,10 @@
         "label": "Dependent",
         "source": "sfc/22?highlight=DEPENDENT"
       },
+      "doomed (major)@@horror": {
+        "label": "Doomed (Major)",
+        "source": "horror/6?highlight=DOOMED%20(MAJOR)"
+      },
       "doomed@@fantasy": {
         "label": "Doomed",
         "source": "fantasy/28?highlight=DOOMED"
@@ -2106,6 +2550,10 @@
       "doubting thomas@@swade": {
         "label": "Doubting thomas",
         "source": "swade/20?highlight=Doubting%20Thomas"
+      },
+      "dread (minor)@@horror": {
+        "label": "Dread (Minor)",
+        "source": "horror/6?highlight=DREAD%20(MINOR)"
       },
       "driven@@swade": {
         "label": "Driven",
@@ -2142,6 +2590,10 @@
       "hard of hearing@@swade": {
         "label": "Hard of hearing",
         "source": "swade/23?highlight=Hard%20of%20Hearing"
+      },
+      "heavy sleeper (minor)@@horror": {
+        "label": "Heavy Sleeper (Minor)",
+        "source": "horror/6?highlight=HEAVY%20SLEEPER%20(MINOR)"
       },
       "heroic@@swade": {
         "label": "Heroic",
@@ -2183,6 +2635,10 @@
         "label": "Loyal",
         "source": "swade/24?highlight=Loyal"
       },
+      "materia l components (major)@@horror": {
+        "label": "Materia L Components (Major)",
+        "source": "horror/7?highlight=MATERIA%20L%20COMPONENTS%20(MAJOR)"
+      },
       "material components@@fantasy": {
         "label": "Material Components",
         "source": "fantasy/29?highlight=MATERIAL%20COMPONENTS"
@@ -2198,6 +2654,10 @@
       "mute@@swade": {
         "label": "Mute",
         "source": "swade/24?highlight=Mute"
+      },
+      "night terrors (major)@@horror": {
+        "label": "Night Terrors (Major)",
+        "source": "horror/7?highlight=NIGHT%20TERRORS%20(MAJOR)"
       },
       "obese@@swade": {
         "label": "Obese",
@@ -2251,6 +2711,14 @@
         "label": "Ruthless",
         "source": "swade/25?highlight=Ruthless"
       },
+      "screamer (minor/major)@@horror": {
+        "label": "Screamer (Minor/Major)",
+        "source": "horror/7?highlight=SCREAMER%20(MINOR%2FMAJOR)",
+        "aliases": [
+          "Screamer (Minor)",
+          "Screamer (Major)"
+        ]
+      },
       "secret@@swade": {
         "label": "Secret",
         "source": "swade/25?highlight=Secret"
@@ -2291,6 +2759,10 @@
         "label": "Stubborn",
         "source": "swade/26?highlight=Stubborn"
       },
+      "superstitious (minor)@@horror": {
+        "label": "Superstitious (Minor)",
+        "source": "horror/6?highlight=SUPERSTITIOUS%20(MINOR)"
+      },
       "suspicious@@swade": {
         "label": "Suspicious",
         "source": "swade/26?highlight=Suspicious"
@@ -2319,9 +2791,21 @@
         "label": "Ugly",
         "source": "swade/27?highlight=Ugly"
       },
+      "umpy (minor)@@horror": {
+        "label": "Umpy (Minor)",
+        "source": "horror/6?highlight=UMPY%20(MINOR)"
+      },
+      "unnatura l appetite (minor)@@horror": {
+        "label": "Unnatura L Appetite (Minor)",
+        "source": "horror/7?highlight=UNNATURA%20L%20APPETITE%20(MINOR)"
+      },
       "vengeful@@swade": {
         "label": "Vengeful",
         "source": "swade/27?highlight=Vengeful"
+      },
+      "victim (major)@@horror": {
+        "label": "Victim (Major)",
+        "source": "horror/7?highlight=VICTIM%20(MAJOR)"
       },
       "vow@@fantasy": {
         "label": "Vow",
@@ -2357,6 +2841,18 @@
         "label": "Blackout smoke grenade",
         "source": "starbreaker_core/91?highlight=Blackout%20Smoke%20Grenade"
       },
+      "corpse catcher@@horror": {
+        "label": "Corpse Catcher",
+        "source": "horror/26?highlight=Corpse%20Catcher"
+      },
+      "crucifix@@horror": {
+        "label": "Crucifix",
+        "source": "horror/27?highlight=Crucifix"
+      },
+      "emf meter@@horror": {
+        "label": "EMF Meter",
+        "source": "horror/27?highlight=EMF%20Meter"
+      },
       "emp grenade@@starbreaker_core": {
         "label": "Emp grenade",
         "source": "starbreaker_core/91?highlight=EMP%20Grenade"
@@ -2381,9 +2877,17 @@
         "label": "Flechette grenades",
         "source": "starbreaker_core/91?highlight=Flechette%20Grenades"
       },
+      "garlic bullets@@horror": {
+        "label": "Garlic Bullets",
+        "source": "horror/26?highlight=Garlic%20Bullets"
+      },
       "gatling laser@@sfc": {
         "label": "Gatling laser",
         "source": "sfc/54?highlight=Gatling%20Laser"
+      },
+      "ghost trap@@horror": {
+        "label": "Ghost trap",
+        "source": "horror/27?highlight=Ghost%20trap"
       },
       "gravity grenade@@starbreaker_core": {
         "label": "Gravity grenade",
@@ -2397,6 +2901,38 @@
         "label": "Handheld Sensor",
         "source": "starbreaker_star_marines/41?highlight=Handheld%20Sensor"
       },
+      "holy water, grenade@@horror": {
+        "label": "Holy Water, Grenade",
+        "source": "horror/26?highlight=Holy%20Water%2C%20Grenade"
+      },
+      "holy water, pistol@@horror": {
+        "label": "Holy Water, Pistol",
+        "source": "horror/26?highlight=Holy%20Water%2C%20Pistol"
+      },
+      "holy water, spray@@horror": {
+        "label": "Holy Water, Spray",
+        "source": "horror/26?highlight=Holy%20Water%2C%20Spray"
+      },
+      "kinect sls camera@@horror": {
+        "label": "Kinect SLS Camera",
+        "source": "horror/27?highlight=Kinect%20SLS%20Camera"
+      },
+      "kirlian camera@@horror": {
+        "label": "Kirlian camera",
+        "source": "horror/27?highlight=Kirlian%20camera"
+      },
+      "kirlian goggles@@horror": {
+        "label": "Kirlian goggles",
+        "source": "horror/27?highlight=Kirlian%20goggles"
+      },
+      "motion tracker@@horror": {
+        "label": "Motion tracker",
+        "source": "horror/28?highlight=Motion%20tracker"
+      },
+      "neck protector,@@horror": {
+        "label": "Neck protector,",
+        "source": "horror/28?highlight=Neck%20protector%2C"
+      },
       "psyfocus loadout & advanced@@starbreaker_core": {
         "label": "Psyfocus loadout & advanced",
         "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout%20%26%20Advanced"
@@ -2405,9 +2941,21 @@
         "label": "Psyfocus",
         "source": "starbreaker_core/120?highlight=PsyFocus"
       },
+      "silver bullets@@horror": {
+        "label": "Silver Bullets",
+        "source": "horror/26?highlight=Silver%20Bullets"
+      },
+      "silver nitrate bullets@@horror": {
+        "label": "Silver Nitrate Bullets",
+        "source": "horror/26?highlight=Silver%20Nitrate%20Bullets"
+      },
       "solar battery@@starbreaker_star_marshals": {
         "label": "Solar Battery",
         "source": "starbreaker_star_marshals/11?highlight=SOLAR%20BATTERY"
+      },
+      "stake@@horror": {
+        "label": "Stake",
+        "source": "horror/26?highlight=Stake"
       },
       "star marine armor (+6*)@@starbreaker_star_marines": {
         "label": "Star marine armor (+6*)",
@@ -2416,6 +2964,18 @@
       "the badge@@starbreaker_star_marshals": {
         "label": "The Badge",
         "source": "starbreaker_star_marshals/11?highlight=THE%20BADGE"
+      },
+      "uv bullets@@horror": {
+        "label": "UV Bullets",
+        "source": "horror/26?highlight=UV%20Bullets"
+      },
+      "uv flashlight@@horror": {
+        "label": "UV flashlight",
+        "source": "horror/28?highlight=UV%20flashlight"
+      },
+      "uv grenade@@horror": {
+        "label": "UV Grenade",
+        "source": "horror/26?highlight=UV%20Grenade"
       },
       "web grenade@@starbreaker_core": {
         "label": "Web grenade",
@@ -2793,6 +3353,10 @@
         "label": "Invisibility",
         "source": "fantasy/129?highlight=INVISIBILITY"
       },
+      "invisibility@@horror": {
+        "label": "Invisibility",
+        "source": "horror/17?highlight=INVISIBILITY"
+      },
       "invisibility@@swade": {
         "label": "Invisibility",
         "source": "swade/163?highlight=Invisibility"
@@ -2848,6 +3412,10 @@
       "mystic intervention@@fantasy": {
         "label": "Mystic Intervention",
         "source": "fantasy/131?highlight=MYSTIC%20INTERVENTION"
+      },
+      "mystic powers (phantom)@@horror": {
+        "label": "Mystic Powers (Phantom)",
+        "source": "horror/18?highlight=MYSTIC%20POWERS%20(PHANTOM)"
       },
       "object reading@@fantasy": {
         "label": "Object Reading",
@@ -3059,12 +3627,20 @@
       }
     },
     "rules": {
+      "rage@@horror": {
+        "label": "Rage",
+        "source": "horror/10?highlight=RAGE"
+      },
       "rank die@@starbreaker_star_marines": {
         "label": "Rank Die",
         "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
       }
     },
     "skills": {
+      "alchemy (smarts)@@horror": {
+        "label": "Alchemy (Smarts)",
+        "source": "horror/7?highlight=ALCHEMY%20(SMARTS)"
+      },
       "hypertech@@starbreaker_core": {
         "label": "Hypertech",
         "source": "starbreaker_core/78?highlight=Hypertech"
