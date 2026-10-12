@@ -537,6 +537,10 @@
         "label": "Laser Reflect",
         "source": "sfc/206?highlight=LASER%20REFLECT"
       },
+      "sabre armor@@starbreaker_star_marines": {
+        "label": "Sabre Armor",
+        "source": "starbreaker_star_marines/43?highlight=SABRE%20ARMOR"
+      },
       "toughness@@swade": {
         "label": "Toughness",
         "source": "swade/18?highlight=Toughness"
@@ -546,6 +550,10 @@
       "acrobat@@swade": {
         "label": "Acrobat",
         "source": "swade/47?highlight=Acrobat"
+      },
+      "adrenaline rush@@starbreaker_star_marines": {
+        "label": "Adrenaline Rush",
+        "source": "starbreaker_star_marines/21?highlight=Adrenaline%20Rush"
       },
       "advanced psyfocus loadout@@starbreaker_core": {
         "label": "Advanced psyfocus loadout",
@@ -590,6 +598,13 @@
       "arcane background (psy operative)@@starbreaker_core": {
         "label": "Arcane Background (Psy Operative)",
         "source": "starbreaker_core/79?highlight=Arcane%20Background%20(Psy%20Operative)"
+      },
+      "arcane background (sabre)@@starbreaker_star_marines": {
+        "label": "Arcane Background (Sabre)",
+        "source": "starbreaker_star_marines/38?highlight=ARCANE%20BACKGROUND%20(SABRE)",
+        "aliases": [
+          "Sabre"
+        ]
       },
       "arcane background@@swade": {
         "label": "Arcane background",
@@ -647,6 +662,10 @@
         "label": "Basic psychic loadout",
         "source": "starbreaker_core/120?highlight=Basic%20Psychic%20Loadout"
       },
+      "battle hardened@@starbreaker_star_marines": {
+        "label": "Battle Hardened",
+        "source": "starbreaker_star_marines/21?highlight=Battle%20Hardened"
+      },
       "battle magic@@fantasy": {
         "label": "Battle Magic",
         "source": "fantasy/36?highlight=BATTLE%20MAGIC"
@@ -662,6 +681,10 @@
       "beast talker@@fantasy": {
         "label": "Beast Talker",
         "source": "fantasy/40?highlight=BEAST%20TALKER"
+      },
+      "bedside manner@@starbreaker_star_marines": {
+        "label": "Bedside Manner",
+        "source": "starbreaker_star_marines/27?highlight=Bedside%20Manner"
       },
       "berserk@@swade": {
         "label": "Berserk",
@@ -710,6 +733,10 @@
       "brute@@swade": {
         "label": "Brute",
         "source": "swade/37?highlight=Brute"
+      },
+      "bulletproof@@starbreaker_star_marines": {
+        "label": "Bulletproof",
+        "source": "starbreaker_star_marines/39?highlight=Bulletproof"
       },
       "calculating@@swade": {
         "label": "Calculating",
@@ -779,6 +806,14 @@
         "label": "Combat acrobat",
         "source": "swade/47?highlight=Combat%20Acrobat"
       },
+      "combat engineer@@starbreaker_star_marines": {
+        "label": "Combat Engineer",
+        "source": "starbreaker_star_marines/25?highlight=COMBAT%20ENGINEER"
+      },
+      "combat medic@@starbreaker_star_marines": {
+        "label": "Combat Medic",
+        "source": "starbreaker_star_marines/26?highlight=COMBAT%20MEDIC"
+      },
       "combat reflexes@@swade": {
         "label": "Combat reflexes",
         "source": "swade/40?highlight=Combat%20Reflexes"
@@ -811,6 +846,10 @@
         "label": "Counterattack",
         "source": "swade/40?highlight=Counterattack"
       },
+      "cover fire@@starbreaker_star_marines": {
+        "label": "Cover Fire",
+        "source": "starbreaker_star_marines/23?highlight=Cover%20Fire"
+      },
       "cover story@@starbreaker_core": {
         "label": "Cover Story",
         "source": "starbreaker_core/79?highlight=Cover%20Story"
@@ -819,6 +858,10 @@
         "label": "Cunning Plan",
         "source": "starbreaker_core/79?highlight=Cunning%20Plan"
       },
+      "cutting edge@@starbreaker_star_marines": {
+        "label": "Cutting Edge",
+        "source": "starbreaker_star_marines/39?highlight=Cutting%20Edge"
+      },
       "dead shot@@swade": {
         "label": "Dead shot",
         "source": "swade/40?highlight=Dead%20Shot"
@@ -826,6 +869,10 @@
       "deadly illusion@@fantasy": {
         "label": "Deadly Illusion",
         "source": "fantasy/97?highlight=DEADLY%20ILLUSION"
+      },
+      "death's door@@starbreaker_star_marines": {
+        "label": "Death’s Door",
+        "source": "starbreaker_star_marines/27?highlight=Death%E2%80%99s%20Door"
       },
       "deceptive@@fantasy": {
         "label": "Deceptive",
@@ -842,6 +889,10 @@
       "destroy undead@@fantasy": {
         "label": "Destroy Undead",
         "source": "fantasy/93?highlight=DESTROY%20UNDEAD"
+      },
+      "detect weakness@@starbreaker_star_marines": {
+        "label": "Detect Weakness",
+        "source": "starbreaker_star_marines/24?highlight=Detect%20Weakness"
       },
       "diabolist@@fantasy": {
         "label": "Diabolist",
@@ -866,6 +917,14 @@
       "double tap@@swade": {
         "label": "Double tap",
         "source": "swade/40?highlight=Double%20Tap"
+      },
+      "drone combat specialist@@starbreaker_star_marines": {
+        "label": "Drone Combat Specialist",
+        "source": "starbreaker_star_marines/31?highlight=Drone%20Combat%20Specialist"
+      },
+      "drone tech@@starbreaker_star_marines": {
+        "label": "Drone Tech",
+        "source": "starbreaker_star_marines/31?highlight=DRONE%20TECH"
       },
       "drone@@starbreaker_core": {
         "label": "Drone",
@@ -1003,6 +1062,10 @@
         "label": "Formation Fighter",
         "source": "fantasy/34?highlight=FORMATION%20FIGHTER"
       },
+      "fortified@@starbreaker_star_marines": {
+        "label": "Fortified",
+        "source": "starbreaker_star_marines/40?highlight=Fortified"
+      },
       "free runner@@swade": {
         "label": "Free runner",
         "source": "swade/41?highlight=Free%20Runner"
@@ -1051,6 +1114,10 @@
         "label": "Great Summoning",
         "source": "fantasy/101?highlight=GREAT%20SUMMONING"
       },
+      "guardian angels@@starbreaker_star_marines": {
+        "label": "Guardian Angels",
+        "source": "starbreaker_star_marines/40?highlight=Guardian%20Angels"
+      },
       "hard to kill@@swade": {
         "label": "Hard to kill",
         "source": "swade/41?highlight=Hard%20To%20Kill"
@@ -1071,9 +1138,24 @@
         "label": "Heartwood Staff",
         "source": "fantasy/95?highlight=HEARTWOOD%20STAFF"
       },
+      "heavy aim@@starbreaker_star_marines": {
+        "label": "Heavy Aim",
+        "source": "starbreaker_star_marines/23?highlight=Heavy%20Aim"
+      },
       "heavy hitters squad edge@@starbreaker_star_marines": {
         "label": "Heavy hitters squad edge",
-        "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge"
+        "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge",
+        "aliases": [
+          "Heavy hitters"
+        ]
+      },
+      "heavy suppression@@starbreaker_star_marines": {
+        "label": "Heavy Suppression",
+        "source": "starbreaker_star_marines/23?highlight=Heavy%20Suppression"
+      },
+      "heavy weapons gunner@@starbreaker_star_marines": {
+        "label": "Heavy Weapons Gunner",
+        "source": "starbreaker_star_marines/22?highlight=HEAVY%20WEAPONS%20GUNNER"
       },
       "heavy/super-heavy-g worlder@@sfc": {
         "label": "Heavy/Super-Heavy-G Worlder",
@@ -1091,9 +1173,17 @@
         "label": "Home Ground",
         "source": "fantasy/41?highlight=HOME%20GROUND"
       },
+      "hot swap@@starbreaker_star_marines": {
+        "label": "Hot Swap",
+        "source": "starbreaker_star_marines/39?highlight=Hot%20Swap"
+      },
       "humiliate@@swade": {
         "label": "Humiliate",
         "source": "swade/49?highlight=Humiliate"
+      },
+      "hyperdrone@@starbreaker_star_marines": {
+        "label": "Hyperdrone",
+        "source": "starbreaker_star_marines/31?highlight=Hyperdrone"
       },
       "illusionist@@fantasy": {
         "label": "Illusionist",
@@ -1175,9 +1265,17 @@
         "label": "Improvisational fighter",
         "source": "swade/41?highlight=Improvisational%20Fighter"
       },
+      "infantry@@starbreaker_star_marines": {
+        "label": "Infantry",
+        "source": "starbreaker_star_marines/21?highlight=INFANTRY"
+      },
       "infused@@sfc": {
         "label": "Infused",
         "source": "sfc/200?highlight=INFUSED"
+      },
+      "inglorious@@starbreaker_star_marines": {
+        "label": "Inglorious",
+        "source": "starbreaker_star_marines/40?highlight=Inglorious"
       },
       "inspire heroics@@fantasy": {
         "label": "Inspire Heroics",
@@ -1259,6 +1357,10 @@
         "label": "Made Man",
         "source": "starbreaker_core/80?highlight=Made%20Man"
       },
+      "maintenance budget@@starbreaker_star_marines": {
+        "label": "Maintenance Budget",
+        "source": "starbreaker_star_marines/31?highlight=Maintenance%20Budget"
+      },
       "marksman@@swade": {
         "label": "Marksman",
         "source": "swade/42?highlight=Marksman"
@@ -1298,6 +1400,10 @@
       "mcgyver@@swade": {
         "label": "Mcgyver",
         "source": "swade/48?highlight=McGyver"
+      },
+      "mental map@@starbreaker_star_marines": {
+        "label": "Mental Map",
+        "source": "starbreaker_star_marines/37?highlight=Mental%20Map"
       },
       "mentalist@@swade": {
         "label": "Mentalist",
@@ -1375,6 +1481,10 @@
         "label": "No mercy",
         "source": "swade/42?highlight=No%20Mercy"
       },
+      "officer@@starbreaker_star_marines": {
+        "label": "Officer",
+        "source": "starbreaker_star_marines/28?highlight=OFFICER"
+      },
       "opportunistic@@fantasy": {
         "label": "Opportunistic",
         "source": "fantasy/34?highlight=OPPORTUNISTIC"
@@ -1382,6 +1492,10 @@
       "opportunistic@@sfc": {
         "label": "Opportunistic",
         "source": "sfc/25?highlight=OPPORTUNISTIC"
+      },
+      "paint the target@@starbreaker_star_marines": {
+        "label": "Paint the Target",
+        "source": "starbreaker_star_marines/21?highlight=Paint%20the%20Target"
       },
       "phenomenal power@@fantasy": {
         "label": "Phenomenal Power",
@@ -1419,6 +1533,10 @@
         "label": "Provoke",
         "source": "swade/49?highlight=Provoke"
       },
+      "psionic discipline@@starbreaker_star_marines": {
+        "label": "Psionic Discipline",
+        "source": "starbreaker_star_marines/33?highlight=Psionic%20Discipline"
+      },
       "psyfocus loadout@@starbreaker_core": {
         "label": "Psyfocus loadout",
         "source": "starbreaker_core/120?highlight=PsyFocus%20Loadout"
@@ -1430,6 +1548,10 @@
       "quick draw@@sfc": {
         "label": "Quick Draw",
         "source": "sfc/25?highlight=QUICK%20DRAW"
+      },
+      "quick patch@@starbreaker_star_marines": {
+        "label": "Quick Patch",
+        "source": "starbreaker_star_marines/26?highlight=Quick%20Patch"
       },
       "quick@@swade": {
         "label": "Quick",
@@ -1454,6 +1576,10 @@
       "rearrange time@@sfc": {
         "label": "Rearrange Time",
         "source": "sfc/198?highlight=REARRANGE%20TIME"
+      },
+      "recon report@@starbreaker_star_marines": {
+        "label": "Recon Report",
+        "source": "starbreaker_star_marines/37?highlight=Recon%20Report"
       },
       "relic@@fantasy": {
         "label": "Relic",
@@ -1483,6 +1609,10 @@
         "label": "Room",
         "source": "swade/50?highlight=Room"
       },
+      "rousing speech@@starbreaker_star_marines": {
+        "label": "Rousing Speech",
+        "source": "starbreaker_star_marines/29?highlight=Rousing%20Speech"
+      },
       "sacred fetish@@fantasy": {
         "label": "Sacred Fetish",
         "source": "fantasy/99?highlight=SACRED%20FETISH"
@@ -1503,6 +1633,10 @@
         "label": "Scholar",
         "source": "swade/48?highlight=Scholar"
       },
+      "scientist@@starbreaker_star_marines": {
+        "label": "Scientist",
+        "source": "starbreaker_star_marines/35?highlight=SCIENTIST"
+      },
       "scorch@@fantasy": {
         "label": "Scorch",
         "source": "fantasy/34?highlight=SCORCH"
@@ -1510,6 +1644,18 @@
       "scout@@fantasy": {
         "label": "Scout",
         "source": "fantasy/39?highlight=SCOUT"
+      },
+      "scout@@starbreaker_star_marines": {
+        "label": "Scout",
+        "source": "starbreaker_star_marines/37?highlight=SCOUT"
+      },
+      "scrap craft@@starbreaker_star_marines": {
+        "label": "Scrap Craft",
+        "source": "starbreaker_star_marines/25?highlight=Scrap%20Craft"
+      },
+      "second nature@@starbreaker_star_marines": {
+        "label": "Second Nature",
+        "source": "starbreaker_star_marines/33?highlight=Second%20Nature"
       },
       "shaman@@fantasy": {
         "label": "Shaman",
@@ -1563,6 +1709,14 @@
         "label": "Soul Jar",
         "source": "fantasy/98?highlight=SOUL%20JAR"
       },
+      "special operative@@starbreaker_star_marines": {
+        "label": "Special Operative",
+        "source": "starbreaker_star_marines/37?highlight=Special%20Operative"
+      },
+      "specialist@@starbreaker_star_marines": {
+        "label": "Specialist",
+        "source": "starbreaker_star_marines/35?highlight=Specialist"
+      },
       "spellbooks@@fantasy": {
         "label": "Spellbooks",
         "source": "fantasy/104?highlight=SPELLBOOKS"
@@ -1591,6 +1745,10 @@
         "label": "Stonecunning",
         "source": "fantasy/40?highlight=STONECUNNING"
       },
+      "strategic mind@@starbreaker_star_marines": {
+        "label": "Strategic Mind",
+        "source": "starbreaker_star_marines/29?highlight=Strategic%20Mind"
+      },
       "street smarts@@starbreaker_core": {
         "label": "Street Smarts",
         "source": "starbreaker_core/80?highlight=Street%20Smarts"
@@ -1618,6 +1776,10 @@
       "sweep@@swade": {
         "label": "Sweep",
         "source": "swade/43?highlight=Sweep"
+      },
+      "tactical mind@@starbreaker_star_marines": {
+        "label": "Tactical Mind",
+        "source": "starbreaker_star_marines/28?highlight=Tactical%20Mind"
       },
       "tactician c@@swade": {
         "label": "Tactician c",
@@ -1723,6 +1885,10 @@
         "label": "Undead Familiar",
         "source": "fantasy/98?highlight=UNDEAD%20FAMILIAR"
       },
+      "undercover@@starbreaker_star_marines": {
+        "label": "Undercover",
+        "source": "starbreaker_star_marines/40?highlight=Undercover"
+      },
       "unstoppable@@fantasy": {
         "label": "Unstoppable",
         "source": "fantasy/41?highlight=UNSTOPPABLE"
@@ -1759,6 +1925,10 @@
         "label": "Wing Gust",
         "source": "fantasy/35?highlight=WING%20GUST"
       },
+      "wired perspective@@starbreaker_star_marines": {
+        "label": "Wired Perspective",
+        "source": "starbreaker_star_marines/24?highlight=Wired%20Perspective"
+      },
       "witch@@fantasy": {
         "label": "Witch",
         "source": "fantasy/102?highlight=WITCH"
@@ -1770,6 +1940,14 @@
       "wizard@@swade": {
         "label": "Wizard",
         "source": "swade/46?highlight=Wizard"
+      },
+      "xenolinguist@@starbreaker_star_marines": {
+        "label": "Xenolinguist",
+        "source": "starbreaker_star_marines/35?highlight=Xenolinguist"
+      },
+      "xenotechnologist@@starbreaker_star_marines": {
+        "label": "Xenotechnologist",
+        "source": "starbreaker_star_marines/35?highlight=Xenotechnologist"
       },
       "zero-g combatant@@starbreaker_core": {
         "label": "Zero-G Combatant",
@@ -2143,6 +2321,10 @@
       }
     },
     "items": {
+      "atmospheric tent@@starbreaker_star_marines": {
+        "label": "Atmospheric Tent",
+        "source": "starbreaker_star_marines/41?highlight=Atmospheric%20Tent"
+      },
       "blackout grenades@@starbreaker_core": {
         "label": "Blackout grenades",
         "source": "starbreaker_core/91?highlight=Blackout%20Grenades"
@@ -2154,6 +2336,18 @@
       "emp grenade@@starbreaker_core": {
         "label": "Emp grenade",
         "source": "starbreaker_core/91?highlight=EMP%20Grenade"
+      },
+      "exo-frame@@starbreaker_star_marines": {
+        "label": "Exo-frame",
+        "source": "starbreaker_star_marines/41?highlight=Exo-frame"
+      },
+      "explosive brick@@starbreaker_star_marines": {
+        "label": "Explosive Brick",
+        "source": "starbreaker_star_marines/41?highlight=Explosive%20Brick"
+      },
+      "explosives kit@@starbreaker_star_marines": {
+        "label": "Explosives Kit",
+        "source": "starbreaker_star_marines/41?highlight=Explosives%20Kit"
       },
       "flechette disk@@starbreaker_core": {
         "label": "Flechette disk",
@@ -2174,6 +2368,10 @@
       "gravity grenades@@starbreaker_core": {
         "label": "Gravity grenades",
         "source": "starbreaker_core/91?highlight=Gravity%20Grenades"
+      },
+      "handheld sensor@@starbreaker_star_marines": {
+        "label": "Handheld Sensor",
+        "source": "starbreaker_star_marines/41?highlight=Handheld%20Sensor"
       },
       "psyfocus loadout & advanced@@starbreaker_core": {
         "label": "Psyfocus loadout & advanced",
@@ -2198,7 +2396,55 @@
     },
     "monsters": {},
     "npcs": {},
-    "other": {},
+    "other": {
+      "apc@@starbreaker_star_marines": {
+        "label": "Apc",
+        "source": "starbreaker_star_marines/51?highlight=APC"
+      },
+      "ltv (light tactical vehicle)@@starbreaker_star_marines": {
+        "label": "LTV (Light Tactical Vehicle)",
+        "source": "starbreaker_star_marines/51?highlight=LTV%20(Light%20Tactical%20Vehicle)",
+        "aliases": [
+          "LTV"
+        ]
+      },
+      "recon bike@@starbreaker_star_marines": {
+        "label": "Recon Bike",
+        "source": "starbreaker_star_marines/52?highlight=Recon%20Bike"
+      },
+      "recon fav@@starbreaker_star_marines": {
+        "label": "Recon FAV",
+        "source": "starbreaker_star_marines/55?highlight=Recon%20FAV"
+      },
+      "ssa navy cruiser@@starbreaker_star_marines": {
+        "label": "SSA Navy Cruiser",
+        "source": "starbreaker_star_marines/49?highlight=SSA%20Navy%20Cruiser"
+      },
+      "star marine dropship@@starbreaker_star_marines": {
+        "label": "Star Marine DropShip",
+        "source": "starbreaker_star_marines/47?highlight=Star%20Marine%20DropShip"
+      },
+      "tank bike@@starbreaker_star_marines": {
+        "label": "Tank Bike",
+        "source": "starbreaker_star_marines/53?highlight=Tank%20Bike"
+      },
+      "vz apc@@starbreaker_star_marines": {
+        "label": "Vz Apc",
+        "source": "starbreaker_star_marines/55?highlight=VZ%20APC"
+      },
+      "vz dropship@@starbreaker_star_marines": {
+        "label": "VZ Dropship",
+        "source": "starbreaker_star_marines/50?highlight=VZ%20Dropship"
+      },
+      "vz fast track@@starbreaker_star_marines": {
+        "label": "VZ Fast Track",
+        "source": "starbreaker_star_marines/57?highlight=VZ%20Fast%20Track"
+      },
+      "vz ltv@@starbreaker_star_marines": {
+        "label": "Vz Ltv",
+        "source": "starbreaker_star_marines/57?highlight=VZ%20LTV"
+      }
+    },
     "powers": {
       "arcane protection@@fantasy": {
         "label": "Arcane Protection",
@@ -2772,7 +3018,12 @@
         "source": "swade/170?highlight=Zombie"
       }
     },
-    "rules": {},
+    "rules": {
+      "rank die@@starbreaker_star_marines": {
+        "label": "Rank Die",
+        "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
+      }
+    },
     "skills": {
       "hypertech@@starbreaker_core": {
         "label": "Hypertech",
