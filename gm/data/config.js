@@ -72,7 +72,10 @@ window.BOOKS = {
     defaultVisible: false,
     preload: false,
     pages: [
-      { label: "TOC", page: 2 }
+      { label: "TOC", page: 2 },
+      { label: "Gear", page: 13 },
+      { label: "Powers", page: 41 },
+      { label: "Index", page: 196 }
     ]
   },
   "starbreaker_core": {
