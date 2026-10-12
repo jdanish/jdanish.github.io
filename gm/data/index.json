@@ -575,9 +575,21 @@
         "label": "Animal Handling",
         "source": "sfc/24?highlight=ANIMAL%20HANDLING"
       },
+      "arcane background (cyborg)@@starbreaker_core": {
+        "label": "Arcane Background (Cyborg)",
+        "source": "starbreaker_core/78?highlight=Arcane%20Background%20(Cyborg)"
+      },
+      "arcane background (hypertech)@@starbreaker_core": {
+        "label": "Arcane Background (Hypertech)",
+        "source": "starbreaker_core/78?highlight=Arcane%20Background%20(Hypertech)"
+      },
       "arcane background (psy commando)@@starbreaker_core": {
         "label": "Arcane background (psy commando)",
         "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
+      },
+      "arcane background (psy operative)@@starbreaker_core": {
+        "label": "Arcane Background (Psy Operative)",
+        "source": "starbreaker_core/79?highlight=Arcane%20Background%20(Psy%20Operative)"
       },
       "arcane background@@swade": {
         "label": "Arcane background",
@@ -687,6 +699,10 @@
         "label": "Breaker",
         "source": "sfc/207?highlight=BREAKER"
       },
+      "bring 'em back alive@@starbreaker_core": {
+        "label": "Bring ’Em Back Alive",
+        "source": "starbreaker_core/79?highlight=Bring%20%E2%80%99Em%20Back%20Alive"
+      },
       "bruiser@@swade": {
         "label": "Bruiser",
         "source": "swade/40?highlight=Bruiser"
@@ -755,6 +771,10 @@
         "label": "Close Fighting",
         "source": "fantasy/33?highlight=CLOSE%20FIGHTING"
       },
+      "combat ace@@starbreaker_core": {
+        "label": "Combat Ace",
+        "source": "starbreaker_core/80?highlight=Combat%20Ace"
+      },
       "combat acrobat@@swade": {
         "label": "Combat acrobat",
         "source": "swade/47?highlight=Combat%20Acrobat"
@@ -790,6 +810,14 @@
       "counterattack@@swade": {
         "label": "Counterattack",
         "source": "swade/40?highlight=Counterattack"
+      },
+      "cover story@@starbreaker_core": {
+        "label": "Cover Story",
+        "source": "starbreaker_core/79?highlight=Cover%20Story"
+      },
+      "cunning plan@@starbreaker_core": {
+        "label": "Cunning Plan",
+        "source": "starbreaker_core/79?highlight=Cunning%20Plan"
       },
       "dead shot@@swade": {
         "label": "Dead shot",
@@ -838,6 +866,10 @@
       "double tap@@swade": {
         "label": "Double tap",
         "source": "swade/40?highlight=Double%20Tap"
+      },
+      "drone@@starbreaker_core": {
+        "label": "Drone",
+        "source": "starbreaker_core/79?highlight=Drone"
       },
       "drones@@sfc": {
         "label": "Drones",
@@ -1211,9 +1243,21 @@
         "label": "Living weapon",
         "source": "starbreaker_star_marines/33?highlight=Living%20Weapon"
       },
+      "local contact@@starbreaker_core": {
+        "label": "Local Contact",
+        "source": "starbreaker_core/80?highlight=Local%20Contact"
+      },
+      "lords of the night@@starbreaker_core": {
+        "label": "Lords of the Night",
+        "source": "starbreaker_core/80?highlight=Lords%20of%20the%20Night"
+      },
       "luck@@swade": {
         "label": "Luck",
         "source": "swade/39?highlight=Luck"
+      },
+      "made man@@starbreaker_core": {
+        "label": "Made Man",
+        "source": "starbreaker_core/80?highlight=Made%20Man"
       },
       "marksman@@swade": {
         "label": "Marksman",
@@ -1243,6 +1287,10 @@
         "label": "Master tactician",
         "source": "swade/44?highlight=Master%20Tactician"
       },
+      "master thief@@starbreaker_core": {
+        "label": "Master Thief",
+        "source": "starbreaker_core/80?highlight=Master%20Thief"
+      },
       "master@@swade": {
         "label": "Master",
         "source": "swade/52?highlight=Master"
@@ -1271,9 +1319,17 @@
         "label": "Miracle Worker",
         "source": "sfc/27?highlight=MIRACLE%20WORKER"
       },
+      "misdirection@@starbreaker_core": {
+        "label": "Misdirection",
+        "source": "starbreaker_core/80?highlight=Misdirection"
+      },
       "missile deflection@@fantasy": {
         "label": "Missile Deflection",
         "source": "fantasy/34?highlight=MISSILE%20DEFLECTION"
+      },
+      "mission control@@starbreaker_core": {
+        "label": "Mission Control",
+        "source": "starbreaker_core/80?highlight=Mission%20Control"
       },
       "morph@@sfc": {
         "label": "Morph",
@@ -1535,6 +1591,14 @@
         "label": "Stonecunning",
         "source": "fantasy/40?highlight=STONECUNNING"
       },
+      "street smarts@@starbreaker_core": {
+        "label": "Street Smarts",
+        "source": "starbreaker_core/80?highlight=Street%20Smarts"
+      },
+      "strength in numbers@@starbreaker_core": {
+        "label": "Strength in Numbers",
+        "source": "starbreaker_core/80?highlight=Strength%20in%20Numbers"
+      },
       "strong willed@@swade": {
         "label": "Strong willed",
         "source": "swade/50?highlight=Strong%20Willed"
@@ -1706,6 +1770,14 @@
       "wizard@@swade": {
         "label": "Wizard",
         "source": "swade/46?highlight=Wizard"
+      },
+      "zero-g combatant@@starbreaker_core": {
+        "label": "Zero-G Combatant",
+        "source": "starbreaker_core/78?highlight=Zero-G%20Combatant"
+      },
+      "zero-g operator@@starbreaker_core": {
+        "label": "Zero-G Operator",
+        "source": "starbreaker_core/78?highlight=Zero-G%20Operator"
       }
     },
     "hindrances": {
@@ -1765,6 +1837,10 @@
         "label": "Blunderer",
         "source": "fantasy/28?highlight=BLUNDERER"
       },
+      "branded (minor)@@starbreaker_core": {
+        "label": "Branded (Minor)",
+        "source": "starbreaker_core/77?highlight=Branded%20(Minor)"
+      },
       "bullet magnet@@sfc": {
         "label": "Bullet magnet",
         "source": "sfc/22?highlight=BULLET%20MAGNET"
@@ -1804,6 +1880,14 @@
       "death wish@@swade": {
         "label": "Death wish",
         "source": "swade/22?highlight=Death%20Wish"
+      },
+      "debt (minor or major)@@starbreaker_core": {
+        "label": "Debt (Minor or Major)",
+        "source": "starbreaker_core/78?highlight=Debt%20(Minor%20or%20Major)",
+        "aliases": [
+          "Debt (Minor)",
+          "Debt (Major)"
+        ]
       },
       "delusional@@swade": {
         "label": "Delusional",
@@ -1980,6 +2064,26 @@
       "slow@@swade": {
         "label": "Slow",
         "source": "swade/26?highlight=Slow"
+      },
+      "smart mouth (minor or major)@@starbreaker_core": {
+        "label": "Smart Mouth (Minor or Major)",
+        "source": "starbreaker_core/78?highlight=Smart%20Mouth%20(Minor%20or%20Major)",
+        "aliases": [
+          "Smart Mouth (Minor)",
+          "Smart Mouth (Major)"
+        ]
+      },
+      "snitch (major)@@starbreaker_core": {
+        "label": "Snitch (Major)",
+        "source": "starbreaker_core/78?highlight=Snitch%20(Major)"
+      },
+      "sticky fingers (minor or major)@@starbreaker_core": {
+        "label": "Sticky Fingers (Minor or Major)",
+        "source": "starbreaker_core/77?highlight=Sticky%20Fingers%20(Minor%20or%20Major)",
+        "aliases": [
+          "Sticky Fingers (Minor)",
+          "Sticky Fingers (Major)"
+        ]
       },
       "stubborn@@swade": {
         "label": "Stubborn",
@@ -2669,7 +2773,12 @@
       }
     },
     "rules": {},
-    "skills": {},
+    "skills": {
+      "hypertech@@starbreaker_core": {
+        "label": "Hypertech",
+        "source": "starbreaker_core/78?highlight=Hypertech"
+      }
+    },
     "weapons": {}
   }
 }
