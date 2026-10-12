@@ -1701,6 +1701,10 @@
         "label": "Mystic Powers (Mummy)",
         "source": "horror/15?highlight=MYSTIC%20POWERS%20(MUMMY)"
       },
+      "mystic powers (phantom)@@horror": {
+        "label": "Mystic Powers (Phantom)",
+        "source": "horror/18?highlight=MYSTIC%20POWERS%20(PHANTOM)"
+      },
       "mystic powers@@fantasy": {
         "label": "Mystic Powers",
         "source": "fantasy/37?highlight=MYSTIC%20POWERS"
@@ -3058,6 +3062,10 @@
         "label": "Armor",
         "source": "swade/154?highlight=Armor"
       },
+      "aspect of the rada loa@@horror": {
+        "label": "Aspect Of The Rada Loa",
+        "source": "horror/73?highlight=ASPECT%20OF%20THE%20RADA%20LOA"
+      },
       "backwash@@sfc": {
         "label": "Backwash",
         "source": "sfc/209?highlight=BACKWASH"
@@ -3157,9 +3165,17 @@
         "label": "Conjure Item",
         "source": "fantasy/119?highlight=CONJURE%20ITEM"
       },
+      "consecrate ground curse@@horror": {
+        "label": "Consecrate Ground Curse",
+        "source": "horror/75?highlight=CONSECRATE%20GROUND%20CURSE"
+      },
       "control machine@@sfc": {
         "label": "Control Machine",
         "source": "sfc/209?highlight=CONTROL%20MACHINE"
+      },
+      "corpse sense@@horror": {
+        "label": "Corpse Sense",
+        "source": "horror/75?highlight=CORPSE%20SENSE"
       },
       "create item@@sfc": {
         "label": "Create Item",
@@ -3281,9 +3297,17 @@
         "label": "Fly",
         "source": "swade/161?highlight=Fly"
       },
+      "fury of the petro loa@@horror": {
+        "label": "Fury Of The Petro Loa",
+        "source": "horror/76?highlight=FURY%20OF%20THE%20PETRO%20LOA"
+      },
       "ghost in the machine@@sfc": {
         "label": "Ghost In The Machine",
         "source": "sfc/211?highlight=GHOST%20IN%20THE%20MACHINE"
+      },
+      "grave shroud@@horror": {
+        "label": "Grave Shroud",
+        "source": "horror/77?highlight=GRAVE%20SHROUD"
       },
       "gravitate@@sfc": {
         "label": "Gravitate",
@@ -3341,6 +3365,10 @@
         "label": "Illusion",
         "source": "swade/162?highlight=Illusion"
       },
+      "illusionary horrors@@horror": {
+        "label": "Illusionary Horrors",
+        "source": "horror/77?highlight=ILLUSIONARY%20HORRORS"
+      },
       "intangibility@@fantasy": {
         "label": "Intangibility",
         "source": "fantasy/128?highlight=INTANGIBILITY"
@@ -3373,6 +3401,10 @@
         "label": "Locate",
         "source": "fantasy/130?highlight=LOCATE"
       },
+      "locate@@horror": {
+        "label": "Locate",
+        "source": "horror/78?highlight=LOCATE"
+      },
       "locate@@sfc": {
         "label": "Locate",
         "source": "sfc/211?highlight=LOCATE"
@@ -3380,6 +3412,10 @@
       "lock/unlock@@fantasy": {
         "label": "Lock/Unlock",
         "source": "fantasy/130?highlight=LOCK%2FUNLOCK"
+      },
+      "lock/unlock@@horror": {
+        "label": "Lock/Unlock",
+        "source": "horror/78?highlight=LOCK%2FUNLOCK"
       },
       "lock/unlock@@sfc": {
         "label": "Lock/Unlock",
@@ -3413,9 +3449,9 @@
         "label": "Mystic Intervention",
         "source": "fantasy/131?highlight=MYSTIC%20INTERVENTION"
       },
-      "mystic powers (phantom)@@horror": {
-        "label": "Mystic Powers (Phantom)",
-        "source": "horror/18?highlight=MYSTIC%20POWERS%20(PHANTOM)"
+      "nightmares@@horror": {
+        "label": "Nightmares",
+        "source": "horror/78?highlight=NIGHTMARES"
       },
       "object reading@@fantasy": {
         "label": "Object Reading",
@@ -3477,13 +3513,25 @@
         "label": "Sanctuary",
         "source": "fantasy/135?highlight=SANCTUARY"
       },
+      "sanctuary@@horror": {
+        "label": "Sanctuary",
+        "source": "horror/78?highlight=SANCTUARY"
+      },
       "scrying@@fantasy": {
         "label": "Scrying",
         "source": "fantasy/135?highlight=SCRYING"
       },
+      "scrying@@horror": {
+        "label": "Scrying",
+        "source": "horror/79?highlight=SCRYING"
+      },
       "scrying@@sfc": {
         "label": "Scrying",
         "source": "sfc/212?highlight=SCRYING"
+      },
+      "seance@@horror": {
+        "label": "Seance",
+        "source": "horror/79?highlight=SEANCE"
       },
       "shape change@@fantasy": {
         "label": "Shape Change",
@@ -3529,6 +3577,10 @@
         "label": "Speak language",
         "source": "swade/167?highlight=Speak%20Language"
       },
+      "spite@@horror": {
+        "label": "Spite",
+        "source": "horror/80?highlight=SPITE"
+      },
       "stun@@fantasy": {
         "label": "Stun",
         "source": "fantasy/138?highlight=STUN"
@@ -3553,6 +3605,10 @@
         "label": "Summon Animal",
         "source": "fantasy/139?highlight=SUMMON%20ANIMAL"
       },
+      "summon demon@@horror": {
+        "label": "Summon Demon",
+        "source": "horror/82?highlight=SUMMON%20DEMON"
+      },
       "summon monster@@fantasy": {
         "label": "Summon Monster",
         "source": "fantasy/140?highlight=SUMMON%20MONSTER"
@@ -3560,6 +3616,10 @@
       "summon undead@@fantasy": {
         "label": "Summon Undead",
         "source": "fantasy/141?highlight=SUMMON%20UNDEAD"
+      },
+      "suppress transformation@@horror": {
+        "label": "Suppress Transformation",
+        "source": "horror/83?highlight=SUPPRESS%20TRANSFORMATION"
       },
       "telekinesis@@fantasy": {
         "label": "Telekinesis",
