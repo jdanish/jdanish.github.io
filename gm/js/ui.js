@@ -2238,6 +2238,15 @@
       dom.sidebarTabsEl.appendChild(button);
 
       if (tab === 'search') {
+        const indexButton = document.createElement('button');
+        indexButton.type = 'button';
+        indexButton.className = 'sidebar-tab-button sidebar-data-button icon-button';
+        indexButton.setAttribute('aria-label', 'Open Reference Index');
+        indexButton.title = 'Open Reference Index';
+        indexButton.textContent = 'Index';
+        indexButton.addEventListener('click', () => window.GM.referenceIndex?.openBrowser?.());
+        dom.sidebarTabsEl.appendChild(indexButton);
+
         const editButton = document.createElement('button');
         editButton.type = 'button';
         editButton.className = 'sidebar-tab-button sidebar-data-button icon-button';

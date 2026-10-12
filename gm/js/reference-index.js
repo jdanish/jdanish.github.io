@@ -915,6 +915,15 @@
     const typeSelect = wrap.querySelector('[data-index-type]');
     typesForBrowser(types => { types.forEach((type) => { const o=document.createElement('option'); o.value=type; o.textContent=type; typeSelect.appendChild(o); }); });
     const bookSelect = wrap.querySelector('[data-index-book]');
+    const isMobileBookPicker = window.matchMedia?.('(max-width: 760px)')?.matches || window.innerWidth <= 760 || /iPad|iPhone|iPod/.test(navigator.userAgent || '');
+    if (isMobileBookPicker) {
+      // Native multi-selects are not dependable on iOS Safari. A normal
+      // single-select gives iPhone/iPad a standard picker whose value changes
+      // immediately and can be persisted reliably.
+      bookSelect.multiple = false;
+      bookSelect.removeAttribute('size');
+      bookSelect.dataset.mobileSingle = 'true';
+    }
     const allBooksOption = document.createElement('option');
     allBooksOption.value = '';
     allBooksOption.textContent = 'All Books';
@@ -934,11 +943,18 @@
     let sortKey = savedView.sortKey || 'label';
     let sortDir = savedView.sortDir === 'desc' ? 'desc' : 'asc';
 
+    function getSelectedBookKeys() {
+      if (bookSelect.dataset.mobileSingle === 'true') {
+        return bookSelect.value ? [bookSelect.value] : [];
+      }
+      return Array.from(bookSelect.options).filter((option) => option.selected && option.value).map((option) => option.value);
+    }
+
     function captureViewState() {
       return {
         search: search.value,
         type: typeSelect.value,
-        books: Array.from(bookSelect.selectedOptions).map((option) => option.value),
+        books: getSelectedBookKeys(),
         sortKey,
         sortDir,
         scrollTop: list.scrollTop,
@@ -952,16 +968,20 @@
     if (savedView.search) search.value = savedView.search;
     if (savedView.type) typeSelect.value = savedView.type;
     if (Array.isArray(savedView.books) && savedView.books.length) {
-      allBooksOption.selected = false;
-      Array.from(bookSelect.options).forEach((option) => {
-        option.selected = savedView.books.includes(option.value);
-      });
+      if (bookSelect.dataset.mobileSingle === 'true') {
+        bookSelect.value = savedView.books[0] || '';
+      } else {
+        allBooksOption.selected = false;
+        Array.from(bookSelect.options).forEach((option) => {
+          option.selected = savedView.books.includes(option.value);
+        });
+      }
     }
     function render() {
       const index = ensureIndex();
       const query = normalizeSearchText(search.value);
       const type = typeSelect.value;
-      const selectedBooks = Array.from(bookSelect.selectedOptions).map((option) => option.value).filter(Boolean);
+      const selectedBooks = getSelectedBookKeys();
       const entries = [];
       Object.entries(index).forEach(([category, bucket]) => {
         if (type && category !== type) return;
@@ -1049,7 +1069,7 @@
           state.browserViewState = {
             search: search.value,
             type: typeSelect.value,
-            books: Array.from(bookSelect.selectedOptions).map((option) => option.value),
+            books: getSelectedBookKeys(),
             sortKey, sortDir,
             scrollTop: list.scrollTop,
           };
@@ -1104,19 +1124,26 @@
 
     search.addEventListener('input', () => { persistViewState(); render(); });
     typeSelect.addEventListener('change', () => { persistViewState(); render(); });
-    bookSelect.addEventListener('change', () => {
-      const selected = Array.from(bookSelect.selectedOptions);
-      if (!selected.length) {
-        allBooksOption.selected = true;
-      } else if (selected.some((option) => option.value === '')) {
-        selected.forEach((option) => { if (option.value) option.selected = false; });
-        allBooksOption.selected = true;
-      } else {
-        allBooksOption.selected = false;
+    function handleBookFilterSelection() {
+      if (bookSelect.dataset.mobileSingle !== 'true') {
+        const selected = Array.from(bookSelect.options).filter((option) => option.selected);
+        if (!selected.length) {
+          allBooksOption.selected = true;
+        } else if (selected.some((option) => option.value === '')) {
+          selected.forEach((option) => { if (option.value) option.selected = false; });
+          allBooksOption.selected = true;
+        } else {
+          allBooksOption.selected = false;
+        }
       }
       persistViewState();
       render();
-    });
+    }
+    // iOS Safari can update a native multiple-select on `input` without
+    // reliably delivering `change` until its picker is dismissed. Listen to
+    // both so the index refreshes as soon as the selected book changes.
+    bookSelect.addEventListener('input', handleBookFilterSelection);
+    bookSelect.addEventListener('change', handleBookFilterSelection);
     list.addEventListener('scroll', () => {
       window.clearTimeout(list._saveViewTimer);
       list._saveViewTimer = window.setTimeout(persistViewState, 150);

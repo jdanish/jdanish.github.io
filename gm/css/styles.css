@@ -5115,3 +5115,10 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
     white-space: normal;
   }
 }
+
+@media (max-width: 760px) {
+  .reference-index-toolbar [data-index-book][data-mobile-single="true"] {
+    min-height: 0;
+    height: auto;
+  }
+}
