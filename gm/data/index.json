@@ -1464,7 +1464,10 @@
       },
       "get down, mr. president!@@starbreaker_star_marshals": {
         "label": "Get Down, Mr. President!",
-        "source": "starbreaker_star_marshals/7?highlight=Get%20Down%2C%20Mr.%20President!"
+        "source": "starbreaker_star_marshals/7?highlight=Get%20Down%2C%20Mr.%20President!",
+        "aliases": [
+          "Get Down Mr. President!"
+        ]
       },
       "giant killer@@swade": {
         "label": "Giant killer",
@@ -3335,15 +3338,24 @@
       },
       "holy water, grenade@@horror": {
         "label": "Holy Water, Grenade",
-        "source": "horror/26?highlight=Holy%20Water%2C%20Grenade"
+        "source": "horror/26?highlight=Holy%20Water%2C%20Grenade",
+        "aliases": [
+          "Holy Water Grenade"
+        ]
       },
       "holy water, pistol@@horror": {
         "label": "Holy Water, Pistol",
-        "source": "horror/26?highlight=Holy%20Water%2C%20Pistol"
+        "source": "horror/26?highlight=Holy%20Water%2C%20Pistol",
+        "aliases": [
+          "Holy Water Pistol"
+        ]
       },
       "holy water, spray@@horror": {
         "label": "Holy Water, Spray",
-        "source": "horror/26?highlight=Holy%20Water%2C%20Spray"
+        "source": "horror/26?highlight=Holy%20Water%2C%20Spray",
+        "aliases": [
+          "Holy Water Spray"
+        ]
       },
       "kinect sls camera@@horror": {
         "label": "Kinect SLS Camera",
@@ -3363,7 +3375,10 @@
       },
       "neck protector,@@horror": {
         "label": "Neck protector,",
-        "source": "horror/28?highlight=Neck%20protector%2C"
+        "source": "horror/28?highlight=Neck%20protector%2C",
+        "aliases": [
+          "Neck protector"
+        ]
       },
       "psyfocus loadout & advanced@@starbreaker_core": {
         "label": "Psyfocus loadout & advanced",
@@ -3643,7 +3658,10 @@
       },
       "antitoxin, vial@@fantasy": {
         "label": "Antitoxin, vial",
-        "source": "fantasy/60?highlight=Antitoxin%2C%20vial"
+        "source": "fantasy/60?highlight=Antitoxin%2C%20vial",
+        "aliases": [
+          "Antitoxin vial"
+        ]
       },
       "everburning torch@@fantasy": {
         "label": "Everburning torch",
@@ -5157,23 +5175,43 @@
       },
       "axe, hand@@swade": {
         "label": "Axe, Hand",
-        "source": "swade/71?highlight=Axe%2C%20Hand"
+        "source": "swade/71?highlight=Axe%2C%20Hand",
+        "aliases": [
+          "Axe Hand",
+          "Hand Axe"
+        ]
       },
       "axe, battle@@swade": {
         "label": "Axe, Battle",
-        "source": "swade/71?highlight=Axe%2C%20Battle"
+        "source": "swade/71?highlight=Axe%2C%20Battle",
+        "aliases": [
+          "Axe Battle",
+          "Battle Axe"
+        ]
       },
       "axe, great@@swade": {
         "label": "Axe, Great",
-        "source": "swade/71?highlight=Axe%2C%20Great"
+        "source": "swade/71?highlight=Axe%2C%20Great",
+        "aliases": [
+          "Axe Great",
+          "Great Axe"
+        ]
       },
       "club, light@@swade": {
         "label": "Club, Light",
-        "source": "swade/71?highlight=Club%2C%20Light"
+        "source": "swade/71?highlight=Club%2C%20Light",
+        "aliases": [
+          "Club Light",
+          "Light Club"
+        ]
       },
       "club, heavy@@swade": {
         "label": "Club, Heavy",
-        "source": "swade/71?highlight=Club%2C%20Heavy"
+        "source": "swade/71?highlight=Club%2C%20Heavy",
+        "aliases": [
+          "Club Heavy",
+          "Heavy Club"
+        ]
       },
       "dagger/knife@@swade": {
         "label": "Dagger/Knife",
@@ -5221,15 +5259,27 @@
       },
       "sword, great@@swade": {
         "label": "Sword, Great",
-        "source": "swade/71?highlight=Sword%2C%20Great"
+        "source": "swade/71?highlight=Sword%2C%20Great",
+        "aliases": [
+          "Sword Great",
+          "Great Sword"
+        ]
       },
       "sword, long@@swade": {
         "label": "Sword, Long",
-        "source": "swade/71?highlight=Sword%2C%20Long"
+        "source": "swade/71?highlight=Sword%2C%20Long",
+        "aliases": [
+          "Sword Long",
+          "Long Sword"
+        ]
       },
       "sword, short@@swade": {
         "label": "Sword, Short",
-        "source": "swade/71?highlight=Sword%2C%20Short"
+        "source": "swade/71?highlight=Sword%2C%20Short",
+        "aliases": [
+          "Sword Short",
+          "Short Sword"
+        ]
       },
       "warhammer@@swade": {
         "label": "Warhammer",
@@ -5277,7 +5327,11 @@
       },
       "axe, throwing@@swade": {
         "label": "Axe, Throwing",
-        "source": "swade/72?highlight=Axe%2C%20Throwing"
+        "source": "swade/72?highlight=Axe%2C%20Throwing",
+        "aliases": [
+          "Axe Throwing",
+          "Throwing Axe"
+        ]
       },
       "bow@@swade": {
         "label": "Bow",
@@ -5289,7 +5343,11 @@
       },
       "crossbow, heavy@@swade": {
         "label": "Crossbow, Heavy",
-        "source": "swade/72?highlight=Crossbow%2C%20Heavy"
+        "source": "swade/72?highlight=Crossbow%2C%20Heavy",
+        "aliases": [
+          "Crossbow Heavy",
+          "Heavy Crossbow"
+        ]
       },
       "long bow@@swade": {
         "label": "Long Bow",
@@ -5477,15 +5535,27 @@
       },
       "axe, hand@@fantasy": {
         "label": "Axe, Hand",
-        "source": "fantasy/56?highlight=Axe%2C%20Hand"
+        "source": "fantasy/56?highlight=Axe%2C%20Hand",
+        "aliases": [
+          "Axe Hand",
+          "Hand Axe"
+        ]
       },
       "axe, battle@@fantasy": {
         "label": "Axe, Battle",
-        "source": "fantasy/56?highlight=Axe%2C%20Battle"
+        "source": "fantasy/56?highlight=Axe%2C%20Battle",
+        "aliases": [
+          "Axe Battle",
+          "Battle Axe"
+        ]
       },
       "axe, great@@fantasy": {
         "label": "Axe, Great",
-        "source": "fantasy/56?highlight=Axe%2C%20Great"
+        "source": "fantasy/56?highlight=Axe%2C%20Great",
+        "aliases": [
+          "Axe Great",
+          "Great Axe"
+        ]
       },
       "chakram@@fantasy": {
         "label": "Chakram",
@@ -5493,11 +5563,19 @@
       },
       "club, light@@fantasy": {
         "label": "Club, Light",
-        "source": "fantasy/56?highlight=Club%2C%20Light"
+        "source": "fantasy/56?highlight=Club%2C%20Light",
+        "aliases": [
+          "Club Light",
+          "Light Club"
+        ]
       },
       "club, heavy@@fantasy": {
         "label": "Club, Heavy",
-        "source": "fantasy/56?highlight=Club%2C%20Heavy"
+        "source": "fantasy/56?highlight=Club%2C%20Heavy",
+        "aliases": [
+          "Club Heavy",
+          "Heavy Club"
+        ]
       },
       "cutlass@@fantasy": {
         "label": "Cutlass",
@@ -5513,7 +5591,11 @@
       },
       "flail, heavy@@fantasy": {
         "label": "Flail, Heavy",
-        "source": "fantasy/56?highlight=Flail%2C%20Heavy"
+        "source": "fantasy/56?highlight=Flail%2C%20Heavy",
+        "aliases": [
+          "Flail Heavy",
+          "Heavy Flail"
+        ]
       },
       "falchion@@fantasy": {
         "label": "Falchion",
@@ -5541,11 +5623,19 @@
       },
       "mace, light@@fantasy": {
         "label": "Mace, Light",
-        "source": "fantasy/56?highlight=Mace%2C%20Light"
+        "source": "fantasy/56?highlight=Mace%2C%20Light",
+        "aliases": [
+          "Mace Light",
+          "Light Mace"
+        ]
       },
       "mace, heavy@@fantasy": {
         "label": "Mace, Heavy",
-        "source": "fantasy/56?highlight=Mace%2C%20Heavy"
+        "source": "fantasy/56?highlight=Mace%2C%20Heavy",
+        "aliases": [
+          "Mace Heavy",
+          "Heavy Mace"
+        ]
       },
       "mancatcher@@fantasy": {
         "label": "Mancatcher",
@@ -5593,7 +5683,11 @@
       },
       "spear, short@@fantasy": {
         "label": "Spear, Short",
-        "source": "fantasy/57?highlight=Spear%2C%20Short"
+        "source": "fantasy/57?highlight=Spear%2C%20Short",
+        "aliases": [
+          "Spear Short",
+          "Short Spear"
+        ]
       },
       "spear@@fantasy": {
         "label": "Spear",
@@ -5613,23 +5707,43 @@
       },
       "sword, bastard@@fantasy": {
         "label": "Sword, Bastard",
-        "source": "fantasy/57?highlight=Sword%2C%20Bastard"
+        "source": "fantasy/57?highlight=Sword%2C%20Bastard",
+        "aliases": [
+          "Sword Bastard",
+          "Bastard Sword"
+        ]
       },
       "sword, great@@fantasy": {
         "label": "Sword, Great",
-        "source": "fantasy/57?highlight=Sword%2C%20Great"
+        "source": "fantasy/57?highlight=Sword%2C%20Great",
+        "aliases": [
+          "Sword Great",
+          "Great Sword"
+        ]
       },
       "sword, hook@@fantasy": {
         "label": "Sword, Hook",
-        "source": "fantasy/57?highlight=Sword%2C%20Hook"
+        "source": "fantasy/57?highlight=Sword%2C%20Hook",
+        "aliases": [
+          "Sword Hook",
+          "Hook Sword"
+        ]
       },
       "sword, long@@fantasy": {
         "label": "Sword, Long",
-        "source": "fantasy/57?highlight=Sword%2C%20Long"
+        "source": "fantasy/57?highlight=Sword%2C%20Long",
+        "aliases": [
+          "Sword Long",
+          "Long Sword"
+        ]
       },
       "sword, short@@fantasy": {
         "label": "Sword, Short",
-        "source": "fantasy/57?highlight=Sword%2C%20Short"
+        "source": "fantasy/57?highlight=Sword%2C%20Short",
+        "aliases": [
+          "Sword Short",
+          "Short Sword"
+        ]
       },
       "trident@@fantasy": {
         "label": "Trident",
@@ -5653,39 +5767,75 @@
       },
       "bow, short@@fantasy": {
         "label": "Bow, Short",
-        "source": "fantasy/58?highlight=Bow%2C%20Short"
+        "source": "fantasy/58?highlight=Bow%2C%20Short",
+        "aliases": [
+          "Bow Short",
+          "Short Bow"
+        ]
       },
       "bow, long@@fantasy": {
         "label": "Bow, Long",
-        "source": "fantasy/58?highlight=Bow%2C%20Long"
+        "source": "fantasy/58?highlight=Bow%2C%20Long",
+        "aliases": [
+          "Bow Long",
+          "Long Bow"
+        ]
       },
       "bow, composite@@fantasy": {
         "label": "Bow, Composite",
-        "source": "fantasy/58?highlight=Bow%2C%20Composite"
+        "source": "fantasy/58?highlight=Bow%2C%20Composite",
+        "aliases": [
+          "Bow Composite",
+          "Composite Bow"
+        ]
       },
       "crossbow, hand@@fantasy": {
         "label": "Crossbow, Hand",
-        "source": "fantasy/58?highlight=Crossbow%2C%20Hand"
+        "source": "fantasy/58?highlight=Crossbow%2C%20Hand",
+        "aliases": [
+          "Crossbow Hand",
+          "Hand Crossbow"
+        ]
       },
       "crossbow, hand repeating@@fantasy": {
         "label": "Crossbow, Hand Repeating",
-        "source": "fantasy/58?highlight=Crossbow%2C%20Hand%20Repeating"
+        "source": "fantasy/58?highlight=Crossbow%2C%20Hand%20Repeating",
+        "aliases": [
+          "Crossbow Hand Repeating",
+          "Repeating Hand Crossbow"
+        ]
       },
       "crossbow, light@@fantasy": {
         "label": "Crossbow, Light",
-        "source": "fantasy/58?highlight=Crossbow%2C%20Light"
+        "source": "fantasy/58?highlight=Crossbow%2C%20Light",
+        "aliases": [
+          "Crossbow Light",
+          "Light Crossbow"
+        ]
       },
       "crossbow, light repeating@@fantasy": {
         "label": "Crossbow, Light Repeating",
-        "source": "fantasy/58?highlight=Crossbow%2C%20Light%20Repeating"
+        "source": "fantasy/58?highlight=Crossbow%2C%20Light%20Repeating",
+        "aliases": [
+          "Crossbow Light Repeating",
+          "Repeating Light Crossbow"
+        ]
       },
       "crossbow, heavy@@fantasy": {
         "label": "Crossbow, Heavy",
-        "source": "fantasy/58?highlight=Crossbow%2C%20Heavy"
+        "source": "fantasy/58?highlight=Crossbow%2C%20Heavy",
+        "aliases": [
+          "Crossbow Heavy",
+          "Heavy Crossbow"
+        ]
       },
       "crossbow, heavy repeating@@fantasy": {
         "label": "Crossbow, Heavy Repeating",
-        "source": "fantasy/58?highlight=Crossbow%2C%20Heavy%20Repeating"
+        "source": "fantasy/58?highlight=Crossbow%2C%20Heavy%20Repeating",
+        "aliases": [
+          "Crossbow Heavy Repeating",
+          "Repeating Heavy Crossbow"
+        ]
       },
       "net (weighted)@@fantasy": {
         "label": "Net (Weighted)",
@@ -5721,15 +5871,27 @@
       },
       "crossbow, mini@@horror": {
         "label": "Crossbow, Mini",
-        "source": "horror/26?highlight=Crossbow%2C%20Mini"
+        "source": "horror/26?highlight=Crossbow%2C%20Mini",
+        "aliases": [
+          "Crossbow Mini",
+          "Mini Crossbow"
+        ]
       },
       "crossbow, repeating@@horror": {
         "label": "Crossbow, Repeating",
-        "source": "horror/26?highlight=Crossbow%2C%20Repeating"
+        "source": "horror/26?highlight=Crossbow%2C%20Repeating",
+        "aliases": [
+          "Crossbow Repeating",
+          "Repeating Crossbow"
+        ]
       },
       "crossbow, winch@@horror": {
         "label": "Crossbow, Winch",
-        "source": "horror/26?highlight=Crossbow%2C%20Winch"
+        "source": "horror/26?highlight=Crossbow%2C%20Winch",
+        "aliases": [
+          "Crossbow Winch",
+          "Winch Crossbow"
+        ]
       },
       "flare gun (pistol)@@horror": {
         "label": "Flare Gun (Pistol)",
@@ -5737,7 +5899,11 @@
       },
       "stake, thrown@@horror": {
         "label": "Stake, thrown",
-        "source": "horror/26?highlight=Stake%2C%20thrown"
+        "source": "horror/26?highlight=Stake%2C%20thrown",
+        "aliases": [
+          "Stake thrown",
+          "Thrown Stake"
+        ]
       },
       "stake (silver-tipped)@@horror": {
         "label": "Stake (Silver-tipped)",
@@ -5773,7 +5939,11 @@
       },
       "molecular axe, great@@sfc": {
         "label": "Molecular Axe, Great",
-        "source": "sfc/50?highlight=Molecular%20Axe%2C%20Great"
+        "source": "sfc/50?highlight=Molecular%20Axe%2C%20Great",
+        "aliases": [
+          "Molecular Axe Great",
+          "Molecular Great Axe"
+        ]
       },
       "molecular knife@@sfc": {
         "label": "Molecular Knife",
