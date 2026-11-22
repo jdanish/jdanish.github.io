@@ -3416,6 +3416,486 @@
       "web grenades@@starbreaker_core": {
         "label": "Web grenades",
         "source": "starbreaker_core/91?highlight=Web%20Grenades"
+      },
+      "bandages of anubis@@horror": {
+        "label": "Bandages of Anubis",
+        "source": "horror/85?highlight=Bandages%20of%20Anubis"
+      },
+      "blood money@@horror": {
+        "label": "Blood Money",
+        "source": "horror/85?highlight=Blood%20Money"
+      },
+      "brazier of conjuration@@horror": {
+        "label": "Brazier of Conjuration",
+        "source": "horror/86?highlight=Brazier%20of%20Conjuration"
+      },
+      "cannibal mask@@horror": {
+        "label": "Cannibal Mask",
+        "source": "horror/86?highlight=Cannibal%20Mask"
+      },
+      "ceramic masks@@horror": {
+        "label": "Ceramic Masks",
+        "source": "horror/86?highlight=Ceramic%20Masks"
+      },
+      "cold iron chainmail@@horror": {
+        "label": "Cold Iron Chainmail",
+        "source": "horror/86?highlight=Cold%20Iron%20Chainmail"
+      },
+      "corpse dust@@horror": {
+        "label": "Corpse Dust",
+        "source": "horror/86?highlight=Corpse%20Dust"
+      },
+      "diary of a madman@@horror": {
+        "label": "Diary of a Madman",
+        "source": "horror/87?highlight=Diary%20of%20a%20Madman"
+      },
+      "doppelganger mirror@@horror": {
+        "label": "Doppelganger Mirror",
+        "source": "horror/87?highlight=Doppelganger%20Mirror"
+      },
+      "elixir of love@@horror": {
+        "label": "Elixir of Love",
+        "source": "horror/87?highlight=Elixir%20of%20Love"
+      },
+      "flail of unhealing flesh@@horror": {
+        "label": "Flail of Unhealing Flesh",
+        "source": "horror/87?highlight=Flail%20of%20Unhealing%20Flesh"
+      },
+      "frankenstein’s laboratory@@horror": {
+        "label": "Frankenstein’s Laboratory",
+        "source": "horror/88?highlight=Frankenstein%E2%80%99s%20Laboratory"
+      },
+      "grandfather clock@@horror": {
+        "label": "Grandfather Clock",
+        "source": "horror/88?highlight=Grandfather%20Clock"
+      },
+      "grave dust@@horror": {
+        "label": "Grave Dust",
+        "source": "horror/88?highlight=Grave%20Dust"
+      },
+      "grimoires@@horror": {
+        "label": "Grimoires",
+        "source": "horror/89?highlight=Grimoires"
+      },
+      "hand of fate@@horror": {
+        "label": "Hand of Fate",
+        "source": "horror/89?highlight=Hand%20of%20Fate"
+      },
+      "hand of glory@@horror": {
+        "label": "Hand of Glory",
+        "source": "horror/89?highlight=Hand%20of%20Glory"
+      },
+      "haunted dollhouse@@horror": {
+        "label": "Haunted Dollhouse",
+        "source": "horror/89?highlight=Haunted%20Dollhouse"
+      },
+      "the heartbeat’s pocket watch@@horror": {
+        "label": "The Heartbeat’s Pocket Watch",
+        "source": "horror/90?highlight=The%20Heartbeat%E2%80%99s%20Pocket%20Watch"
+      },
+      "hellfire blade@@horror": {
+        "label": "Hellfire Blade",
+        "source": "horror/90?highlight=Hellfire%20Blade"
+      },
+      "hockey mask of terror@@horror": {
+        "label": "Hockey Mask of Terror",
+        "source": "horror/90?highlight=Hockey%20Mask%20of%20Terror"
+      },
+      "jack’s scalpel@@horror": {
+        "label": "Jack’s Scalpel",
+        "source": "horror/91?highlight=Jack%E2%80%99s%20Scalpel"
+      },
+      "jade mirror@@horror": {
+        "label": "Jade Mirror",
+        "source": "horror/91?highlight=Jade%20Mirror"
+      },
+      "manacle of the inquisition@@horror": {
+        "label": "Manacle of the Inquisition",
+        "source": "horror/91?highlight=Manacle%20of%20the%20Inquisition"
+      },
+      "mark of the demon@@horror": {
+        "label": "Mark of the Demon",
+        "source": "horror/91?highlight=Mark%20of%20the%20Demon"
+      },
+      "monkey’s paw@@horror": {
+        "label": "Monkey’s Paw",
+        "source": "horror/92?highlight=Monkey%E2%80%99s%20Paw"
+      },
+      "moonblade@@horror": {
+        "label": "Moonblade",
+        "source": "horror/92?highlight=Moonblade"
+      },
+      "necronomicon@@horror": {
+        "label": "Necronomicon",
+        "source": "horror/93?highlight=Necronomicon"
+      },
+      "nightmare stone@@horror": {
+        "label": "Nightmare Stone",
+        "source": "horror/93?highlight=Nightmare%20Stone"
+      },
+      "optograph@@horror": {
+        "label": "Optograph",
+        "source": "horror/93?highlight=Optograph"
+      },
+      "potions@@horror": {
+        "label": "Potions",
+        "source": "horror/94?highlight=Potions"
+      },
+      "primal cleaver@@horror": {
+        "label": "Primal Cleaver",
+        "source": "horror/94?highlight=Primal%20Cleaver"
+      },
+      "possessed doll@@horror": {
+        "label": "Possessed Doll",
+        "source": "horror/94?highlight=Possessed%20Doll"
+      },
+      "penumbral diadem@@horror": {
+        "label": "Penumbral Diadem",
+        "source": "horror/94?highlight=Penumbral%20Diadem"
+      },
+      "portrait of immortality@@horror": {
+        "label": "Portrait of Immortality",
+        "source": "horror/94?highlight=Portrait%20of%20Immortality"
+      },
+      "puzzle box@@horror": {
+        "label": "Puzzle Box",
+        "source": "horror/95?highlight=Puzzle%20Box"
+      },
+      "ring of magical warding@@horror": {
+        "label": "Ring of Magical Warding",
+        "source": "horror/95?highlight=Ring%20of%20Magical%20Warding"
+      },
+      "rings of the eternal brotherhood@@horror": {
+        "label": "Rings of the Eternal Brotherhood",
+        "source": "horror/95?highlight=Rings%20of%20the%20Eternal%20Brotherhood"
+      },
+      "sacrificial knife@@horror": {
+        "label": "Sacrificial Knife",
+        "source": "horror/96?highlight=Sacrificial%20Knife"
+      },
+      "scrolls@@horror": {
+        "label": "Scrolls",
+        "source": "horror/96?highlight=Scrolls"
+      },
+      "shadow candles@@horror": {
+        "label": "Shadow Candles",
+        "source": "horror/96?highlight=Shadow%20Candles"
+      },
+      "ship’s figurehead@@horror": {
+        "label": "Ship’s Figurehead",
+        "source": "horror/96?highlight=Ship%E2%80%99s%20Figurehead"
+      },
+      "silver claws@@horror": {
+        "label": "Silver Claws",
+        "source": "horror/96?highlight=Silver%20Claws"
+      },
+      "soul candles@@horror": {
+        "label": "Soul Candles",
+        "source": "horror/97?highlight=Soul%20Candles"
+      },
+      "soul-killer gun@@horror": {
+        "label": "Soul-Killer Gun",
+        "source": "horror/97?highlight=Soul-Killer%20Gun"
+      },
+      "staff of the necromancer@@horror": {
+        "label": "Staff of the Necromancer",
+        "source": "horror/97?highlight=Staff%20of%20the%20Necromancer"
+      },
+      "talisman of protection@@horror": {
+        "label": "Talisman of Protection",
+        "source": "horror/97?highlight=Talisman%20of%20Protection"
+      },
+      "templar blade@@horror": {
+        "label": "Templar Blade",
+        "source": "horror/97?highlight=Templar%20Blade"
+      },
+      "vampire’s coffin@@horror": {
+        "label": "Vampire’s Coffin",
+        "source": "horror/97?highlight=Vampire%E2%80%99s%20Coffin"
+      },
+      "voodoo dolls@@horror": {
+        "label": "Voodoo Dolls",
+        "source": "horror/98?highlight=Voodoo%20Dolls"
+      },
+      "warding chalk@@horror": {
+        "label": "Warding Chalk",
+        "source": "horror/98?highlight=Warding%20Chalk"
+      },
+      "werewolf blood@@horror": {
+        "label": "Werewolf Blood",
+        "source": "horror/98?highlight=Werewolf%20Blood"
+      },
+      "witch ladder@@horror": {
+        "label": "Witch Ladder",
+        "source": "horror/98?highlight=Witch%20Ladder"
+      },
+      "wolf-head cane@@horror": {
+        "label": "Wolf-Head Cane",
+        "source": "horror/98?highlight=Wolf-Head%20Cane"
+      },
+      "acid flask@@fantasy": {
+        "label": "Acid flask",
+        "source": "fantasy/60?highlight=Acid%20flask"
+      },
+      "alchemist’s fire@@fantasy": {
+        "label": "Alchemist’s Fire",
+        "source": "fantasy/60?highlight=Alchemist%E2%80%99s%20Fire"
+      },
+      "antitoxin, vial@@fantasy": {
+        "label": "Antitoxin, vial",
+        "source": "fantasy/60?highlight=Antitoxin%2C%20vial"
+      },
+      "everburning torch@@fantasy": {
+        "label": "Everburning torch",
+        "source": "fantasy/60?highlight=Everburning%20torch"
+      },
+      "holy water@@fantasy": {
+        "label": "Holy Water",
+        "source": "fantasy/60?highlight=Holy%20Water"
+      },
+      "smokestick@@fantasy": {
+        "label": "Smokestick",
+        "source": "fantasy/60?highlight=Smokestick"
+      },
+      "sunrod@@fantasy": {
+        "label": "Sunrod",
+        "source": "fantasy/60?highlight=Sunrod"
+      },
+      "tanglefoot bag@@fantasy": {
+        "label": "Tanglefoot bag",
+        "source": "fantasy/60?highlight=Tanglefoot%20bag"
+      },
+      "thunderstone@@fantasy": {
+        "label": "Thunderstone",
+        "source": "fantasy/60?highlight=Thunderstone"
+      },
+      "tindertwig@@fantasy": {
+        "label": "Tindertwig",
+        "source": "fantasy/60?highlight=Tindertwig"
+      },
+      "bug detector@@secret_world": {
+        "label": "Bug Detector",
+        "source": "secret_world/50?highlight=Bug%20Detector"
+      },
+      "c4 plastic explosive@@secret_world": {
+        "label": "C4 Plastic Explosive",
+        "source": "secret_world/50?highlight=C4%20Plastic%20Explosive"
+      },
+      "enhanced smart phone@@secret_world": {
+        "label": "Enhanced Smart Phone",
+        "source": "secret_world/50?highlight=Enhanced%20Smart%20Phone"
+      },
+      "gas mask@@secret_world": {
+        "label": "Gas Mask",
+        "source": "secret_world/50?highlight=Gas%20Mask"
+      },
+      "grappling gun@@secret_world": {
+        "label": "Grappling Gun",
+        "source": "secret_world/51?highlight=Grappling%20Gun"
+      },
+      "healing drone@@secret_world": {
+        "label": "Healing Drone",
+        "source": "secret_world/51?highlight=Healing%20Drone"
+      },
+      "holy water@@secret_world": {
+        "label": "Holy Water",
+        "source": "secret_world/51?highlight=Holy%20Water"
+      },
+      "tactical survey drone@@secret_world": {
+        "label": "Tactical Survey Drone",
+        "source": "secret_world/51?highlight=Tactical%20Survey%20Drone"
+      },
+      "thermographic camera@@secret_world": {
+        "label": "Thermographic Camera",
+        "source": "secret_world/51?highlight=Thermographic%20Camera"
+      },
+      "blood magic charm@@secret_world": {
+        "label": "Blood Magic Charm",
+        "source": "secret_world/52?highlight=Blood%20Magic%20Charm"
+      },
+      "chaos magic charm@@secret_world": {
+        "label": "Chaos Magic Charm",
+        "source": "secret_world/52?highlight=Chaos%20Magic%20Charm"
+      },
+      "elementalism charm@@secret_world": {
+        "label": "Elementalism Charm",
+        "source": "secret_world/52?highlight=Elementalism%20Charm"
+      },
+      "accelerating chronometer@@secret_world": {
+        "label": "Accelerating Chronometer",
+        "source": "secret_world/53?highlight=Accelerating%20Chronometer"
+      },
+      "ankh@@secret_world": {
+        "label": "Ankh",
+        "source": "secret_world/53?highlight=Ankh"
+      },
+      "ashes of crushed cities@@secret_world": {
+        "label": "Ashes of Crushed Cities",
+        "source": "secret_world/53?highlight=Ashes%20of%20Crushed%20Cities"
+      },
+      "barbelith wire@@secret_world": {
+        "label": "Barbelith Wire",
+        "source": "secret_world/53?highlight=Barbelith%20Wire"
+      },
+      "biker’s charm@@secret_world": {
+        "label": "Biker’s Charm",
+        "source": "secret_world/53?highlight=Biker%E2%80%99s%20Charm"
+      },
+      "blood halo@@secret_world": {
+        "label": "Blood Halo",
+        "source": "secret_world/53?highlight=Blood%20Halo"
+      },
+      "bracer of horus@@secret_world": {
+        "label": "Bracer of Horus",
+        "source": "secret_world/53?highlight=Bracer%20of%20Horus"
+      },
+      "rurikid knot@@secret_world": {
+        "label": "Rurikid Knot",
+        "source": "secret_world/54?highlight=Rurikid%20Knot"
+      },
+      "seed of aggression@@secret_world": {
+        "label": "Seed of Aggression",
+        "source": "secret_world/54?highlight=Seed%20of%20Aggression"
+      },
+      "serpent venom ring@@secret_world": {
+        "label": "Serpent Venom Ring",
+        "source": "secret_world/54?highlight=Serpent%20Venom%20Ring"
+      },
+      "waistguard@@secret_world": {
+        "label": "Waistguard",
+        "source": "secret_world/54?highlight=Waistguard"
+      },
+      "fishbone medallion@@secret_world": {
+        "label": "Fishbone Medallion",
+        "source": "secret_world/54?highlight=Fishbone%20Medallion"
+      },
+      "golden coin@@secret_world": {
+        "label": "Golden Coin",
+        "source": "secret_world/54?highlight=Golden%20Coin"
+      },
+      "rune dice@@secret_world": {
+        "label": "Rune Dice",
+        "source": "secret_world/54?highlight=Rune%20Dice"
+      },
+      "emp transmitter@@secret_world_na": {
+        "label": "EMP Transmitter",
+        "source": "secret_world_na/70?highlight=EMP%20Transmitter"
+      },
+      "memory scrambler@@secret_world_na": {
+        "label": "Memory Scrambler",
+        "source": "secret_world_na/70?highlight=Memory%20Scrambler"
+      },
+      "signal jammer@@secret_world_na": {
+        "label": "Signal Jammer",
+        "source": "secret_world_na/70?highlight=Signal%20Jammer"
+      },
+      "tracker@@secret_world_na": {
+        "label": "Tracker",
+        "source": "secret_world_na/70?highlight=Tracker"
+      },
+      "truth serum@@secret_world_na": {
+        "label": "Truth Serum",
+        "source": "secret_world_na/70?highlight=Truth%20Serum"
+      },
+      "video bug@@secret_world_na": {
+        "label": "Video Bug",
+        "source": "secret_world_na/70?highlight=Video%20Bug"
+      },
+      "bionano injector@@starbreaker_core": {
+        "label": "Bionano Injector",
+        "source": "starbreaker_core/84?highlight=Bionano%20Injector"
+      },
+      "breathing device@@starbreaker_core": {
+        "label": "Breathing Device",
+        "source": "starbreaker_core/84?highlight=Breathing%20Device"
+      },
+      "comm system earbuds@@starbreaker_core": {
+        "label": "Comm System Earbuds",
+        "source": "starbreaker_core/84?highlight=Comm%20System%20Earbuds"
+      },
+      "cutting laser@@starbreaker_core": {
+        "label": "Cutting Laser",
+        "source": "starbreaker_core/84?highlight=Cutting%20Laser"
+      },
+      "magnetic boots@@starbreaker_core": {
+        "label": "Magnetic Boots",
+        "source": "starbreaker_core/84?highlight=Magnetic%20Boots"
+      },
+      "nano multi-tool lockpick@@starbreaker_core": {
+        "label": "Nano Multi-Tool Lockpick",
+        "source": "starbreaker_core/84?highlight=Nano%20Multi-Tool%20Lockpick"
+      },
+      "plastic cuffs@@starbreaker_core": {
+        "label": "Plastic Cuffs",
+        "source": "starbreaker_core/84?highlight=Plastic%20Cuffs"
+      },
+      "rocket pack@@starbreaker_core": {
+        "label": "Rocket Pack",
+        "source": "starbreaker_core/84?highlight=Rocket%20Pack"
+      },
+      "skinister@@starbreaker_core": {
+        "label": "Skinister",
+        "source": "starbreaker_core/84?highlight=Skinister"
+      },
+      "griptex climbing gloves & boots@@starbreaker_core": {
+        "label": "GripTex Climbing Gloves & Boots",
+        "source": "starbreaker_core/84?highlight=GripTex%20Climbing%20Gloves%20%26%20Boots"
+      },
+      "third arm@@starbreaker_core": {
+        "label": "Third Arm",
+        "source": "starbreaker_core/84?highlight=Third%20Arm"
+      },
+      "wrist-mounted grapple line@@starbreaker_core": {
+        "label": "Wrist-Mounted Grapple Line",
+        "source": "starbreaker_core/84?highlight=Wrist-Mounted%20Grapple%20Line"
+      },
+      "explosive pellet@@starbreaker_core": {
+        "label": "Explosive Pellet",
+        "source": "starbreaker_core/91?highlight=Explosive%20Pellet"
+      },
+      "high explosive grenade@@starbreaker_core": {
+        "label": "High Explosive Grenade",
+        "source": "starbreaker_core/91?highlight=High%20Explosive%20Grenade"
+      },
+      "nausea grenade@@starbreaker_core": {
+        "label": "Nausea Grenade",
+        "source": "starbreaker_core/92?highlight=Nausea%20Grenade"
+      },
+      "sticky grenade@@starbreaker_core": {
+        "label": "Sticky Grenade",
+        "source": "starbreaker_core/92?highlight=Sticky%20Grenade"
+      },
+      "antimatter mines@@starbreaker_core": {
+        "label": "Antimatter Mines",
+        "source": "starbreaker_core/93?highlight=Antimatter%20Mines"
+      },
+      "emp mines@@starbreaker_core": {
+        "label": "EMP Mines",
+        "source": "starbreaker_core/93?highlight=EMP%20Mines"
+      },
+      "gravity mines@@starbreaker_core": {
+        "label": "Gravity Mines",
+        "source": "starbreaker_core/93?highlight=Gravity%20Mines"
+      },
+      "energy shield@@spc": {
+        "label": "Energy Shield",
+        "source": "spc/14?highlight=Energy%20Shield"
+      },
+      "auto grapnel@@spc": {
+        "label": "Auto Grapnel",
+        "source": "spc/14?highlight=Auto%20Grapnel"
+      },
+      "comm link@@spc": {
+        "label": "Comm Link",
+        "source": "spc/14?highlight=Comm%20Link"
+      },
+      "jet pack@@spc": {
+        "label": "Jet Pack",
+        "source": "spc/14?highlight=Jet%20Pack"
+      },
+      "smoke grenade@@spc": {
+        "label": "Smoke Grenade",
+        "source": "spc/14?highlight=Smoke%20Grenade"
       }
     },
     "monsters": {},
