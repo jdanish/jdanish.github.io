@@ -5154,6 +5154,986 @@
       "star shot sniper rifle@@starbreaker_star_marshals": {
         "label": "Star Shot Sniper Rifle",
         "source": "starbreaker_star_marshals/10?highlight=STAR%20SHOT%20SNIPER%20RIFLE"
+      },
+      "axe, hand@@swade": {
+        "label": "Axe, Hand",
+        "source": "swade/71?highlight=Axe%2C%20Hand"
+      },
+      "axe, battle@@swade": {
+        "label": "Axe, Battle",
+        "source": "swade/71?highlight=Axe%2C%20Battle"
+      },
+      "axe, great@@swade": {
+        "label": "Axe, Great",
+        "source": "swade/71?highlight=Axe%2C%20Great"
+      },
+      "club, light@@swade": {
+        "label": "Club, Light",
+        "source": "swade/71?highlight=Club%2C%20Light"
+      },
+      "club, heavy@@swade": {
+        "label": "Club, Heavy",
+        "source": "swade/71?highlight=Club%2C%20Heavy"
+      },
+      "dagger/knife@@swade": {
+        "label": "Dagger/Knife",
+        "source": "swade/71?highlight=Dagger%2FKnife"
+      },
+      "flail@@swade": {
+        "label": "Flail",
+        "source": "swade/71?highlight=Flail"
+      },
+      "halberd@@swade": {
+        "label": "Halberd",
+        "source": "swade/71?highlight=Halberd"
+      },
+      "katana@@swade": {
+        "label": "Katana",
+        "source": "swade/71?highlight=Katana"
+      },
+      "lance@@swade": {
+        "label": "Lance",
+        "source": "swade/71?highlight=Lance"
+      },
+      "mace@@swade": {
+        "label": "Mace",
+        "source": "swade/71?highlight=Mace"
+      },
+      "maul@@swade": {
+        "label": "Maul",
+        "source": "swade/71?highlight=Maul"
+      },
+      "pike@@swade": {
+        "label": "Pike",
+        "source": "swade/71?highlight=Pike"
+      },
+      "rapier@@swade": {
+        "label": "Rapier",
+        "source": "swade/71?highlight=Rapier"
+      },
+      "spear@@swade": {
+        "label": "Spear",
+        "source": "swade/71?highlight=Spear"
+      },
+      "staff@@swade": {
+        "label": "Staff",
+        "source": "swade/71?highlight=Staff"
+      },
+      "sword, great@@swade": {
+        "label": "Sword, Great",
+        "source": "swade/71?highlight=Sword%2C%20Great"
+      },
+      "sword, long@@swade": {
+        "label": "Sword, Long",
+        "source": "swade/71?highlight=Sword%2C%20Long"
+      },
+      "sword, short@@swade": {
+        "label": "Sword, Short",
+        "source": "swade/71?highlight=Sword%2C%20Short"
+      },
+      "warhammer@@swade": {
+        "label": "Warhammer",
+        "source": "swade/71?highlight=Warhammer"
+      },
+      "bangstick@@swade": {
+        "label": "Bangstick",
+        "source": "swade/71?highlight=Bangstick"
+      },
+      "bayonet@@swade": {
+        "label": "Bayonet",
+        "source": "swade/71?highlight=Bayonet"
+      },
+      "billy club/baton@@swade": {
+        "label": "Billy Club/Baton",
+        "source": "swade/71?highlight=Billy%20Club%2FBaton"
+      },
+      "brass knuckles@@swade": {
+        "label": "Brass Knuckles",
+        "source": "swade/71?highlight=Brass%20Knuckles"
+      },
+      "chainsaw@@swade": {
+        "label": "Chainsaw",
+        "source": "swade/71?highlight=Chainsaw"
+      },
+      "switchblade@@swade": {
+        "label": "Switchblade",
+        "source": "swade/71?highlight=Switchblade"
+      },
+      "survival knife@@swade": {
+        "label": "Survival Knife",
+        "source": "swade/71?highlight=Survival%20Knife"
+      },
+      "molecular knife@@swade": {
+        "label": "Molecular Knife",
+        "source": "swade/71?highlight=Molecular%20Knife"
+      },
+      "molecular sword@@swade": {
+        "label": "Molecular Sword",
+        "source": "swade/71?highlight=Molecular%20Sword"
+      },
+      "laser sword@@swade": {
+        "label": "Laser Sword",
+        "source": "swade/71?highlight=Laser%20Sword"
+      },
+      "axe, throwing@@swade": {
+        "label": "Axe, Throwing",
+        "source": "swade/72?highlight=Axe%2C%20Throwing"
+      },
+      "bow@@swade": {
+        "label": "Bow",
+        "source": "swade/72?highlight=Bow"
+      },
+      "crossbow (hand drawn)@@swade": {
+        "label": "Crossbow (Hand Drawn)",
+        "source": "swade/72?highlight=Crossbow%20%28Hand%20Drawn%29"
+      },
+      "crossbow, heavy@@swade": {
+        "label": "Crossbow, Heavy",
+        "source": "swade/72?highlight=Crossbow%2C%20Heavy"
+      },
+      "long bow@@swade": {
+        "label": "Long Bow",
+        "source": "swade/72?highlight=Long%20Bow"
+      },
+      "net (weighted)@@swade": {
+        "label": "Net (Weighted)",
+        "source": "swade/72?highlight=Net%20%28Weighted%29"
+      },
+      "sling@@swade": {
+        "label": "Sling",
+        "source": "swade/72?highlight=Sling"
+      },
+      "spear/javelin@@swade": {
+        "label": "Spear/Javelin",
+        "source": "swade/72?highlight=Spear%2FJavelin"
+      },
+      "compound bow@@swade": {
+        "label": "Compound Bow",
+        "source": "swade/72?highlight=Compound%20Bow"
+      },
+      "crossbow@@swade": {
+        "label": "Crossbow",
+        "source": "swade/72?highlight=Crossbow"
+      },
+      "flintlock pistol@@swade": {
+        "label": "Flintlock Pistol",
+        "source": "swade/72?highlight=Flintlock%20Pistol"
+      },
+      "brown bess or similar muskets@@swade": {
+        "label": "Brown Bess or Similar Muskets",
+        "source": "swade/72?highlight=Brown%20Bess%20or%20Similar%20Muskets"
+      },
+      "blunderbuss@@swade": {
+        "label": "Blunderbuss",
+        "source": "swade/72?highlight=Blunderbuss"
+      },
+      "kentucky rifle@@swade": {
+        "label": "Kentucky Rifle",
+        "source": "swade/72?highlight=Kentucky%20Rifle"
+      },
+      "springfield model 1861@@swade": {
+        "label": "Springfield Model 1861",
+        "source": "swade/72?highlight=Springfield%20Model%201861"
+      },
+      "derringer (.41)@@swade": {
+        "label": "Derringer (.41)",
+        "source": "swade/73?highlight=Derringer%20%28.41%29"
+      },
+      "police revolver (.38)@@swade": {
+        "label": "Police Revolver (.38)",
+        "source": "swade/73?highlight=Police%20Revolver%20%28.38%29"
+      },
+      "colt peacemaker (.45)@@swade": {
+        "label": "Colt Peacemaker (.45)",
+        "source": "swade/73?highlight=Colt%20Peacemaker%20%28.45%29"
+      },
+      "smith & wesson (.357)@@swade": {
+        "label": "Smith & Wesson (.357)",
+        "source": "swade/73?highlight=Smith%20%26%20Wesson%20%28.357%29"
+      },
+      "colt 1911 (.45)@@swade": {
+        "label": "Colt 1911 (.45)",
+        "source": "swade/73?highlight=Colt%201911%20%28.45%29"
+      },
+      "desert eagle (.50)@@swade": {
+        "label": "Desert Eagle (.50)",
+        "source": "swade/73?highlight=Desert%20Eagle%20%28.50%29"
+      },
+      "glock (9mm)@@swade": {
+        "label": "Glock (9mm)",
+        "source": "swade/73?highlight=Glock%20%289mm%29"
+      },
+      "ruger (.22)@@swade": {
+        "label": "Ruger (.22)",
+        "source": "swade/73?highlight=Ruger%20%28.22%29"
+      },
+      "h&k mp5 (9mm)@@swade": {
+        "label": "H&K MP5 (9mm)",
+        "source": "swade/73?highlight=H%26K%20MP5%20%289mm%29"
+      },
+      "tommy gun (.45)@@swade": {
+        "label": "Tommy Gun (.45)",
+        "source": "swade/73?highlight=Tommy%20Gun%20%28.45%29"
+      },
+      "uzi (9mm)@@swade": {
+        "label": "Uzi (9mm)",
+        "source": "swade/73?highlight=Uzi%20%289mm%29"
+      },
+      "double-barrel shotgun@@swade": {
+        "label": "Double-Barrel Shotgun",
+        "source": "swade/73?highlight=Double-Barrel%20Shotgun"
+      },
+      "pump action shotgun@@swade": {
+        "label": "Pump Action Shotgun",
+        "source": "swade/73?highlight=Pump%20Action%20Shotgun"
+      },
+      "sawed-off db shotgun@@swade": {
+        "label": "Sawed-Off DB Shotgun",
+        "source": "swade/73?highlight=Sawed-Off%20DB%20Shotgun"
+      },
+      "streetsweeper@@swade": {
+        "label": "Streetsweeper",
+        "source": "swade/73?highlight=Streetsweeper"
+      },
+      "barrett (.50)@@swade": {
+        "label": "Barrett (.50)",
+        "source": "swade/74?highlight=Barrett%20%28.50%29"
+      },
+      "m1 garand (.30-06)@@swade": {
+        "label": "M1 Garand (.30-06)",
+        "source": "swade/74?highlight=M1%20Garand%20%28.30-06%29"
+      },
+      "hunting rifle (.308)@@swade": {
+        "label": "Hunting Rifle (.308)",
+        "source": "swade/74?highlight=Hunting%20Rifle%20%28.308%29"
+      },
+      "sharps big 50 (.50)@@swade": {
+        "label": "Sharps Big 50 (.50)",
+        "source": "swade/74?highlight=Sharps%20Big%2050%20%28.50%29"
+      },
+      "spencer carbine (.52)@@swade": {
+        "label": "Spencer Carbine (.52)",
+        "source": "swade/74?highlight=Spencer%20Carbine%20%28.52%29"
+      },
+      "winchester ’73 (.44-40)@@swade": {
+        "label": "Winchester ’73 (.44-40)",
+        "source": "swade/74?highlight=Winchester%20%E2%80%9973%20%28.44-40%29"
+      },
+      "ak47 (7.62mm)@@swade": {
+        "label": "AK47 (7.62mm)",
+        "source": "swade/74?highlight=AK47%20%287.62mm%29"
+      },
+      "m-16 (5.56mm)@@swade": {
+        "label": "M-16 (5.56mm)",
+        "source": "swade/74?highlight=M-16%20%285.56mm%29"
+      },
+      "steyr aug (5.56mm)@@swade": {
+        "label": "Steyr AUG (5.56mm)",
+        "source": "swade/74?highlight=Steyr%20AUG%20%285.56mm%29"
+      },
+      "browning automatic rifle (bar) (.30-06)@@swade": {
+        "label": "Browning Automatic Rifle (BAR) (.30-06)",
+        "source": "swade/74?highlight=Browning%20Automatic%20Rifle%20%28BAR%29%20%28.30-06%29"
+      },
+      "gatling (.45)@@swade": {
+        "label": "Gatling (.45)",
+        "source": "swade/74?highlight=Gatling%20%28.45%29"
+      },
+      "minigun (7.62mm)@@swade": {
+        "label": "Minigun (7.62mm)",
+        "source": "swade/74?highlight=Minigun%20%287.62mm%29"
+      },
+      "m2 browning (.50 cal)@@swade": {
+        "label": "M2 Browning (.50 Cal)",
+        "source": "swade/74?highlight=M2%20Browning%20%28.50%20Cal%29"
+      },
+      "m60 (7.62mm)@@swade": {
+        "label": "M60 (7.62mm)",
+        "source": "swade/74?highlight=M60%20%287.62mm%29"
+      },
+      "mg42 (7.92mm)@@swade": {
+        "label": "MG42 (7.92mm)",
+        "source": "swade/74?highlight=MG42%20%287.92mm%29"
+      },
+      "saw (5.56mm)@@swade": {
+        "label": "SAW (5.56mm)",
+        "source": "swade/74?highlight=SAW%20%285.56mm%29"
+      },
+      "laser pistol@@swade": {
+        "label": "Laser Pistol",
+        "source": "swade/75?highlight=Laser%20Pistol"
+      },
+      "laser smg@@swade": {
+        "label": "Laser SMG",
+        "source": "swade/75?highlight=Laser%20SMG"
+      },
+      "laser rifle@@swade": {
+        "label": "Laser Rifle",
+        "source": "swade/75?highlight=Laser%20Rifle"
+      },
+      "gatling laser@@swade": {
+        "label": "Gatling Laser",
+        "source": "swade/75?highlight=Gatling%20Laser"
+      },
+      "axe, hand@@fantasy": {
+        "label": "Axe, Hand",
+        "source": "fantasy/56?highlight=Axe%2C%20Hand"
+      },
+      "axe, battle@@fantasy": {
+        "label": "Axe, Battle",
+        "source": "fantasy/56?highlight=Axe%2C%20Battle"
+      },
+      "axe, great@@fantasy": {
+        "label": "Axe, Great",
+        "source": "fantasy/56?highlight=Axe%2C%20Great"
+      },
+      "chakram@@fantasy": {
+        "label": "Chakram",
+        "source": "fantasy/56?highlight=Chakram"
+      },
+      "club, light@@fantasy": {
+        "label": "Club, Light",
+        "source": "fantasy/56?highlight=Club%2C%20Light"
+      },
+      "club, heavy@@fantasy": {
+        "label": "Club, Heavy",
+        "source": "fantasy/56?highlight=Club%2C%20Heavy"
+      },
+      "cutlass@@fantasy": {
+        "label": "Cutlass",
+        "source": "fantasy/56?highlight=Cutlass"
+      },
+      "dagger/knife@@fantasy": {
+        "label": "Dagger/Knife",
+        "source": "fantasy/56?highlight=Dagger%2FKnife"
+      },
+      "flail@@fantasy": {
+        "label": "Flail",
+        "source": "fantasy/56?highlight=Flail"
+      },
+      "flail, heavy@@fantasy": {
+        "label": "Flail, Heavy",
+        "source": "fantasy/56?highlight=Flail%2C%20Heavy"
+      },
+      "falchion@@fantasy": {
+        "label": "Falchion",
+        "source": "fantasy/56?highlight=Falchion"
+      },
+      "glaive@@fantasy": {
+        "label": "Glaive",
+        "source": "fantasy/56?highlight=Glaive"
+      },
+      "guisarme@@fantasy": {
+        "label": "Guisarme",
+        "source": "fantasy/56?highlight=Guisarme"
+      },
+      "halberd@@fantasy": {
+        "label": "Halberd",
+        "source": "fantasy/56?highlight=Halberd"
+      },
+      "katana@@fantasy": {
+        "label": "Katana",
+        "source": "fantasy/56?highlight=Katana"
+      },
+      "lance@@fantasy": {
+        "label": "Lance",
+        "source": "fantasy/56?highlight=Lance"
+      },
+      "mace, light@@fantasy": {
+        "label": "Mace, Light",
+        "source": "fantasy/56?highlight=Mace%2C%20Light"
+      },
+      "mace, heavy@@fantasy": {
+        "label": "Mace, Heavy",
+        "source": "fantasy/56?highlight=Mace%2C%20Heavy"
+      },
+      "mancatcher@@fantasy": {
+        "label": "Mancatcher",
+        "source": "fantasy/56?highlight=Mancatcher"
+      },
+      "meteor hammer@@fantasy": {
+        "label": "Meteor Hammer",
+        "source": "fantasy/56?highlight=Meteor%20Hammer"
+      },
+      "morningstar@@fantasy": {
+        "label": "Morningstar",
+        "source": "fantasy/56?highlight=Morningstar"
+      },
+      "maul@@fantasy": {
+        "label": "Maul",
+        "source": "fantasy/57?highlight=Maul"
+      },
+      "pike@@fantasy": {
+        "label": "Pike",
+        "source": "fantasy/57?highlight=Pike"
+      },
+      "rapier@@fantasy": {
+        "label": "Rapier",
+        "source": "fantasy/57?highlight=Rapier"
+      },
+      "ranseur@@fantasy": {
+        "label": "Ranseur",
+        "source": "fantasy/57?highlight=Ranseur"
+      },
+      "sap@@fantasy": {
+        "label": "Sap",
+        "source": "fantasy/57?highlight=Sap"
+      },
+      "scimitar@@fantasy": {
+        "label": "Scimitar",
+        "source": "fantasy/57?highlight=Scimitar"
+      },
+      "scythe@@fantasy": {
+        "label": "Scythe",
+        "source": "fantasy/57?highlight=Scythe"
+      },
+      "sickle@@fantasy": {
+        "label": "Sickle",
+        "source": "fantasy/57?highlight=Sickle"
+      },
+      "spear, short@@fantasy": {
+        "label": "Spear, Short",
+        "source": "fantasy/57?highlight=Spear%2C%20Short"
+      },
+      "spear@@fantasy": {
+        "label": "Spear",
+        "source": "fantasy/57?highlight=Spear"
+      },
+      "spiked chain@@fantasy": {
+        "label": "Spiked Chain",
+        "source": "fantasy/57?highlight=Spiked%20Chain"
+      },
+      "spiked gauntlet@@fantasy": {
+        "label": "Spiked Gauntlet",
+        "source": "fantasy/57?highlight=Spiked%20Gauntlet"
+      },
+      "staff/quarterstaff@@fantasy": {
+        "label": "Staff/Quarterstaff",
+        "source": "fantasy/57?highlight=Staff%2FQuarterstaff"
+      },
+      "sword, bastard@@fantasy": {
+        "label": "Sword, Bastard",
+        "source": "fantasy/57?highlight=Sword%2C%20Bastard"
+      },
+      "sword, great@@fantasy": {
+        "label": "Sword, Great",
+        "source": "fantasy/57?highlight=Sword%2C%20Great"
+      },
+      "sword, hook@@fantasy": {
+        "label": "Sword, Hook",
+        "source": "fantasy/57?highlight=Sword%2C%20Hook"
+      },
+      "sword, long@@fantasy": {
+        "label": "Sword, Long",
+        "source": "fantasy/57?highlight=Sword%2C%20Long"
+      },
+      "sword, short@@fantasy": {
+        "label": "Sword, Short",
+        "source": "fantasy/57?highlight=Sword%2C%20Short"
+      },
+      "trident@@fantasy": {
+        "label": "Trident",
+        "source": "fantasy/57?highlight=Trident"
+      },
+      "warhammer@@fantasy": {
+        "label": "Warhammer",
+        "source": "fantasy/57?highlight=Warhammer"
+      },
+      "whip@@fantasy": {
+        "label": "Whip",
+        "source": "fantasy/57?highlight=Whip"
+      },
+      "bolas@@fantasy": {
+        "label": "Bolas",
+        "source": "fantasy/58?highlight=Bolas"
+      },
+      "blowgun@@fantasy": {
+        "label": "Blowgun",
+        "source": "fantasy/58?highlight=Blowgun"
+      },
+      "bow, short@@fantasy": {
+        "label": "Bow, Short",
+        "source": "fantasy/58?highlight=Bow%2C%20Short"
+      },
+      "bow, long@@fantasy": {
+        "label": "Bow, Long",
+        "source": "fantasy/58?highlight=Bow%2C%20Long"
+      },
+      "bow, composite@@fantasy": {
+        "label": "Bow, Composite",
+        "source": "fantasy/58?highlight=Bow%2C%20Composite"
+      },
+      "crossbow, hand@@fantasy": {
+        "label": "Crossbow, Hand",
+        "source": "fantasy/58?highlight=Crossbow%2C%20Hand"
+      },
+      "crossbow, hand repeating@@fantasy": {
+        "label": "Crossbow, Hand Repeating",
+        "source": "fantasy/58?highlight=Crossbow%2C%20Hand%20Repeating"
+      },
+      "crossbow, light@@fantasy": {
+        "label": "Crossbow, Light",
+        "source": "fantasy/58?highlight=Crossbow%2C%20Light"
+      },
+      "crossbow, light repeating@@fantasy": {
+        "label": "Crossbow, Light Repeating",
+        "source": "fantasy/58?highlight=Crossbow%2C%20Light%20Repeating"
+      },
+      "crossbow, heavy@@fantasy": {
+        "label": "Crossbow, Heavy",
+        "source": "fantasy/58?highlight=Crossbow%2C%20Heavy"
+      },
+      "crossbow, heavy repeating@@fantasy": {
+        "label": "Crossbow, Heavy Repeating",
+        "source": "fantasy/58?highlight=Crossbow%2C%20Heavy%20Repeating"
+      },
+      "net (weighted)@@fantasy": {
+        "label": "Net (Weighted)",
+        "source": "fantasy/58?highlight=Net%20%28Weighted%29"
+      },
+      "short spear/javelin@@fantasy": {
+        "label": "Short Spear/Javelin",
+        "source": "fantasy/58?highlight=Short%20Spear%2FJavelin"
+      },
+      "shuriken@@fantasy": {
+        "label": "Shuriken",
+        "source": "fantasy/58?highlight=Shuriken"
+      },
+      "sling@@fantasy": {
+        "label": "Sling",
+        "source": "fantasy/58?highlight=Sling"
+      },
+      "blunderbuss@@fantasy": {
+        "label": "Blunderbuss",
+        "source": "fantasy/58?highlight=Blunderbuss"
+      },
+      "flintlock pistol@@fantasy": {
+        "label": "Flintlock Pistol",
+        "source": "fantasy/58?highlight=Flintlock%20Pistol"
+      },
+      "musket@@fantasy": {
+        "label": "Musket",
+        "source": "fantasy/58?highlight=Musket"
+      },
+      "atomic ghost pack@@horror": {
+        "label": "Atomic Ghost Pack",
+        "source": "horror/26?highlight=Atomic%20Ghost%20Pack"
+      },
+      "crossbow, mini@@horror": {
+        "label": "Crossbow, Mini",
+        "source": "horror/26?highlight=Crossbow%2C%20Mini"
+      },
+      "crossbow, repeating@@horror": {
+        "label": "Crossbow, Repeating",
+        "source": "horror/26?highlight=Crossbow%2C%20Repeating"
+      },
+      "crossbow, winch@@horror": {
+        "label": "Crossbow, Winch",
+        "source": "horror/26?highlight=Crossbow%2C%20Winch"
+      },
+      "flare gun (pistol)@@horror": {
+        "label": "Flare Gun (Pistol)",
+        "source": "horror/26?highlight=Flare%20Gun%20%28Pistol%29"
+      },
+      "stake, thrown@@horror": {
+        "label": "Stake, thrown",
+        "source": "horror/26?highlight=Stake%2C%20thrown"
+      },
+      "stake (silver-tipped)@@horror": {
+        "label": "Stake (Silver-tipped)",
+        "source": "horror/27?highlight=Stake%20%28Silver-tipped%29"
+      },
+      "ripper bayonet@@sfc": {
+        "label": "Ripper Bayonet",
+        "source": "sfc/50?highlight=Ripper%20Bayonet"
+      },
+      "ripper sword@@sfc": {
+        "label": "Ripper Sword",
+        "source": "sfc/50?highlight=Ripper%20Sword"
+      },
+      "ripper halberd@@sfc": {
+        "label": "Ripper Halberd",
+        "source": "sfc/50?highlight=Ripper%20Halberd"
+      },
+      "xemp baton@@sfc": {
+        "label": "XEMP Baton",
+        "source": "sfc/50?highlight=XEMP%20Baton"
+      },
+      "xemp staff@@sfc": {
+        "label": "XEMP Staff",
+        "source": "sfc/50?highlight=XEMP%20Staff"
+      },
+      "energy sword@@sfc": {
+        "label": "Energy Sword",
+        "source": "sfc/50?highlight=Energy%20Sword"
+      },
+      "energy pike@@sfc": {
+        "label": "Energy Pike",
+        "source": "sfc/50?highlight=Energy%20Pike"
+      },
+      "molecular axe, great@@sfc": {
+        "label": "Molecular Axe, Great",
+        "source": "sfc/50?highlight=Molecular%20Axe%2C%20Great"
+      },
+      "molecular knife@@sfc": {
+        "label": "Molecular Knife",
+        "source": "sfc/50?highlight=Molecular%20Knife"
+      },
+      "molecular sword@@sfc": {
+        "label": "Molecular Sword",
+        "source": "sfc/50?highlight=Molecular%20Sword"
+      },
+      "molecular spear@@sfc": {
+        "label": "Molecular Spear",
+        "source": "sfc/50?highlight=Molecular%20Spear"
+      },
+      "molecular whip@@sfc": {
+        "label": "Molecular Whip",
+        "source": "sfc/50?highlight=Molecular%20Whip"
+      },
+      "power gauntlet@@sfc": {
+        "label": "Power Gauntlet",
+        "source": "sfc/50?highlight=Power%20Gauntlet"
+      },
+      "power mace@@sfc": {
+        "label": "Power Mace",
+        "source": "sfc/50?highlight=Power%20Mace"
+      },
+      "power whip@@sfc": {
+        "label": "Power Whip",
+        "source": "sfc/50?highlight=Power%20Whip"
+      },
+      "psi blade@@sfc": {
+        "label": "Psi Blade",
+        "source": "sfc/50?highlight=Psi%20Blade"
+      },
+      "gravity gauntlets@@sfc": {
+        "label": "Gravity Gauntlets",
+        "source": "sfc/51?highlight=Gravity%20Gauntlets"
+      },
+      "gravity hammer@@sfc": {
+        "label": "Gravity Hammer",
+        "source": "sfc/51?highlight=Gravity%20Hammer"
+      },
+      "stun baton@@sfc": {
+        "label": "Stun Baton",
+        "source": "sfc/51?highlight=Stun%20Baton"
+      },
+      "stun pike@@sfc": {
+        "label": "Stun Pike",
+        "source": "sfc/51?highlight=Stun%20Pike"
+      },
+      "vibro blade@@sfc": {
+        "label": "Vibro Blade",
+        "source": "sfc/51?highlight=Vibro%20Blade"
+      },
+      "vibro sword@@sfc": {
+        "label": "Vibro Sword",
+        "source": "sfc/51?highlight=Vibro%20Sword"
+      },
+      "blaster pistol@@sfc": {
+        "label": "Blaster Pistol",
+        "source": "sfc/52?highlight=Blaster%20Pistol"
+      },
+      "blaster heavy pistol@@sfc": {
+        "label": "Blaster Heavy Pistol",
+        "source": "sfc/52?highlight=Blaster%20Heavy%20Pistol"
+      },
+      "blaster smg@@sfc": {
+        "label": "Blaster SMG",
+        "source": "sfc/52?highlight=Blaster%20SMG"
+      },
+      "blaster rifle@@sfc": {
+        "label": "Blaster Rifle",
+        "source": "sfc/52?highlight=Blaster%20Rifle"
+      },
+      "blaster heavy rifle@@sfc": {
+        "label": "Blaster Heavy Rifle",
+        "source": "sfc/52?highlight=Blaster%20Heavy%20Rifle"
+      },
+      "blaster gatling@@sfc": {
+        "label": "Blaster Gatling",
+        "source": "sfc/52?highlight=Blaster%20Gatling"
+      },
+      "disintegrator pistol@@sfc": {
+        "label": "Disintegrator Pistol",
+        "source": "sfc/52?highlight=Disintegrator%20Pistol"
+      },
+      "disintegrator rifle@@sfc": {
+        "label": "Disintegrator Rifle",
+        "source": "sfc/52?highlight=Disintegrator%20Rifle"
+      },
+      "flak gun@@sfc": {
+        "label": "Flak Gun",
+        "source": "sfc/52?highlight=Flak%20Gun"
+      },
+      "hand flamer@@sfc": {
+        "label": "Hand Flamer",
+        "source": "sfc/52?highlight=Hand%20Flamer"
+      },
+      "heavy flamer@@sfc": {
+        "label": "Heavy Flamer",
+        "source": "sfc/52?highlight=Heavy%20Flamer"
+      },
+      "flechette smg@@sfc": {
+        "label": "Flechette SMG",
+        "source": "sfc/53?highlight=Flechette%20SMG"
+      },
+      "gyrojet pistol@@sfc": {
+        "label": "Gyrojet Pistol",
+        "source": "sfc/53?highlight=Gyrojet%20Pistol"
+      },
+      "gyrojet rifle@@sfc": {
+        "label": "Gyrojet Rifle",
+        "source": "sfc/53?highlight=Gyrojet%20Rifle"
+      },
+      "laser pistol@@sfc": {
+        "label": "Laser Pistol",
+        "source": "sfc/54?highlight=Laser%20Pistol"
+      },
+      "laser rifle@@sfc": {
+        "label": "Laser Rifle",
+        "source": "sfc/54?highlight=Laser%20Rifle"
+      },
+      "laser sniper rifle@@sfc": {
+        "label": "Laser Sniper Rifle",
+        "source": "sfc/54?highlight=Laser%20Sniper%20Rifle"
+      },
+      "plasma pistol@@sfc": {
+        "label": "Plasma Pistol",
+        "source": "sfc/55?highlight=Plasma%20Pistol"
+      },
+      "plasma rifle@@sfc": {
+        "label": "Plasma Rifle",
+        "source": "sfc/55?highlight=Plasma%20Rifle"
+      },
+      "plasma shotgun@@sfc": {
+        "label": "Plasma Shotgun",
+        "source": "sfc/55?highlight=Plasma%20Shotgun"
+      },
+      "psychic pistol@@sfc": {
+        "label": "Psychic Pistol",
+        "source": "sfc/55?highlight=Psychic%20Pistol"
+      },
+      "psychic rifle@@sfc": {
+        "label": "Psychic Rifle",
+        "source": "sfc/55?highlight=Psychic%20Rifle"
+      },
+      "pulse pistol@@sfc": {
+        "label": "Pulse Pistol",
+        "source": "sfc/55?highlight=Pulse%20Pistol"
+      },
+      "pulse smg@@sfc": {
+        "label": "Pulse SMG",
+        "source": "sfc/55?highlight=Pulse%20SMG"
+      },
+      "pulse rifle@@sfc": {
+        "label": "Pulse Rifle",
+        "source": "sfc/55?highlight=Pulse%20Rifle"
+      },
+      "pulse assault rifle@@sfc": {
+        "label": "Pulse Assault Rifle",
+        "source": "sfc/55?highlight=Pulse%20Assault%20Rifle"
+      },
+      "pulse sniper rifle@@sfc": {
+        "label": "Pulse Sniper Rifle",
+        "source": "sfc/55?highlight=Pulse%20Sniper%20Rifle"
+      },
+      "pulse gatling@@sfc": {
+        "label": "Pulse Gatling",
+        "source": "sfc/55?highlight=Pulse%20Gatling"
+      },
+      "slugthrower machine pistol@@sfc": {
+        "label": "Slugthrower Machine Pistol",
+        "source": "sfc/56?highlight=Slugthrower%20Machine%20Pistol"
+      },
+      "slugthrower light pistol@@sfc": {
+        "label": "Slugthrower Light Pistol",
+        "source": "sfc/56?highlight=Slugthrower%20Light%20Pistol"
+      },
+      "slugthrower medium pistol@@sfc": {
+        "label": "Slugthrower Medium Pistol",
+        "source": "sfc/56?highlight=Slugthrower%20Medium%20Pistol"
+      },
+      "slugthrower heavy pistol@@sfc": {
+        "label": "Slugthrower Heavy Pistol",
+        "source": "sfc/56?highlight=Slugthrower%20Heavy%20Pistol"
+      },
+      "slugthrower medium smg@@sfc": {
+        "label": "Slugthrower Medium SMG",
+        "source": "sfc/56?highlight=Slugthrower%20Medium%20SMG"
+      },
+      "slugthrower heavy smg@@sfc": {
+        "label": "Slugthrower Heavy SMG",
+        "source": "sfc/56?highlight=Slugthrower%20Heavy%20SMG"
+      },
+      "slugthrower carbine@@sfc": {
+        "label": "Slugthrower Carbine",
+        "source": "sfc/57?highlight=Slugthrower%20Carbine"
+      },
+      "slugthrower hunting rifle@@sfc": {
+        "label": "Slugthrower Hunting Rifle",
+        "source": "sfc/57?highlight=Slugthrower%20Hunting%20Rifle"
+      },
+      "slugthrower assault rifle@@sfc": {
+        "label": "Slugthrower Assault Rifle",
+        "source": "sfc/57?highlight=Slugthrower%20Assault%20Rifle"
+      },
+      "slugthrower sniper rifle@@sfc": {
+        "label": "Slugthrower Sniper Rifle",
+        "source": "sfc/57?highlight=Slugthrower%20Sniper%20Rifle"
+      },
+      "slugthrower automatic shotgun@@sfc": {
+        "label": "Slugthrower Automatic Shotgun",
+        "source": "sfc/57?highlight=Slugthrower%20Automatic%20Shotgun"
+      },
+      "slugthrower full-auto shotgun@@sfc": {
+        "label": "Slugthrower Full-Auto Shotgun",
+        "source": "sfc/57?highlight=Slugthrower%20Full-Auto%20Shotgun"
+      },
+      "slugthrower light machine gun@@sfc": {
+        "label": "Slugthrower Light Machine Gun",
+        "source": "sfc/57?highlight=Slugthrower%20Light%20Machine%20Gun"
+      },
+      "slugthrower medium machine gun@@sfc": {
+        "label": "Slugthrower Medium Machine Gun",
+        "source": "sfc/57?highlight=Slugthrower%20Medium%20Machine%20Gun"
+      },
+      "slugthrower heavy machine gun@@sfc": {
+        "label": "Slugthrower Heavy Machine Gun",
+        "source": "sfc/57?highlight=Slugthrower%20Heavy%20Machine%20Gun"
+      },
+      "slugthrower minigun@@sfc": {
+        "label": "Slugthrower Minigun",
+        "source": "sfc/57?highlight=Slugthrower%20Minigun"
+      },
+      "stun gun attachment@@sfc": {
+        "label": "Stun Gun Attachment",
+        "source": "sfc/57?highlight=Stun%20Gun%20Attachment"
+      },
+      "stun gun@@sfc": {
+        "label": "Stun Gun",
+        "source": "sfc/57?highlight=Stun%20Gun"
+      },
+      "baton@@spc": {
+        "label": "Baton",
+        "source": "spc/16?highlight=Baton"
+      },
+      "net (weighted)@@spc": {
+        "label": "Net (Weighted)",
+        "source": "spc/16?highlight=Net%20%28Weighted%29"
+      },
+      "nullifier rod@@spc": {
+        "label": "Nullifier Rod",
+        "source": "spc/16?highlight=Nullifier%20Rod"
+      },
+      "gauntlets@@spc": {
+        "label": "Gauntlets",
+        "source": "spc/16?highlight=Gauntlets"
+      },
+      "two-handed mallet@@spc": {
+        "label": "Two-Handed Mallet",
+        "source": "spc/16?highlight=Two-Handed%20Mallet"
+      },
+      "wrist claws@@spc": {
+        "label": "Wrist Claws",
+        "source": "spc/16?highlight=Wrist%20Claws"
+      },
+      "pulse pistol@@spc": {
+        "label": "Pulse Pistol",
+        "source": "spc/17?highlight=Pulse%20Pistol"
+      },
+      "pulse smg@@spc": {
+        "label": "Pulse SMG",
+        "source": "spc/17?highlight=Pulse%20SMG"
+      },
+      "pulse rifle@@spc": {
+        "label": "Pulse Rifle",
+        "source": "spc/17?highlight=Pulse%20Rifle"
+      },
+      "pulse assault rifle@@spc": {
+        "label": "Pulse Assault Rifle",
+        "source": "spc/17?highlight=Pulse%20Assault%20Rifle"
+      },
+      "pulse sniper rifle@@spc": {
+        "label": "Pulse Sniper Rifle",
+        "source": "spc/17?highlight=Pulse%20Sniper%20Rifle"
+      },
+      "pulse gatling@@spc": {
+        "label": "Pulse Gatling",
+        "source": "spc/17?highlight=Pulse%20Gatling"
+      },
+      "pulse cannon@@spc": {
+        "label": "Pulse Cannon",
+        "source": "spc/17?highlight=Pulse%20Cannon"
+      },
+      "foam thrower@@spc": {
+        "label": "Foam Thrower",
+        "source": "spc/17?highlight=Foam%20Thrower"
+      },
+      "net gun@@spc": {
+        "label": "Net Gun",
+        "source": "spc/17?highlight=Net%20Gun"
+      },
+      "nullifier gun@@spc": {
+        "label": "Nullifier Gun",
+        "source": "spc/17?highlight=Nullifier%20Gun"
+      },
+      "stun grenade@@spc": {
+        "label": "Stun Grenade",
+        "source": "spc/17?highlight=Stun%20Grenade"
+      },
+      "stun gun@@spc": {
+        "label": "Stun Gun",
+        "source": "spc/17?highlight=Stun%20Gun"
+      },
+      "battle hammer@@secret_world": {
+        "label": "Battle Hammer",
+        "source": "secret_world/52?highlight=Battle%20Hammer"
+      },
+      "bladed cestus@@secret_world": {
+        "label": "Bladed Cestus",
+        "source": "secret_world/52?highlight=Bladed%20Cestus"
+      },
+      "tactical blade@@secret_world": {
+        "label": "Tactical Blade",
+        "source": "secret_world/52?highlight=Tactical%20Blade"
+      },
+      "assault rifle (5.56mm)@@secret_world": {
+        "label": "Assault Rifle (5.56mm)",
+        "source": "secret_world/52?highlight=Assault%20Rifle%20%285.56mm%29"
+      },
+      "combat shotgun@@secret_world": {
+        "label": "Combat Shotgun",
+        "source": "secret_world/52?highlight=Combat%20Shotgun"
+      },
+      "pistol (9mm)@@secret_world": {
+        "label": "Pistol (9mm)",
+        "source": "secret_world/52?highlight=Pistol%20%289mm%29"
+      },
+      "acid pellet pistol@@starbreaker_core": {
+        "label": "Acid Pellet Pistol",
+        "source": "starbreaker_core/90?highlight=Acid%20Pellet%20Pistol"
+      },
+      "cryo gun@@starbreaker_core": {
+        "label": "Cryo Gun",
+        "source": "starbreaker_core/90?highlight=Cryo%20Gun"
+      },
+      "grenade launcher@@starbreaker_core": {
+        "label": "Grenade Launcher",
+        "source": "starbreaker_core/90?highlight=Grenade%20Launcher"
+      },
+      "poison dart launcher@@starbreaker_core": {
+        "label": "Poison Dart Launcher",
+        "source": "starbreaker_core/90?highlight=Poison%20Dart%20Launcher"
+      },
+      "mag spike gun@@starbreaker_core": {
+        "label": "Mag Spike Gun",
+        "source": "starbreaker_core/90?highlight=Mag%20Spike%20Gun"
+      },
+      "sonic gun@@starbreaker_core": {
+        "label": "Sonic Gun",
+        "source": "starbreaker_core/90?highlight=Sonic%20Gun"
       }
     }
   }
