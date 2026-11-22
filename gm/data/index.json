@@ -3,6 +3,10 @@
   "identity": "type+name+book",
   "entries": {
     "abilities": {
+      "adaptable@@doom_guard": {
+        "label": "Adaptable",
+        "source": "doom_guard/31?highlight=ADAPTABLE"
+      },
       "adaptable@@swade": {
         "label": "Adaptable",
         "source": "swade/17?highlight=Adaptable"
@@ -11,9 +15,25 @@
         "label": "Additional action",
         "source": "swade/17?highlight=Additional%20Action"
       },
+      "ageless@@doom_guard": {
+        "label": "Ageless",
+        "source": "doom_guard/31?highlight=AGELESS"
+      },
       "aquatic/semi-aquatic@@swade": {
         "label": "Aquatic/semi-aquatic",
         "source": "swade/17?highlight=Aquatic%2FSemi-Aquatic"
+      },
+      "aquatic@@doom_guard": {
+        "label": "Aquatic",
+        "source": "doom_guard/31?highlight=AQUATIC"
+      },
+      "aquatic@@ne_invasion": {
+        "label": "Aquatic",
+        "source": "ne_invasion/14?highlight=AQUATIC"
+      },
+      "atlantean heritage@@doom_guard": {
+        "label": "Atlantean Heritage",
+        "source": "doom_guard/31?highlight=ATLANTEAN%20HERITAGE"
       },
       "burrowing@@swade": {
         "label": "Burrowing",
@@ -59,9 +79,17 @@
         "label": "Leaper",
         "source": "swade/18?highlight=Leaper"
       },
+      "low light vision@@doom_guard": {
+        "label": "Low Light Vision",
+        "source": "doom_guard/31?highlight=LOW%20LIGHT%20VISION"
+      },
       "low light vision@@swade": {
         "label": "Low light vision",
         "source": "swade/18?highlight=Low%20Light%20Vision"
+      },
+      "no vital organs@@doom_guard": {
+        "label": "No Vital Organs",
+        "source": "doom_guard/31?highlight=NO%20VITAL%20ORGANS"
       },
       "no vital organs@@swade": {
         "label": "No vital organs",
@@ -79,13 +107,33 @@
         "label": "Reach",
         "source": "swade/18?highlight=Reach"
       },
+      "rending@@horror": {
+        "label": "Rending",
+        "source": "horror/101?highlight=RENDING"
+      },
       "sleep reduction@@swade": {
         "label": "Sleep reduction",
         "source": "swade/18?highlight=Sleep%20Reduction"
       },
+      "swallow whole@@horror": {
+        "label": "Swallow Whole",
+        "source": "horror/101?highlight=SWALLOW%20WHOLE"
+      },
+      "telepathy@@doom_guard": {
+        "label": "Telepathy",
+        "source": "doom_guard/31?highlight=TELEPATHY"
+      },
+      "telepathy@@ne_invasion": {
+        "label": "Telepathy",
+        "source": "ne_invasion/14?highlight=TELEPATHY"
+      },
       "toughness@@swade": {
         "label": "Toughness",
         "source": "swade/18?highlight=Toughness"
+      },
+      "unstoppable@@horror": {
+        "label": "Unstoppable",
+        "source": "horror/101?highlight=UNSTOPPABLE"
       },
       "wilderness stride@@fantasy": {
         "label": "Wilderness Stride",
@@ -121,6 +169,14 @@
         "aliases": [
           "Arusan"
         ]
+      },
+      "atlantean@@doom_guard": {
+        "label": "Atlantean",
+        "source": "doom_guard/31?highlight=ATLANTEAN"
+      },
+      "atlantean@@ne_invasion": {
+        "label": "Atlantean",
+        "source": "ne_invasion/14?highlight=ATLANTEAN"
       },
       "aurax@@sfc": {
         "label": "Aurax",
@@ -327,9 +383,13 @@
         "label": "Hosts",
         "source": "sfc/17?highlight=HOSTS"
       },
+      "human@@doom_guard": {
+        "label": "Human",
+        "source": "doom_guard/31?highlight=HUMAN"
+      },
       "humans@@starbreaker_core": {
         "label": "Humans",
-        "source": "starbreaker_core/20?highlight=Humans",
+        "source": "starbreaker_core/41?highlight=Humans",
         "aliases": [
           "Human"
         ]
@@ -340,6 +400,14 @@
         "aliases": [
           "Human"
         ]
+      },
+      "hybrid (half-atlantean)@@doom_guard": {
+        "label": "Hybrid (Half-Atlantean)",
+        "source": "doom_guard/31?highlight=HYBRID%20%28HALF-ATLANTEAN%29"
+      },
+      "hybrid (half-atlantean)@@ne_invasion": {
+        "label": "Hybrid (Half-Atlantean)",
+        "source": "ne_invasion/15?highlight=HYBRID%20%28HALF-ATLANTEAN%29"
       },
       "infernals@@fantasy": {
         "label": "Infernals",
@@ -430,6 +498,10 @@
       "phantom@@horror": {
         "label": "Phantom",
         "source": "horror/17?highlight=PHANTOM"
+      },
+      "protean@@doom_guard": {
+        "label": "Protean",
+        "source": "doom_guard/31?highlight=PROTEAN"
       },
       "quadroids@@sfc": {
         "label": "Quadroids",
@@ -556,6 +628,10 @@
         "label": "Vulkolasi",
         "source": "starbreaker_core/52?highlight=Vulkolasi"
       },
+      "v’sori@@doom_guard": {
+        "label": "V’sori",
+        "source": "doom_guard/32?highlight=V%E2%80%99SORI"
+      },
       "werewolf@@horror": {
         "label": "Werewolf",
         "source": "horror/22?highlight=WEREWOLF"
@@ -663,6 +739,10 @@
         "label": "Arcane Background (Hypertech)",
         "source": "starbreaker_core/78?highlight=Arcane%20Background%20(Hypertech)"
       },
+      "arcane background (mystic)@@secret_world_na": {
+        "label": "Arcane Background (Mystic)",
+        "source": "secret_world_na/68?highlight=ARCANE%20BACKGROUND%20%28MYSTIC%29"
+      },
       "arcane background (psy commando)@@starbreaker_core": {
         "label": "Arcane background (psy commando)",
         "source": "starbreaker_core/119?highlight=ARCANE%20BACKGROUND%20%28PSY%20COMMANDO%29"
@@ -718,6 +798,14 @@
         "label": "Assassin",
         "source": "swade/47?highlight=Assassin"
       },
+      "assault rifle conduit@@secret_world": {
+        "label": "Assault Rifle Conduit",
+        "source": "secret_world/42?highlight=ASSAULT%20RIFLE%20CONDUIT"
+      },
+      "atlantean heritage@@ne_invasion": {
+        "label": "Atlantean Heritage",
+        "source": "ne_invasion/15?highlight=ATLANTEAN%20HERITAGE"
+      },
       "atmospheric acclimation@@sfc": {
         "label": "Atmospheric Acclimation",
         "source": "sfc/26?highlight=ATMOSPHERIC%20ACCLIMATION"
@@ -737,6 +825,10 @@
       "aura of courage@@horror": {
         "label": "Aura Of Courage",
         "source": "horror/64?highlight=AURA%20OF%20COURAGE"
+      },
+      "badge of authority@@secret_world_na": {
+        "label": "Badge of Authority",
+        "source": "secret_world_na/69?highlight=BADGE%20OF%20AUTHORITY"
       },
       "bard@@fantasy": {
         "label": "Bard",
@@ -786,9 +878,17 @@
         "label": "Bite",
         "source": "horror/14?highlight=BITE"
       },
+      "blade conduit@@secret_world": {
+        "label": "Blade Conduit",
+        "source": "secret_world/43?highlight=BLADE%20CONDUIT"
+      },
       "block@@swade": {
         "label": "Block",
         "source": "swade/39?highlight=Block"
+      },
+      "blood magic conduit@@secret_world": {
+        "label": "Blood Magic Conduit",
+        "source": "secret_world/43?highlight=BLOOD%20MAGIC%20CONDUIT"
       },
       "blood magic specialist@@secret_world": {
         "label": "Blood Magic Specialist",
@@ -858,9 +958,9 @@
         "label": "Celestial Symphony",
         "source": "sfc/201?highlight=CELESTIAL%20SYMPHONY"
       },
-      "champion healer@@swade": {
-        "label": "Champion healer",
-        "source": "swade/51?highlight=Champion%20Healer"
+      "champion@@swade": {
+        "label": "Champion",
+        "source": "swade/51?highlight=CHAMPION"
       },
       "channel the warp@@sfc": {
         "label": "Channel The Warp",
@@ -869,6 +969,10 @@
       "channeling@@swade": {
         "label": "Channeling",
         "source": "swade/45?highlight=Channeling"
+      },
+      "chaos magic conduit@@secret_world": {
+        "label": "Chaos Magic Conduit",
+        "source": "secret_world/44?highlight=CHAOS%20MAGIC%20CONDUIT"
       },
       "chaos magic specialist@@secret_world": {
         "label": "Chaos Magic Specialist",
@@ -1014,6 +1118,18 @@
         "label": "Cutting Edge",
         "source": "starbreaker_star_marines/39?highlight=Cutting%20Edge"
       },
+      "cyber samurai@@sfc": {
+        "label": "Cyber Samurai",
+        "source": "sfc/113?highlight=CYBER%20SAMURAI"
+      },
+      "cyber tolerant@@sfc": {
+        "label": "Cyber Tolerant",
+        "source": "sfc/113?highlight=CYBER%20TOLERANT"
+      },
+      "cyborg@@sfc": {
+        "label": "Cyborg",
+        "source": "sfc/113?highlight=CYBORG"
+      },
       "daywa lker@@horror": {
         "label": "Daywa Lker",
         "source": "horror/21?highlight=DAYWA%20LKER"
@@ -1037,6 +1153,10 @@
       "death's door@@starbreaker_star_marines": {
         "label": "Death’s Door",
         "source": "starbreaker_star_marines/27?highlight=Death%E2%80%99s%20Door"
+      },
+      "deceptive@@doom_guard": {
+        "label": "Deceptive",
+        "source": "doom_guard/34?highlight=DECEPTIVE"
       },
       "deceptive@@fantasy": {
         "label": "Deceptive",
@@ -1130,6 +1250,10 @@
         "label": "Duct Tape & Bubble Gum",
         "source": "sfc/26?highlight=DUCT%20TAPE%20%26%20BUBBLE%20GUM"
       },
+      "dynamic duo@@spc": {
+        "label": "Dynamic Duo",
+        "source": "spc/11?highlight=DYNAMIC%20DUO"
+      },
       "elan@@swade": {
         "label": "Elan",
         "source": "swade/38?highlight=Elan"
@@ -1153,6 +1277,10 @@
       "elemental master@@fantasy": {
         "label": "Elemental Master",
         "source": "fantasy/96?highlight=ELEMENTAL%20MASTER"
+      },
+      "elementalism magic conduit@@secret_world": {
+        "label": "Elementalism Magic Conduit",
+        "source": "secret_world/44?highlight=ELEMENTALISM%20MAGIC%20CONDUIT"
       },
       "elementalist@@fantasy": {
         "label": "Elementalist",
@@ -1185,6 +1313,10 @@
       "extraction@@swade": {
         "label": "Extraction",
         "source": "swade/40?highlight=Extraction"
+      },
+      "faction favorite@@secret_world": {
+        "label": "Faction Favorite",
+        "source": "secret_world/47?highlight=FACTION%20FAVORITE"
       },
       "fame@@swade": {
         "label": "Fame",
@@ -1266,6 +1398,10 @@
         "label": "First strike",
         "source": "swade/41?highlight=First%20Strike"
       },
+      "fist conduit@@secret_world": {
+        "label": "Fist Conduit",
+        "source": "secret_world/45?highlight=FIST%20CONDUIT"
+      },
       "flashbacks@@horror": {
         "label": "Flashbacks",
         "source": "horror/17?highlight=FLASHBACKS"
@@ -1301,6 +1437,14 @@
       "gadgeteer@@swade": {
         "label": "Gadgeteer",
         "source": "swade/45?highlight=Gadgeteer"
+      },
+      "gaia’s blessing@@secret_world": {
+        "label": "Gaia’s Blessing",
+        "source": "secret_world/48?highlight=GAIA%E2%80%99S%20BLESSING"
+      },
+      "gallows humor@@doom_guard": {
+        "label": "Gallows Humor",
+        "source": "doom_guard/33?highlight=GALLOWS%20HUMOR"
       },
       "gallows humor@@horror": {
         "label": "Gallows Humor",
@@ -1358,6 +1502,10 @@
         "label": "Guardian Angels",
         "source": "starbreaker_star_marines/40?highlight=Guardian%20Angels"
       },
+      "hammer conduit@@secret_world": {
+        "label": "Hammer Conduit",
+        "source": "secret_world/45?highlight=HAMMER%20CONDUIT"
+      },
       "hard to kill@@swade": {
         "label": "Hard to kill",
         "source": "swade/41?highlight=Hard%20To%20Kill"
@@ -1382,9 +1530,9 @@
         "label": "Heavy Aim",
         "source": "starbreaker_star_marines/23?highlight=Heavy%20Aim"
       },
-      "heavy hitters squad edge@@starbreaker_star_marines": {
-        "label": "Heavy hitters squad edge",
-        "source": "starbreaker_star_marines/40?highlight=Heavy%20Hitters%20Squad%20Edge",
+      "heavy hitters@@starbreaker_star_marines": {
+        "label": "Heavy Hitters",
+        "source": "starbreaker_star_marines/40?highlight=HEAVY%20HITTERS",
         "aliases": [
           "Heavy hitters"
         ]
@@ -1432,6 +1580,10 @@
       "hyperdrone@@starbreaker_star_marines": {
         "label": "Hyperdrone",
         "source": "starbreaker_star_marines/31?highlight=Hyperdrone"
+      },
+      "illuminati string puller@@secret_world_na": {
+        "label": "Illuminati String Puller",
+        "source": "secret_world_na/69?highlight=ILLUMINATI%20STRING%20PULLER"
       },
       "illusionist@@fantasy": {
         "label": "Illusionist",
@@ -1665,6 +1817,10 @@
         "label": "Mcgyver",
         "source": "swade/48?highlight=McGyver"
       },
+      "menacing@@swade": {
+        "label": "Menacing",
+        "source": "swade/49?highlight=MENACING"
+      },
       "mental map@@starbreaker_star_marines": {
         "label": "Mental Map",
         "source": "starbreaker_star_marines/37?highlight=Mental%20Map"
@@ -1801,6 +1957,10 @@
         "label": "Phenomenal Power",
         "source": "fantasy/100?highlight=PHENOMENAL%20POWER"
       },
+      "pistol conduit@@secret_world": {
+        "label": "Pistol Conduit",
+        "source": "secret_world/46?highlight=PISTOL%20CONDUIT"
+      },
       "poisoner@@fantasy": {
         "label": "Poisoner",
         "source": "fantasy/39?highlight=POISONER"
@@ -1844,6 +2004,10 @@
       "psyker@@sfc": {
         "label": "Psyker",
         "source": "sfc/202?highlight=PSYKER"
+      },
+      "quick draw@@doom_guard": {
+        "label": "Quick Draw",
+        "source": "doom_guard/33?highlight=QUICK%20DRAW"
       },
       "quick draw@@sfc": {
         "label": "Quick Draw",
@@ -1901,6 +2065,10 @@
         "label": "Relentless Tracker",
         "source": "horror/19?highlight=RELENTLESS%20TRACKER"
       },
+      "relentless@@doom_guard": {
+        "label": "Relentless",
+        "source": "doom_guard/33?highlight=RELENTLESS"
+      },
       "relentless@@horror": {
         "label": "Relentless",
         "source": "horror/7?highlight=RELENTLESS"
@@ -1916,6 +2084,14 @@
       "rich@@swade": {
         "label": "Rich",
         "source": "swade/39?highlight=Rich"
+      },
+      "rising stars@@spc": {
+        "label": "Rising Stars",
+        "source": "spc/11?highlight=RISING%20STARS"
+      },
+      "ritualist@@secret_world_na": {
+        "label": "Ritualist",
+        "source": "secret_world_na/68?highlight=RITUALIST"
       },
       "roar (patchwork monster)@@horror": {
         "label": "Roar (patchwork monster)",
@@ -1952,6 +2128,14 @@
       "sacred fetish@@fantasy": {
         "label": "Sacred Fetish",
         "source": "fantasy/99?highlight=SACRED%20FETISH"
+      },
+      "sanctum@@secret_world_na": {
+        "label": "Sanctum",
+        "source": "secret_world_na/68?highlight=SANCTUM"
+      },
+      "savagery@@doom_guard": {
+        "label": "Savagery",
+        "source": "doom_guard/34?highlight=SAVAGERY"
       },
       "savagery@@fantasy": {
         "label": "Savagery",
@@ -2045,6 +2229,14 @@
         "label": "Shifter",
         "source": "sfc/203?highlight=SHIFTER"
       },
+      "shotgun conduit@@secret_world": {
+        "label": "Shotgun Conduit",
+        "source": "secret_world/46?highlight=SHOTGUN%20CONDUIT"
+      },
+      "sidekick@@spc": {
+        "label": "Sidekick",
+        "source": "spc/11?highlight=SIDEKICK"
+      },
       "silent caster@@fantasy": {
         "label": "Silent Caster",
         "source": "fantasy/37?highlight=SILENT%20CASTER"
@@ -2068,10 +2260,6 @@
       "sneak attack@@sfc": {
         "label": "Sneak Attack",
         "source": "sfc/26?highlight=SNEAK%20ATTACK"
-      },
-      "social edges menacing@@swade": {
-        "label": "Social edges menacing",
-        "source": "swade/49?highlight=Social%20Edges%20Menacing"
       },
       "soft touch@@sfc": {
         "label": "Soft Touch",
@@ -2113,9 +2301,21 @@
         "label": "Spellbooks",
         "source": "fantasy/104?highlight=SPELLBOOKS"
       },
+      "spirit ally@@secret_world_na": {
+        "label": "Spirit Ally",
+        "source": "secret_world_na/69?highlight=SPIRIT%20ALLY"
+      },
+      "spirit bond@@secret_world_na": {
+        "label": "Spirit Bond",
+        "source": "secret_world_na/69?highlight=SPIRIT%20BOND"
+      },
       "spirit friend@@horror": {
         "label": "Spirit Friend",
         "source": "horror/62?highlight=SPIRIT%20FRIEND"
+      },
+      "spirit made flesh@@secret_world_na": {
+        "label": "Spirit Made Flesh",
+        "source": "secret_world_na/69?highlight=SPIRIT%20MADE%20FLESH"
       },
       "star knave@@sfc": {
         "label": "Star Knave",
@@ -2193,6 +2393,10 @@
         "label": "Sunder",
         "source": "fantasy/35?highlight=SUNDER"
       },
+      "super powers@@spc": {
+        "label": "Super Powers",
+        "source": "spc/10?highlight=SUPER%20POWERS"
+      },
       "sweep@@swade": {
         "label": "Sweep",
         "source": "swade/43?highlight=Sweep"
@@ -2201,21 +2405,37 @@
         "label": "Tactical Mind",
         "source": "starbreaker_star_marines/28?highlight=Tactical%20Mind"
       },
-      "tactician c@@swade": {
-        "label": "Tactician c",
-        "source": "swade/44?highlight=Tactician%20C"
+      "tactician@@swade": {
+        "label": "Tactician",
+        "source": "swade/44?highlight=TACTICIAN"
       },
       "take the hit@@fantasy": {
         "label": "Take The Hit",
         "source": "fantasy/35?highlight=TAKE%20THE%20HIT"
       },
+      "take the hit@@spc": {
+        "label": "Take the Hit",
+        "source": "spc/11?highlight=TAKE%20THE%20HIT"
+      },
+      "team coven@@secret_world_na": {
+        "label": "Team Coven",
+        "source": "secret_world_na/68?highlight=TEAM%20COVEN"
+      },
       "team leader@@sfc": {
         "label": "Team Leader",
         "source": "sfc/25?highlight=TEAM%20LEADER"
       },
+      "team leader@@spc": {
+        "label": "Team Leader",
+        "source": "spc/11?highlight=TEAM%20LEADER"
+      },
       "technomancer@@sfc": {
         "label": "Technomancer",
         "source": "sfc/207?highlight=TECHNOMANCER"
+      },
+      "the best there is@@spc": {
+        "label": "The Best There Is",
+        "source": "spc/11?highlight=THE%20BEST%20THERE%20IS"
       },
       "the evil eye@@fantasy": {
         "label": "The Evil Eye",
@@ -2329,6 +2549,10 @@
         "label": "Two-gun kid",
         "source": "swade/43?highlight=Two-Gun%20Kid"
       },
+      "ultimate power@@doom_guard": {
+        "label": "Ultimate Power",
+        "source": "doom_guard/34?highlight=ULTIMATE%20POWER"
+      },
       "uncanny reflexes@@fantasy": {
         "label": "Uncanny Reflexes",
         "source": "fantasy/35?highlight=UNCANNY%20REFLEXES"
@@ -2348,6 +2572,10 @@
       "universa l ward@@horror": {
         "label": "Universa L Ward",
         "source": "horror/63?highlight=UNIVERSA%20L%20WARD"
+      },
+      "unstoppable@@doom_guard": {
+        "label": "Unstoppable",
+        "source": "doom_guard/34?highlight=UNSTOPPABLE"
       },
       "unstoppable@@fantasy": {
         "label": "Unstoppable",
@@ -2376,6 +2604,10 @@
       "wall walker@@horror": {
         "label": "Wall Walker",
         "source": "horror/22?highlight=Wall%20Walker"
+      },
+      "war hero@@doom_guard": {
+        "label": "War Hero",
+        "source": "doom_guard/33?highlight=WAR%20HERO"
       },
       "warband@@fantasy": {
         "label": "Warband",
@@ -2447,9 +2679,17 @@
       }
     },
     "hindrances": {
+      "alien form (major)@@spc": {
+        "label": "Alien Form (Major)",
+        "source": "spc/6?highlight=ALIEN%20FORM%20%28MAJOR%29"
+      },
       "all thumbs@@swade": {
         "label": "All thumbs",
         "source": "swade/21?highlight=All%20Thumbs"
+      },
+      "amorous (minor)@@doom_guard": {
+        "label": "Amorous (Minor)",
+        "source": "doom_guard/32?highlight=AMOROUS%20%28MINOR%29"
       },
       "amorous (minor)@@horror": {
         "label": "Amorous (Minor)",
@@ -2462,6 +2702,10 @@
       "amorous@@sfc": {
         "label": "Amorous",
         "source": "sfc/22?highlight=AMOROUS"
+      },
+      "ancestral enemy (k’tharen)@@doom_guard": {
+        "label": "Ancestral Enemy (K’tharen)",
+        "source": "doom_guard/32?highlight=ANCESTRAL%20ENEMY%20%28K%E2%80%99THAREN%29"
       },
       "anemic@@swade": {
         "label": "Anemic",
@@ -2515,6 +2759,14 @@
         "label": "Branded (Minor)",
         "source": "starbreaker_core/77?highlight=Branded%20(Minor)"
       },
+      "broken (minor/major)@@doom_guard": {
+        "label": "Broken (Minor/Major)",
+        "source": "doom_guard/32?highlight=BROKEN%20%28MINOR%2FMAJOR%29"
+      },
+      "bullet magnet (minor)@@doom_guard": {
+        "label": "Bullet Magnet (Minor)",
+        "source": "doom_guard/32?highlight=BULLET%20MAGNET%20%28MINOR%29"
+      },
       "bullet magnet (minor)@@horror": {
         "label": "Bullet Magnet (Minor)",
         "source": "horror/6?highlight=BULLET%20MAGNET%20(MINOR)"
@@ -2522,6 +2774,10 @@
       "bullet magnet@@sfc": {
         "label": "Bullet magnet",
         "source": "sfc/22?highlight=BULLET%20MAGNET"
+      },
+      "bully (minor/major)@@doom_guard": {
+        "label": "Bully (Minor/Major)",
+        "source": "doom_guard/32?highlight=BULLY%20%28MINOR%2FMAJOR%29"
       },
       "bully (minor/major)@@horror": {
         "label": "Bully (Minor/Major)",
@@ -2563,6 +2819,10 @@
         "label": "Curious",
         "source": "swade/22?highlight=Curious"
       },
+      "cursed (major)@@doom_guard": {
+        "label": "Cursed (Major)",
+        "source": "doom_guard/32?highlight=CURSED%20%28MAJOR%29"
+      },
       "cursed (major)@@horror": {
         "label": "Cursed (Major)",
         "source": "horror/6?highlight=CURSED%20(MAJOR)"
@@ -2570,6 +2830,18 @@
       "cursed@@fantasy": {
         "label": "Cursed",
         "source": "fantasy/28?highlight=CURSED"
+      },
+      "cyber resistant (minor)@@sfc": {
+        "label": "Cyber Resistant (Minor)",
+        "source": "sfc/113?highlight=CYBER%20RESISTANT%20%28MINOR%29"
+      },
+      "cyber sensitive (minor)@@sfc": {
+        "label": "Cyber Sensitive (Minor)",
+        "source": "sfc/113?highlight=CYBER%20SENSITIVE%20%28MINOR%29"
+      },
+      "cyber side effect (major)@@sfc": {
+        "label": "Cyber Side Effect (Major)",
+        "source": "sfc/113?highlight=CYBER%20SIDE%20EFFECT%20%28MAJOR%29"
       },
       "death wish@@swade": {
         "label": "Death wish",
@@ -2587,9 +2859,29 @@
         "label": "Delusional",
         "source": "swade/22?highlight=Delusional"
       },
+      "dependency (major)@@spc": {
+        "label": "Dependency (Major)",
+        "source": "spc/6?highlight=DEPENDENCY%20%28MAJOR%29"
+      },
+      "dependency (water)@@doom_guard": {
+        "label": "Dependency (Water)",
+        "source": "doom_guard/31?highlight=DEPENDENCY%20%28WATER%29"
+      },
+      "dependency (water)@@ne_invasion": {
+        "label": "Dependency (Water)",
+        "source": "ne_invasion/14?highlight=DEPENDENCY%20%28WATER%29"
+      },
+      "dependent (minor/major)@@spc": {
+        "label": "Dependent (Minor/Major)",
+        "source": "spc/7?highlight=DEPENDENT%20%28MINOR%2FMAJOR%29"
+      },
       "dependent@@sfc": {
         "label": "Dependent",
         "source": "sfc/22?highlight=DEPENDENT"
+      },
+      "distinctive appearance (minor)@@spc": {
+        "label": "Distinctive Appearance (Minor)",
+        "source": "spc/7?highlight=DISTINCTIVE%20APPEARANCE%20%28MINOR%29"
       },
       "doomed (major)@@horror": {
         "label": "Doomed (Major)",
@@ -2601,7 +2893,7 @@
       },
       "doubting thomas@@swade": {
         "label": "Doubting thomas",
-        "source": "swade/20?highlight=Doubting%20Thomas"
+        "source": "swade/23?highlight=DOUBTING%20THOMAS"
       },
       "dread (minor)@@horror": {
         "label": "Dread (Minor)",
@@ -2609,7 +2901,7 @@
       },
       "driven@@swade": {
         "label": "Driven",
-        "source": "swade/20?highlight=Driven"
+        "source": "swade/23?highlight=DRIVEN"
       },
       "elderly@@swade": {
         "label": "Elderly",
@@ -2618,6 +2910,10 @@
       "enemy@@swade": {
         "label": "Enemy",
         "source": "swade/23?highlight=Enemy"
+      },
+      "environmental weakness (minor)@@spc": {
+        "label": "Environmental Weakness (Minor)",
+        "source": "spc/7?highlight=ENVIRONMENTAL%20WEAKNESS%20%28MINOR%29"
       },
       "ex-drone@@sfc": {
         "label": "Ex-drone",
@@ -2630,6 +2926,10 @@
       "greedy@@swade": {
         "label": "Greedy",
         "source": "swade/23?highlight=Greedy"
+      },
+      "grim (minor)@@spc": {
+        "label": "Grim (Minor)",
+        "source": "spc/7?highlight=GRIM%20%28MINOR%29"
       },
       "grim@@fantasy": {
         "label": "Grim",
@@ -2647,6 +2947,10 @@
         "label": "Haunted",
         "source": "secret_world/41?highlight=HAUNTED"
       },
+      "heartless (minor)@@ne_invasion": {
+        "label": "Heartless (Minor)",
+        "source": "ne_invasion/15?highlight=HEARTLESS%20%28MINOR%29"
+      },
       "heavy sleeper (minor)@@horror": {
         "label": "Heavy Sleeper (Minor)",
         "source": "horror/6?highlight=HEAVY%20SLEEPER%20(MINOR)"
@@ -2658,6 +2962,10 @@
       "hesitant@@swade": {
         "label": "Hesitant",
         "source": "swade/24?highlight=Hesitant"
+      },
+      "idealistic (minor)@@spc": {
+        "label": "Idealistic (Minor)",
+        "source": "spc/8?highlight=IDEALISTIC%20%28MINOR%29"
       },
       "idealistic@@fantasy": {
         "label": "Idealistic",
@@ -2703,9 +3011,17 @@
         "label": "Mean",
         "source": "swade/24?highlight=Mean"
       },
+      "megalomaniac (major)@@spc": {
+        "label": "Megalomaniac (Major)",
+        "source": "spc/8?highlight=MEGALOMANIAC%20%28MAJOR%29"
+      },
       "mild mannered@@swade": {
         "label": "Mild mannered",
         "source": "swade/24?highlight=Mild%20Mannered"
+      },
+      "monologuer (major)@@spc": {
+        "label": "Monologuer (Major)",
+        "source": "spc/8?highlight=MONOLOGUER%20%28MAJOR%29"
       },
       "monster magnet@@secret_world": {
         "label": "Monster Magnet",
@@ -2714,6 +3030,10 @@
       "mute@@swade": {
         "label": "Mute",
         "source": "swade/24?highlight=Mute"
+      },
+      "night terrors (major)@@doom_guard": {
+        "label": "Night Terrors (Major)",
+        "source": "doom_guard/32?highlight=NIGHT%20TERRORS%20%28MAJOR%29"
       },
       "night terrors (major)@@horror": {
         "label": "Night Terrors (Major)",
@@ -2735,6 +3055,10 @@
         "label": "One eye",
         "source": "swade/25?highlight=One%20Eye"
       },
+      "outsider (minor)@@doom_guard": {
+        "label": "Outsider (Minor)",
+        "source": "doom_guard/32?highlight=OUTSIDER%20%28MINOR%29"
+      },
       "outsider@@swade": {
         "label": "Outsider",
         "source": "swade/25?highlight=Outsider"
@@ -2755,6 +3079,10 @@
         "label": "Poverty",
         "source": "swade/25?highlight=Poverty"
       },
+      "power negation (minor/major)@@spc": {
+        "label": "Power Negation (Minor/Major)",
+        "source": "spc/8?highlight=POWER%20NEGATION%20%28MINOR%2FMAJOR%29"
+      },
       "programmed@@sfc": {
         "label": "Programmed",
         "source": "sfc/23?highlight=PROGRAMMED"
@@ -2763,9 +3091,17 @@
         "label": "Quirk",
         "source": "swade/25?highlight=Quirk"
       },
+      "rebellious (minor)@@doom_guard": {
+        "label": "Rebellious (Minor)",
+        "source": "doom_guard/33?highlight=REBELLIOUS%20%28MINOR%29"
+      },
       "rebellious@@sfc": {
         "label": "Rebellious",
         "source": "sfc/23?highlight=REBELLIOUS"
+      },
+      "reckless (major)@@spc": {
+        "label": "Reckless (Major)",
+        "source": "spc/8?highlight=RECKLESS%20%28MAJOR%29"
       },
       "ruthless@@swade": {
         "label": "Ruthless",
@@ -2779,13 +3115,25 @@
           "Screamer (Major)"
         ]
       },
+      "secret identity (major)@@spc": {
+        "label": "Secret Identity (Major)",
+        "source": "spc/8?highlight=SECRET%20IDENTITY%20%28MAJOR%29"
+      },
       "secret@@swade": {
         "label": "Secret",
         "source": "swade/25?highlight=Secret"
       },
+      "selfless (minor/major)@@doom_guard": {
+        "label": "Selfless (Minor/Major)",
+        "source": "doom_guard/33?highlight=SELFLESS%20%28MINOR%2FMAJOR%29"
+      },
       "selfless@@sfc": {
         "label": "Selfless",
         "source": "sfc/23?highlight=SELFLESS"
+      },
+      "servitor (major)@@ne_invasion": {
+        "label": "Servitor (Major)",
+        "source": "ne_invasion/15?highlight=SERVITOR%20%28MAJOR%29"
       },
       "shamed@@swade": {
         "label": "Shamed",
@@ -2835,6 +3183,10 @@
         "label": "Talisman",
         "source": "fantasy/29?highlight=TALISMAN"
       },
+      "terminally ill (minor/major)@@spc": {
+        "label": "Terminally Ill (Minor/Major)",
+        "source": "spc/8?highlight=TERMINALLY%20ILL%20%28MINOR%2FMAJOR%29"
+      },
       "thin skinned@@swade": {
         "label": "Thin skinned",
         "source": "swade/27?highlight=Thin%20Skinned"
@@ -2846,6 +3198,10 @@
       "tongue-tied@@swade": {
         "label": "Tongue-tied",
         "source": "swade/27?highlight=Tongue-Tied"
+      },
+      "transformation (minor/major)@@spc": {
+        "label": "Transformation (Minor/Major)",
+        "source": "spc/9?highlight=TRANSFORMATION%20%28MINOR%2FMAJOR%29"
       },
       "trouble magnet@@sfc": {
         "label": "Trouble magnet",
@@ -2875,6 +3231,10 @@
         "label": "Victim (Major)",
         "source": "horror/7?highlight=VICTIM%20(MAJOR)"
       },
+      "vow@@doom_guard": {
+        "label": "Vow",
+        "source": "doom_guard/31?highlight=VOW"
+      },
       "vow@@fantasy": {
         "label": "Vow",
         "source": "fantasy/95?highlight=VOW"
@@ -2882,6 +3242,10 @@
       "vow@@swade": {
         "label": "Vow",
         "source": "swade/26?highlight=Vow"
+      },
+      "vulnerability (minor/major)@@spc": {
+        "label": "Vulnerability (Minor/Major)",
+        "source": "spc/9?highlight=VULNERABILITY%20%28MINOR%2FMAJOR%29"
       },
       "wanted@@swade": {
         "label": "Wanted",
@@ -3061,12 +3425,24 @@
         "label": "Apc",
         "source": "starbreaker_star_marines/51?highlight=APC"
       },
+      "boston witch@@secret_world_na": {
+        "label": "Boston Witch",
+        "source": "secret_world_na/62?highlight=BOSTON%20WITCH"
+      },
+      "illuminati operative@@secret_world_na": {
+        "label": "Illuminati Operative",
+        "source": "secret_world_na/63?highlight=ILLUMINATI%20OPERATIVE"
+      },
       "ltv (light tactical vehicle)@@starbreaker_star_marines": {
         "label": "LTV (Light Tactical Vehicle)",
         "source": "starbreaker_star_marines/51?highlight=LTV%20(Light%20Tactical%20Vehicle)",
         "aliases": [
           "LTV"
         ]
+      },
+      "mystic@@secret_world_na": {
+        "label": "Mystic",
+        "source": "secret_world_na/65?highlight=MYSTIC"
       },
       "recon bike@@starbreaker_star_marines": {
         "label": "Recon Bike",
@@ -3114,6 +3490,34 @@
       }
     },
     "powers": {
+      "absorption@@spc": {
+        "label": "Absorption",
+        "source": "spc/48?highlight=ABSORPTION"
+      },
+      "additional actions@@spc": {
+        "label": "Additional Actions",
+        "source": "spc/48?highlight=ADDITIONAL%20ACTIONS"
+      },
+      "ageless@@spc": {
+        "label": "Ageless",
+        "source": "spc/49?highlight=AGELESS"
+      },
+      "altered form@@spc": {
+        "label": "Altered Form",
+        "source": "spc/49?highlight=ALTERED%20FORM"
+      },
+      "animal companion@@spc": {
+        "label": "Animal Companion",
+        "source": "spc/50?highlight=ANIMAL%20COMPANION"
+      },
+      "animal control@@spc": {
+        "label": "Animal Control",
+        "source": "spc/51?highlight=ANIMAL%20CONTROL"
+      },
+      "aquatic@@spc": {
+        "label": "Aquatic",
+        "source": "spc/52?highlight=AQUATIC"
+      },
       "arcane protection@@fantasy": {
         "label": "Arcane Protection",
         "source": "fantasy/116?highlight=ARCANE%20PROTECTION"
@@ -3122,6 +3526,10 @@
         "label": "Arcane protection",
         "source": "swade/154?highlight=Arcane%20Protection"
       },
+      "armor@@spc": {
+        "label": "Armor",
+        "source": "spc/52?highlight=ARMOR"
+      },
       "armor@@swade": {
         "label": "Armor",
         "source": "swade/154?highlight=Armor"
@@ -3129,6 +3537,10 @@
       "aspect of the rada loa@@horror": {
         "label": "Aspect Of The Rada Loa",
         "source": "horror/73?highlight=ASPECT%20OF%20THE%20RADA%20LOA"
+      },
+      "awareness@@spc": {
+        "label": "Awareness",
+        "source": "spc/53?highlight=AWARENESS"
       },
       "backwash@@sfc": {
         "label": "Backwash",
@@ -3158,6 +3570,10 @@
         "label": "Beast friend",
         "source": "swade/154?highlight=Beast%20Friend"
       },
+      "bite@@spc": {
+        "label": "Bite",
+        "source": "spc/53?highlight=BITE"
+      },
       "black hole@@sfc": {
         "label": "Black Hole",
         "source": "sfc/209?highlight=BLACK%20HOLE"
@@ -3178,6 +3594,10 @@
         "label": "Blind",
         "source": "fantasy/118?highlight=BLIND"
       },
+      "blind@@spc": {
+        "label": "Blind",
+        "source": "spc/53?highlight=BLIND"
+      },
       "blind@@swade": {
         "label": "Blind",
         "source": "swade/155?highlight=Blind"
@@ -3190,6 +3610,10 @@
         "label": "Bolt",
         "source": "swade/155?highlight=bolt"
       },
+      "boost / lower trait@@spc": {
+        "label": "Boost / Lower Trait",
+        "source": "spc/53?highlight=BOOST%20%2F%20LOWER%20TRAIT"
+      },
       "boost / lower trait@@swade": {
         "label": "Boost / lower trait",
         "source": "swade/155?highlight=Boost%20%2F%20Lower%20Trait",
@@ -3201,9 +3625,17 @@
         "label": "Boost/Lower Trait",
         "source": "fantasy/119?highlight=BOOST%2FLOWER%20TRAIT"
       },
+      "broadcast@@spc": {
+        "label": "Broadcast",
+        "source": "spc/54?highlight=BROADCAST"
+      },
       "burrower@@fantasy": {
         "label": "Burrower",
         "source": "fantasy/141?highlight=Burrower"
+      },
+      "burrowing@@spc": {
+        "label": "Burrowing",
+        "source": "spc/54?highlight=BURROWING"
       },
       "burst@@fantasy": {
         "label": "Burst",
@@ -3213,9 +3645,17 @@
         "label": "Burst",
         "source": "swade/156?highlight=Burst"
       },
+      "chameleon@@spc": {
+        "label": "Chameleon",
+        "source": "spc/55?highlight=CHAMELEON"
+      },
       "chimera@@fantasy": {
         "label": "Chimera",
         "source": "fantasy/141?highlight=Chimera"
+      },
+      "claws@@spc": {
+        "label": "Claws",
+        "source": "spc/55?highlight=CLAWS"
       },
       "cockatrice@@fantasy": {
         "label": "Cockatrice",
@@ -3229,13 +3669,21 @@
         "label": "Conjure Item",
         "source": "fantasy/119?highlight=CONJURE%20ITEM"
       },
-      "consecrate ground curse@@horror": {
-        "label": "Consecrate Ground Curse",
-        "source": "horror/75?highlight=CONSECRATE%20GROUND%20CURSE"
+      "consecrate ground@@horror": {
+        "label": "Consecrate Ground",
+        "source": "horror/75?highlight=CONSECRATE%20GROUND"
+      },
+      "construct@@spc": {
+        "label": "Construct",
+        "source": "spc/55?highlight=CONSTRUCT"
       },
       "control machine@@sfc": {
         "label": "Control Machine",
         "source": "sfc/209?highlight=CONTROL%20MACHINE"
+      },
+      "copycat@@spc": {
+        "label": "Copycat",
+        "source": "spc/56?highlight=COPYCAT"
       },
       "corpse sense@@horror": {
         "label": "Corpse Sense",
@@ -3257,6 +3705,10 @@
         "label": "Damage Field",
         "source": "fantasy/121?highlight=DAMAGE%20FIELD"
       },
+      "damage field@@spc": {
+        "label": "Damage Field",
+        "source": "spc/56?highlight=DAMAGE%20FIELD"
+      },
       "darkmantle@@fantasy": {
         "label": "Darkmantle",
         "source": "fantasy/141?highlight=Darkmantle"
@@ -3264,6 +3716,14 @@
       "darksight@@fantasy": {
         "label": "Darksight",
         "source": "fantasy/121?highlight=DARKSIGHT"
+      },
+      "deadeye@@spc": {
+        "label": "Deadeye",
+        "source": "spc/57?highlight=DEADEYE"
+      },
+      "decay@@spc": {
+        "label": "Decay",
+        "source": "spc/57?highlight=DECAY"
       },
       "deflection@@fantasy": {
         "label": "Deflection",
@@ -3297,6 +3757,22 @@
         "label": "Divination",
         "source": "fantasy/123?highlight=DIVINATION"
       },
+      "dodge@@spc": {
+        "label": "Dodge",
+        "source": "spc/57?highlight=DODGE"
+      },
+      "doesn’t breathe@@spc": {
+        "label": "Doesn’t Breathe",
+        "source": "spc/58?highlight=DOESN%E2%80%99T%20BREATHE"
+      },
+      "doesn’t eat@@spc": {
+        "label": "Doesn’t Eat",
+        "source": "spc/58?highlight=DOESN%E2%80%99T%20EAT"
+      },
+      "doesn’t sleep@@spc": {
+        "label": "Doesn’t Sleep",
+        "source": "spc/58?highlight=DOESN%E2%80%99T%20SLEEP"
+      },
       "drain power points@@fantasy": {
         "label": "Drain Power Points",
         "source": "fantasy/124?highlight=DRAIN%20POWER%20POINTS"
@@ -3308,6 +3784,18 @@
       "drake@@fantasy": {
         "label": "Drake",
         "source": "fantasy/141?highlight=Drake"
+      },
+      "duplication@@spc": {
+        "label": "Duplication",
+        "source": "spc/58?highlight=DUPLICATION"
+      },
+      "earthquake@@spc": {
+        "label": "Earthquake",
+        "source": "spc/59?highlight=EARTHQUAKE"
+      },
+      "elasticity@@spc": {
+        "label": "Elasticity",
+        "source": "spc/59?highlight=ELASTICITY"
       },
       "elemental manipulation@@fantasy": {
         "label": "Elemental manipulation",
@@ -3325,9 +3813,17 @@
         "label": "Empathy",
         "source": "swade/159?highlight=Empathy"
       },
+      "energy control@@spc": {
+        "label": "Energy Control",
+        "source": "spc/59?highlight=ENERGY%20CONTROL"
+      },
       "entangle@@fantasy": {
         "label": "Entangle",
         "source": "fantasy/126?highlight=ENTANGLE"
+      },
+      "entangle@@spc": {
+        "label": "Entangle",
+        "source": "spc/60?highlight=ENTANGLE"
       },
       "environmental protection@@fantasy": {
         "label": "Environmental Protection",
@@ -3336,6 +3832,18 @@
       "environmental protection@@swade": {
         "label": "Environmental protection",
         "source": "swade/160?highlight=Environmental%20Protection"
+      },
+      "environmental resistance@@spc": {
+        "label": "Environmental Resistance",
+        "source": "spc/61?highlight=ENVIRONMENTAL%20RESISTANCE"
+      },
+      "explode@@spc": {
+        "label": "Explode",
+        "source": "spc/62?highlight=EXPLODE"
+      },
+      "extra limbs@@spc": {
+        "label": "Extra Limbs",
+        "source": "spc/62?highlight=EXTRA%20LIMBS"
       },
       "farsight@@fantasy": {
         "label": "Farsight",
@@ -3349,9 +3857,21 @@
         "label": "Fear",
         "source": "fantasy/126?highlight=FEAR"
       },
+      "fear@@spc": {
+        "label": "Fear",
+        "source": "spc/62?highlight=FEAR"
+      },
       "fear@@swade": {
         "label": "Fear",
         "source": "swade/161?highlight=Fear"
+      },
+      "fearless@@spc": {
+        "label": "Fearless",
+        "source": "spc/62?highlight=FEARLESS"
+      },
+      "flight@@spc": {
+        "label": "Flight",
+        "source": "spc/63?highlight=FLIGHT"
       },
       "fly@@fantasy": {
         "label": "Fly",
@@ -3361,9 +3881,17 @@
         "label": "Fly",
         "source": "swade/161?highlight=Fly"
       },
+      "force field@@spc": {
+        "label": "Force Field",
+        "source": "spc/64?highlight=FORCE%20FIELD"
+      },
       "fury of the petro loa@@horror": {
         "label": "Fury Of The Petro Loa",
         "source": "horror/76?highlight=FURY%20OF%20THE%20PETRO%20LOA"
+      },
+      "genius@@spc": {
+        "label": "Genius",
+        "source": "spc/64?highlight=GENIUS"
       },
       "ghost in the machine@@sfc": {
         "label": "Ghost In The Machine",
@@ -3401,6 +3929,14 @@
         "label": "Growth/Shrink",
         "source": "fantasy/127?highlight=GROWTH%2FSHRINK"
       },
+      "growth@@spc": {
+        "label": "Growth",
+        "source": "spc/64?highlight=GROWTH"
+      },
+      "hardy@@spc": {
+        "label": "Hardy",
+        "source": "spc/65?highlight=HARDY"
+      },
       "havoc@@fantasy": {
         "label": "Havoc",
         "source": "fantasy/127?highlight=HAVOC"
@@ -3417,13 +3953,29 @@
         "label": "Healing",
         "source": "fantasy/127?highlight=HEALING"
       },
+      "healing@@spc": {
+        "label": "Healing",
+        "source": "spc/65?highlight=HEALING"
+      },
       "healing@@swade": {
         "label": "Healing",
         "source": "swade/161?highlight=Healing"
       },
+      "heightened senses@@spc": {
+        "label": "Heightened Senses",
+        "source": "spc/66?highlight=HEIGHTENED%20SENSES"
+      },
+      "horns@@spc": {
+        "label": "Horns",
+        "source": "spc/66?highlight=HORNS"
+      },
       "illusion@@fantasy": {
         "label": "Illusion",
         "source": "fantasy/128?highlight=ILLUSION"
+      },
+      "illusion@@spc": {
+        "label": "Illusion",
+        "source": "spc/66?highlight=ILLUSION"
       },
       "illusion@@swade": {
         "label": "Illusion",
@@ -3433,13 +3985,33 @@
         "label": "Illusionary Horrors",
         "source": "horror/77?highlight=ILLUSIONARY%20HORRORS"
       },
+      "immune to poison/disease@@spc": {
+        "label": "Immune to Poison/Disease",
+        "source": "spc/67?highlight=IMMUNE%20TO%20POISON%2FDISEASE"
+      },
+      "infection@@spc": {
+        "label": "Infection",
+        "source": "spc/67?highlight=INFECTION"
+      },
+      "infravision@@spc": {
+        "label": "Infravision",
+        "source": "spc/68?highlight=INFRAVISION"
+      },
       "intangibility@@fantasy": {
         "label": "Intangibility",
         "source": "fantasy/128?highlight=INTANGIBILITY"
       },
+      "intangibility@@spc": {
+        "label": "Intangibility",
+        "source": "spc/68?highlight=INTANGIBILITY"
+      },
       "intangibility@@swade": {
         "label": "Intangibility",
         "source": "swade/162?highlight=Intangibility"
+      },
+      "interface@@spc": {
+        "label": "Interface",
+        "source": "spc/69?highlight=INTERFACE"
       },
       "invisibility@@fantasy": {
         "label": "Invisibility",
@@ -3449,9 +4021,21 @@
         "label": "Invisibility",
         "source": "horror/17?highlight=INVISIBILITY"
       },
+      "invisibility@@spc": {
+        "label": "Invisibility",
+        "source": "spc/69?highlight=INVISIBILITY"
+      },
       "invisibility@@swade": {
         "label": "Invisibility",
         "source": "swade/163?highlight=Invisibility"
+      },
+      "jinx@@spc": {
+        "label": "Jinx",
+        "source": "spc/70?highlight=JINX"
+      },
+      "leaping@@spc": {
+        "label": "Leaping",
+        "source": "spc/70?highlight=LEAPING"
       },
       "light / darkness@@swade": {
         "label": "Light / darkness",
@@ -3460,6 +4044,10 @@
       "light/darkness@@fantasy": {
         "label": "Light/Darkness",
         "source": "fantasy/129?highlight=LIGHT%2FDARKNESS"
+      },
+      "light@@spc": {
+        "label": "Light",
+        "source": "spc/71?highlight=LIGHT"
       },
       "locate@@fantasy": {
         "label": "Locate",
@@ -3485,6 +4073,30 @@
         "label": "Lock/Unlock",
         "source": "sfc/211?highlight=LOCK%2FUNLOCK"
       },
+      "low light vision@@spc": {
+        "label": "Low Light Vision",
+        "source": "spc/71?highlight=LOW%20LIGHT%20VISION"
+      },
+      "machine control@@spc": {
+        "label": "Machine Control",
+        "source": "spc/71?highlight=MACHINE%20CONTROL"
+      },
+      "malfunction@@spc": {
+        "label": "Malfunction",
+        "source": "spc/71?highlight=MALFUNCTION"
+      },
+      "matter control@@spc": {
+        "label": "Matter Control",
+        "source": "spc/72?highlight=MATTER%20CONTROL"
+      },
+      "melee attack@@spc": {
+        "label": "Melee Attack",
+        "source": "spc/73?highlight=MELEE%20ATTACK"
+      },
+      "mind control@@spc": {
+        "label": "Mind Control",
+        "source": "spc/74?highlight=MIND%20CONTROL"
+      },
       "mind link@@fantasy": {
         "label": "Mind Link",
         "source": "fantasy/130?highlight=MIND%20LINK"
@@ -3497,9 +4109,17 @@
         "label": "Mind Reading",
         "source": "fantasy/131?highlight=MIND%20READING"
       },
+      "mind reading@@spc": {
+        "label": "Mind Reading",
+        "source": "spc/75?highlight=MIND%20READING"
+      },
       "mind reading@@swade": {
         "label": "Mind reading",
         "source": "swade/163?highlight=Mind%20Reading"
+      },
+      "mind shield@@spc": {
+        "label": "Mind Shield",
+        "source": "spc/76?highlight=MIND%20SHIELD"
       },
       "mind wipe@@fantasy": {
         "label": "Mind Wipe",
@@ -3509,21 +4129,49 @@
         "label": "Mind wipe",
         "source": "swade/164?highlight=Mind%20Wipe"
       },
+      "minions@@spc": {
+        "label": "Minions",
+        "source": "spc/77?highlight=MINIONS"
+      },
       "mystic intervention@@fantasy": {
         "label": "Mystic Intervention",
         "source": "fantasy/131?highlight=MYSTIC%20INTERVENTION"
+      },
+      "negation@@spc": {
+        "label": "Negation",
+        "source": "spc/77?highlight=NEGATION"
       },
       "nightmares@@horror": {
         "label": "Nightmares",
         "source": "horror/78?highlight=NIGHTMARES"
       },
+      "no vital organs@@spc": {
+        "label": "No Vital Organs",
+        "source": "spc/78?highlight=NO%20VITAL%20ORGANS"
+      },
       "object reading@@fantasy": {
         "label": "Object Reading",
         "source": "fantasy/132?highlight=OBJECT%20READING"
       },
+      "object reading@@spc": {
+        "label": "Object Reading",
+        "source": "spc/78?highlight=OBJECT%20READING"
+      },
       "object reading@@swade": {
         "label": "Object reading",
         "source": "swade/164?highlight=Object%20Reading"
+      },
+      "obscure@@spc": {
+        "label": "Obscure",
+        "source": "spc/78?highlight=OBSCURE"
+      },
+      "pace@@spc": {
+        "label": "Pace",
+        "source": "spc/78?highlight=PACE"
+      },
+      "parry@@spc": {
+        "label": "Parry",
+        "source": "spc/78?highlight=PARRY"
       },
       "planar binding@@fantasy": {
         "label": "Planar Binding",
@@ -3532,6 +4180,14 @@
       "plane shift@@fantasy": {
         "label": "Plane Shift",
         "source": "fantasy/133?highlight=PLANE%20SHIFT"
+      },
+      "poison@@spc": {
+        "label": "Poison",
+        "source": "spc/79?highlight=POISON"
+      },
+      "possession@@spc": {
+        "label": "Possession",
+        "source": "spc/79?highlight=POSSESSION"
       },
       "prediction@@sfc": {
         "label": "Prediction",
@@ -3553,9 +4209,25 @@
         "label": "Puppet",
         "source": "swade/164?highlight=Puppet"
       },
+      "push@@spc": {
+        "label": "Push",
+        "source": "spc/80?highlight=PUSH"
+      },
       "quickness@@swade": {
         "label": "Quickness",
         "source": "swade/165?highlight=Quickness"
+      },
+      "ranged attack@@spc": {
+        "label": "Ranged Attack",
+        "source": "spc/80?highlight=RANGED%20ATTACK"
+      },
+      "reach@@spc": {
+        "label": "Reach",
+        "source": "spc/81?highlight=REACH"
+      },
+      "regeneration@@spc": {
+        "label": "Regeneration",
+        "source": "spc/81?highlight=REGENERATION"
       },
       "relief@@fantasy": {
         "label": "Relief",
@@ -3569,6 +4241,10 @@
         "label": "Resurrection",
         "source": "fantasy/135?highlight=RESURRECTION"
       },
+      "resurrection@@spc": {
+        "label": "Resurrection",
+        "source": "spc/82?highlight=RESURRECTION"
+      },
       "resurrection@@swade": {
         "label": "Resurrection",
         "source": "swade/165?highlight=Resurrection"
@@ -3580,6 +4256,10 @@
       "sanctuary@@horror": {
         "label": "Sanctuary",
         "source": "horror/78?highlight=SANCTUARY"
+      },
+      "scan@@spc": {
+        "label": "Scan",
+        "source": "spc/82?highlight=SCAN"
       },
       "scrying@@fantasy": {
         "label": "Scrying",
@@ -3605,9 +4285,21 @@
         "label": "Shape Change",
         "source": "sfc/212?highlight=SHAPE%20CHANGE"
       },
+      "shape change@@spc": {
+        "label": "Shape Change",
+        "source": "spc/82?highlight=SHAPE%20CHANGE"
+      },
       "shape change@@swade": {
         "label": "Shape change",
         "source": "swade/166?highlight=Shape%20Change"
+      },
+      "shrink@@spc": {
+        "label": "Shrink",
+        "source": "spc/83?highlight=SHRINK"
+      },
+      "skill bonus@@spc": {
+        "label": "Skill Bonus",
+        "source": "spc/83?highlight=SKILL%20BONUS"
       },
       "sloth / speed@@swade": {
         "label": "Sloth / speed",
@@ -3616,6 +4308,10 @@
       "sloth/speed@@fantasy": {
         "label": "Sloth/Speed",
         "source": "fantasy/136?highlight=SLOTH%2FSPEED"
+      },
+      "slow@@spc": {
+        "label": "Slow",
+        "source": "spc/83?highlight=SLOW"
       },
       "slumber@@fantasy": {
         "label": "Slumber",
@@ -3633,13 +4329,25 @@
         "label": "Sound / silence",
         "source": "swade/167?highlight=Sound%20%2F%20Silence"
       },
+      "spacer@@spc": {
+        "label": "Spacer",
+        "source": "spc/83?highlight=SPACER"
+      },
       "speak language@@fantasy": {
         "label": "Speak Language",
         "source": "fantasy/138?highlight=SPEAK%20LANGUAGE"
       },
+      "speak language@@spc": {
+        "label": "Speak Language",
+        "source": "spc/84?highlight=SPEAK%20LANGUAGE"
+      },
       "speak language@@swade": {
         "label": "Speak language",
         "source": "swade/167?highlight=Speak%20Language"
+      },
+      "speed@@spc": {
+        "label": "Speed",
+        "source": "spc/84?highlight=SPEED"
       },
       "spite@@horror": {
         "label": "Spite",
@@ -3648,6 +4356,10 @@
       "stun@@fantasy": {
         "label": "Stun",
         "source": "fantasy/138?highlight=STUN"
+      },
+      "stun@@spc": {
+        "label": "Stun",
+        "source": "spc/85?highlight=STUN"
       },
       "stun@@swade": {
         "label": "Stun",
@@ -3681,9 +4393,33 @@
         "label": "Summon Undead",
         "source": "fantasy/141?highlight=SUMMON%20UNDEAD"
       },
+      "super attribute@@spc": {
+        "label": "Super Attribute",
+        "source": "spc/85?highlight=SUPER%20ATTRIBUTE"
+      },
+      "super edge@@spc": {
+        "label": "Super Edge",
+        "source": "spc/85?highlight=SUPER%20EDGE"
+      },
+      "super science@@spc": {
+        "label": "Super Science",
+        "source": "spc/86?highlight=SUPER%20SCIENCE"
+      },
+      "super skill@@spc": {
+        "label": "Super Skill",
+        "source": "spc/86?highlight=SUPER%20SKILL"
+      },
+      "super sorcery@@spc": {
+        "label": "Super Sorcery",
+        "source": "spc/86?highlight=SUPER%20SORCERY"
+      },
       "suppress transformation@@horror": {
         "label": "Suppress Transformation",
         "source": "horror/83?highlight=SUPPRESS%20TRANSFORMATION"
+      },
+      "swinging@@spc": {
+        "label": "Swinging",
+        "source": "spc/87?highlight=SWINGING"
       },
       "telekinesis@@fantasy": {
         "label": "Telekinesis",
@@ -3691,7 +4427,11 @@
       },
       "telekinesis@@sfc": {
         "label": "Telekinesis",
-        "source": "sfc/169?highlight=Telekinesis"
+        "source": "sfc/26?highlight=TELEKINESIS"
+      },
+      "telekinesis@@spc": {
+        "label": "Telekinesis",
+        "source": "spc/87?highlight=TELEKINESIS"
       },
       "telekinesis@@swade": {
         "label": "Telekinesis",
@@ -3701,6 +4441,10 @@
         "label": "Telekinetic Squeeze",
         "source": "sfc/214?highlight=TELEKINETIC%20SQUEEZE"
       },
+      "telepathy@@spc": {
+        "label": "Telepathy",
+        "source": "spc/87?highlight=TELEPATHY"
+      },
       "teleport@@fantasy": {
         "label": "Teleport",
         "source": "fantasy/141?highlight=TELEPORT"
@@ -3708,6 +4452,10 @@
       "teleport@@sfc": {
         "label": "Teleport",
         "source": "sfc/215?highlight=TELEPORT"
+      },
+      "teleport@@spc": {
+        "label": "Teleport",
+        "source": "spc/88?highlight=TELEPORT"
       },
       "teleport@@swade": {
         "label": "Teleport",
@@ -3721,9 +4469,29 @@
         "label": "Time Stop",
         "source": "sfc/215?highlight=TIME%20STOP"
       },
+      "toughness@@spc": {
+        "label": "Toughness",
+        "source": "spc/88?highlight=TOUGHNESS"
+      },
+      "uncanny reflexes@@spc": {
+        "label": "Uncanny Reflexes",
+        "source": "spc/89?highlight=UNCANNY%20REFLEXES"
+      },
+      "undead@@spc": {
+        "label": "Undead",
+        "source": "spc/89?highlight=UNDEAD"
+      },
+      "vehicle@@spc": {
+        "label": "Vehicle",
+        "source": "spc/89?highlight=VEHICLE"
+      },
       "wall walker@@fantasy": {
         "label": "Wall Walker",
         "source": "fantasy/143?highlight=WALL%20WALKER"
+      },
+      "wall walker@@spc": {
+        "label": "Wall Walker",
+        "source": "spc/91?highlight=WALL%20WALKER"
       },
       "wall walker@@swade": {
         "label": "Wall walker",
@@ -3736,6 +4504,14 @@
       "warrior's gift@@swade": {
         "label": "Warrior’s gift",
         "source": "swade/169?highlight=Warrior%E2%80%99s%20Gift"
+      },
+      "weather control@@spc": {
+        "label": "Weather Control",
+        "source": "spc/91?highlight=WEATHER%20CONTROL"
+      },
+      "whirlwind@@spc": {
+        "label": "Whirlwind",
+        "source": "spc/92?highlight=WHIRLWIND"
       },
       "wish@@fantasy": {
         "label": "Wish",
@@ -3751,6 +4527,78 @@
       }
     },
     "rules": {
+      "born a hero@@doom_guard": {
+        "label": "Born a Hero",
+        "source": "doom_guard/37?highlight=BORN%20A%20HERO"
+      },
+      "born a hero@@ne_invasion": {
+        "label": "Born a Hero",
+        "source": "ne_invasion/16?highlight=BORN%20A%20HERO"
+      },
+      "comic book combat@@doom_guard": {
+        "label": "Comic Book Combat",
+        "source": "doom_guard/37?highlight=COMIC%20BOOK%20COMBAT"
+      },
+      "comic book combat@@ne_invasion": {
+        "label": "Comic Book Combat",
+        "source": "ne_invasion/16?highlight=COMIC%20BOOK%20COMBAT"
+      },
+      "conviction@@doom_guard": {
+        "label": "Conviction",
+        "source": "doom_guard/37?highlight=CONVICTION"
+      },
+      "conviction@@ne_invasion": {
+        "label": "Conviction",
+        "source": "ne_invasion/16?highlight=CONVICTION"
+      },
+      "creative combat@@ne_invasion": {
+        "label": "Creative Combat",
+        "source": "ne_invasion/16?highlight=CREATIVE%20COMBAT"
+      },
+      "death & defeat@@ne_invasion": {
+        "label": "Death & Defeat",
+        "source": "ne_invasion/16?highlight=DEATH%20%26%20DEFEAT"
+      },
+      "downtime@@doom_guard": {
+        "label": "Downtime",
+        "source": "doom_guard/38?highlight=DOWNTIME"
+      },
+      "fear checks@@doom_guard": {
+        "label": "Fear Checks",
+        "source": "doom_guard/39?highlight=FEAR%20CHECKS"
+      },
+      "group tests@@doom_guard": {
+        "label": "Group Tests",
+        "source": "doom_guard/39?highlight=GROUP%20TESTS"
+      },
+      "larger than life@@doom_guard": {
+        "label": "Larger Than Life",
+        "source": "doom_guard/37?highlight=LARGER%20THAN%20LIFE"
+      },
+      "larger than life@@ne_invasion": {
+        "label": "Larger Than Life",
+        "source": "ne_invasion/16?highlight=LARGER%20THAN%20LIFE"
+      },
+      "mega destruction@@doom_guard": {
+        "label": "Mega Destruction",
+        "source": "doom_guard/37?highlight=MEGA%20DESTRUCTION"
+      },
+      "mega destruction@@ne_invasion": {
+        "label": "Mega Destruction",
+        "source": "ne_invasion/16?highlight=MEGA%20DESTRUCTION"
+      },
+      "more skill points@@doom_guard": {
+        "label": "More Skill Points",
+        "source": "doom_guard/37?highlight=MORE%20SKILL%20POINTS"
+      },
+      "more skill points@@ne_invasion": {
+        "label": "More Skill Points",
+        "source": "ne_invasion/16?highlight=MORE%20SKILL%20POINTS"
+      },
+      "never surrender@@ne_invasion": {
+        "label": "Never Surrender",
+        "source": "ne_invasion/16?highlight=NEVER%20SURRENDER"
+      },
       "rage@@horror": {
         "label": "Rage",
         "source": "horror/10?highlight=RAGE"
@@ -3758,12 +4606,52 @@
       "rank die@@starbreaker_star_marines": {
         "label": "Rank Die",
         "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
+      },
+      "roleplaying breakdowns@@doom_guard": {
+        "label": "Roleplaying Breakdowns",
+        "source": "doom_guard/41?highlight=ROLEPLAYING%20BREAKDOWNS"
+      },
+      "throwdown@@doom_guard": {
+        "label": "Throwdown",
+        "source": "doom_guard/37?highlight=THROWDOWN"
+      },
+      "throwdown@@ne_invasion": {
+        "label": "Throwdown",
+        "source": "ne_invasion/16?highlight=THROWDOWN"
+      },
+      "unarmored hero@@doom_guard": {
+        "label": "Unarmored Hero",
+        "source": "doom_guard/37?highlight=UNARMORED%20HERO"
+      },
+      "villainous conviction@@doom_guard": {
+        "label": "Villainous Conviction",
+        "source": "doom_guard/37?highlight=VILLAINOUS%20CONVICTION"
+      },
+      "villainous conviction@@ne_invasion": {
+        "label": "Villainous Conviction",
+        "source": "ne_invasion/16?highlight=VILLAINOUS%20CONVICTION"
+      },
+      "wound cap@@doom_guard": {
+        "label": "Wound Cap",
+        "source": "doom_guard/37?highlight=WOUND%20CAP"
+      },
+      "wound cap@@ne_invasion": {
+        "label": "Wound Cap",
+        "source": "ne_invasion/16?highlight=WOUND%20CAP"
       }
     },
     "skills": {
+      "alchemy (smarts)@@fantasy": {
+        "label": "Alchemy (Smarts)",
+        "source": "fantasy/31?highlight=ALCHEMY%20%28SMARTS%29"
+      },
       "alchemy (smarts)@@horror": {
         "label": "Alchemy (Smarts)",
         "source": "horror/7?highlight=ALCHEMY%20(SMARTS)"
+      },
+      "focus (spirit)@@spc": {
+        "label": "Focus (Spirit)",
+        "source": "spc/6?highlight=FOCUS%20%28SPIRIT%29"
       },
       "hypertech@@starbreaker_core": {
         "label": "Hypertech",
