@@ -977,6 +977,7 @@ window.SIDEBAR_SECTIONS = [];
   let activeDocumentPath = '';
   let activeDocumentMeta = { path: '', type: 'note', name: '' };
   let openDocumentPaths = [];
+  const documentMetaByPath = new Map();
   const WORKSPACE_STORAGE_KEY = 'gm_workspace_v1';
   let rulesSections = markdownToSections(rulesMarkdown, 'rules');
   let currentSections = markdownToSections(currentMarkdown, 'current');
@@ -1060,8 +1061,11 @@ window.SIDEBAR_SECTIONS = [];
         if (m) meta[m[1]] = m[2].trim().replace(/^['"]|['"]$/g, '');
       });
     }
+    const normalizedPath = normalizeWorkspaceDocumentPath(path);
     const fallbackName = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || 'Untitled';
-    return { path, type: meta.type || 'note', name: meta.name || fallbackName, portrait: meta.portrait || '' };
+    const result = { path: normalizedPath || path, type: meta.type || 'note', name: meta.name || fallbackName, portrait: meta.portrait || '' };
+    if (normalizedPath) documentMetaByPath.set(normalizedPath, result);
+    return result;
   }
 
   function normalizeWorkspaceDocumentPath(path) {
@@ -1105,8 +1109,19 @@ window.SIDEBAR_SECTIONS = [];
     return { ...activeDocumentMeta, path: activeDocumentPath, markdown: currentMarkdown };
   }
 
+  function notifyInitiativePortraitRefresh() {
+    document.getElementById('toolsFrame')?.contentWindow?.postMessage(
+      { type: 'gm-refresh-initiative-portraits' }, '*'
+    );
+  }
+
   function getWorkspaceDocuments() {
     return openDocumentPaths.slice();
+  }
+
+  function getWorkspaceDocumentName(path) {
+    const normalizedPath = normalizeWorkspaceDocumentPath(path);
+    return documentMetaByPath.get(normalizedPath)?.name || '';
   }
 
   async function setWorkspaceDocumentOrder(paths) {
@@ -1168,6 +1183,7 @@ window.SIDEBAR_SECTIONS = [];
     const meta = parseDocumentMeta(path, text);
     activeDocumentPath = path;
     activeDocumentMeta = meta;
+    notifyInitiativePortraitRefresh();
     if (!openDocumentPaths.includes(path)) openDocumentPaths.push(path);
     importMarkdownFromText('current', stripFrontMatter(text), getWorkspaceSectionKind(meta, path));
     await saveWorkspaceState();
@@ -1179,6 +1195,11 @@ window.SIDEBAR_SECTIONS = [];
   async function loadActiveFromFolder(folder) {
     if (!folder) return false;
     loadWorkspaceState();
+
+    (Array.isArray(folder.files) ? folder.files : []).forEach((file) => {
+      const path = normalizeWorkspaceDocumentPath(file?.path);
+      if (/\.md$/i.test(path) && file?.text != null) parseDocumentMeta(path, file.text);
+    });
 
     // Browser-local workspace state can outlive files that were renamed or
     // removed. Normalize legacy Current paths and discard orphaned tabs each
@@ -1211,6 +1232,7 @@ window.SIDEBAR_SECTIONS = [];
     const meta = parseDocumentMeta(path, raw);
     activeDocumentMeta = meta;
     if (raw) importMarkdownFromText('current', stripFrontMatter(raw), getWorkspaceSectionKind(meta, path));
+    notifyInitiativePortraitRefresh();
     await saveWorkspaceState();
     return true;
   }
@@ -1354,6 +1376,7 @@ window.SIDEBAR_SECTIONS = [];
     getActiveDocument,
     getActiveSections,
     getWorkspaceDocuments,
+    getWorkspaceDocumentName,
     reorderWorkspaceDocuments,
     setWorkspaceDocumentOrder,
     getDocumentDisplayName,

@@ -205,13 +205,12 @@
       const markdown=await readFile.call(gm.data,path);
       if(markdown==null)continue;
       const entry=nameFromOpenDocument(path,markdown);
-      if(!entry?.hasPortrait||!entry.portraitPath)continue;
+      if(!entry)continue;
       const aliases=new Set(entry.aliases.map(normalizedCombatantName));
       state.combatants.forEach(combatant=>{
-        if(aliases.has(normalizedCombatantName(combatant.name))&&combatant.portraitPath!==entry.portraitPath){
-          combatant.portraitPath=entry.portraitPath;
-          changed=true;
-        }
+        if(!aliases.has(normalizedCombatantName(combatant.name)))return;
+        if(combatant.entityType!==entry.type){combatant.entityType=entry.type;changed=true;}
+        if(entry.hasPortrait&&combatant.portraitPath!==entry.portraitPath){combatant.portraitPath=entry.portraitPath;changed=true;}
       });
     }
     if(changed){save();render();}
@@ -251,7 +250,8 @@
         const current = existing.get(key);
         if (current) {
           const hasTrackers=Boolean(item.trackers.bennies||item.trackers.wounds);
-          if(!hasTrackers&&!item.hasPortrait)return;
+          const needsType=current.entityType!==item.type;
+          if(!hasTrackers&&!item.hasPortrait&&!needsType)return;
           if(hasTrackers){
             current.bennies = item.trackers.bennies?.value ?? current.bennies ?? 0;
             current.wounds = item.trackers.wounds?.value ?? current.wounds ?? 0;
@@ -259,12 +259,14 @@
             current.gmTrackers = item.trackers;
           }
           if(item.hasPortrait)current.portraitPath=item.portraitPath;
+          current.entityType=item.type;
           synced += 1;
           return;
         }
         const combatant = {
           id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
           name: item.name,
+          entityType: item.type,
           card: null,
           bennies: item.trackers.bennies?.value ?? 0,
           wounds: item.trackers.wounds?.value ?? 0,
@@ -345,17 +347,31 @@
       if (isDealing && combatant.card) card.classList.add('is-dealing-card');
       const portrait=document.createElement('span');
       portrait.className='combatant-portrait';
+      const isMonster=combatant.entityType==='monster';
+      if(isMonster)portrait.classList.add('is-monster');
       portrait.setAttribute('role','img');
-      portrait.setAttribute('aria-label',combatant.portraitPath?`${combatant.name} portrait`:`No portrait for ${combatant.name}`);
+      portrait.setAttribute('aria-label',combatant.portraitPath?`${combatant.name} portrait`:`${combatant.name} ${isMonster?'monster':'character'} silhouette`);
       const silhouette=document.createElementNS('http://www.w3.org/2000/svg','svg');
       silhouette.setAttribute('viewBox','0 0 40 40');
       silhouette.setAttribute('aria-hidden','true');
       silhouette.setAttribute('focusable','false');
-      const head=document.createElementNS('http://www.w3.org/2000/svg','circle');
-      head.setAttribute('cx','20');head.setAttribute('cy','13');head.setAttribute('r','6');
-      const shoulders=document.createElementNS('http://www.w3.org/2000/svg','path');
-      shoulders.setAttribute('d','M8 34c.8-7.2 5.7-11 12-11s11.2 3.8 12 11');
-      silhouette.append(head,shoulders);
+      if(isMonster){
+        const head=document.createElementNS('http://www.w3.org/2000/svg','path');
+        head.setAttribute('d','M12 12 5 4l11 5c1-2 3-3 4-3s3 1 4 3l11-5-7 9c1 2 2 4 2 7 0 8-4 13-10 13s-10-5-10-13c0-3 1-6 2-8Z');
+        const leftEye=document.createElementNS('http://www.w3.org/2000/svg','path');
+        leftEye.setAttribute('d','m13 18 5 2-4 3Z');leftEye.setAttribute('class','silhouette-cutout');
+        const rightEye=document.createElementNS('http://www.w3.org/2000/svg','path');
+        rightEye.setAttribute('d','m27 18-5 2 4 3Z');rightEye.setAttribute('class','silhouette-cutout');
+        const mouth=document.createElementNS('http://www.w3.org/2000/svg','path');
+        mouth.setAttribute('d','M15 27q5 3 10 0l-2 5h-6Z');mouth.setAttribute('class','silhouette-cutout');
+        silhouette.append(head,leftEye,rightEye,mouth);
+      }else{
+        const head=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        head.setAttribute('cx','20');head.setAttribute('cy','13');head.setAttribute('r','6');
+        const shoulders=document.createElementNS('http://www.w3.org/2000/svg','path');
+        shoulders.setAttribute('d','M8 34c.8-7.2 5.7-11 12-11s11.2 3.8 12 11');
+        silhouette.append(head,shoulders);
+      }
       const portraitImage=document.createElement('img');
       portraitImage.alt='';portraitImage.loading='eager';portraitImage.draggable=false;
       portrait.append(silhouette,portraitImage);
@@ -690,7 +706,7 @@
   }
   ui.form.addEventListener('submit',event=>{
     event.preventDefault();const name=ui.name.value.trim();if(!name)return;
-    state.combatants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,card:null,bennies:0,wounds:0,trackResources:false});
+    state.combatants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,entityType:'character',card:null,bennies:0,wounds:0,trackResources:false});
     ui.name.value='';save();render();ui.name.focus();
   });
   ui.deal.addEventListener('click',deal);

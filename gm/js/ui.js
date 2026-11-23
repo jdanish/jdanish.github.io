@@ -1796,9 +1796,8 @@
 
       const label = document.createElement('span');
       label.className = 'gm-workspace-tab-label';
-      label.textContent = path === active.path
-        ? (active.name || path.split('/').pop().replace(/\.md$/i, ''))
-        : path.split('/').pop().replace(/\.md$/i, '');
+      label.textContent = (path === active.path ? active.name : window.GM.sidebarData?.getWorkspaceDocumentName?.(path))
+        || path.split('/').pop().replace(/\.md$/i, '');
       docButton.appendChild(label);
 
       const edit = document.createElement('button');
@@ -3080,7 +3079,7 @@
         <button type="button" data-doc-new-note>＋ New Note</button>
         <button type="button" data-doc-new-character>＋ New Character</button>
         <button type="button" data-doc-new-monster>＋ New Monster/NPC</button>
-        <button type="button" data-doc-import-character>＋ Import Character</button>
+        <button type="button" data-doc-import-character>＋ Import Character (XML)</button>
         <button type="button" data-doc-import-monster>＋ Import Monster</button>
       </div>
       <div data-doc-list class="gm-document-list"></div>
