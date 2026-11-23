@@ -33,7 +33,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=single-card-deal-animation-20261123">
+  <link rel="stylesheet" href="styles.css?v=dice-palette-roll-display-20261123">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
   <header class="topbar">
@@ -73,10 +73,18 @@
     <aside class="right-column">
       <section class="panel dice-panel" id="dicePanel" role="tabpanel" aria-labelledby="diceTab diceTitle">
         <div class="panel-heading compact"><div><div class="eyebrow">LET THE DICE FLY</div><h2 id="diceTitle">Quick Roll</h2></div><div class="die-glyph">⚄</div></div>
-        <label class="field-label" for="traitDie">TRAIT DIE</label>
-        <div class="roll-controls"><select id="traitDie" aria-label="Trait die"><option value="4">d4</option><option value="6" selected>d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option><option value="20">d20</option></select><label class="count-control"><span>COUNT</span><input id="dieCount" type="number" min="1" max="20" value="1" aria-label="Number of dice"></label><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
-        <div class="roll-mode-row" id="rollModeRow" hidden><label class="field-label" for="diceMode">MULTI-DIE METHOD</label><select id="diceMode"><option value="sum">Sum all Trait dice</option><option value="keep">Keep highest dice · check separately</option></select></div>
-        <div class="dice-pool-preview"><div class="dice-pool-heading"><span>DICE POOL</span><span id="dicePoolSummary" aria-live="polite"></span></div><div class="dice-pool-images" id="dicePoolImages" aria-hidden="true"></div></div>
+        <div class="field-label">ADD DICE</div>
+        <div class="die-palette" id="diePalette" aria-label="Add a die to the pool">
+          <button type="button" class="die-palette-button" data-add-die="4" aria-label="Add a d4"><span class="pool-die-shape d4"><strong>4</strong></span><small>d4</small></button>
+          <button type="button" class="die-palette-button" data-add-die="6" aria-label="Add a d6"><span class="pool-die-shape d6"><strong>6</strong></span><small>d6</small></button>
+          <button type="button" class="die-palette-button" data-add-die="8" aria-label="Add a d8"><span class="pool-die-shape d8"><strong>8</strong></span><small>d8</small></button>
+          <button type="button" class="die-palette-button" data-add-die="10" aria-label="Add a d10"><span class="pool-die-shape d10"><strong>10</strong></span><small>d10</small></button>
+          <button type="button" class="die-palette-button" data-add-die="12" aria-label="Add a d12"><span class="pool-die-shape d12"><strong>12</strong></span><small>d12</small></button>
+          <button type="button" class="die-palette-button" data-add-die="20" aria-label="Add a d20"><span class="pool-die-shape d20"><strong>20</strong></span><small>d20</small></button>
+        </div>
+        <div class="roll-controls"><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
+        <div class="roll-mode-row" id="rollModeRow" hidden><label class="field-label" for="diceMode">MULTI-DIE METHOD</label><div class="roll-method-controls"><select id="diceMode"><option value="sum">Sum all Trait dice</option><option value="keep">Keep highest dice · check separately</option><option value="display">Show rolls only</option></select><label id="keepCountWrap" class="keep-count-control" hidden><span>KEEP</span><select id="keepCount" aria-label="Number of dice to keep"><option value="1">1</option></select></label></div></div>
+        <div class="dice-pool-preview"><div class="dice-pool-heading"><span>DICE POOL <small>Click a die to remove it</small></span><span id="dicePoolSummary" aria-live="polite"></span></div><div class="dice-pool-images" id="dicePoolImages"></div></div>
         <div class="roll-extra-fields"><div><label class="field-label modifier-label" for="modifier">MODIFIER</label><div class="modifier-wrap"><span>±</span><input id="modifier" type="number" value="0" min="-99" max="99" aria-label="Roll modifier"></div></div><div><label class="field-label modifier-label" for="targetNumber">TARGET</label><div class="modifier-wrap"><span>TN</span><input id="targetNumber" type="number" value="4" min="1" max="99" aria-label="Target number"></div></div></div>
         <button class="button button-roll" id="rollBtn">ROLL <span>↗</span></button>
         <div class="roll-result" id="rollResult" aria-live="polite"><span class="result-hint">Your roll will appear here.</span></div>
@@ -151,6 +159,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=single-card-deal-animation-20261123"></script>
+  <script src="app.js?v=dice-palette-roll-display-20261123"></script>
 </body>
 </html>

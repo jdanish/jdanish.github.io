@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261123-single-card-deal-animation';
+const CACHE_NAME = 'gm-reference-shell-v20261123-dice-palette-roll-display';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 
