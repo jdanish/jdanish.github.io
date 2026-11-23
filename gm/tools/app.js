@@ -38,6 +38,38 @@
     if (!document.documentElement.classList.contains('embedded') || window.parent === window) return null;
     try { return window.parent.GM || null; } catch (_) { return null; }
   }
+  function readCounterDefinition(key, fallback, max, enforceMax) {
+    const definition = {
+      key: String(key || '').trim(),
+      fallback: Number.isFinite(Number(fallback)) ? Math.trunc(Number(fallback)) : 0,
+      max: max === '' || max == null || !Number.isFinite(Number(max)) ? null : Math.trunc(Number(max)),
+      enforceMax: /^(?:1|true|yes)$/i.test(String(enforceMax || '').trim())
+    };
+    let value = definition.fallback;
+    try {
+      const stored = localStorage.getItem(`gm_tracker_${definition.key.toLowerCase()}`);
+      if (stored !== null && Number.isFinite(Number(stored))) value = Math.trunc(Number(stored));
+    } catch (_) { /* use the value embedded in the GM document */ }
+    value = Math.max(0, value);
+    if (definition.enforceMax && definition.max !== null) value = Math.min(definition.max, value);
+    return { ...definition, value };
+  }
+  function countersFromOpenDocument(markdown) {
+    const source = String(markdown || '');
+    const trackers = {};
+    const pattern = /\{\{counter\??:([^|}]+)\|([^|}]*)\|([^|}]*)\|([^}]+)\}\}/gi;
+    let match;
+    while ((match = pattern.exec(source))) {
+      const lineStart = source.lastIndexOf('\n', match.index) + 1;
+      const cellStart = Math.max(lineStart, source.lastIndexOf('|', match.index) + 1);
+      const label = source.slice(cellStart, match.index).replace(/[*_`]/g, ' ').toLowerCase();
+      const resource = /\bbenn(?:y|ies)\b/i.test(label) ? 'bennies'
+        : /\bwounds?\b/i.test(label) ? 'wounds' : '';
+      if (!resource || trackers[resource]) continue;
+      trackers[resource] = readCounterDefinition(match[1], match[2], match[3], match[4]);
+    }
+    return trackers;
+  }
   function nameFromOpenDocument(path, markdown) {
     const text = String(markdown || '').replace(/^\uFEFF/, '');
     const frontMatter = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
@@ -54,7 +86,7 @@
     const heading = text.match(/^#\s+(.+)$/m)?.[1]?.trim();
     const filename = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || '';
     const name = fields.name || heading || filename;
-    return name ? { name, type } : null;
+    return name ? { name, type, trackers: countersFromOpenDocument(text) } : null;
   }
   async function importOpenDocuments() {
     const status = $('#importOpenStatus');
@@ -76,21 +108,46 @@
         const entry = nameFromOpenDocument(path, markdown);
         if (entry) names.push(entry);
       }
-      const existing = new Set(state.combatants.map(item => String(item.name || '').trim().toLocaleLowerCase()));
-      const additions = names.filter(item => {
+      const existing = new Map(state.combatants.map(item => [String(item.name || '').trim().toLocaleLowerCase(), item]));
+      const seen = new Set();
+      const uniqueNames = names.filter(item => {
         const key = item.name.trim().toLocaleLowerCase();
-        if (!key || existing.has(key)) return false;
-        existing.add(key);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
         return true;
       });
-      additions.forEach(item => state.combatants.push({
-        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-        name: item.name, card: null, bennies: 0, wounds: 0, trackResources: false
-      }));
-      if (additions.length) { save(); render(); }
+      const additions = [];
+      let synced = 0;
+      uniqueNames.forEach(item => {
+        const key = item.name.trim().toLocaleLowerCase();
+        const current = existing.get(key);
+        if (current) {
+          if (!item.trackers.bennies && !item.trackers.wounds) return;
+          current.bennies = item.trackers.bennies?.value ?? current.bennies ?? 0;
+          current.wounds = item.trackers.wounds?.value ?? current.wounds ?? 0;
+          current.trackResources = true;
+          current.gmTrackers = item.trackers;
+          synced += 1;
+          return;
+        }
+        const combatant = {
+          id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+          name: item.name,
+          card: null,
+          bennies: item.trackers.bennies?.value ?? 0,
+          wounds: item.trackers.wounds?.value ?? 0,
+          trackResources: Boolean(item.trackers.bennies || item.trackers.wounds),
+          gmTrackers: item.trackers
+        };
+        additions.push(combatant);
+        existing.set(key, combatant);
+      });
+      additions.forEach(combatant => state.combatants.push(combatant));
+      const duplicates = names.length - uniqueNames.length;
+      if (additions.length || synced) { save(); render(); }
       status.hidden = false;
-      status.textContent = additions.length
-        ? `Imported ${additions.length} ${additions.length === 1 ? 'name' : 'names'}${names.length > additions.length ? `; skipped ${names.length - additions.length} duplicate${names.length - additions.length === 1 ? '' : 's'}` : ''}.`
+      status.textContent = additions.length || synced
+        ? `Imported ${additions.length} ${additions.length === 1 ? 'name' : 'names'}${synced ? `; synced ${synced} existing ${synced === 1 ? 'entry' : 'entries'}` : ''}${duplicates ? `; skipped ${duplicates} duplicate${duplicates === 1 ? '' : 's'}` : ''}.`
         : names.length ? 'All open character and monster names are already in the list.' : 'No open character or monster documents found in the GM workspace.';
     } catch (error) {
       status.hidden = false;
@@ -219,6 +276,8 @@
     });
   }
   function makeResourceCounter(combatant,key,label,min,max){
+    const linkedTracker=combatant.gmTrackers?.[key];
+    if(linkedTracker?.enforceMax&&Number.isFinite(linkedTracker.max))max=linkedTracker.max;
     const group=document.createElement('div');group.className='resource-counter';
     const title=document.createElement('span');title.className='resource-name';
     const icon=document.createElement('span');icon.className=`resource-icon ${key==='bennies'?'coin':'heart'}`;
@@ -236,8 +295,38 @@
   }
   function changeResource(id,key,delta,min,max){
     const combatant=state.combatants.find(c=>c.id===id);if(!combatant)return;
-    combatant[key]=Math.max(min,Math.min(max,(Number(combatant[key])||0)+delta));save();render();
+    combatant[key]=Math.max(min,Math.min(max,(Number(combatant[key])||0)+delta));
+    syncGmTracker(combatant,key);save();render();
   }
+  function syncGmTracker(combatant,resource){
+    const tracker=combatant.gmTrackers?.[resource];
+    if(!tracker?.key)return;
+    const key=String(tracker.key).trim().toLowerCase();
+    const value=Number(combatant[resource])||0;
+    try{localStorage.setItem(`gm_tracker_${key}`,String(value));}catch(_){/* table state still persists separately */}
+    if(window.parent!==window)window.parent.postMessage({type:'gm-tracker-updated',key,value},'*');
+  }
+  function readLinkedTrackerValue(tracker,newValue){
+    const raw=newValue===null||newValue===undefined?tracker.fallback:newValue;
+    const parsed=Number(raw);
+    let value=Number.isFinite(parsed)?Math.trunc(parsed):tracker.fallback;
+    value=Math.max(0,value);
+    if(tracker.enforceMax&&Number.isFinite(tracker.max))value=Math.min(tracker.max,value);
+    return value;
+  }
+  window.addEventListener('storage',event=>{
+    if(!event.key?.startsWith('gm_tracker_'))return;
+    const key=event.key.slice('gm_tracker_'.length).toLowerCase();
+    let changed=false;
+    state.combatants.forEach(combatant=>{
+      Object.entries(combatant.gmTrackers||{}).forEach(([resource,tracker])=>{
+        if(String(tracker?.key||'').toLowerCase()!==key)return;
+        const value=readLinkedTrackerValue(tracker,event.newValue);
+        if(combatant[resource]!==value){combatant[resource]=value;changed=true;}
+      });
+    });
+    if(changed){save();render();}
+  });
   function escapeHTML(s) { return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function shuffleInPlace(cards){
     for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}

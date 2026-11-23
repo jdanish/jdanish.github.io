@@ -8,6 +8,7 @@
   const fgImportReferenceSelections = new Map();
   let toolsResetPending = false;
   let toolsReadyMessageBound = false;
+  let trackerStorageListenerBound = false;
 
   let dom = {};
 
@@ -68,6 +69,17 @@
     const toolsFrame = document.getElementById('toolsFrame');
     toolsFrame?.contentWindow?.postMessage({ type: 'gm-theme-change', theme: resolved }, '*');
     return resolved;
+  }
+
+  function updateTrackerInputs(key, value) {
+    const trackerKey = String(key || '').trim().toLowerCase();
+    const trackerValue = Number(value);
+    if (!trackerKey || !Number.isFinite(trackerValue)) return;
+    document.querySelectorAll('.sidebar-tracker').forEach((tracker) => {
+      if (String(tracker.dataset.trackerKey || '').toLowerCase() !== trackerKey) return;
+      const input = tracker.querySelector('.sidebar-tracker-input');
+      if (input) input.value = String(Math.trunc(trackerValue));
+    });
   }
 
   function setWorkspaceMode(mode) {
@@ -3858,12 +3870,24 @@
     const toolsResetButton = document.getElementById('toolsResetButton');
     if (!toolsReadyMessageBound) {
       window.addEventListener('message', (event) => {
-        if (event.source !== toolsFrame?.contentWindow || event.data?.type !== 'gm-tools-ready') return;
+        if (event.source !== toolsFrame?.contentWindow) return;
+        if (event.data?.type === 'gm-tracker-updated') {
+          updateTrackerInputs(event.data.key, event.data.value);
+          return;
+        }
+        if (event.data?.type !== 'gm-tools-ready') return;
         if (!toolsResetPending) return;
         toolsResetPending = false;
         event.source.postMessage({ type: 'gm-tools-reset' }, '*');
       });
       toolsReadyMessageBound = true;
+    }
+    if (!trackerStorageListenerBound) {
+      window.addEventListener('storage', (event) => {
+        if (!event.key?.startsWith('gm_tracker_') || event.newValue === null) return;
+        updateTrackerInputs(event.key.slice('gm_tracker_'.length), event.newValue);
+      });
+      trackerStorageListenerBound = true;
     }
     if (toolsResetButton && toolsResetButton.dataset.bound !== 'true') {
       toolsResetButton.addEventListener('click', () => {
