@@ -1,5 +1,7 @@
 # {{NAME}}
 
+<!-- Optional initiative portrait: set the front-matter portrait field to an image path such as images/portrait.png. -->
+
 **Profession**:
 
 **Ancestry**:

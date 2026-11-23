@@ -5243,3 +5243,8 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
 html[data-theme="light"] .character-dice-reference { color: #1763a0; background: rgba(37, 117, 180, .08); }
 html[data-theme="light"] .character-dice-reference:hover,
 html[data-theme="light"] .character-dice-reference:focus-visible { color: #fff; background: #1763a0; border-color: #1763a0; }
+
+.sidebar-md-portrait-field{display:grid;gap:6px;margin:-4px 0 12px;font-size:.82rem;font-weight:600;color:var(--sidebar-text,#e5e7eb)}
+.sidebar-md-portrait-input{width:min(100%,36rem);padding:9px 11px;border:1px solid var(--line,#475569);border-radius:7px;background:var(--input-bg,rgba(0,0,0,.18));color:var(--sidebar-text,#e5e7eb);font:inherit;font-weight:400}
+.sidebar-md-portrait-input::placeholder{opacity:.65}
+html[data-theme="light"] .sidebar-md-portrait-input{background:#fff;border-color:#cbd5e1;color:#1f2937}

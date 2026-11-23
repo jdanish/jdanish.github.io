@@ -151,6 +151,7 @@
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
+      moduleUrl.searchParams.set('v', 'initiative-portrait-edit-load-20261123');
       await import(moduleUrl.href);
       await window.GM.data?.init?.();
     } catch (err) {

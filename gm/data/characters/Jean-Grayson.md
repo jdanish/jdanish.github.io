@@ -1,6 +1,7 @@
 ---
 type: character
 name: Jean Grayson
+portrait: images/psycommando.jpeg
 ---
 
 # Jean Grayson (Phoenix)

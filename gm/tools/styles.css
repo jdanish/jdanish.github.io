@@ -327,3 +327,12 @@ html[data-theme="light"] .dice-pool-heading small{color:#64748b}
 html[data-theme="light"] .keep-count-control{background:#f8fafc;border-color:#cbd5e1;color:#475569}
 html[data-theme="light"] .pool-die-removable:hover:not(:disabled) .pool-die-shape{filter:drop-shadow(0 3px 5px #0003)}
 @media(max-width:420px){.die-palette{gap:5px}.die-palette-button{min-height:58px}.roll-method-controls{align-items:stretch;flex-direction:column}.keep-count-control{justify-content:space-between;min-height:35px}}
+
+.combatant-portrait{position:relative;flex:0 0 38px;width:38px;height:38px;display:grid;place-items:center;overflow:hidden;border:1px solid #485265;border-radius:50%;background:#222731;color:#aab3c5}
+.combatant-portrait svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.combatant-portrait img{display:none;width:100%;height:100%;object-fit:cover}
+.combatant-portrait.has-image img{display:block}
+.combatant-portrait.has-image svg{display:none}
+html[data-theme="light"] .combatant-portrait{background:#f8fafc;border-color:#cbd5e1;color:#64748b}
+html[data-theme="light"] .card-face.pending{background:#f8fafc;color:#64748b;border-color:#94a3b8}
+

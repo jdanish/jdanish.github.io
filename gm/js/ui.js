@@ -2694,11 +2694,27 @@
       ? 'Server data is read-only. You can inspect and edit this copy on this device, but it cannot be saved back to the server.'
       : 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and wiki links for PDF navigation.';
 
+    let portraitInput = null;
+    if (kind === 'current' && String(activeDoc?.type || '').toLowerCase() === 'character') {
+      const portraitField = document.createElement('label');
+      portraitField.className = 'sidebar-md-portrait-field';
+      portraitField.textContent = 'Initiative portrait image path';
+      portraitInput = document.createElement('input');
+      portraitInput.type = 'text';
+      portraitInput.className = 'sidebar-md-portrait-input';
+      portraitInput.value = String(activeDoc?.portrait || '');
+      portraitInput.placeholder = 'images/portrait.png';
+      portraitInput.setAttribute('aria-label', 'Initiative portrait image path');
+      portraitInput.autocomplete = 'off';
+      portraitField.appendChild(portraitInput);
+    }
+
     const frame = document.createElement('div');
     frame.className = 'sidebar-md-editor-frame';
 
     wrap.appendChild(actions);
     wrap.appendChild(hint);
+    if (portraitInput) wrap.appendChild(portraitInput.parentElement);
     wrap.appendChild(frame);
 
     const setDirty = (dirty) => {
@@ -2735,7 +2751,9 @@
 
         if (kind === 'current') {
           window.GM.sidebarData?.importMarkdownFromText?.('current', markdown, activeSectionKind);
-          const saved = await window.GM.sidebarData?.saveActiveDocument?.();
+          const saved = await window.GM.sidebarData?.saveActiveDocument?.(
+            portraitInput ? { portrait: portraitInput.value } : undefined
+          );
           if (saved === false) throw new Error('The document save function reported failure.');
         } else {
           window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
@@ -2767,6 +2785,8 @@
         window.GM.popup?.hide?.();
       }
     };
+
+    portraitInput?.addEventListener('input', () => setDirty(true));
 
     window.GM.popup?.show?.({
       title: connectedAtOpen

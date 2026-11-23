@@ -8,6 +8,7 @@
   const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
   const STORAGE_KEY = 'wildcard-table-v1';
   const $ = (selector) => document.querySelector(selector);
+  const portraitUrlCache = new Map();
   const ui = {
     list: $('#combatantList'), empty: $('#emptyState'), name: $('#combatantName'),
     form: $('#addForm'), count: $('#combatantCount'), round: $('#roundNumber'),
@@ -103,6 +104,31 @@
     if (!document.documentElement.classList.contains('embedded') || window.parent === window) return null;
     try { return window.parent.GM || null; } catch (_) { return null; }
   }
+  function normalizePortraitReference(value){
+    const source=String(value||'').trim();
+    if(!source)return {direct:'',path:''};
+    if(/^(?:https?:\/\/|blob:)/i.test(source)||/^data:image\/(?:png|jpe?g|gif|webp|avif);base64,/i.test(source))return {direct:source,path:''};
+    if(/^(?:javascript|file):/i.test(source))return {direct:'',path:''};
+    let path=source.replace(/\\/g,'/').replace(/^\.\//,'').replace(/^\/+/, '');
+    if(/^data\//i.test(path))path=path.slice(5);
+    if(!path||path.split('/').some(part=>part==='..'))return {direct:'',path:''};
+    return {direct:'',path};
+  }
+  function attachPortraitSource(container,image,portraitPath){
+    const {direct,path}=normalizePortraitReference(portraitPath);
+    image.addEventListener('load',()=>container.classList.add('has-image'));
+    image.addEventListener('error',()=>container.classList.remove('has-image'));
+    if(direct){image.src=direct;return;}
+    if(!path)return;
+    const data=parentGM()?.data;
+    if(typeof data?.resolveAssetUrl!=='function')return;
+    let pending=portraitUrlCache.get(path);
+    if(!pending){
+      pending=Promise.resolve(data.resolveAssetUrl(path)).catch(()=> '');
+      portraitUrlCache.set(path,pending);
+    }
+    pending.then(url=>{if(url)image.src=url;});
+  }
   function readCounterDefinition(key, fallback, max, enforceMax) {
     const definition = {
       key: String(key || '').trim(),
@@ -151,7 +177,13 @@
     const heading = text.match(/^#\s+(.+)$/m)?.[1]?.trim();
     const filename = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || '';
     const name = fields.name || heading || filename;
-    return name ? { name, type, trackers: countersFromOpenDocument(text) } : null;
+    return name ? {
+      name,
+      type,
+      trackers: countersFromOpenDocument(text),
+      portraitPath: fields.portrait || '',
+      hasPortrait: Object.prototype.hasOwnProperty.call(fields, 'portrait')
+    } : null;
   }
   async function importOpenDocuments() {
     const status = $('#importOpenStatus');
@@ -187,11 +219,15 @@
         const key = item.name.trim().toLocaleLowerCase();
         const current = existing.get(key);
         if (current) {
-          if (!item.trackers.bennies && !item.trackers.wounds) return;
-          current.bennies = item.trackers.bennies?.value ?? current.bennies ?? 0;
-          current.wounds = item.trackers.wounds?.value ?? current.wounds ?? 0;
-          current.trackResources = true;
-          current.gmTrackers = item.trackers;
+          const hasTrackers=Boolean(item.trackers.bennies||item.trackers.wounds);
+          if(!hasTrackers&&!item.hasPortrait)return;
+          if(hasTrackers){
+            current.bennies = item.trackers.bennies?.value ?? current.bennies ?? 0;
+            current.wounds = item.trackers.wounds?.value ?? current.wounds ?? 0;
+            current.trackResources = true;
+            current.gmTrackers = item.trackers;
+          }
+          if(item.hasPortrait)current.portraitPath=item.portraitPath;
           synced += 1;
           return;
         }
@@ -202,7 +238,8 @@
           bennies: item.trackers.bennies?.value ?? 0,
           wounds: item.trackers.wounds?.value ?? 0,
           trackResources: Boolean(item.trackers.bennies || item.trackers.wounds),
-          gmTrackers: item.trackers
+          gmTrackers: item.trackers,
+          portraitPath: item.portraitPath
         };
         additions.push(combatant);
         existing.set(key, combatant);
@@ -275,6 +312,23 @@
       const card = combatant.card ? cardFace(combatant.card) : document.createElement('div');
       if (!combatant.card) { card.className='card-face pending'; card.textContent='···'; }
       if (isDealing && combatant.card) card.classList.add('is-dealing-card');
+      const portrait=document.createElement('span');
+      portrait.className='combatant-portrait';
+      portrait.setAttribute('role','img');
+      portrait.setAttribute('aria-label',combatant.portraitPath?`${combatant.name} portrait`:`No portrait for ${combatant.name}`);
+      const silhouette=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      silhouette.setAttribute('viewBox','0 0 40 40');
+      silhouette.setAttribute('aria-hidden','true');
+      silhouette.setAttribute('focusable','false');
+      const head=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      head.setAttribute('cx','20');head.setAttribute('cy','13');head.setAttribute('r','6');
+      const shoulders=document.createElementNS('http://www.w3.org/2000/svg','path');
+      shoulders.setAttribute('d','M8 34c.8-7.2 5.7-11 12-11s11.2 3.8 12 11');
+      silhouette.append(head,shoulders);
+      const portraitImage=document.createElement('img');
+      portraitImage.alt='';portraitImage.loading='lazy';portraitImage.draggable=false;
+      portrait.append(silhouette,portraitImage);
+      attachPortraitSource(portrait,portraitImage,combatant.portraitPath);
       const name = document.createElement('span'); name.className='combatant-name'; name.textContent=combatant.name;
       const status = document.createElement('span'); status.className='row-status';
       status.textContent = combatant.card ? (combatant.card.joker ? 'WILD' : `#${String(index+1).padStart(2,'0')}`) : 'WAITING';
@@ -309,7 +363,7 @@
         }
         state.combatants=state.combatants.filter(x=>x.id!==combatant.id);save();render();
       });
-      row.append(card,name,marker,turnArrows,status,redraw,trackerToggle,remove);
+      row.append(portrait,card,name,marker,turnArrows,status,redraw,trackerToggle,remove);
       if(combatant.trackResources){
         const resources=document.createElement('div');resources.className='resource-trackers';
         resources.append(makeResourceCounter(combatant,'bennies','Bennies',0,99));

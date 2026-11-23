@@ -1061,7 +1061,7 @@ window.SIDEBAR_SECTIONS = [];
       });
     }
     const fallbackName = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || 'Untitled';
-    return { path, type: meta.type || 'note', name: meta.name || fallbackName };
+    return { path, type: meta.type || 'note', name: meta.name || fallbackName, portrait: meta.portrait || '' };
   }
 
   function normalizeWorkspaceDocumentPath(path) {
@@ -1215,12 +1215,25 @@ window.SIDEBAR_SECTIONS = [];
     return true;
   }
 
-  async function saveActiveDocument() {
+  async function saveActiveDocument(options = {}) {
     if (!window.GM.data?.getStatus?.().connected) return false;
     if (!activeDocumentPath) return false;
     const raw = await window.GM.data.readFile(activeDocumentPath);
-    const match = String(raw || '').match(/^---\s*\n[\s\S]*?\n---\s*\n?/);
-    const prefix = match ? match[0] : '';
+    const match = String(raw || '').match(/^(---\s*\n[\s\S]*?\n---\s*\n?)/);
+    let prefix = match ? match[1] : '';
+    if (Object.prototype.hasOwnProperty.call(options, 'portrait')) {
+      const block = prefix.match(/^---\s*\n([\s\S]*?)\n---\s*\n?$/);
+      if (block) {
+        const lines = block[1].split(/\r?\n/);
+        const fieldIndex = lines.findIndex((line) => /^portrait\s*:/i.test(line));
+        const portrait = String(options.portrait || '').trim().replace(/[\r\n]/g, ' ');
+        const field = `portrait: ${portrait}`.trimEnd();
+        if (fieldIndex >= 0) lines[fieldIndex] = field;
+        else lines.push(field);
+        prefix = `---\n${lines.join('\n')}\n---\n\n`;
+        activeDocumentMeta = { ...activeDocumentMeta, portrait };
+      }
+    }
     const body = `${prefix}${currentMarkdown.trim()}\n`;
     await window.GM.data.writeFile(activeDocumentPath, body);
     await saveWorkspaceState();
