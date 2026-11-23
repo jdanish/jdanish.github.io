@@ -218,3 +218,18 @@ html[data-theme="light"] .dice-pool-heading{color:#64748b}
 html[data-theme="light"] .dice-pool-heading span:last-child{color:#1f2937}
 html[data-theme="light"] .pool-die-label{color:#475569}
 @media(prefers-reduced-motion:reduce){.dice-pool-images.rolling .pool-die-shape,.die-visual-face{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+.combatant-row.is-dealing,.chase-participant-row.is-dealing{animation:deal-slide-in .46s cubic-bezier(.2,.8,.25,1) both;animation-delay:var(--deal-delay,0ms)}
+.card-face.is-dealing-card{animation:deal-card-flip .55s cubic-bezier(.18,.75,.3,1) both;animation-delay:calc(var(--deal-delay,0ms) + 70ms);transform-style:preserve-3d}
+.joker-reveal-row .card-face.joker{animation:joker-card-glow 1.1s ease-out both;animation-delay:calc(var(--deal-delay,0ms) + 180ms)}
+@keyframes deal-slide-in{0%{opacity:0;transform:translate(-18px,-8px) scale(.97)}65%{opacity:1;transform:translate(3px,1px) scale(1.01)}100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes deal-card-flip{0%{opacity:.2;transform:perspective(440px) rotateY(76deg) translateY(-5px) scale(.9)}65%{opacity:1;transform:perspective(440px) rotateY(-9deg) translateY(0) scale(1.06)}100%{opacity:1;transform:perspective(440px) rotateY(0) translateY(0) scale(1)}}
+@keyframes joker-card-glow{0%{box-shadow:0 0 0 #f1c87600;filter:brightness(1)}28%{box-shadow:0 0 26px #f1c876d9;filter:brightness(1.35)}100%{box-shadow:0 2px 5px #0003;filter:brightness(1)}}
+.joker-reveal{display:flex;align-items:center;gap:14px;margin:12px 0 2px;padding:14px 16px;border:1px solid #a8863d;border-radius:10px;background:linear-gradient(110deg,#493b1c,#27251e 60%,#1b1d20);box-shadow:0 0 24px #e9bd4a24;animation:joker-banner-in .48s cubic-bezier(.2,.8,.25,1) both}
+.joker-reveal[hidden]{display:none!important}
+.joker-reveal-star{flex:0 0 38px;width:38px;height:38px;display:grid;place-items:center;border:1px solid #d9b75c;border-radius:50%;background:#f1c876;color:#372b11;font-size:22px;box-shadow:0 0 18px #f1c87677}
+.joker-reveal strong{display:block;color:#f5d783;font:800 13px var(--mono);letter-spacing:1.5px}
+.joker-reveal p{margin:4px 0 0;color:#e6dfca;font-size:11px;line-height:1.5}
+@keyframes joker-banner-in{0%{opacity:0;transform:translateY(-9px) scale(.985)}65%{opacity:1;transform:translateY(2px) scale(1.005)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.dice-pool-preview.is-loaded{animation:dice-pool-ready .75s ease-out}
+@keyframes dice-pool-ready{0%{box-shadow:0 0 0 0 #7cc4ff00}35%{box-shadow:0 0 0 3px #7cc4ff66}100%{box-shadow:0 0 0 0 #7cc4ff00}}
+@media(prefers-reduced-motion:reduce){.combatant-row.is-dealing,.chase-participant-row.is-dealing,.card-face.is-dealing-card,.joker-reveal,.joker-reveal-row .card-face.joker,.dice-pool-preview.is-loaded{animation-duration:.01ms!important;animation-delay:0ms!important;animation-iteration-count:1!important}}

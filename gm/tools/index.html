@@ -33,7 +33,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=dice-pool-roll-animation-20261123">
+  <link rel="stylesheet" href="styles.css?v=dice-refs-joker-deal-20261123">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
   <header class="topbar">
@@ -60,6 +60,7 @@
         <div class="deck-copy"><strong id="deckStatus">54 cards left</strong><span>Jokers are in the deck</span></div>
         <div class="deck-actions"><button class="button button-secondary" id="shuffleBtn">↻ Shuffle</button><button class="button button-primary" id="dealBtn"><span>↗</span> Deal cards</button></div>
       </div>
+      <div class="joker-reveal" id="jokerReveal" role="status" aria-live="polite" hidden><span class="joker-reveal-star" aria-hidden="true">★</span><div><strong>JOKER!</strong><p id="jokerRevealText"></p></div></div>
       <div class="combatants-head"><span>COMBATANTS <span class="muted" id="combatantCount">0</span></span><span class="list-tools"><span class="tracker-hint">Bennies &amp; wounds optional</span><button class="text-button" id="clearCombatants">Clear list</button></span></div>
       <form class="add-form" id="addForm"><label class="sr-only" for="combatantName">Combatant name</label><input id="combatantName" maxlength="32" placeholder="Add a hero, foe, or group…" autocomplete="off" required><button class="button button-add" type="submit">＋ <span>Add</span></button><button class="button button-secondary import-open-button" id="importOpenDocuments" type="button" hidden>Import open</button></form>
       <div class="import-open-status" id="importOpenStatus" role="status" aria-live="polite" hidden></div>
@@ -150,6 +151,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=dice-pool-roll-animation-20261123"></script>
+  <script src="app.js?v=dice-refs-joker-deal-20261123"></script>
 </body>
 </html>

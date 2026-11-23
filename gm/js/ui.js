@@ -7,6 +7,7 @@
   let activeSidebarHighlightRoot = null;
   const fgImportReferenceSelections = new Map();
   let toolsResetPending = false;
+  let toolsDiceRollPending = null;
   let toolsReadyMessageBound = false;
   let trackerStorageListenerBound = false;
 
@@ -637,6 +638,9 @@
         link.replaceWith(img);
       });
       decorateJumpLinks(nestedBody);
+      const activeDocument = tab === 'current' ? window.GM.sidebarData?.getActiveDocument?.() : null;
+      const isCharacterDocument = activeDocument?.type === 'character' || /^characters\//i.test(String(activeDocument?.path || ''));
+      decorateCharacterDiceReferences(nestedBody, tab === 'current' && isCharacterDocument);
       window.GM.sidebarData?.resolveSidebarImages?.(nestedBody).catch?.(() => {});
       window.GM.sidebarData?.bindTrackerEvents?.(nestedBody);
       nested.appendChild(nestedBody);
@@ -2200,6 +2204,58 @@
         link.setAttribute('target', targetName);
         link.setAttribute('rel', 'noopener noreferrer');
       }
+    });
+  }
+
+  function requestCharacterDiceRoll(notation) {
+    const match = String(notation || '').replace(/\s+/g, '').match(/^(?:(\d{1,2}))?d(4|6|8|10|12|20)$/i);
+    if (!match) return;
+    const count = Math.max(1, Math.min(20, Number(match[1]) || 1));
+    toolsDiceRollPending = { type: 'gm-dice-reference', count, sides: Number(match[2] || match[3]), wild: count === 1 };
+    setWorkspaceMode('tools');
+    const toolsFrame = document.getElementById('toolsFrame');
+    if (toolsFrame?.contentWindow?.WildCardToolsReady) {
+      toolsFrame.contentWindow.postMessage(toolsDiceRollPending, '*');
+      toolsDiceRollPending = null;
+    }
+  }
+
+  function decorateCharacterDiceReferences(root, enabled) {
+    if (!root || !enabled) return;
+    const pattern = /\b(?:(\d{1,2})\s*d\s*(4|6|8|10|12|20)|d\s*(4|6|8|10|12|20))\b/gi;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!pattern.test(node.nodeValue || '')) { pattern.lastIndex = 0; return NodeFilter.FILTER_REJECT; }
+        pattern.lastIndex = 0;
+        return node.parentElement?.closest('a,code,pre,script,style,button') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach((node) => {
+      const text = node.nodeValue || '';
+      const fragment = document.createDocumentFragment();
+      let cursor = 0;
+      pattern.lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(text))) {
+        if (match.index > cursor) fragment.append(document.createTextNode(text.slice(cursor, match.index)));
+        const label = match[0];
+        const link = document.createElement('a');
+        link.className = 'character-dice-reference';
+        link.href = '#dice-roll';
+        link.textContent = label;
+        link.title = `Load ${label} in the dice roller`;
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          requestCharacterDiceRoll(label);
+        });
+        fragment.append(link);
+        cursor = match.index + label.length;
+      }
+      if (cursor < text.length) fragment.append(document.createTextNode(text.slice(cursor)));
+      node.replaceWith(fragment);
     });
   }
 
@@ -3899,6 +3955,10 @@
           return;
         }
         if (event.data?.type !== 'gm-tools-ready') return;
+        if (toolsDiceRollPending) {
+          event.source.postMessage(toolsDiceRollPending, '*');
+          toolsDiceRollPending = null;
+        }
         if (!toolsResetPending) return;
         toolsResetPending = false;
         event.source.postMessage({ type: 'gm-tools-reset' }, '*');
@@ -3971,6 +4031,7 @@
 
   window.GM.ui = {
     init,
+    setWorkspaceMode,
     renderSidebar,
     buildTabs,
     buildPageButtons,

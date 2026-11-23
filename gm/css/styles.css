@@ -5217,3 +5217,29 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
   .workspace-switcher { padding-top: max(0px, env(safe-area-inset-top)); }
   .workspace-theme-button { margin-right: 10px; }
 }
+
+.character-dice-reference {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 3px;
+  border: 1px solid transparent;
+  border-bottom-color: var(--accent-strong);
+  border-radius: 4px 4px 2px 2px;
+  color: #9fd5ff;
+  background: rgba(124, 196, 255, .08);
+  font: 600 .92em ui-monospace, SFMono-Regular, Consolas, monospace;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.character-dice-reference:hover,
+.character-dice-reference:focus-visible {
+  color: #101720;
+  background: #9fd5ff;
+  border-color: #9fd5ff;
+  box-shadow: 0 0 12px rgba(124, 196, 255, .35);
+  outline: none;
+}
+html[data-theme="light"] .character-dice-reference { color: #1763a0; background: rgba(37, 117, 180, .08); }
+html[data-theme="light"] .character-dice-reference:hover,
+html[data-theme="light"] .character-dice-reference:focus-visible { color: #fff; background: #1763a0; border-color: #1763a0; }

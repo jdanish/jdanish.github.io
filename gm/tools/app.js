@@ -15,6 +15,13 @@
     drawList: $('#drawnCards')
   };
   let state = loadState();
+  let cardDealAnimationIds = new Set();
+  let cardDealAnimationOrder = new Map();
+  let activeJokerRevealIds = [];
+  let cardDealSequence = 0;
+  let jokerRevealSequence = 0;
+  let cardDealTimer = null;
+  let jokerRevealTimer = null;
 
   function loadState() {
     try {
@@ -70,6 +77,32 @@
       deck: source.deck && Array.isArray(source.deck.draw) && Array.isArray(source.deck.discard) ? source.deck : null,
       notes: String(source.notes || '').slice(0, 500)
     };
+  }
+  function beginCardDealAnimation(ids, jokerIds = undefined) {
+    const sequence = ++cardDealSequence;
+    const orderedIds = [...new Set(ids || [])];
+    cardDealAnimationIds = new Set(orderedIds);
+    cardDealAnimationOrder = new Map(orderedIds.map((id, index) => [id, index]));
+    if (cardDealTimer) window.clearTimeout(cardDealTimer);
+    cardDealTimer = window.setTimeout(() => {
+      if (sequence !== cardDealSequence) return;
+      cardDealAnimationIds.clear();
+      cardDealAnimationOrder.clear();
+      render();
+    }, 1700);
+
+    if (jokerIds !== undefined) {
+      activeJokerRevealIds = [...jokerIds];
+      const reveal = ++jokerRevealSequence;
+      if (jokerRevealTimer) window.clearTimeout(jokerRevealTimer);
+      if (activeJokerRevealIds.length) {
+        jokerRevealTimer = window.setTimeout(() => {
+          if (reveal !== jokerRevealSequence) return;
+          activeJokerRevealIds = [];
+          render();
+        }, 4200);
+      }
+    }
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* app remains usable if storage is unavailable */ }
@@ -244,9 +277,12 @@
     ui.list.replaceChildren();
     sorted.forEach((combatant, index) => {
       const row = document.createElement('div');
-      row.className = `combatant-row${combatant.card?.joker ? ' is-joker' : ''}`;
+      const isDealing = cardDealAnimationIds.has(combatant.id);
+      row.className = `combatant-row${combatant.card?.joker ? ' is-joker' : ''}${isDealing ? ' is-dealing' : ''}${activeJokerRevealIds.includes(combatant.id) ? ' joker-reveal-row' : ''}`;
+      if (isDealing) row.style.setProperty('--deal-delay', `${Math.min((cardDealAnimationOrder.get(combatant.id) || 0) * 55, 850)}ms`);
       const card = combatant.card ? cardFace(combatant.card) : document.createElement('div');
       if (!combatant.card) { card.className='card-face pending'; card.textContent='···'; }
+      if (isDealing && combatant.card) card.classList.add('is-dealing-card');
       const name = document.createElement('span'); name.className='combatant-name'; name.textContent=combatant.name;
       const status = document.createElement('span'); status.className='row-status';
       status.textContent = combatant.card ? (combatant.card.joker ? 'WILD' : `#${String(index+1).padStart(2,'0')}`) : 'WAITING';
@@ -306,6 +342,12 @@
     ui.empty.hidden=state.combatants.length>0;
     const inHands=new Set(state.combatants.flatMap(c=>c.cardOptions?.map(option=>option.card)||[c.card]).filter(Boolean).map(cardKey));
     ui.deckStatus.textContent=`${state.initiativeDeck?.draw?.length??Math.max(0,54-inHands.size)} cards left`;
+    const revealedJokers=state.combatants.filter(combatant=>activeJokerRevealIds.includes(combatant.id)&&combatant.card?.joker);
+    const jokerReveal=$('#jokerReveal');
+    jokerReveal.hidden=revealedJokers.length===0;
+    $('#jokerRevealText').textContent=revealedJokers.length
+      ?`${revealedJokers.map(combatant=>combatant.name).join(', ')} drew a Joker. +2 to Trait and damage rolls this round; all other players on their side receive a Benny. A Joker acts whenever its player chooses.`
+      :'';
     $('#extraDeckStatus').textContent=`${state.extraDeck.length} cards left in this deck`;
     renderDraws();
     renderChase();
@@ -338,8 +380,12 @@
     list.replaceChildren();
     chaseOrder().forEach(participant => {
       const row = document.createElement('div');
-      row.className = `chase-participant-row${participant.card?.joker ? ' is-joker' : ''}`;
-      row.append(participant.card ? cardFace(participant.card) : Object.assign(document.createElement('div'), {className:'card-face pending',textContent:'···'}));
+      const isDealing=cardDealAnimationIds.has(participant.id);
+      row.className = `chase-participant-row${participant.card?.joker ? ' is-joker' : ''}${isDealing?' is-dealing':''}`;
+      if(isDealing)row.style.setProperty('--deal-delay',`${Math.min((cardDealAnimationOrder.get(participant.id)||0)*55,850)}ms`);
+      const card=participant.card?cardFace(participant.card):Object.assign(document.createElement('div'),{className:'card-face pending',textContent:'···'});
+      if(isDealing&&participant.card)card.classList.add('is-dealing-card');
+      row.append(card);
       const name = document.createElement('span'); name.className = 'chase-participant-name'; name.textContent = participant.name;
       const side = document.createElement('span'); side.className = `chase-side ${participant.side}`; side.textContent = participant.side === 'pursuit' ? 'CHASING' : 'AHEAD';
       const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'row-menu'; remove.textContent = '×';
@@ -424,6 +470,7 @@
       chase.deck.draw = shuffleInPlace([...chase.deck.draw,...chase.deck.discard]);
       chase.deck.discard = [];
     }
+    beginCardDealAnimation(chaseOrder().map(participant=>participant.id));
     save(); render();
   }
   function makeResourceCounter(combatant,key,label,min,max){
@@ -502,6 +549,8 @@
     state.combatants.forEach(combatant=>{combatant.card=state.initiativeDeck.draw.shift()||null;combatant.cardOptions=null;});
     state.activeId=initiativeOrder().find(c=>c.card)?.id||null;
     if(state.combatants.some(c=>c.card?.joker)&&confirmJokerReshuffle('undealt initiative deck','Cards already dealt for initiative stay in play.'))shuffleInitiativeUndealt();
+    const order=initiativeOrder();
+    beginCardDealAnimation(order.map(combatant=>combatant.id),order.filter(combatant=>combatant.card?.joker).map(combatant=>combatant.id));
     save();render();
   }
   function reshuffleInitiative() {
@@ -525,6 +574,7 @@
     const replacement=deck.draw.shift();
     combatant.cardOptions=[{card:combatant.card},{card:replacement}];
     if(replacement.joker&&confirmJokerReshuffle('undealt initiative deck','Cards already dealt for initiative stay in play.'))shuffleInitiativeUndealt();
+    beginCardDealAnimation([id]);
     save();render();
   }
   function chooseCard(id,optionIndex){
@@ -535,6 +585,7 @@
     const returned=optionIndex===0?replacement:current;
     if(returned?.card&&state.initiativeDeck)state.initiativeDeck.discard.push(returned.card);
     combatant.card=chosen.card;combatant.cardOptions=null;
+    beginCardDealAnimation([id],[chosen.card?.joker?id:null].filter(Boolean));
     save();render();
   }
   function moveTurnFrom(id,direction) {
@@ -649,7 +700,23 @@
     save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
   });
   window.addEventListener('message',event=>{
-    if(event.source===window.parent&&event.data?.type==='gm-tools-reset')$('#resetAll').click();
+    if(event.source!==window.parent)return;
+    if(event.data?.type==='gm-tools-reset')$('#resetAll').click();
+    if(event.data?.type==='gm-dice-reference'){
+      const sides=[4,6,8,10,12,20].includes(Number(event.data.sides))?Number(event.data.sides):6;
+      const count=Math.max(1,Math.min(20,Math.trunc(Number(event.data.count)||1)));
+      $('#traitDie').value=String(sides);
+      $('#dieCount').value=String(count);
+      $('#diceMode').value='sum';
+      $('#wildDie').checked=count===1&&event.data.wild!==false;
+      updateWildAvailability();
+      setToolPanel('dice');
+      const preview=$('.dice-pool-preview');
+      preview.classList.remove('is-loaded');
+      requestAnimationFrame(()=>preview.classList.add('is-loaded'));
+      window.setTimeout(()=>preview.classList.remove('is-loaded'),900);
+      $('#rollBtn').focus({preventScroll:true});
+    }
   });
 
   function explodingDie(sides) {
