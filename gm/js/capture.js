@@ -172,6 +172,7 @@
       ['copy-link', 'Copy Sidebar Link'],
       ['notes', 'Add to Notes'],
       ['copy-text', 'Copy Text'],
+      ['create-monster', 'Create Monster/NPC Markdown'],
       ['close', 'Close'],
     ];
 
@@ -198,6 +199,19 @@
       }
 
       try {
+        if (action === 'create-monster') {
+          const created = await window.GM.monsterImporter?.createFromSelection?.(current.text, current);
+          if (!created) throw new Error('The monster importer is not ready yet.');
+          window.GM.popup?.hide?.();
+          if (created.downloaded) {
+            const message = created.fallbackReason
+              ? `Downloaded ${created.filename}. The connected folder changed, so reconnect it before the next direct save.`
+              : `Downloaded ${created.filename}.`;
+            window.setTimeout(() => window.alert(message), 0);
+          }
+          return;
+        }
+
         if (action === 'bookmark') {
           window.GM.popup?.hide?.();
           window.GM.bookmarks?.createBookmarkFromContext?.(current, {
@@ -246,6 +260,7 @@
         }
       } catch (err) {
         console.error(err);
+        if (action === 'create-monster') window.alert(`Could not create monster/NPC Markdown: ${err?.message || err}`);
       }
     });
 

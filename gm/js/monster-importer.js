@@ -108,7 +108,15 @@
   }
 
   function parseStatBlock(text) {
-    const raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    let raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // PDF text selection can flatten a whole stat block into one line. Put
+    // its description and familiar stat labels back on boundaries before
+    // parsing, otherwise the whole selection can be mistaken for the name.
+    raw = raw
+      .replace(/\s+(?=(?:This entry|This creature|These creatures|A favored tactic)\b)/gi, '\nDescription: ')
+      .replace(/;\s+(?=(?:Parry|Toughness)\b)/gi, '\n')
+      .replace(/\s+(?=(?:Attributes?|Stats?|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Pace|Parry|Toughness)\s*:?(?:\s|$))/gi, '\n')
+      .replace(/^(Attributes?|Stats?|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Pace|Parry|Toughness)\s+(?!:)/gim, '$1: ');
     const rawLines = raw.split('\n').map((line) => line.trim()).filter((line, i, arr) => line || (i > 0 && arr[i - 1]));
     if (!rawLines.length) throw new Error('The stat block is empty.');
 
@@ -169,6 +177,47 @@
     return { name, markdown, slug: slug(name) };
   }
 
+  async function createFromSelection(text, context = {}) {
+    const parsed = parseStatBlock(text);
+    let markdown = parsed.markdown;
+    if (context.tab && context.displayPage) {
+      const source = `${context.tab}/${context.displayPage}?highlight=${encodeURIComponent(parsed.name)}`;
+      const sourceLabel = `${context.book?.title || context.tab} p. ${context.displayPage}`.replace(/\]/g, '\\]');
+      markdown += `\n\n**Source:** [[${source}|${sourceLabel}]]`;
+    }
+
+    const status = window.GM.data?.getStatus?.() || {};
+    if (status.connected && !status.readOnly) {
+      try {
+        const path = await window.GM.data.writeTextDocument('monster', parsed.name, markdown);
+        await window.GM.sidebarData?.openDocument?.(path);
+        window.GM.ui?.refreshSidebarFromData?.();
+        window.GM.ui?.setSidebarTab?.('current');
+        return { ...parsed, markdown, path, downloaded: false };
+      } catch (err) {
+        const message = String(err?.message || err || '');
+        if (err?.name !== 'InvalidStateError' && !/state cached in an interface object|state had changed since it was read from disk|invalid state/i.test(message)) throw err;
+        return downloadMonsterMarkdown(parsed, markdown, 'the connected data folder became out of date');
+      }
+    }
+
+    return downloadMonsterMarkdown(parsed, markdown);
+  }
+
+  function downloadMonsterMarkdown(parsed, markdown, fallbackReason = '') {
+    const frontMatter = `---\ntype: monster\nname: ${parsed.name.replace(/[\r\n]/g, ' ')}\n---\n\n`;
+    const blob = new Blob([frontMatter, markdown.trim(), '\n'], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${parsed.slug}.md`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return { ...parsed, markdown, path: null, filename: link.download, downloaded: true, ...(fallbackReason ? { fallbackReason } : {}) };
+  }
+
   async function importText(text) {
     const parsed = parseStatBlock(text);
     const dataStatus = window.GM.data?.getStatus?.() || {};
@@ -207,5 +256,5 @@
     });
   }
 
-  window.GM.monsterImporter = { parseStatBlock, importText, openImporter };
+  window.GM.monsterImporter = { parseStatBlock, importText, createFromSelection, openImporter };
 })();

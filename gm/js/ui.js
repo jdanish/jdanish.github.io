@@ -1743,6 +1743,24 @@
     return button;
   }
 
+  async function createWorkspaceDocumentFile(type, name) {
+    const cleanedName = String(name || '').trim();
+    if (!cleanedName) throw new Error('Enter a document name.');
+    let markdown = `# ${cleanedName}`;
+    const templatePath = type === 'character' ? 'templates/character.md' : type === 'monster' ? 'templates/monster.md' : '';
+    if (templatePath) {
+      let template = await window.GM.data.readFile(templatePath);
+      if (template === null) {
+        const response = await fetch(`data/${templatePath}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`${type === 'character' ? 'Character' : 'Monster'} template could not be loaded.`);
+        template = await response.text();
+      }
+      const slug = cleanedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || type;
+      markdown = String(template).replaceAll('{{NAME}}', cleanedName).replaceAll('{{SLUG}}', slug);
+    }
+    return window.GM.data.writeTextDocument(type, cleanedName, markdown);
+  }
+
   function renderWorkspaceTabs() {
     const tabs = document.createElement('div');
     tabs.className = 'gm-workspace-tabs';
@@ -1918,22 +1936,11 @@
     });
 
     const createWorkspaceDocument = async (type) => {
-      const label = type === 'character' ? 'Character' : 'Note';
+      const label = type === 'character' ? 'Character' : type === 'monster' ? 'Monster/NPC' : 'Note';
       const name = window.prompt(`${label} name`);
       if (!name?.trim()) return;
       try {
-        let markdown = `# ${name.trim()}`;
-        if (type === 'character') {
-          let template = await window.GM.data.readFile('templates/character.md');
-          if (template === null) {
-            const response = await fetch('data/templates/character.md', { cache: 'no-store' });
-            if (!response.ok) throw new Error('Character template could not be loaded.');
-            template = await response.text();
-          }
-          const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'character';
-          markdown = String(template).replaceAll('{{NAME}}', name.trim()).replaceAll('{{SLUG}}', slug);
-        }
-        const path = await window.GM.data.writeTextDocument(type, name.trim(), markdown);
+        const path = await createWorkspaceDocumentFile(type, name.trim());
         await window.GM.sidebarData.openDocument(path);
         openSidebarMarkdownEditor('current');
       } catch (err) { window.alert(`Could not create ${label.toLowerCase()}: ${err?.message || err}`); }
@@ -1947,6 +1954,10 @@
     newCharacter.type = 'button'; newCharacter.className = 'gm-workspace-add'; newCharacter.textContent = '＋ Character'; newCharacter.title = 'Create a new character from the character template'; newCharacter.disabled = !writable;
     newCharacter.addEventListener('click', () => createWorkspaceDocument('character'));
     tabs.appendChild(newCharacter);
+    const newMonster = document.createElement('button');
+    newMonster.type = 'button'; newMonster.className = 'gm-workspace-add'; newMonster.textContent = '＋ Monster'; newMonster.title = 'Create a monster or NPC from the monster template'; newMonster.disabled = !writable;
+    newMonster.addEventListener('click', () => createWorkspaceDocument('monster'));
+    tabs.appendChild(newMonster);
 
     const browse = document.createElement('button');
     browse.type = 'button';
@@ -2985,6 +2996,7 @@
         <button type="button" data-doc-refresh>Refresh</button>
         <button type="button" data-doc-new-note>＋ New Note</button>
         <button type="button" data-doc-new-character>＋ New Character</button>
+        <button type="button" data-doc-new-monster>＋ New Monster/NPC</button>
         <button type="button" data-doc-import-character>＋ Import Character</button>
         <button type="button" data-doc-import-monster>＋ Import Monster</button>
       </div>
@@ -2998,6 +3010,7 @@
     // back to the server.
     wrap.querySelector('[data-doc-new-note]').disabled = readonly;
     wrap.querySelector('[data-doc-new-character]').disabled = readonly;
+    wrap.querySelector('[data-doc-new-monster]').disabled = readonly;
     wrap.querySelector('[data-doc-import-character]').disabled = false;
     wrap.querySelector('[data-doc-import-monster]').disabled = readonly;
 
@@ -3061,21 +3074,25 @@
       const name = window.prompt('Character name');
       if (!name?.trim()) return;
       try {
-        let template = await window.GM.data.readFile('templates/character.md');
-        if (template === null) {
-          const response = await fetch('data/templates/character.md', { cache: 'no-store' });
-          if (!response.ok) throw new Error('Character template could not be loaded.');
-          template = await response.text();
-        }
-        const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'character';
-        const markdown = String(template).replaceAll('{{NAME}}', name.trim()).replaceAll('{{SLUG}}', slug);
-        const path = await window.GM.data.writeTextDocument('character', name.trim(), markdown);
+        const path = await createWorkspaceDocumentFile('character', name.trim());
         await window.GM.sidebarData.openDocument(path);
         window.GM.popup?.hide?.();
         setSidebarTab('current');
         if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
         openSidebarMarkdownEditor('current');
       } catch (err) { window.alert(`Could not create character: ${err?.message || err}`); }
+    });
+    wrap.querySelector('[data-doc-new-monster]').addEventListener('click', async () => {
+      const name = window.prompt('Monster or NPC name');
+      if (!name?.trim()) return;
+      try {
+        const path = await createWorkspaceDocumentFile('monster', name.trim());
+        await window.GM.sidebarData.openDocument(path);
+        window.GM.popup?.hide?.();
+        setSidebarTab('current');
+        if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
+        openSidebarMarkdownEditor('current');
+      } catch (err) { window.alert(`Could not create monster/NPC: ${err?.message || err}`); }
     });
     wrap.querySelector('[data-doc-import-character]').addEventListener('click', () => {
       window.GM.popup?.hide?.();
