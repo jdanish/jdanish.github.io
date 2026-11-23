@@ -90,7 +90,6 @@
       if (sequence !== cardDealSequence) return;
       cardDealAnimationIds.clear();
       cardDealAnimationOrder.clear();
-      render();
     }, 1700);
 
     activeJokerRevealIds = [...jokerIds];
