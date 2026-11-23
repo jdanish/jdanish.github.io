@@ -639,8 +639,9 @@
       });
       decorateJumpLinks(nestedBody);
       const activeDocument = tab === 'current' ? window.GM.sidebarData?.getActiveDocument?.() : null;
-      const isCharacterDocument = activeDocument?.type === 'character' || /^characters\//i.test(String(activeDocument?.path || ''));
-      decorateCharacterDiceReferences(nestedBody, tab === 'current' && isCharacterDocument);
+      const isDiceLinkedDocument = ['character', 'monster'].includes(activeDocument?.type)
+        || /^(characters|monsters)\//i.test(String(activeDocument?.path || ''));
+      decorateDiceReferences(nestedBody, tab === 'current' && isDiceLinkedDocument);
       window.GM.sidebarData?.resolveSidebarImages?.(nestedBody).catch?.(() => {});
       window.GM.sidebarData?.bindTrackerEvents?.(nestedBody);
       nested.appendChild(nestedBody);
@@ -2221,7 +2222,7 @@
     }
   }
 
-  function decorateCharacterDiceReferences(root, enabled) {
+  function decorateDiceReferences(root, enabled) {
     if (!root || !enabled) return;
     const pattern = /\b(?:(\d{1,2})\s*d\s*(4|6|8|10|12|20)|d\s*(4|6|8|10|12|20))(?:\s*([+\-−–])\s*(\d{1,2}))?\b/gi;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
