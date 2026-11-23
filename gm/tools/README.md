@@ -8,6 +8,8 @@ Open `index.html` in a browser, add combatants, then choose **Deal cards** for a
 
 The Quick Roll panel supports d4–d12, 1–20 dice, an optional d6 Wild Die, exploding dice, a modifier, and an editable target number. With multiple dice, choose to sum the Trait dice or keep the highest N from N Trait dice plus an optional Wild Die. In keep-highest mode, each kept die is checked separately against the target and its success or raises are listed individually. A single Trait Die uses the higher of the Trait and Wild Die.
 
+The **Dramatic Task** tab tracks task tokens and rounds. Start with the default challenging single-character task of four tokens in three rounds, or set custom limits for the scene. Add one token for a success and two for a success with a raise; the task completes when the target is met or expires when the final round ends. The active task is saved on the device.
+
 Combatants and the round number are saved in local storage on that device. The table is not synced across players or browsers.
 
 ## Publish with GitHub Pages

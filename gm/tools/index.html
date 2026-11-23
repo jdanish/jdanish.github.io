@@ -33,7 +33,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=d20-dice-option-20261123">
+  <link rel="stylesheet" href="styles.css?v=dramatic-task-20261123">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
   <header class="topbar">
@@ -46,6 +46,7 @@
     <button type="button" class="tool-tab" id="diceTab" role="tab" aria-selected="false" aria-controls="dicePanel" data-tool-panel="dice">Dice</button>
     <button type="button" class="tool-tab" id="deckTab" role="tab" aria-selected="false" aria-controls="deckPanel" data-tool-panel="deck">Deck</button>
     <button type="button" class="tool-tab" id="chaseTab" role="tab" aria-selected="false" aria-controls="chasePanel" data-tool-panel="chase">Chase</button>
+    <button type="button" class="tool-tab" id="dramaticTab" role="tab" aria-selected="false" aria-controls="dramaticPanel" data-tool-panel="dramatic">Dramatic Task</button>
   </nav>
 
   <main class="layout">
@@ -112,7 +113,42 @@
       <label class="field-label chase-notes-label" for="chaseNotes">CHASE NOTES <span class="optional-label">OPTIONAL</span></label>
       <textarea id="chaseNotes" class="chase-notes" rows="3" maxlength="500" placeholder="Hazards, obstacles, or details to remember…"></textarea>
     </section>
+    <section class="panel dramatic-panel" id="dramaticPanel" role="tabpanel" aria-labelledby="dramaticTab dramaticTitle">
+      <div class="panel-heading">
+        <div><div class="eyebrow">BEAT THE CLOCK</div><h1 id="dramaticTitle">Dramatic Task</h1></div>
+        <button type="button" class="icon-button" id="resetDramaticTask" title="Set up a new dramatic task" aria-label="Set up a new dramatic task">↻</button>
+      </div>
+      <p class="dramatic-intro">Track task tokens against a round limit. Add one token for each success and one more for each raise.</p>
+      <form class="dramatic-setup" id="dramaticSetup">
+        <label class="field-label" for="dramaticTaskName">WHAT ARE THE HEROES TRYING TO DO?</label>
+        <input id="dramaticTaskName" maxlength="80" placeholder="Defuse the bomb, escape the collapsing mine…" autocomplete="off">
+        <div class="dramatic-config-row">
+          <label><span class="field-label">TOKENS TO SUCCEED</span><input id="dramaticTargetTokens" type="number" min="1" max="100" value="4"></label>
+          <label><span class="field-label">ROUNDS</span><input id="dramaticRoundLimit" type="number" min="1" max="20" value="3"></label>
+        </div>
+        <p class="dramatic-rule-note">Starts at 4 tokens in 3 rounds, a challenging task for one character. Adjust for your scene and group.</p>
+        <button class="button button-primary dramatic-start" type="submit">Start task <span>↗</span></button>
+      </form>
+      <div class="dramatic-live" id="dramaticLive" hidden>
+        <div class="dramatic-task-title" id="dramaticLiveName"></div>
+        <div class="dramatic-scoreboard">
+          <div class="dramatic-token-score"><strong id="dramaticTokenCount">0</strong><span>OF <b id="dramaticTokenTarget">4</b> TOKENS</span></div>
+          <div class="dramatic-round-score"><span class="eyebrow">ROUND</span><strong id="dramaticRoundCount">1 / 3</strong></div>
+        </div>
+        <div class="dramatic-progress" role="progressbar" aria-label="Task token progress" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="dramaticProgressFill"></span></div>
+        <div class="dramatic-token-track" id="dramaticTokenTrack" aria-hidden="true"></div>
+        <div class="dramatic-outcome" id="dramaticOutcome" role="status" aria-live="polite"></div>
+        <div class="dramatic-actions">
+          <button type="button" class="button button-primary" id="addTaskSuccess">＋ Success <small>1 token</small></button>
+          <button type="button" class="button button-secondary" id="addTaskRaise">＋ Raise <small>2 tokens</small></button>
+        </div>
+        <div class="dramatic-round-actions">
+          <button type="button" class="text-button" id="undoTaskAction">Undo last</button>
+          <button type="button" class="button button-secondary" id="endTaskRound">End round</button>
+        </div>
+      </div>
+    </section>
   </main>
-  <script src="app.js?v=dice-outcome-marks-20261123"></script>
+  <script src="app.js?v=dramatic-task-20261123"></script>
 </body>
 </html>

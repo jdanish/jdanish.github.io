@@ -27,11 +27,32 @@
         extraDeck: Array.isArray(saved.extraDeck) ? saved.extraDeck : shuffledDeck(),
         extraDiscard: Array.isArray(saved.extraDiscard) ? saved.extraDiscard : [],
         cardDraws: Array.isArray(saved.cardDraws) ? saved.cardDraws : [],
-        activeToolPanel: ['initiative','dice','deck','chase'].includes(saved.activeToolPanel) ? saved.activeToolPanel : 'initiative',
-        chase: normalizeChase(saved.chase)
+        activeToolPanel: ['initiative','dice','deck','chase','dramatic'].includes(saved.activeToolPanel) ? saved.activeToolPanel : 'initiative',
+        chase: normalizeChase(saved.chase),
+        dramaticTask: normalizeDramaticTask(saved.dramaticTask)
       };
     } catch (_) { /* start a fresh table if saved data is invalid */ }
-    return {round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:'initiative',chase:normalizeChase(null)};
+    return {round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:'initiative',chase:normalizeChase(null),dramaticTask:normalizeDramaticTask(null)};
+  }
+  function normalizeDramaticTask(task) {
+    const source = task && typeof task === 'object' ? task : {};
+    const targetTokens = Math.max(1, Math.min(100, Math.trunc(Number(source.targetTokens) || 4)));
+    const maxRounds = Math.max(1, Math.min(20, Math.trunc(Number(source.maxRounds) || 3)));
+    const actions = Array.isArray(source.actions) ? source.actions
+      .filter(action => action && [1, 2].includes(Number(action.tokens)))
+      .slice(-200)
+      .map(action => ({tokens:Number(action.tokens),round:Math.max(1,Math.min(maxRounds,Math.trunc(Number(action.round)||1)))})) : [];
+    const tokens = actions.reduce((sum, action) => sum + action.tokens, 0);
+    const status = ['setup','active','complete','expired'].includes(source.status) ? source.status : 'setup';
+    return {
+      title:String(source.title || '').slice(0,80),
+      targetTokens,
+      maxRounds,
+      currentRound:Math.max(0,Math.min(maxRounds,Math.trunc(Number(source.currentRound)||0))),
+      actions,
+      tokens,
+      status:tokens >= targetTokens && status === 'active' ? 'complete' : status
+    };
   }
   function normalizeChase(chase) {
     const source = chase && typeof chase === 'object' ? chase : {};
@@ -174,9 +195,9 @@
     }
   }
   function setToolPanel(panel) {
-    const activePanel = ['initiative', 'dice', 'deck', 'chase'].includes(panel) ? panel : 'initiative';
+    const activePanel = ['initiative', 'dice', 'deck', 'chase', 'dramatic'].includes(panel) ? panel : 'initiative';
     document.body.dataset.activeToolPanel = activePanel;
-    ['initiative', 'dice', 'deck', 'chase'].forEach(name => {
+    ['initiative', 'dice', 'deck', 'chase', 'dramatic'].forEach(name => {
       document.body.classList.toggle(`tool-tab-${name}`, activePanel === name);
     });
     state.activeToolPanel = activePanel;
@@ -288,6 +309,7 @@
     $('#extraDeckStatus').textContent=`${state.extraDeck.length} cards left in this deck`;
     renderDraws();
     renderChase();
+    renderDramaticTask();
   }
   function renderDraws() {
     ui.drawList.replaceChildren();
@@ -333,6 +355,52 @@
     $('#chaseDeckStatus').textContent = `${chase.deck?.draw?.length ?? 54} cards left`;
     $('#chaseNotes').value = chase.notes;
     $('#dealChaseCards').disabled = chase.participants.length === 0;
+  }
+  function renderDramaticTask() {
+    const task = state.dramaticTask;
+    const setup = $('#dramaticSetup');
+    const live = $('#dramaticLive');
+    const running = task.status !== 'setup';
+    setup.hidden = running;
+    live.hidden = !running;
+    if (!running) {
+      $('#dramaticTaskName').value = task.title;
+      $('#dramaticTargetTokens').value = task.targetTokens;
+      $('#dramaticRoundLimit').value = task.maxRounds;
+      return;
+    }
+
+    $('#dramaticLiveName').textContent = task.title || 'Dramatic Task';
+    $('#dramaticTokenCount').textContent = task.tokens;
+    $('#dramaticTokenTarget').textContent = task.targetTokens;
+    $('#dramaticRoundCount').textContent = `${task.currentRound} / ${task.maxRounds}`;
+    const progress = Math.min(100, Math.round((task.tokens / task.targetTokens) * 100));
+    const progressBar = $('.dramatic-progress');
+    progressBar.setAttribute('aria-valuemax', String(task.targetTokens));
+    progressBar.setAttribute('aria-valuenow', String(Math.min(task.tokens, task.targetTokens)));
+    $('#dramaticProgressFill').style.width = `${progress}%`;
+    const track = $('#dramaticTokenTrack');
+    track.replaceChildren();
+    if (task.targetTokens <= 30) {
+      for (let i = 0; i < task.targetTokens; i += 1) {
+        const token = document.createElement('span');
+        token.className = `dramatic-token${i < task.tokens ? ' earned' : ''}`;
+        track.append(token);
+      }
+    }
+    const outcome = $('#dramaticOutcome');
+    outcome.className = `dramatic-outcome${task.status === 'complete' ? ' success' : task.status === 'expired' ? ' failed' : ''}`;
+    outcome.textContent = task.status === 'complete'
+      ? 'TASK COMPLETE'
+      : task.status === 'expired'
+        ? `TIME UP · ${task.tokens} OF ${task.targetTokens} TOKENS`
+        : `ROUND ${task.currentRound} · ${task.maxRounds - task.currentRound} ${task.maxRounds - task.currentRound === 1 ? 'ROUND' : 'ROUNDS'} AFTER THIS`;
+    const active = task.status === 'active';
+    $('#addTaskSuccess').disabled = !active;
+    $('#addTaskRaise').disabled = !active;
+    $('#endTaskRound').disabled = !active;
+    $('#undoTaskAction').disabled = task.actions.length === 0;
+    $('#endTaskRound').textContent = task.currentRound >= task.maxRounds ? 'Finish final round' : 'End round';
   }
   function dealChaseRound() {
     const chase = state.chase;
@@ -507,6 +575,51 @@
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
   });
   setToolPanel(state.activeToolPanel);
+  $('#dramaticSetup').addEventListener('submit',event=>{
+    event.preventDefault();
+    state.dramaticTask={
+      title:$('#dramaticTaskName').value.trim().slice(0,80),
+      targetTokens:Math.max(1,Math.min(100,Math.trunc(Number($('#dramaticTargetTokens').value)||4))),
+      maxRounds:Math.max(1,Math.min(20,Math.trunc(Number($('#dramaticRoundLimit').value)||3))),
+      currentRound:1,
+      actions:[],
+      tokens:0,
+      status:'active'
+    };
+    save();render();
+  });
+  const addDramaticTokens = amount => {
+    const task=state.dramaticTask;
+    if(task.status!=='active')return;
+    task.actions.push({tokens:amount,round:task.currentRound});
+    task.tokens+=amount;
+    if(task.tokens>=task.targetTokens)task.status='complete';
+    save();render();
+  };
+  $('#addTaskSuccess').addEventListener('click',()=>addDramaticTokens(1));
+  $('#addTaskRaise').addEventListener('click',()=>addDramaticTokens(2));
+  $('#undoTaskAction').addEventListener('click',()=>{
+    const task=state.dramaticTask;
+    const previous=task.actions.pop();
+    if(!previous)return;
+    task.tokens=Math.max(0,task.tokens-previous.tokens);
+    if(task.status==='complete')task.status='active';
+    if(task.status==='expired')task.status='active';
+    save();render();
+  });
+  $('#endTaskRound').addEventListener('click',()=>{
+    const task=state.dramaticTask;
+    if(task.status!=='active')return;
+    if(task.currentRound>=task.maxRounds)task.status='expired';
+    else task.currentRound+=1;
+    save();render();
+  });
+  $('#resetDramaticTask').addEventListener('click',()=>{
+    const task=state.dramaticTask;
+    if(task.status==='active'&&task.actions.length&&!confirm('Start a new task and discard this task’s progress?'))return;
+    state.dramaticTask={...normalizeDramaticTask(null),title:task.title,targetTokens:task.targetTokens,maxRounds:task.maxRounds};
+    save();render();
+  });
   $('#chaseAddForm').addEventListener('submit',event=>{
     event.preventDefault();
     const name=$('#chaseParticipantName').value.trim();if(!name)return;
@@ -532,7 +645,7 @@
   });
   $('#resetAll').addEventListener('click',()=>{
     if(!confirm('Clear all combatants and reset the round?'))return;
-    state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:state.activeToolPanel,chase:normalizeChase(null)};
+    state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:state.activeToolPanel,chase:normalizeChase(null),dramaticTask:normalizeDramaticTask(null)};
     save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
   });
   window.addEventListener('message',event=>{
