@@ -3,22 +3,54 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101515">
-  <title>Wild Card — Savage Worlds Table Tools</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#0f1115">
+  <script>
+    (function () {
+      function applyTheme(theme) {
+        const resolved = theme === "light" ? "light" : "dark";
+        document.documentElement.dataset.theme = resolved;
+        document.documentElement.style.colorScheme = resolved;
+      }
+      if (new URLSearchParams(window.location.search).get("embedded") === "1") {
+        document.documentElement.classList.add("embedded");
+      }
+      try {
+        const state = JSON.parse(localStorage.getItem("gm_screen_state_v5") || "{}");
+        const mode = state.themeMode || "dark";
+        applyTheme(mode === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : mode);
+      } catch (_) { applyTheme("dark"); }
+      window.addEventListener("message", event => {
+        if (event.source === window.parent && event.data?.type === "gm-theme-change") applyTheme(event.data.theme);
+      });
+      window.addEventListener("storage", event => {
+        if (event.key !== "gm_screen_state_v5") return;
+        try {
+          const state = JSON.parse(event.newValue || "{}");
+          const mode = state.themeMode || "dark";
+          applyTheme(mode === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : mode);
+        } catch (_) { applyTheme("dark"); }
+      });
+    })();
+  </script>
+  <title>Table Tools — GM Reference</title>
+  <link rel="stylesheet" href="styles.css?v=gm-tools-reset-tab-arrows-20261123">
 </head>
-<body>
+<body class="mobile-tool-tab-initiative">
   <header class="topbar">
     <a class="brand" href="#" aria-label="Wild Card home"><span class="brand-mark">W</span><span>WILD<span class="brand-light">CARD</span></span></a>
     <div class="edition-tag"><span class="live-dot"></span> TABLE TOOLS <span class="divider">/</span> ADVENTURE EDITION</div>
-    <button class="icon-button" id="resetAll" title="Clear saved table data" aria-label="Clear saved table data">↻</button>
   </header>
 
+  <nav class="mobile-tool-tabs" role="tablist" aria-label="Choose a table tool">
+    <button type="button" class="mobile-tool-tab active" id="mobileInitiativeTab" role="tab" aria-selected="true" aria-controls="initiativePanel" data-tool-panel="initiative">Initiative</button>
+    <button type="button" class="mobile-tool-tab" id="mobileDiceTab" role="tab" aria-selected="false" aria-controls="diceTabPanel" data-tool-panel="dice">Dice</button>
+  </nav>
+
   <main class="layout">
-    <section class="panel initiative-panel" aria-labelledby="initiativeTitle">
+    <section class="panel initiative-panel" id="initiativePanel" role="tabpanel" aria-labelledby="mobileInitiativeTab initiativeTitle">
       <div class="panel-heading">
         <div><div class="eyebrow">THE ACTION DECK</div><h1 id="initiativeTitle">Initiative</h1></div>
-        <div class="round-badge"><span class="eyebrow">ROUND</span><strong id="roundNumber">01</strong></div>
+        <div class="panel-heading-actions"><div class="round-badge"><span class="eyebrow">ROUND</span><strong id="roundNumber">01</strong></div><button class="icon-button tool-reset-button" id="resetAll" title="Clear saved table data" aria-label="Clear saved table data">↻</button></div>
       </div>
       <div class="deck-strip">
         <div class="deck-stack" aria-hidden="true"><span>♠</span><span>♦</span><span>♣</span></div>
@@ -26,14 +58,15 @@
         <div class="deck-actions"><button class="button button-secondary" id="shuffleBtn">↻ Shuffle</button><button class="button button-primary" id="dealBtn"><span>↗</span> Deal cards</button></div>
       </div>
       <div class="combatants-head"><span>COMBATANTS <span class="muted" id="combatantCount">0</span></span><span class="list-tools"><span class="tracker-hint">Bennies &amp; wounds optional</span><button class="text-button" id="clearCombatants">Clear list</button></span></div>
-      <form class="add-form" id="addForm"><label class="sr-only" for="combatantName">Combatant name</label><input id="combatantName" maxlength="32" placeholder="Add a hero, foe, or group…" autocomplete="off" required><button class="button button-add" type="submit">＋ <span>Add</span></button></form>
+      <form class="add-form" id="addForm"><label class="sr-only" for="combatantName">Combatant name</label><input id="combatantName" maxlength="32" placeholder="Add a hero, foe, or group…" autocomplete="off" required><button class="button button-add" type="submit">＋ <span>Add</span></button><button class="button button-secondary import-open-button" id="importOpenDocuments" type="button" hidden>Import open</button></form>
+      <div class="import-open-status" id="importOpenStatus" role="status" aria-live="polite" hidden></div>
       <div class="combatant-list" id="combatantList"></div>
       <div class="empty-state" id="emptyState"><div class="empty-icon">♧</div><strong>No combatants yet</strong><span>Add everyone who needs a card this round.</span></div>
       <div class="panel-footer"><span>INITIATIVE ORDER</span><span>ACE → 2 <i>·</i> ♠ &gt; ♥ &gt; ♦ &gt; ♣</span></div>
     </section>
 
-    <aside class="right-column">
-      <section class="panel dice-panel" aria-labelledby="diceTitle">
+    <aside class="right-column" id="diceTabPanel" role="tabpanel" aria-labelledby="mobileDiceTab">
+      <section class="panel dice-panel" id="dicePanel" aria-labelledby="diceTitle">
         <div class="panel-heading compact"><div><div class="eyebrow">LET THE DICE FLY</div><h2 id="diceTitle">Quick Roll</h2></div><div class="die-glyph">⚄</div></div>
         <label class="field-label" for="traitDie">TRAIT DIE</label>
         <div class="roll-controls"><select id="traitDie" aria-label="Trait die"><option value="4">d4</option><option value="6" selected>d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option></select><label class="count-control"><span>COUNT</span><input id="dieCount" type="number" min="1" max="20" value="1" aria-label="Number of dice"></label><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
@@ -51,11 +84,11 @@
         <div class="extra-deck-status" id="extraDeckStatus">54 cards left in this deck</div>
         <button class="text-button reshuffle-button" id="reshuffleDrawDeck">Reshuffle this deck</button>
       </section>
-      <section class="tip-card"><span class="tip-spark">✳</span><div><strong>Joker’s wild</strong><p>Draw a Joker and gain +2 to Trait and damage rolls for the round. A Joker acts whenever you like.</p></div></section>
+      <section class="tip-card"><span class="tip-spark">✳</span><div><strong>Joker’s wild</strong><p>Draw a Joker and gain +2 to Trait and damage rolls for the round. All other players on your side also receive a Benny. A Joker acts whenever you like.</p></div></section>
       <div class="save-note"><span>▣</span> Your table is saved on this device.</div>
     </aside>
   </main>
   <footer class="page-footer"><span>WILD CARD <i>·</i> A LITTLE HELP FOR YOUR NEXT ADVENTURE</span><span>Unofficial fan-made tool</span></footer>
-  <script src="app.js"></script>
+  <script src="app.js?v=gm-tools-reset-tab-arrows-20261123"></script>
 </body>
 </html>

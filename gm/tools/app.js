@@ -34,6 +34,79 @@
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* app remains usable if storage is unavailable */ }
   }
+  function parentGM() {
+    if (!document.documentElement.classList.contains('embedded') || window.parent === window) return null;
+    try { return window.parent.GM || null; } catch (_) { return null; }
+  }
+  function nameFromOpenDocument(path, markdown) {
+    const text = String(markdown || '').replace(/^\uFEFF/, '');
+    const frontMatter = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
+    const fields = {};
+    if (frontMatter) {
+      frontMatter[1].split(/\r?\n/).forEach(line => {
+        const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(.*)$/);
+        if (match) fields[match[1].toLowerCase()] = match[2].trim().replace(/^['"]|['"]$/g, '');
+      });
+    }
+    const pathType = String(path || '').match(/(?:^|\/)(characters|monsters)\//i)?.[1]?.toLowerCase();
+    const type = String(fields.type || (pathType === 'characters' ? 'character' : pathType === 'monsters' ? 'monster' : '')).toLowerCase();
+    if (type !== 'character' && type !== 'monster') return null;
+    const heading = text.match(/^#\s+(.+)$/m)?.[1]?.trim();
+    const filename = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || '';
+    const name = fields.name || heading || filename;
+    return name ? { name, type } : null;
+  }
+  async function importOpenDocuments() {
+    const status = $('#importOpenStatus');
+    const gm = parentGM();
+    const sidebar = gm?.sidebarData;
+    const readFile = gm?.data?.readFile;
+    if (!sidebar || typeof readFile !== 'function') {
+      status.hidden = false;
+      status.textContent = 'The GM document workspace is not ready. Try again in a moment.';
+      return;
+    }
+    try {
+      await sidebar.readyPromise;
+      const paths = sidebar.getWorkspaceDocuments?.() || [];
+      const names = [];
+      for (const path of paths) {
+        const markdown = await readFile.call(gm.data, path);
+        if (markdown === null || markdown === undefined) continue;
+        const entry = nameFromOpenDocument(path, markdown);
+        if (entry) names.push(entry);
+      }
+      const existing = new Set(state.combatants.map(item => String(item.name || '').trim().toLocaleLowerCase()));
+      const additions = names.filter(item => {
+        const key = item.name.trim().toLocaleLowerCase();
+        if (!key || existing.has(key)) return false;
+        existing.add(key);
+        return true;
+      });
+      additions.forEach(item => state.combatants.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+        name: item.name, card: null, bennies: 0, wounds: 0, trackResources: false
+      }));
+      if (additions.length) { save(); render(); }
+      status.hidden = false;
+      status.textContent = additions.length
+        ? `Imported ${additions.length} ${additions.length === 1 ? 'name' : 'names'}${names.length > additions.length ? `; skipped ${names.length - additions.length} duplicate${names.length - additions.length === 1 ? '' : 's'}` : ''}.`
+        : names.length ? 'All open character and monster names are already in the list.' : 'No open character or monster documents found in the GM workspace.';
+    } catch (error) {
+      status.hidden = false;
+      status.textContent = `Could not import open document names: ${error?.message || error}`;
+    }
+  }
+  function setMobileToolPanel(panel) {
+    const diceActive = panel === 'dice';
+    document.body.classList.toggle('mobile-tool-tab-dice', diceActive);
+    document.body.classList.toggle('mobile-tool-tab-initiative', !diceActive);
+    document.querySelectorAll('[data-tool-panel]').forEach(button => {
+      const selected = button.dataset.toolPanel === panel;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-selected', String(selected));
+    });
+  }
   function shuffledDeck() {
     const deck=[];
     SUITS.forEach(suit => RANKS.forEach((value,index) => deck.push({value,suit,rank:index})));
@@ -66,6 +139,7 @@
     const sorted = initiativeOrder();
     const inRound = sorted.filter(c=>c.card);
     if(!inRound.some(c=>c.id===state.activeId)) state.activeId=inRound[0]?.id||null;
+    const turnPositions = new Map(inRound.map((combatant, index) => [combatant.id, index]));
     ui.list.replaceChildren();
     sorted.forEach((combatant, index) => {
       const row = document.createElement('div');
@@ -78,8 +152,13 @@
       if (combatant.card?.joker) status.className='joker-tag';
       const marker=document.createElement('span');marker.className='turn-marker';marker.textContent='NOW';marker.hidden=combatant.id!==state.activeId;
       if(combatant.id===state.activeId)row.classList.add('is-current');
-      const turnArrows=document.createElement('span');turnArrows.className='turn-arrows';turnArrows.hidden=!combatant.card;
-      [[-1,'←','Previous'],[1,'→','Next']].forEach(([direction,symbol,label])=>{
+      const turnPosition=turnPositions.get(combatant.id);
+      const isCurrent=combatant.id===state.activeId;
+      const turnArrows=document.createElement('span');turnArrows.className='turn-arrows';turnArrows.hidden=!isCurrent||inRound.length<2;
+      const availableMoves=[];
+      if(isCurrent&&turnPosition>0)availableMoves.push([-1,'←','Previous']);
+      if(isCurrent&&turnPosition<inRound.length-1)availableMoves.push([1,'→','Next']);
+      availableMoves.forEach(([direction,symbol,label])=>{
         const arrow=document.createElement('button');arrow.type='button';arrow.className=`turn-arrow${direction===1?' next':''}`;arrow.textContent=symbol;
         arrow.title=`${label} turn from ${combatant.name}`;arrow.setAttribute('aria-label',arrow.title);
         arrow.addEventListener('click',()=>moveTurnFrom(combatant.id,direction));turnArrows.append(arrow);
@@ -247,6 +326,15 @@
   $('#reshuffleDrawDeck').addEventListener('click',()=>{
     state.extraDeck=shuffledDeck();state.extraDiscard=[];state.cardDraws=[];save();render();
   });
+  const importOpenButton = $('#importOpenDocuments');
+  if (document.documentElement.classList.contains('embedded')) {
+    importOpenButton.hidden = false;
+    importOpenButton.addEventListener('click', importOpenDocuments);
+  }
+  document.querySelectorAll('[data-tool-panel]').forEach(button => {
+    button.addEventListener('click', () => setMobileToolPanel(button.dataset.toolPanel));
+  });
+  setMobileToolPanel('initiative');
   $('#clearCombatants').addEventListener('click',()=>{
     state.combatants.forEach(c=>{
       if(state.initiativeDeck){
@@ -260,6 +348,9 @@
     if(!confirm('Clear all combatants and reset the round?'))return;
     state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[]};
     save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
+  });
+  window.addEventListener('message',event=>{
+    if(event.source===window.parent&&event.data?.type==='gm-tools-reset')$('#resetAll').click();
   });
 
   function explodingDie(sides) {
@@ -346,4 +437,8 @@
   });
   updateWildAvailability();
   render();
+  if(document.documentElement.classList.contains('embedded')&&window.parent!==window){
+    window.WildCardToolsReady=true;
+    window.parent.postMessage({type:'gm-tools-ready'},'*');
+  }
 })();

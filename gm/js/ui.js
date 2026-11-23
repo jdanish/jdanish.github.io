@@ -6,6 +6,8 @@
   const sidebarSearchEntries = [];
   let activeSidebarHighlightRoot = null;
   const fgImportReferenceSelections = new Map();
+  let toolsResetPending = false;
+  let toolsReadyMessageBound = false;
 
   let dom = {};
 
@@ -63,7 +65,36 @@
     document.documentElement.style.colorScheme = resolved;
     if (document.body) document.body.dataset.theme = resolved;
     updateThemeButton();
+    const toolsFrame = document.getElementById('toolsFrame');
+    toolsFrame?.contentWindow?.postMessage({ type: 'gm-theme-change', theme: resolved }, '*');
     return resolved;
+  }
+
+  function setWorkspaceMode(mode) {
+    const toolsActive = mode === 'tools';
+    const main = document.querySelector('.main');
+    const rulebooksTab = document.getElementById('rulebooksWorkspaceTab');
+    const toolsTab = document.getElementById('toolsWorkspaceTab');
+    const toolsTabGroup = document.getElementById('toolsTabGroup');
+    if (!main || !rulebooksTab || !toolsTab) return;
+
+    main.classList.toggle('tools-mode', toolsActive);
+    rulebooksTab.classList.toggle('active', !toolsActive);
+    toolsTab.classList.toggle('active', toolsActive);
+    toolsTabGroup?.classList.toggle('active', toolsActive);
+    rulebooksTab.setAttribute('aria-selected', String(!toolsActive));
+    toolsTab.setAttribute('aria-selected', String(toolsActive));
+
+    if (toolsActive) {
+      const toolsFrame = document.getElementById('toolsFrame');
+      toolsFrame?.contentWindow?.postMessage({ type: 'gm-theme-change', theme: document.documentElement.dataset.theme || 'dark' }, '*');
+      updateTabButtonLabels();
+      return;
+    }
+
+    const tab = getCurrentTab();
+    if (tab) window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
+    updateTabButtonLabels();
   }
 
   function setThemeMode(nextMode) {
@@ -222,7 +253,7 @@
       if (!book) return;
 
       button.textContent = `${book.title} · p. ${getDisplayPage(tab)}`;
-      button.classList.toggle('active', tab === getCurrentTab());
+      button.classList.toggle('active', !document.querySelector('.main')?.classList.contains('tools-mode') && tab === getCurrentTab());
       button.classList.toggle('loading', Boolean(window.GM.pdfviewer?.isTabLoading?.(tab)));
     });
   }
@@ -3557,6 +3588,7 @@
       dom.tabsEl.appendChild(button);
 
       button.addEventListener('click', () => {
+        setWorkspaceMode('rulebooks');
         window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
       });
     });
@@ -3728,8 +3760,8 @@
   function setupMobileSidebar() {
     const app = document.querySelector('.app');
     const main = document.querySelector('.main');
-    const headerRow = main?.querySelector('.panel-header-row');
-    if (!app || !main || !headerRow) return;
+    const switcher = main?.querySelector('.workspace-switcher');
+    if (!app || !main || !switcher) return;
 
     let toggle = document.getElementById('mobileSidebarToggle');
     if (!toggle) {
@@ -3744,7 +3776,7 @@
       toggle.addEventListener('click', () => {
         setMobileSidebarOpen(!app.classList.contains('mobile-sidebar-open'));
       });
-      headerRow.insertBefore(toggle, headerRow.firstChild);
+      switcher.insertBefore(toggle, switcher.firstChild);
     }
 
     let backdrop = document.getElementById('mobileSidebarBackdrop');
@@ -3811,6 +3843,40 @@
       dom.themeButtonEl.dataset.bound = 'true';
     }
 
+    const rulebooksWorkspaceTab = document.getElementById('rulebooksWorkspaceTab');
+    const toolsWorkspaceTab = document.getElementById('toolsWorkspaceTab');
+    if (rulebooksWorkspaceTab && rulebooksWorkspaceTab.dataset.bound !== 'true') {
+      rulebooksWorkspaceTab.addEventListener('click', () => setWorkspaceMode('rulebooks'));
+      rulebooksWorkspaceTab.dataset.bound = 'true';
+    }
+    if (toolsWorkspaceTab && toolsWorkspaceTab.dataset.bound !== 'true') {
+      toolsWorkspaceTab.addEventListener('click', () => setWorkspaceMode('tools'));
+      toolsWorkspaceTab.dataset.bound = 'true';
+    }
+
+    const toolsFrame = document.getElementById('toolsFrame');
+    const toolsResetButton = document.getElementById('toolsResetButton');
+    if (!toolsReadyMessageBound) {
+      window.addEventListener('message', (event) => {
+        if (event.source !== toolsFrame?.contentWindow || event.data?.type !== 'gm-tools-ready') return;
+        if (!toolsResetPending) return;
+        toolsResetPending = false;
+        event.source.postMessage({ type: 'gm-tools-reset' }, '*');
+      });
+      toolsReadyMessageBound = true;
+    }
+    if (toolsResetButton && toolsResetButton.dataset.bound !== 'true') {
+      toolsResetButton.addEventListener('click', () => {
+        toolsResetPending = true;
+        setWorkspaceMode('tools');
+        if (toolsFrame?.contentWindow?.WildCardToolsReady) {
+          toolsResetPending = false;
+          toolsFrame.contentWindow.postMessage({ type: 'gm-tools-reset' }, '*');
+        }
+      });
+      toolsResetButton.dataset.bound = 'true';
+    }
+
     if (dom.bookVisibilityButtonEl && dom.bookVisibilityButtonEl.dataset.bound !== 'true') {
       dom.bookVisibilityButtonEl.addEventListener('click', toggleBookVisibilityPopup);
       dom.bookVisibilityButtonEl.dataset.bound = 'true';
@@ -3853,6 +3919,7 @@
       buildPageButtons(initialTab);
       setViewerTitle(initialTab, getDisplayPage(initialTab));
     }
+    setWorkspaceMode('rulebooks');
   }
 
   window.GM.ui = {
