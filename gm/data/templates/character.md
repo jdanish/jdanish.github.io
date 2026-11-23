@@ -19,6 +19,8 @@
 | 🔥 **Power Points:** {{counter:{{SLUG}}-power-points|0|0|true}} | 🪙 **Bennies** {{counter:{{SLUG}}-bennies|3|3|false}} |
 | 🩸 **Wounds** {{counter:{{SLUG}}-wounds|0|4|true}} | 🪫 **Fatigue** {{counter:{{SLUG}}-fatigue|0|3|true}} |
 
+- [ ] **Shaken**
+
 ### Weapons
 
 | Weapon | Range | AP | Damage | ROF | Shots | Notes |

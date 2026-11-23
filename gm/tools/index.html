@@ -33,22 +33,23 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=gm-mobile-three-tabs-20261123">
+  <link rel="stylesheet" href="styles.css?v=dice-outcome-marks-20261123">
 </head>
-<body class="mobile-tool-tab-initiative" data-mobile-tool-panel="initiative">
+<body class="tool-tab-initiative" data-active-tool-panel="initiative">
   <header class="topbar">
     <a class="brand" href="#" aria-label="Wild Card home"><span class="brand-mark">W</span><span>WILD<span class="brand-light">CARD</span></span></a>
     <div class="edition-tag"><span class="live-dot"></span> TABLE TOOLS <span class="divider">/</span> ADVENTURE EDITION</div>
   </header>
 
-  <nav class="mobile-tool-tabs" role="tablist" aria-label="Choose a table tool">
-    <button type="button" class="mobile-tool-tab active" id="mobileInitiativeTab" role="tab" aria-selected="true" aria-controls="initiativePanel" data-tool-panel="initiative">Initiative</button>
-    <button type="button" class="mobile-tool-tab" id="mobileDiceTab" role="tab" aria-selected="false" aria-controls="dicePanel" data-tool-panel="dice">Dice</button>
-    <button type="button" class="mobile-tool-tab" id="mobileDeckTab" role="tab" aria-selected="false" aria-controls="deckPanel" data-tool-panel="deck">Deck</button>
+  <nav class="tool-tabs" role="tablist" aria-label="Choose a table tool">
+    <button type="button" class="tool-tab active" id="initiativeTab" role="tab" aria-selected="true" aria-controls="initiativePanel" data-tool-panel="initiative">Initiative</button>
+    <button type="button" class="tool-tab" id="diceTab" role="tab" aria-selected="false" aria-controls="dicePanel" data-tool-panel="dice">Dice</button>
+    <button type="button" class="tool-tab" id="deckTab" role="tab" aria-selected="false" aria-controls="deckPanel" data-tool-panel="deck">Deck</button>
+    <button type="button" class="tool-tab" id="chaseTab" role="tab" aria-selected="false" aria-controls="chasePanel" data-tool-panel="chase">Chase</button>
   </nav>
 
   <main class="layout">
-    <section class="panel initiative-panel" id="initiativePanel" role="tabpanel" aria-labelledby="mobileInitiativeTab initiativeTitle">
+    <section class="panel initiative-panel" id="initiativePanel" role="tabpanel" aria-labelledby="initiativeTab initiativeTitle">
       <div class="panel-heading">
         <div><div class="eyebrow">THE ACTION DECK</div><h1 id="initiativeTitle">Initiative</h1></div>
         <div class="panel-heading-actions"><div class="round-badge"><span class="eyebrow">ROUND</span><strong id="roundNumber">01</strong></div><button class="icon-button tool-reset-button" id="resetAll" title="Clear saved table data" aria-label="Clear saved table data">↻</button></div>
@@ -68,7 +69,7 @@
     </section>
 
     <aside class="right-column">
-      <section class="panel dice-panel" id="dicePanel" role="tabpanel" aria-labelledby="mobileDiceTab diceTitle">
+      <section class="panel dice-panel" id="dicePanel" role="tabpanel" aria-labelledby="diceTab diceTitle">
         <div class="panel-heading compact"><div><div class="eyebrow">LET THE DICE FLY</div><h2 id="diceTitle">Quick Roll</h2></div><div class="die-glyph">⚄</div></div>
         <label class="field-label" for="traitDie">TRAIT DIE</label>
         <div class="roll-controls"><select id="traitDie" aria-label="Trait die"><option value="4">d4</option><option value="6" selected>d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option></select><label class="count-control"><span>COUNT</span><input id="dieCount" type="number" min="1" max="20" value="1" aria-label="Number of dice"></label><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
@@ -78,7 +79,7 @@
         <div class="roll-result" id="rollResult" aria-live="polite"><span class="result-hint">Your roll will appear here.</span></div>
         <p class="dice-note" id="diceNote">Each die aces (maximum rolls) and explodes. With one Trait Die, the Wild Die keeps the higher result. Multiple dice are summed.</p>
       </section>
-      <section class="panel card-draw-panel" id="deckPanel" role="tabpanel" aria-labelledby="mobileDeckTab">
+      <section class="panel card-draw-panel" id="deckPanel" role="tabpanel" aria-labelledby="deckTab">
         <div class="panel-heading compact"><div><div class="eyebrow">A SEPARATE DECK</div><h2 id="cardDrawTitle">Draw a Card</h2></div><div class="card-glyph">♠</div></div>
         <label class="field-label" for="drawReason">REASON <span class="optional-label">OPTIONAL</span></label>
         <div class="draw-controls"><input id="drawReason" maxlength="32" placeholder="Loot, omen, table…" autocomplete="off"><button class="button button-primary" id="drawCardBtn">Draw</button></div>
@@ -87,7 +88,31 @@
         <button class="text-button reshuffle-button" id="reshuffleDrawDeck">Reshuffle this deck</button>
       </section>
     </aside>
+    <section class="panel chase-panel" id="chasePanel" role="tabpanel" aria-labelledby="chaseTab chaseTitle">
+      <div class="panel-heading">
+        <div><div class="eyebrow">THE PURSUIT</div><h1 id="chaseTitle">Chase</h1></div>
+        <div class="panel-heading-actions"><div class="round-badge"><span class="eyebrow">ROUND</span><strong id="chaseRound">00</strong></div><button class="icon-button" id="resetChase" title="Reset this chase" aria-label="Reset this chase">↻</button></div>
+      </div>
+      <div class="chase-range-card">
+        <div><span class="eyebrow">CHASE RANGE</span><strong><span id="chaseRange">5</span> <small>increments</small></strong></div>
+        <div class="range-controls"><button type="button" class="range-button" id="rangeDown" aria-label="Decrease range">−</button><button type="button" class="range-button" id="rangeUp" aria-label="Increase range">+</button></div>
+      </div>
+      <p class="chase-guidance">Track the overall gap between the lead and pursuers here. Draw a fresh action card for each participant each round.</p>
+      <div class="chase-section-heading"><span>PARTICIPANTS <span class="muted" id="chaseParticipantCount">0</span></span><span class="chase-deck-count" id="chaseDeckStatus">54 cards left</span></div>
+      <form class="chase-add-form" id="chaseAddForm">
+        <label class="sr-only" for="chaseParticipantName">Participant name</label>
+        <input id="chaseParticipantName" maxlength="32" placeholder="Add a driver, runner, or vehicle…" autocomplete="off" required>
+        <label class="sr-only" for="chaseParticipantSide">Chase side</label>
+        <select id="chaseParticipantSide"><option value="lead">Ahead</option><option value="pursuit">Chasing</option></select>
+        <button class="button button-add" type="submit">＋ <span>Add</span></button>
+      </form>
+      <div class="chase-participant-list" id="chaseParticipantList"></div>
+      <div class="chase-empty" id="chaseEmpty"><strong>No chase participants yet</strong><span>Add the lead and anyone trying to catch them.</span></div>
+      <div class="chase-actions"><button type="button" class="button button-secondary" id="dealChaseCards">↻ Deal next round</button></div>
+      <label class="field-label chase-notes-label" for="chaseNotes">CHASE NOTES <span class="optional-label">OPTIONAL</span></label>
+      <textarea id="chaseNotes" class="chase-notes" rows="3" maxlength="500" placeholder="Hazards, obstacles, or details to remember…"></textarea>
+    </section>
   </main>
-  <script src="app.js?v=gm-workspace-persist-mobile-deck-20261123"></script>
+  <script src="app.js?v=dice-outcome-marks-20261123"></script>
 </body>
 </html>

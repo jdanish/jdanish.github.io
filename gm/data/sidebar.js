@@ -587,7 +587,13 @@ window.SIDEBAR_SECTIONS = [];
         }
 
         closeItem();
-        html += `<li>${renderInline(match[3])}`;
+        const task = match[3].match(/^\[([ xX])\]\s+([\s\S]+)$/);
+        if (task) {
+          const checked = /x/i.test(task[1]);
+          html += `<li class="note-task-item"><label class="note-task-label"><input type="checkbox" class="sidebar-task-checkbox" data-task-text="${escapeHtml(match[3])}"${checked ? ' checked' : ''}><span>${renderInline(task[2])}</span></label>`;
+        } else {
+          html += `<li>${renderInline(match[3])}`;
+        }
         openItem = true;
         i += 1;
       }
@@ -801,6 +807,23 @@ window.SIDEBAR_SECTIONS = [];
       const input = event.target.closest?.('.sidebar-tracker-input');
       if (!input || !root.contains(input)) return;
       persist(input.closest('.sidebar-tracker'), input.value);
+    });
+
+    root.addEventListener('change', (event) => {
+      const input = event.target.closest?.('.sidebar-task-checkbox');
+      if (!input || !root.contains(input)) return;
+      const section = root.closest('.nested-block');
+      if (section?.dataset.sectionTab !== 'current') return;
+      const taskText = input.dataset.taskText || '';
+      const lines = String(currentMarkdown || '').split('\n');
+      const lineIndex = lines.findIndex((line) => {
+        const match = line.match(/^\s*([-*+])\s+\[([ xX])\]\s+([\s\S]+)$/);
+        return match && match[3] === taskText;
+      });
+      if (lineIndex < 0) return;
+      lines[lineIndex] = lines[lineIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${input.checked ? 'x' : ' '}]`);
+      importMarkdownFromText('current', lines.join('\n'), getWorkspaceSectionKind(activeDocumentMeta, activeDocumentPath));
+      saveActiveDocument().catch(() => {});
     });
 
     root.addEventListener('keydown', (event) => {

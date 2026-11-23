@@ -26,10 +26,29 @@
         initiativeDeck: saved.initiativeDeck || null,
         extraDeck: Array.isArray(saved.extraDeck) ? saved.extraDeck : shuffledDeck(),
         extraDiscard: Array.isArray(saved.extraDiscard) ? saved.extraDiscard : [],
-        cardDraws: Array.isArray(saved.cardDraws) ? saved.cardDraws : []
+        cardDraws: Array.isArray(saved.cardDraws) ? saved.cardDraws : [],
+        activeToolPanel: ['initiative','dice','deck','chase'].includes(saved.activeToolPanel) ? saved.activeToolPanel : 'initiative',
+        chase: normalizeChase(saved.chase)
       };
     } catch (_) { /* start a fresh table if saved data is invalid */ }
-    return {round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[]};
+    return {round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:'initiative',chase:normalizeChase(null)};
+  }
+  function normalizeChase(chase) {
+    const source = chase && typeof chase === 'object' ? chase : {};
+    const participants = Array.isArray(source.participants) ? source.participants.filter(item => item && typeof item.name === 'string').map(item => ({
+      id: item.id || `${Date.now()}-${Math.random()}`,
+      name: item.name.slice(0, 32),
+      side: item.side === 'pursuit' ? 'pursuit' : 'lead',
+      card: item.card || null
+    })) : [];
+    const range = Number(source.range);
+    return {
+      round: Math.max(0, Math.trunc(Number(source.round) || 0)),
+      range: Number.isFinite(range) ? Math.max(0, Math.min(20, Math.trunc(range))) : 5,
+      participants,
+      deck: source.deck && Array.isArray(source.deck.draw) && Array.isArray(source.deck.discard) ? source.deck : null,
+      notes: String(source.notes || '').slice(0, 500)
+    };
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* app remains usable if storage is unavailable */ }
@@ -154,17 +173,19 @@
       status.textContent = `Could not import open document names: ${error?.message || error}`;
     }
   }
-  function setMobileToolPanel(panel) {
-    const activePanel = ['initiative', 'dice', 'deck'].includes(panel) ? panel : 'initiative';
-    document.body.dataset.mobileToolPanel = activePanel;
-    ['initiative', 'dice', 'deck'].forEach(name => {
-      document.body.classList.toggle(`mobile-tool-tab-${name}`, activePanel === name);
+  function setToolPanel(panel) {
+    const activePanel = ['initiative', 'dice', 'deck', 'chase'].includes(panel) ? panel : 'initiative';
+    document.body.dataset.activeToolPanel = activePanel;
+    ['initiative', 'dice', 'deck', 'chase'].forEach(name => {
+      document.body.classList.toggle(`tool-tab-${name}`, activePanel === name);
     });
+    state.activeToolPanel = activePanel;
     document.querySelectorAll('[data-tool-panel]').forEach(button => {
       const selected = button.dataset.toolPanel === activePanel;
       button.classList.toggle('active', selected);
       button.setAttribute('aria-selected', String(selected));
     });
+    save();
   }
   function shuffledDeck() {
     const deck=[];
@@ -266,6 +287,7 @@
     ui.deckStatus.textContent=`${state.initiativeDeck?.draw?.length??Math.max(0,54-inHands.size)} cards left`;
     $('#extraDeckStatus').textContent=`${state.extraDeck.length} cards left in this deck`;
     renderDraws();
+    renderChase();
   }
   function renderDraws() {
     ui.drawList.replaceChildren();
@@ -276,6 +298,65 @@
       const reason=document.createElement('span');reason.className=`draw-reason${item.reason?'':' no-reason'}`;reason.textContent=item.reason||'No reason added';
       row.append(reason);ui.drawList.append(row);
     });
+  }
+  function chaseOrder() {
+    return [...state.chase.participants].sort((a,b) => {
+      if (!a.card && !b.card) return a.name.localeCompare(b.name);
+      if (!a.card) return 1;
+      if (!b.card) return -1;
+      if (a.card.joker || b.card.joker) return Number(b.card.joker) - Number(a.card.joker);
+      return (Number(b.card.rank) || 0) - (Number(a.card.rank) || 0)
+        || (Number(b.card.suit?.rank) || 0) - (Number(a.card.suit?.rank) || 0)
+        || a.name.localeCompare(b.name);
+    });
+  }
+  function renderChase() {
+    const chase = state.chase;
+    const list = $('#chaseParticipantList');
+    list.replaceChildren();
+    chaseOrder().forEach(participant => {
+      const row = document.createElement('div');
+      row.className = `chase-participant-row${participant.card?.joker ? ' is-joker' : ''}`;
+      row.append(participant.card ? cardFace(participant.card) : Object.assign(document.createElement('div'), {className:'card-face pending',textContent:'···'}));
+      const name = document.createElement('span'); name.className = 'chase-participant-name'; name.textContent = participant.name;
+      const side = document.createElement('span'); side.className = `chase-side ${participant.side}`; side.textContent = participant.side === 'pursuit' ? 'CHASING' : 'AHEAD';
+      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'row-menu'; remove.textContent = '×';
+      remove.title = `Remove ${participant.name} from chase`; remove.setAttribute('aria-label', remove.title);
+      remove.addEventListener('click', () => { chase.participants = chase.participants.filter(item => item.id !== participant.id); save(); render(); });
+      row.append(name, side, remove);
+      list.append(row);
+    });
+    $('#chaseParticipantCount').textContent = chase.participants.length;
+    $('#chaseRound').textContent = String(chase.round).padStart(2, '0');
+    $('#chaseRange').textContent = chase.range;
+    $('#chaseEmpty').hidden = chase.participants.length > 0;
+    $('#chaseDeckStatus').textContent = `${chase.deck?.draw?.length ?? 54} cards left`;
+    $('#chaseNotes').value = chase.notes;
+    $('#dealChaseCards').disabled = chase.participants.length === 0;
+  }
+  function dealChaseRound() {
+    const chase = state.chase;
+    if (!chase.participants.length) { $('#chaseParticipantName').focus(); return; }
+    chase.deck ||= {draw:shuffledDeck(),discard:[]};
+    chase.participants.forEach(participant => {
+      if (participant.card) chase.deck.discard.push(participant.card);
+      participant.card = null;
+    });
+    if (!chase.deck.draw.length) {
+      chase.deck.draw = shuffleInPlace([...chase.deck.discard]);
+      chase.deck.discard = [];
+    }
+    chase.round += 1;
+    chase.participants.forEach(participant => {
+      if (!chase.deck.draw.length) return;
+      participant.card = chase.deck.draw.shift();
+    });
+    if (chase.participants.some(participant => participant.card?.joker)
+      && confirmJokerReshuffle('chase deck','Cards already dealt for this round stay in play.')) {
+      chase.deck.draw = shuffleInPlace([...chase.deck.draw,...chase.deck.discard]);
+      chase.deck.discard = [];
+    }
+    save(); render();
   }
   function makeResourceCounter(combatant,key,label,min,max){
     const linkedTracker=combatant.gmTrackers?.[key];
@@ -423,9 +504,23 @@
     importOpenButton.addEventListener('click', importOpenDocuments);
   }
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
-    button.addEventListener('click', () => setMobileToolPanel(button.dataset.toolPanel));
+    button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
   });
-  setMobileToolPanel('initiative');
+  setToolPanel(state.activeToolPanel);
+  $('#chaseAddForm').addEventListener('submit',event=>{
+    event.preventDefault();
+    const name=$('#chaseParticipantName').value.trim();if(!name)return;
+    state.chase.participants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,side:$('#chaseParticipantSide').value==='pursuit'?'pursuit':'lead',card:null});
+    $('#chaseParticipantName').value='';save();render();$('#chaseParticipantName').focus();
+  });
+  $('#dealChaseCards').addEventListener('click',dealChaseRound);
+  $('#rangeDown').addEventListener('click',()=>{state.chase.range=Math.max(0,state.chase.range-1);save();render();});
+  $('#rangeUp').addEventListener('click',()=>{state.chase.range=Math.min(20,state.chase.range+1);save();render();});
+  $('#chaseNotes').addEventListener('input',event=>{state.chase.notes=event.target.value.slice(0,500);save();});
+  $('#resetChase').addEventListener('click',()=>{
+    if(!confirm('Reset the chase participants, cards, range, and notes?'))return;
+    state.chase=normalizeChase(null);save();render();
+  });
   $('#clearCombatants').addEventListener('click',()=>{
     state.combatants.forEach(c=>{
       if(state.initiativeDeck){
@@ -437,7 +532,7 @@
   });
   $('#resetAll').addEventListener('click',()=>{
     if(!confirm('Clear all combatants and reset the round?'))return;
-    state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[]};
+    state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:state.activeToolPanel,chase:normalizeChase(null)};
     save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
   });
   window.addEventListener('message',event=>{
@@ -450,6 +545,24 @@
     return{subtotal,rolls};
   }
   function formatDie(die){return die.rolls.join(' + ');}
+  function renderDiceVisuals(dice,kept){
+    return `<div class="dice-visual-results" aria-label="Rolled dice">${dice.map(item=>{
+      const sides=item.sides;
+      const faces=item.die.rolls.map(value=>{
+        const face=sides===6?`<span class="die-pips pips-${value}">${Array.from({length:value},()=>'<i></i>').join('')}</span>`:`<strong>${value}</strong>`;
+        return `<span class="die-visual-face d${sides}${value===sides?' is-ace':''}" role="img" aria-label="d${sides} shows ${value}${value===sides?' and aces':''}"><small>d${sides}</small>${face}</span>`;
+      }).join('<span class="die-visual-plus" aria-hidden="true">+</span>');
+      return `<div class="die-visual-group${kept.has(item)?'':' not-kept'}"><span class="die-visual-title">${escapeHTML(item.name)}</span><div class="die-visual-faces">${faces}</div><span class="die-visual-total">${item.die.subtotal}${valueLabel(item.die.rolls.length)}</span></div>`;
+    }).join('')}</div>`;
+  }
+  function valueLabel(rollCount){return rollCount>1?' total':'';}
+  function renderOutcomeMarks(score,target){
+    if(score<target)return '<span class="roll-outcome-marks" role="img" aria-label="Failure"><span class="roll-outcome-mark failure" aria-hidden="true">×</span></span>';
+    const raises=Math.floor((score-target)/4);
+    const label=raises?`Success, ${raises} ${raises===1?'raise':'raises'}`:'Success';
+    const raiseMarks=Array.from({length:raises},()=>'<span class="roll-outcome-mark raise" aria-hidden="true">+</span>').join('');
+    return `<span class="roll-outcome-marks" role="img" aria-label="${label}"><span class="roll-outcome-mark success" aria-hidden="true">✓</span>${raiseMarks}</span>`;
+  }
   function updateWildAvailability(){
     const multiple=Number($('#dieCount').value)>1;
     const keepMode=$('#diceMode').value==='keep';
@@ -475,8 +588,8 @@
     const traits=Array.from({length:count},()=>explodingDie(sides));
     const useWild=$('#wildDie').checked&&(count===1||mode==='keep');
     const wild=useWild?explodingDie(6):null;
-    const dice=traits.map((die,index)=>({name:`Trait ${index+1}`,die}));
-    if(wild)dice.push({name:'Wild',die:wild});
+    const dice=traits.map((die,index)=>({name:`Trait ${index+1}`,die,sides}));
+    if(wild)dice.push({name:'Wild',die:wild,sides:6});
     const keepHighest=count===1||mode==='keep';
     const kept=new Set(keepHighest
       ?[...dice].sort((a,b)=>b.die.subtotal-a.die.subtotal).slice(0,count)
@@ -491,9 +604,9 @@
         const score=item.die.subtotal+(isKept?modifier:0);
         const label=isKept?(score<target?'FAIL':Math.floor((score-target)/4)>0?`${Math.floor((score-target)/4)} ${Math.floor((score-target)/4)===1?'RAISE':'RAISES'}`:'SUCCESS'):'NOT KEPT';
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':'−'} ${Math.abs(modifier)} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
-        return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${label}</strong></div>`;
+        return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${label}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      ui.result.innerHTML=`<div class="multi-result-heading"><strong>${outcome}</strong><span>TN ${target}</span></div><div class="multi-result-list">${rows}</div>`;
+      ui.result.innerHTML=`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>${outcome}</strong><span>TN ${target}</span></div><div class="multi-result-list">${rows}</div>`;
       return;
     }
     if(count>1&&mode==='keep'){
@@ -503,9 +616,9 @@
         const score=item.die.subtotal+modifier;
         const outcome=score<target?'FAIL':Math.floor((score-target)/4)>0?`${Math.floor((score-target)/4)} ${Math.floor((score-target)/4)===1?'RAISE':'RAISES'}`:'SUCCESS';
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':''}${modifier} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
-        return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${isKept?outcome:'NOT KEPT'}</strong></div>`;
+        return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${isKept?outcome:'NOT KEPT'}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      ui.result.innerHTML=`<div class="multi-result-heading"><strong>KEEP HIGHEST ${count} OF ${dice.length}</strong><span>TN ${target}${modifierText}</span></div><div class="multi-result-list">${rows}</div>`;
+      ui.result.innerHTML=`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>KEEP HIGHEST ${count} OF ${dice.length}</strong><span>TN ${target}${modifierText}</span></div><div class="multi-result-list">${rows}</div>`;
       return;
     }
     const rolledTotal=keepHighest
@@ -524,7 +637,7 @@
     const methodLabel=count>1&&mode==='keep'?`Keep ${count} of ${dice.length}  ·  `:'';
     const detail=`${methodLabel}${dieDetails}${count>1&&mode==='sum'&&modifier?`  ·  Modifier ${modifier>0?'+':''}${modifier} to total`:''}`;
     const label=`${outcome}<small class="target-caption">TN ${target}</small>`;
-    ui.result.innerHTML=`<div class="result-line"><span class="result-label">${label}</span><strong class="result-total">${total}</strong></div><span class="die-breakdown">${escapeHTML(detail)}</span>`;
+    ui.result.innerHTML=`${renderDiceVisuals(dice,kept)}<div class="result-line"><span class="result-label">${label}</span><strong class="result-total">${total}</strong>${renderOutcomeMarks(total,target)}</div><span class="die-breakdown">${escapeHTML(detail)}</span>`;
   });
   updateWildAvailability();
   render();
