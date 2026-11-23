@@ -864,10 +864,6 @@
       return;
     }
     if(traitCount===1){
-      const selected=[...kept][0];
-      const total=selected.die.subtotal+modifier;
-      const raises=total>=target?Math.floor((total-target)/4):0;
-      const outcome=total<target?'FAIL':raises?`${raises} ${raises===1?'RAISE':'RAISES'}`:'SUCCESS';
       const rows=dice.map(item=>{
         const isKept=kept.has(item);
         const score=item.die.subtotal+(isKept?modifier:0);
@@ -875,7 +871,7 @@
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':'−'} ${Math.abs(modifier)} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
         return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${label}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>${outcome}</strong><span>TN ${target}</span></div><div class="multi-result-list">${rows}</div>`);
+      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-list">${rows}</div>`);
       return;
     }
     if(traitCount>1&&mode==='keep'){
