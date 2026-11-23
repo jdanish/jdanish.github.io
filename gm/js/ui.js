@@ -91,6 +91,11 @@
     if (!main || !rulebooksTab || !toolsTab) return;
 
     main.classList.toggle('tools-mode', toolsActive);
+    const workspaceMode = toolsActive ? 'tools' : 'rulebooks';
+    if (getState().workspaceMode !== workspaceMode) {
+      getState().workspaceMode = workspaceMode;
+      window.GM.storage?.saveState?.();
+    }
     rulebooksTab.classList.toggle('active', !toolsActive);
     toolsTab.classList.toggle('active', toolsActive);
     toolsTabGroup?.classList.toggle('active', toolsActive);
@@ -105,7 +110,8 @@
     }
 
     const tab = getCurrentTab();
-    if (tab) window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
+    const activeViewer = document.querySelector('#viewerFrame > .viewer.active');
+    if (tab && !activeViewer) window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
     updateTabButtonLabels();
   }
 
@@ -3943,7 +3949,7 @@
       buildPageButtons(initialTab);
       setViewerTitle(initialTab, getDisplayPage(initialTab));
     }
-    setWorkspaceMode('rulebooks');
+    setWorkspaceMode(getState().workspaceMode === 'tools' ? 'tools' : 'rulebooks');
   }
 
   window.GM.ui = {

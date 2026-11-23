@@ -10,6 +10,7 @@
       openSections: {},
       sidebarWidth: null,
       activeTab: null,
+      workspaceMode: 'rulebooks',
       sidebarTab: 'rules',
       currentSubTab: '',
       sidebarNotes: '',
@@ -28,6 +29,7 @@
       state.scales = state.scales || {};
       state.openSections = state.openSections || {};
       if (typeof state.sidebarTab !== 'string' || !state.sidebarTab) state.sidebarTab = 'rules';
+      if (!['rulebooks', 'tools'].includes(state.workspaceMode)) state.workspaceMode = 'rulebooks';
       if (typeof state.currentSubTab !== 'string') state.currentSubTab = '';
       if (typeof state.sidebarNotes !== 'string') state.sidebarNotes = '';
       if (!state.bookVisibility || typeof state.bookVisibility !== 'object') state.bookVisibility = {};

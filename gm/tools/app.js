@@ -155,11 +155,13 @@
     }
   }
   function setMobileToolPanel(panel) {
-    const diceActive = panel === 'dice';
-    document.body.classList.toggle('mobile-tool-tab-dice', diceActive);
-    document.body.classList.toggle('mobile-tool-tab-initiative', !diceActive);
+    const activePanel = ['initiative', 'dice', 'deck'].includes(panel) ? panel : 'initiative';
+    document.body.dataset.mobileToolPanel = activePanel;
+    ['initiative', 'dice', 'deck'].forEach(name => {
+      document.body.classList.toggle(`mobile-tool-tab-${name}`, activePanel === name);
+    });
     document.querySelectorAll('[data-tool-panel]').forEach(button => {
-      const selected = button.dataset.toolPanel === panel;
+      const selected = button.dataset.toolPanel === activePanel;
       button.classList.toggle('active', selected);
       button.setAttribute('aria-selected', String(selected));
     });

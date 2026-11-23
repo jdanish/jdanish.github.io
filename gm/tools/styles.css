@@ -49,10 +49,12 @@ html.embedded .topbar{display:none!important}
   .mobile-tool-tab{flex:1;min-height:38px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font:600 12px var(--sans);cursor:pointer}
   .mobile-tool-tab.active{background:var(--panel2);border-color:var(--accent-strong,var(--acid));color:var(--text);box-shadow:inset 0 -2px 0 var(--acid)}
   .layout{display:block;margin:14px auto 26px;padding:0 12px}
-  .right-column{display:flex;flex-direction:column;gap:12px}
-  body:not(.mobile-tool-tab-dice) .right-column{display:none!important}
-  body.mobile-tool-tab-dice .initiative-panel{display:none!important}
-  body.mobile-tool-tab-dice .right-column{display:flex!important}
+  .right-column{display:contents}
+  .initiative-panel,.dice-panel,.card-draw-panel,.save-note{display:none!important}
+  body[data-mobile-tool-panel="initiative"] .initiative-panel{display:block!important}
+  body[data-mobile-tool-panel="dice"] .dice-panel{display:block!important}
+  body[data-mobile-tool-panel="deck"] .card-draw-panel{display:block!important}
+  body[data-mobile-tool-panel="deck"] .save-note{display:flex!important}
   .initiative-panel{padding:20px 18px 0;min-height:0}
   .dice-panel,.card-draw-panel{padding:20px}
 }

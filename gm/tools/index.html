@@ -33,9 +33,9 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=gm-tools-reset-tab-arrows-20261123">
+  <link rel="stylesheet" href="styles.css?v=gm-mobile-three-tabs-20261123">
 </head>
-<body class="mobile-tool-tab-initiative">
+<body class="mobile-tool-tab-initiative" data-mobile-tool-panel="initiative">
   <header class="topbar">
     <a class="brand" href="#" aria-label="Wild Card home"><span class="brand-mark">W</span><span>WILD<span class="brand-light">CARD</span></span></a>
     <div class="edition-tag"><span class="live-dot"></span> TABLE TOOLS <span class="divider">/</span> ADVENTURE EDITION</div>
@@ -43,7 +43,8 @@
 
   <nav class="mobile-tool-tabs" role="tablist" aria-label="Choose a table tool">
     <button type="button" class="mobile-tool-tab active" id="mobileInitiativeTab" role="tab" aria-selected="true" aria-controls="initiativePanel" data-tool-panel="initiative">Initiative</button>
-    <button type="button" class="mobile-tool-tab" id="mobileDiceTab" role="tab" aria-selected="false" aria-controls="diceTabPanel" data-tool-panel="dice">Dice</button>
+    <button type="button" class="mobile-tool-tab" id="mobileDiceTab" role="tab" aria-selected="false" aria-controls="dicePanel" data-tool-panel="dice">Dice</button>
+    <button type="button" class="mobile-tool-tab" id="mobileDeckTab" role="tab" aria-selected="false" aria-controls="deckPanel" data-tool-panel="deck">Deck</button>
   </nav>
 
   <main class="layout">
@@ -63,10 +64,11 @@
       <div class="combatant-list" id="combatantList"></div>
       <div class="empty-state" id="emptyState"><div class="empty-icon">♧</div><strong>No combatants yet</strong><span>Add everyone who needs a card this round.</span></div>
       <div class="panel-footer"><span>INITIATIVE ORDER</span><span>ACE → 2 <i>·</i> ♠ &gt; ♥ &gt; ♦ &gt; ♣</span></div>
+      <section class="tip-card"><span class="tip-spark">✳</span><div><strong>Joker’s wild</strong><p>Draw a Joker and gain +2 to Trait and damage rolls for the round. All other players on your side also receive a Benny. A Joker acts whenever you like.</p></div></section>
     </section>
 
-    <aside class="right-column" id="diceTabPanel" role="tabpanel" aria-labelledby="mobileDiceTab">
-      <section class="panel dice-panel" id="dicePanel" aria-labelledby="diceTitle">
+    <aside class="right-column">
+      <section class="panel dice-panel" id="dicePanel" role="tabpanel" aria-labelledby="mobileDiceTab diceTitle">
         <div class="panel-heading compact"><div><div class="eyebrow">LET THE DICE FLY</div><h2 id="diceTitle">Quick Roll</h2></div><div class="die-glyph">⚄</div></div>
         <label class="field-label" for="traitDie">TRAIT DIE</label>
         <div class="roll-controls"><select id="traitDie" aria-label="Trait die"><option value="4">d4</option><option value="6" selected>d6</option><option value="8">d8</option><option value="10">d10</option><option value="12">d12</option></select><label class="count-control"><span>COUNT</span><input id="dieCount" type="number" min="1" max="20" value="1" aria-label="Number of dice"></label><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
@@ -76,7 +78,7 @@
         <div class="roll-result" id="rollResult" aria-live="polite"><span class="result-hint">Your roll will appear here.</span></div>
         <p class="dice-note" id="diceNote">Each die aces (maximum rolls) and explodes. With one Trait Die, the Wild Die keeps the higher result. Multiple dice are summed.</p>
       </section>
-      <section class="panel card-draw-panel" aria-labelledby="cardDrawTitle">
+      <section class="panel card-draw-panel" id="deckPanel" role="tabpanel" aria-labelledby="mobileDeckTab">
         <div class="panel-heading compact"><div><div class="eyebrow">A SEPARATE DECK</div><h2 id="cardDrawTitle">Draw a Card</h2></div><div class="card-glyph">♠</div></div>
         <label class="field-label" for="drawReason">REASON <span class="optional-label">OPTIONAL</span></label>
         <div class="draw-controls"><input id="drawReason" maxlength="32" placeholder="Loot, omen, table…" autocomplete="off"><button class="button button-primary" id="drawCardBtn">Draw</button></div>
@@ -84,11 +86,8 @@
         <div class="extra-deck-status" id="extraDeckStatus">54 cards left in this deck</div>
         <button class="text-button reshuffle-button" id="reshuffleDrawDeck">Reshuffle this deck</button>
       </section>
-      <section class="tip-card"><span class="tip-spark">✳</span><div><strong>Joker’s wild</strong><p>Draw a Joker and gain +2 to Trait and damage rolls for the round. All other players on your side also receive a Benny. A Joker acts whenever you like.</p></div></section>
-      <div class="save-note"><span>▣</span> Your table is saved on this device.</div>
     </aside>
   </main>
-  <footer class="page-footer"><span>WILD CARD <i>·</i> A LITTLE HELP FOR YOUR NEXT ADVENTURE</span><span>Unofficial fan-made tool</span></footer>
-  <script src="app.js?v=gm-gm-tracker-sync-20261123"></script>
+  <script src="app.js?v=gm-workspace-persist-mobile-deck-20261123"></script>
 </body>
 </html>
