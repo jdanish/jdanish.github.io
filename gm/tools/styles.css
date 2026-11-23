@@ -130,6 +130,7 @@ html[data-theme="light"] .tool-tab.active{background:#eff6ff;color:#1f2937;borde
 .die-visual-face.d8{clip-path:polygon(50% 1%,94% 50%,50% 99%,6% 50%)}
 .die-visual-face.d10{clip-path:polygon(50% 1%,95% 31%,78% 96%,22% 96%,5% 31%)}
 .die-visual-face.d12{clip-path:polygon(26% 3%,74% 3%,98% 50%,74% 97%,26% 97%,2% 50%)}
+.die-visual-face.d20{clip-path:polygon(50% 1%,72% 8%,91% 25%,99% 48%,92% 72%,75% 91%,51% 99%,28% 92%,9% 75%,1% 51%,8% 28%,26% 9%)}
 .die-visual-face small{font:8px var(--mono);opacity:.72;line-height:1}
 .die-visual-face strong{font:700 18px var(--display);line-height:1.1}
 .die-pips{width:28px;height:25px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);align-items:center;justify-items:center}
