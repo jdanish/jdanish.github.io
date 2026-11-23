@@ -2755,6 +2755,11 @@
             portraitInput ? { portrait: portraitInput.value } : undefined
           );
           if (saved === false) throw new Error('The document save function reported failure.');
+          if (portraitInput) {
+            document.getElementById('toolsFrame')?.contentWindow?.postMessage(
+              { type: 'gm-refresh-initiative-portraits' }, '*'
+            );
+          }
         } else {
           window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
         }

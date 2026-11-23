@@ -8,7 +8,6 @@
   const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
   const STORAGE_KEY = 'wildcard-table-v1';
   const $ = (selector) => document.querySelector(selector);
-  const portraitUrlCache = new Map();
   const ui = {
     list: $('#combatantList'), empty: $('#emptyState'), name: $('#combatantName'),
     form: $('#addForm'), count: $('#combatantCount'), round: $('#roundNumber'),
@@ -122,12 +121,18 @@
     if(!path)return;
     const data=parentGM()?.data;
     if(typeof data?.resolveAssetUrl!=='function')return;
-    let pending=portraitUrlCache.get(path);
-    if(!pending){
-      pending=Promise.resolve(data.resolveAssetUrl(path)).catch(()=> '');
-      portraitUrlCache.set(path,pending);
-    }
-    pending.then(url=>{if(url)image.src=url;});
+    const candidates=[...new Set([path,`data/${path}`])];
+    let nextCandidate=0;
+    const tryNext=async()=>{
+      while(nextCandidate<candidates.length){
+        const candidate=candidates[nextCandidate++];
+        let url='';
+        try{url=await data.resolveAssetUrl(candidate);}catch{}
+        if(url){image.src=url;return;}
+      }
+    };
+    image.addEventListener('error',()=>{tryNext().catch(()=>{});});
+    tryNext().catch(()=>{});
   }
   function readCounterDefinition(key, fallback, max, enforceMax) {
     const definition = {
@@ -179,11 +184,37 @@
     const name = fields.name || heading || filename;
     return name ? {
       name,
+      aliases: [...new Set([name, heading, filename].filter(Boolean))],
       type,
       trackers: countersFromOpenDocument(text),
       portraitPath: fields.portrait || '',
       hasPortrait: Object.prototype.hasOwnProperty.call(fields, 'portrait')
     } : null;
+  }
+  function normalizedCombatantName(name){
+    return String(name||'').toLocaleLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  async function syncOpenPortraits(){
+    const gm=parentGM();
+    const sidebar=gm?.sidebarData;
+    const readFile=gm?.data?.readFile;
+    if(!sidebar||typeof readFile!=='function')return;
+    await sidebar.readyPromise;
+    let changed=false;
+    for(const path of sidebar.getWorkspaceDocuments?.()||[]){
+      const markdown=await readFile.call(gm.data,path);
+      if(markdown==null)continue;
+      const entry=nameFromOpenDocument(path,markdown);
+      if(!entry?.hasPortrait||!entry.portraitPath)continue;
+      const aliases=new Set(entry.aliases.map(normalizedCombatantName));
+      state.combatants.forEach(combatant=>{
+        if(aliases.has(normalizedCombatantName(combatant.name))&&combatant.portraitPath!==entry.portraitPath){
+          combatant.portraitPath=entry.portraitPath;
+          changed=true;
+        }
+      });
+    }
+    if(changed){save();render();}
   }
   async function importOpenDocuments() {
     const status = $('#importOpenStatus');
@@ -326,7 +357,7 @@
       shoulders.setAttribute('d','M8 34c.8-7.2 5.7-11 12-11s11.2 3.8 12 11');
       silhouette.append(head,shoulders);
       const portraitImage=document.createElement('img');
-      portraitImage.alt='';portraitImage.loading='lazy';portraitImage.draggable=false;
+      portraitImage.alt='';portraitImage.loading='eager';portraitImage.draggable=false;
       portrait.append(silhouette,portraitImage);
       attachPortraitSource(portrait,portraitImage,combatant.portraitPath);
       const name = document.createElement('span'); name.className='combatant-name'; name.textContent=combatant.name;
@@ -674,6 +705,10 @@
     importOpenButton.hidden = false;
     importOpenButton.addEventListener('click', importOpenDocuments);
   }
+  window.addEventListener('message',event=>{
+    if(event.source!==window.parent||event.data?.type!=='gm-refresh-initiative-portraits')return;
+    syncOpenPortraits().catch(()=>{});
+  });
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
   });
@@ -963,5 +998,6 @@
   if(document.documentElement.classList.contains('embedded')&&window.parent!==window){
     window.WildCardToolsReady=true;
     window.parent.postMessage({type:'gm-tools-ready'},'*');
+    syncOpenPortraits().catch(()=>{});
   }
 })();
