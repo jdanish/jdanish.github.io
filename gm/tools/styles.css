@@ -161,6 +161,51 @@ html[data-theme="light"] .dramatic-token{background:#e2e8f0;border-color:#94a3b8
 html[data-theme="light"] .dramatic-token.earned{background:#60a5fa;border-color:#3b82f6}
 @media(max-width:760px){.dice-panel,.card-draw-panel,.chase-panel,.dramatic-panel{padding:20px}}
 @media(max-width:520px){.tool-tab{font-size:9px;line-height:1.15;white-space:normal}.dramatic-panel{padding:18px 14px}.dramatic-scoreboard{gap:22px}.dramatic-round-score{padding-left:22px}.dramatic-actions{gap:7px}.dramatic-actions .button{gap:5px;padding:9px 6px;font-size:11px}.dramatic-actions small{font-size:9px}}
+
+/* Keep every secondary control legible in the light theme, including buttons
+   created dynamically for initiative and resource tracking. */
+html[data-theme="light"] .button-primary,
+html[data-theme="light"] .button-roll { background:#2563eb; color:#fff; }
+html[data-theme="light"] .button-add,
+html[data-theme="light"] .button-secondary,
+html[data-theme="light"] .range-button,
+html[data-theme="light"] .turn-arrow,
+html[data-theme="light"] .turn-button,
+html[data-theme="light"] .resource-stepper button,
+html[data-theme="light"] .resource-toggle,
+html[data-theme="light"] .row-redraw,
+html[data-theme="light"] .card-choice-button {
+  background:#edf4fc;
+  border-color:#cbd5e1;
+  color:#334155;
+}
+html[data-theme="light"] .button-add { color:#1d4ed8; }
+html[data-theme="light"] .button-add:hover,
+html[data-theme="light"] .button-secondary:hover,
+html[data-theme="light"] .range-button:hover,
+html[data-theme="light"] .turn-arrow:hover,
+html[data-theme="light"] .turn-button:hover,
+html[data-theme="light"] .resource-stepper button:hover:not(:disabled),
+html[data-theme="light"] .resource-toggle:hover,
+html[data-theme="light"] .resource-toggle.selected,
+html[data-theme="light"] .row-redraw:hover,
+html[data-theme="light"] .card-choice-button:hover {
+  background:#dbeafe;
+  border-color:#93c5fd;
+  color:#1d4ed8;
+}
+html[data-theme="light"] .turn-arrow.next,
+html[data-theme="light"] .turn-button.next-turn {
+  background:#2563eb;
+  border-color:#2563eb;
+  color:#fff;
+}
+html[data-theme="light"] .turn-arrow.next:hover,
+html[data-theme="light"] .turn-button.next-turn:hover {
+  background:#1d4ed8;
+  border-color:#1d4ed8;
+  color:#fff;
+}
 .dice-visual-results{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 9px}
 .die-visual-group{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:76px;padding:7px 8px 6px;border:1px solid #2c3037;border-radius:8px;background:#191d23}
 .die-visual-group.not-kept{opacity:.5}

@@ -707,6 +707,7 @@
       const count=Math.max(1,Math.min(20,Math.trunc(Number(event.data.count)||1)));
       $('#traitDie').value=String(sides);
       $('#dieCount').value=String(count);
+      $('#modifier').value=String(Math.max(-99,Math.min(99,Math.trunc(Number(event.data.modifier)||0))));
       $('#diceMode').value='sum';
       $('#wildDie').checked=count===1&&event.data.wild!==false;
       updateWildAvailability();

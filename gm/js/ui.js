@@ -2208,10 +2208,11 @@
   }
 
   function requestCharacterDiceRoll(notation) {
-    const match = String(notation || '').replace(/\s+/g, '').match(/^(?:(\d{1,2}))?d(4|6|8|10|12|20)$/i);
+    const match = String(notation || '').replace(/[−–]/g, '-').replace(/\s+/g, '').match(/^(?:(\d{1,2}))?d(4|6|8|10|12|20)(?:([+-])(\d{1,2}))?$/i);
     if (!match) return;
     const count = Math.max(1, Math.min(20, Number(match[1]) || 1));
-    toolsDiceRollPending = { type: 'gm-dice-reference', count, sides: Number(match[2] || match[3]), wild: count === 1 };
+    const modifier = (match[4] ? Number(match[4]) * (match[3] === '-' ? -1 : 1) : 0);
+    toolsDiceRollPending = { type: 'gm-dice-reference', count, sides: Number(match[2] || match[3]), modifier, wild: count === 1 };
     setWorkspaceMode('tools');
     const toolsFrame = document.getElementById('toolsFrame');
     if (toolsFrame?.contentWindow?.WildCardToolsReady) {
@@ -2222,7 +2223,7 @@
 
   function decorateCharacterDiceReferences(root, enabled) {
     if (!root || !enabled) return;
-    const pattern = /\b(?:(\d{1,2})\s*d\s*(4|6|8|10|12|20)|d\s*(4|6|8|10|12|20))\b/gi;
+    const pattern = /\b(?:(\d{1,2})\s*d\s*(4|6|8|10|12|20)|d\s*(4|6|8|10|12|20))(?:\s*([+\-−–])\s*(\d{1,2}))?\b/gi;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         if (!pattern.test(node.nodeValue || '')) { pattern.lastIndex = 0; return NodeFilter.FILTER_REJECT; }
