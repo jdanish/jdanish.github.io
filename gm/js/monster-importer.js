@@ -148,9 +148,12 @@
 
     const out = [`# ${name}`, ''];
     const specialSectionNames = /special abilities?/i;
+    let namedIntro = false;
 
     for (const section of sections) {
       const title = clean(section.title);
+      const displayTitle = title.toLowerCase() === 'description' && !namedIntro ? name : title;
+      if (title.toLowerCase() === 'description' && !namedIntro) namedIntro = true;
       const content = splitLabeledLines(section.lines).filter((line) => line !== '');
       if (!content.length) continue;
 
@@ -161,7 +164,7 @@
         continue;
       }
 
-      if (title) out.push(`## ${title}`, '');
+      if (title) out.push(`## ${displayTitle}`, '');
       for (const line of content) {
         const normalized = line
           .replace(/^(Attributes?|Stats?|Skills?|Hindrances?|Edges?|Powers?|Pace|Parry|Toughness)\s*:\s*/i, (m, label) => `**${label}:** `)

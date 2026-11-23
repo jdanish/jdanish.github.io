@@ -171,7 +171,7 @@
 
     try {
       const moduleUrl = new URL('./monster-importer.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'monster-name-parse-20261123c');
+      moduleUrl.searchParams.set('v', 'monster-intro-heading-20261123d');
       await import(moduleUrl.href);
     } catch (err) {
       console.error('Monster importer failed to load', err);
