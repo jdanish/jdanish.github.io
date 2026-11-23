@@ -20,6 +20,8 @@
   let activeJokerRevealIds = [];
   let cardDealSequence = 0;
   let cardDealTimer = null;
+  let activeDrawAnimationId = null;
+  let drawAnimationTimer = null;
   let rollAnimationSequence = 0;
   let rollAnimationTimer = null;
 
@@ -347,7 +349,9 @@
     if(!state.cardDraws.length){const empty=document.createElement('div');empty.className='empty-draw';empty.textContent='Draw a card for any table moment.';ui.drawList.append(empty);return;}
     state.cardDraws.forEach(item=>{
       const row=document.createElement('div');row.className='drawn-card-row';
-      row.append(cardFace(item.card));
+      const face=cardFace(item.card);
+      if(item.id&&item.id===activeDrawAnimationId)face.classList.add('is-dealing-card');
+      row.append(face);
       const reason=document.createElement('span');reason.className=`draw-reason${item.reason?'':' no-reason'}`;reason.textContent=item.reason||'No reason added';
       row.append(reason);ui.drawList.append(row);
     });
@@ -588,7 +592,14 @@
     activeJokerRevealIds=[];
     if(card.joker)shuffleExtraUndealt();
     const reason=$('#drawReason').value.trim();
-    state.cardDraws.unshift({card,reason});state.cardDraws=state.cardDraws.slice(0,12);
+    const drawId=crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`;
+    activeDrawAnimationId=drawId;
+    if(drawAnimationTimer)window.clearTimeout(drawAnimationTimer);
+    drawAnimationTimer=window.setTimeout(()=>{
+      if(activeDrawAnimationId!==drawId)return;
+      activeDrawAnimationId=null;drawAnimationTimer=null;render();
+    },900);
+    state.cardDraws.unshift({id:drawId,card,reason});state.cardDraws=state.cardDraws.slice(0,12);
     $('#drawReason').value='';save();render();
   }
   ui.form.addEventListener('submit',event=>{
