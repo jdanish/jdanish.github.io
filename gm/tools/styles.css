@@ -193,3 +193,28 @@ html[data-theme="light"] .die-visual-title,html[data-theme="light"] .die-visual-
 .roll-outcome-mark.success,.roll-outcome-mark.raise{color:#65d58d}
 .result-line>.roll-outcome-marks{margin-left:-4px;font-size:17px}
 .multi-result-row strong .roll-outcome-marks{font-size:11px}
+.dice-pool-preview{margin-top:14px;padding:11px 12px;background:#12151a;border:1px solid #2c3038;border-radius:9px}
+.dice-pool-heading{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;font:9px var(--mono);letter-spacing:.9px;color:#9098a5}
+.dice-pool-heading span:last-child{color:var(--text);letter-spacing:.2px;text-align:right}
+.dice-pool-images{display:flex;flex-wrap:wrap;align-items:flex-end;gap:9px 7px;min-height:61px}
+.pool-die-item{width:42px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pool-die-shape{width:34px;height:34px;display:grid;place-items:center;background:linear-gradient(145deg,#fffdf3,#c9d5e5);color:#16202d;filter:drop-shadow(0 2px 2px #0007);transition:filter .18s,transform .18s}
+.pool-die-shape strong{font:800 11px var(--mono)}
+.pool-die-shape.d4{clip-path:polygon(50% 1%,98% 91%,2% 91%)}
+.pool-die-shape.d6{width:33px;height:33px;border:2px solid #fff;border-radius:8px;box-shadow:inset 0 0 0 2px #aab9cc}
+.pool-die-shape.d8{clip-path:polygon(50% 1%,96% 50%,50% 99%,4% 50%)}
+.pool-die-shape.d10{clip-path:polygon(50% 1%,93% 30%,78% 96%,22% 96%,7% 30%)}
+.pool-die-shape.d12{clip-path:polygon(25% 2%,75% 2%,99% 50%,75% 98%,25% 98%,1% 50%)}
+.pool-die-shape.d20{clip-path:polygon(50% 1%,72% 8%,91% 25%,99% 48%,92% 72%,75% 91%,51% 99%,28% 92%,9% 75%,1% 51%,8% 28%,26% 9%)}
+.pool-die-label{font:8px var(--mono);letter-spacing:.2px;color:#9ba3b0}
+.dice-pool-images.rolling .pool-die-shape{animation:dice-tumble .62s cubic-bezier(.2,.75,.3,1) both;animation-delay:var(--roll-delay,0ms)}
+@keyframes dice-tumble{0%{transform:translateY(0) rotate(0) scale(1)}22%{transform:translateY(-13px) rotate(95deg) scale(1.08)}48%{transform:translateY(2px) rotate(205deg) scale(.94)}72%{transform:translateY(-7px) rotate(300deg) scale(1.04)}100%{transform:translateY(0) rotate(360deg) scale(1)}}
+.button-roll:disabled{opacity:.72;cursor:wait;transform:none}
+.roll-result.is-rolling{align-items:center;text-align:center}
+.die-visual-face{animation:die-land .35s cubic-bezier(.2,.8,.3,1) both}
+@keyframes die-land{from{opacity:.25;transform:translateY(-7px) rotate(-14deg) scale(.88)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
+html[data-theme="light"] .dice-pool-preview{background:#f1f5f9;border-color:#cbd5e1}
+html[data-theme="light"] .dice-pool-heading{color:#64748b}
+html[data-theme="light"] .dice-pool-heading span:last-child{color:#1f2937}
+html[data-theme="light"] .pool-die-label{color:#475569}
+@media(prefers-reduced-motion:reduce){.dice-pool-images.rolling .pool-die-shape,.die-visual-face{animation-duration:.01ms!important;animation-iteration-count:1!important}}

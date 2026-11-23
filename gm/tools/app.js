@@ -669,6 +669,41 @@
     }).join('')}</div>`;
   }
   function valueLabel(rollCount){return rollCount>1?' total':'';}
+  function renderDicePool(rolling=false){
+    const count=Math.max(1,Math.min(20,Number($('#dieCount').value)||1));
+    const sides=Number($('#traitDie').value)||6;
+    const mode=$('#diceMode').value;
+    const wild=Boolean($('#wildDie').checked&&(count===1||mode==='keep'));
+    const pool=$('#dicePoolImages');
+    pool.replaceChildren();
+    pool.classList.toggle('rolling',rolling);
+    $('#dicePoolSummary').textContent=`${count} × d${sides}${wild?'  +  Wild d6':''}`;
+    const dice=Array.from({length:count},(_,index)=>({label:`T${index+1}`,sides}));
+    if(wild)dice.push({label:'WILD',sides:6});
+    dice.forEach((die,index)=>{
+      const item=document.createElement('div');item.className='pool-die-item';item.title=`${die.label==='WILD'?'Wild':'Trait'} d${die.sides}`;
+      const shape=document.createElement('span');shape.className=`pool-die-shape d${die.sides}`;
+      const number=document.createElement('strong');number.textContent=String(die.sides);shape.append(number);
+      const label=document.createElement('small');label.className='pool-die-label';label.textContent=die.label;
+      item.append(shape,label);
+      if(rolling)item.style.setProperty('--roll-delay',`${index*8}ms`);
+      pool.append(item);
+    });
+  }
+  function animateRollResult(resultHtml){
+    const button=$('#rollBtn');
+    button.disabled=true;
+    renderDicePool(true);
+    ui.result.classList.add('is-rolling');
+    ui.result.innerHTML='<span class="result-hint">Rolling dice…</span>';
+    const duration=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?140:850;
+    window.setTimeout(()=>{
+      renderDicePool(false);
+      ui.result.classList.remove('is-rolling');
+      ui.result.innerHTML=resultHtml;
+      button.disabled=false;
+    },duration);
+  }
   function renderOutcomeMarks(score,target){
     if(score<target)return '<span class="roll-outcome-marks" role="img" aria-label="Failure"><span class="roll-outcome-mark failure" aria-hidden="true">×</span></span>';
     const raises=Math.floor((score-target)/4);
@@ -686,7 +721,9 @@
     $('#diceNote').textContent=multiple
       ?(keepMode?'Roll the selected number of Trait dice plus an optional Wild Die. Keep that many highest, then check each kept die separately against the target. Aces explode.':'Trait dice are summed. To use a Wild Die with multiple dice, choose “Keep highest dice.” Aces explode.')
       :'Each die aces (maximum rolls) and explodes. With one Trait Die, the Wild Die keeps the higher result.';
+    renderDicePool();
   }
+  $('#traitDie').addEventListener('change',updateWildAvailability);
   $('#dieCount').addEventListener('input',updateWildAvailability);
   $('#diceMode').addEventListener('change',updateWildAvailability);
   $('#wildDie').addEventListener('change',updateWildAvailability);
@@ -719,7 +756,7 @@
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':'−'} ${Math.abs(modifier)} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
         return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${label}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      ui.result.innerHTML=`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>${outcome}</strong><span>TN ${target}</span></div><div class="multi-result-list">${rows}</div>`;
+      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>${outcome}</strong><span>TN ${target}</span></div><div class="multi-result-list">${rows}</div>`);
       return;
     }
     if(count>1&&mode==='keep'){
@@ -731,7 +768,7 @@
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':''}${modifier} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
         return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${isKept?outcome:'NOT KEPT'}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      ui.result.innerHTML=`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>KEEP HIGHEST ${count} OF ${dice.length}</strong><span>TN ${target}${modifierText}</span></div><div class="multi-result-list">${rows}</div>`;
+      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>KEEP HIGHEST ${count} OF ${dice.length}</strong><span>TN ${target}${modifierText}</span></div><div class="multi-result-list">${rows}</div>`);
       return;
     }
     const rolledTotal=keepHighest
@@ -750,7 +787,7 @@
     const methodLabel=count>1&&mode==='keep'?`Keep ${count} of ${dice.length}  ·  `:'';
     const detail=`${methodLabel}${dieDetails}${count>1&&mode==='sum'&&modifier?`  ·  Modifier ${modifier>0?'+':''}${modifier} to total`:''}`;
     const label=`${outcome}<small class="target-caption">TN ${target}</small>`;
-    ui.result.innerHTML=`${renderDiceVisuals(dice,kept)}<div class="result-line"><span class="result-label">${label}</span><strong class="result-total">${total}</strong>${renderOutcomeMarks(total,target)}</div><span class="die-breakdown">${escapeHTML(detail)}</span>`;
+    animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="result-line"><span class="result-label">${label}</span><strong class="result-total">${total}</strong>${renderOutcomeMarks(total,target)}</div><span class="die-breakdown">${escapeHTML(detail)}</span>`);
   });
   updateWildAvailability();
   render();
