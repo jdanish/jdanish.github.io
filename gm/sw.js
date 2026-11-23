@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261123-dice-modifier-light-controls';
+const CACHE_NAME = 'gm-reference-shell-v20261123-joker-persistent-reveal-dice-clear';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

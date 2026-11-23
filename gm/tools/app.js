@@ -19,9 +19,9 @@
   let cardDealAnimationOrder = new Map();
   let activeJokerRevealIds = [];
   let cardDealSequence = 0;
-  let jokerRevealSequence = 0;
   let cardDealTimer = null;
-  let jokerRevealTimer = null;
+  let rollAnimationSequence = 0;
+  let rollAnimationTimer = null;
 
   function loadState() {
     try {
@@ -78,7 +78,7 @@
       notes: String(source.notes || '').slice(0, 500)
     };
   }
-  function beginCardDealAnimation(ids, jokerIds = undefined) {
+  function beginCardDealAnimation(ids, jokerIds = []) {
     const sequence = ++cardDealSequence;
     const orderedIds = [...new Set(ids || [])];
     cardDealAnimationIds = new Set(orderedIds);
@@ -91,18 +91,7 @@
       render();
     }, 1700);
 
-    if (jokerIds !== undefined) {
-      activeJokerRevealIds = [...jokerIds];
-      const reveal = ++jokerRevealSequence;
-      if (jokerRevealTimer) window.clearTimeout(jokerRevealTimer);
-      if (activeJokerRevealIds.length) {
-        jokerRevealTimer = window.setTimeout(() => {
-          if (reveal !== jokerRevealSequence) return;
-          activeJokerRevealIds = [];
-          render();
-        }, 4200);
-      }
-    }
+    activeJokerRevealIds = [...jokerIds];
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* app remains usable if storage is unavailable */ }
@@ -465,8 +454,7 @@
       if (!chase.deck.draw.length) return;
       participant.card = chase.deck.draw.shift();
     });
-    if (chase.participants.some(participant => participant.card?.joker)
-      && confirmJokerReshuffle('chase deck','Cards already dealt for this round stay in play.')) {
+    if (chase.participants.some(participant => participant.card?.joker)) {
       chase.deck.draw = shuffleInPlace([...chase.deck.draw,...chase.deck.discard]);
       chase.deck.discard = [];
     }
@@ -539,16 +527,13 @@
     state.extraDeck=shuffleInPlace([...state.extraDeck,...state.extraDiscard]);
     state.extraDiscard=[];
   }
-  function confirmJokerReshuffle(deckName,detail){
-    return window.confirm(`A Joker was drawn. Reshuffle the ${deckName}?\n\nChoose OK for Yes (the default) or Cancel for No. ${detail}`);
-  }
   function deal() {
     if(!state.combatants.length){ui.name.focus();return;}
     state.round+=1;
     state.initiativeDeck={draw:shuffledDeck(),discard:[]};
     state.combatants.forEach(combatant=>{combatant.card=state.initiativeDeck.draw.shift()||null;combatant.cardOptions=null;});
     state.activeId=initiativeOrder().find(c=>c.card)?.id||null;
-    if(state.combatants.some(c=>c.card?.joker)&&confirmJokerReshuffle('undealt initiative deck','Cards already dealt for initiative stay in play.'))shuffleInitiativeUndealt();
+    if(state.combatants.some(c=>c.card?.joker))shuffleInitiativeUndealt();
     const order=initiativeOrder();
     beginCardDealAnimation(order.map(combatant=>combatant.id),order.filter(combatant=>combatant.card?.joker).map(combatant=>combatant.id));
     save();render();
@@ -573,7 +558,7 @@
     if(!deck.draw.length)return;
     const replacement=deck.draw.shift();
     combatant.cardOptions=[{card:combatant.card},{card:replacement}];
-    if(replacement.joker&&confirmJokerReshuffle('undealt initiative deck','Cards already dealt for initiative stay in play.'))shuffleInitiativeUndealt();
+    if(replacement.joker)shuffleInitiativeUndealt();
     beginCardDealAnimation([id]);
     save();render();
   }
@@ -600,7 +585,8 @@
     if(!state.extraDeck.length){state.extraDeck=state.extraDiscard;state.extraDiscard=[];for(let i=state.extraDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.extraDeck[i],state.extraDeck[j]]=[state.extraDeck[j],state.extraDeck[i]];}}
     if(!state.extraDeck.length)state.extraDeck=shuffledDeck();
     const card=state.extraDeck.shift();state.extraDiscard.push(card);
-    if(card.joker&&confirmJokerReshuffle('separate draw deck','Previously drawn cards stay in the displayed history.'))shuffleExtraUndealt();
+    activeJokerRevealIds=[];
+    if(card.joker)shuffleExtraUndealt();
     const reason=$('#drawReason').value.trim();
     state.cardDraws.unshift({card,reason});state.cardDraws=state.cardDraws.slice(0,12);
     $('#drawReason').value='';save();render();
@@ -696,6 +682,7 @@
   });
   $('#resetAll').addEventListener('click',()=>{
     if(!confirm('Clear all combatants and reset the round?'))return;
+    activeJokerRevealIds=[];
     state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:state.activeToolPanel,chase:normalizeChase(null),dramaticTask:normalizeDramaticTask(null)};
     save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
   });
@@ -705,6 +692,7 @@
     if(event.data?.type==='gm-dice-reference'){
       const sides=[4,6,8,10,12,20].includes(Number(event.data.sides))?Number(event.data.sides):6;
       const count=Math.max(1,Math.min(20,Math.trunc(Number(event.data.count)||1)));
+      clearDiceResults();
       $('#traitDie').value=String(sides);
       $('#dieCount').value=String(count);
       $('#modifier').value=String(Math.max(-99,Math.min(99,Math.trunc(Number(event.data.modifier)||0))));
@@ -726,6 +714,14 @@
     return{subtotal,rolls};
   }
   function formatDie(die){return die.rolls.join(' + ');}
+  function clearDiceResults(){
+    rollAnimationSequence++;
+    if(rollAnimationTimer)window.clearTimeout(rollAnimationTimer);
+    rollAnimationTimer=null;
+    $('#rollBtn').disabled=false;
+    ui.result.classList.remove('is-rolling');
+    ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
+  }
   function renderDiceVisuals(dice,kept){
     return `<div class="dice-visual-results" aria-label="Rolled dice">${dice.map(item=>{
       const sides=item.sides;
@@ -759,13 +755,17 @@
     });
   }
   function animateRollResult(resultHtml){
+    const sequence=++rollAnimationSequence;
     const button=$('#rollBtn');
+    if(rollAnimationTimer)window.clearTimeout(rollAnimationTimer);
     button.disabled=true;
     renderDicePool(true);
     ui.result.classList.add('is-rolling');
     ui.result.innerHTML='<span class="result-hint">Rolling dice…</span>';
     const duration=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?140:850;
-    window.setTimeout(()=>{
+    rollAnimationTimer=window.setTimeout(()=>{
+      if(sequence!==rollAnimationSequence)return;
+      rollAnimationTimer=null;
       renderDicePool(false);
       ui.result.classList.remove('is-rolling');
       ui.result.innerHTML=resultHtml;
