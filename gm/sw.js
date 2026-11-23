@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261123-monster-intro-heading';
+const CACHE_NAME = 'gm-reference-shell-v20261123-preserve-selection-lines';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

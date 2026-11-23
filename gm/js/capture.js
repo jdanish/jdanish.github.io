@@ -23,6 +23,15 @@
     return String(text || '').replace(/\s+/g, ' ').trim();
   }
 
+  function normalizeSelectionLines(text) {
+    return String(text || '')
+      .replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+      .split('\n')
+      .map((line) => line.replace(/[\t ]+/g, ' ').trim())
+      .filter(Boolean)
+      .join('\n');
+  }
+
   function truncate(text, max = 120) {
     const clean = normalizeText(text);
     return clean.length <= max ? clean : `${clean.slice(0, max - 1)}…`;
@@ -42,6 +51,7 @@
     state.cachedSelection = {
       tab: ctx.tab,
       text: ctx.text,
+      rawText: ctx.rawText || ctx.text,
       rect: ctx.rect ? { ...ctx.rect } : null,
       displayPage: ctx.displayPage,
       book: ctx.book,
@@ -75,7 +85,8 @@
       selection = null;
     }
 
-    const liveText = normalizeText(selection?.toString?.());
+    const rawText = normalizeSelectionLines(selection?.toString?.());
+    const liveText = normalizeText(rawText);
     let rect = null;
     try {
       if (selection?.rangeCount) {
@@ -94,6 +105,7 @@
         book,
         displayPage,
         text: liveText,
+        rawText,
         rect,
       };
       captureSelectionSnapshot(ctx);
@@ -110,6 +122,7 @@
         book,
         displayPage,
         text: cached.text,
+        rawText: cached.rawText || cached.text,
         rect: cached.rect || null,
       };
     }
@@ -200,7 +213,7 @@
 
       try {
         if (action === 'create-monster') {
-          const created = await window.GM.monsterImporter?.createFromSelection?.(current.text, current);
+          const created = await window.GM.monsterImporter?.createFromSelection?.(current.rawText || current.text, current);
           if (!created) throw new Error('The monster importer is not ready yet.');
           window.GM.popup?.hide?.();
           if (created.downloaded) {

@@ -113,10 +113,11 @@
     // its description and familiar stat labels back on boundaries before
     // parsing, otherwise the whole selection can be mistaken for the name.
     raw = raw
+      .replace(/\s+(?=The stats below\b)/gi, '\n')
       .replace(/\s+(?=(?:This entry|This creature|These creatures|A favored tactic)\b)/gi, '\nDescription: ')
       .replace(/;\s+(?=(?:Parry|Toughness)\b)/gi, '\n')
-      .replace(/\s+(?=(?:Attributes?|Stats?|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Pace|Parry|Toughness)\s*:?(?:\s|$))/gi, '\n')
-      .replace(/^(Attributes?|Stats?|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Pace|Parry|Toughness)\s+(?!:)/gim, '$1: ');
+      .replace(/\s+(?=(?:Attributes?|Stats?(?!\s+below\b)|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Pace|Parry|Toughness)\s*:?(?:\s|$))/gi, '\n')
+      .replace(/^(Attributes?|Stats?(?!\s+below\b)|Skills?|Hindrances?|Edges?(?:\s*&\s*Abilities)?|Special Abilities?|Weapons?|Armor|Gear|Equipment|Powers?|Pace|Parry|Toughness)\s+(?!:)/gim, '$1: ');
     const rawLines = raw.split('\n').map((line) => line.trim()).filter((line, i, arr) => line || (i > 0 && arr[i - 1]));
     if (!rawLines.length) throw new Error('The stat block is empty.');
 
