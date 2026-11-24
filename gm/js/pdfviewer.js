@@ -362,30 +362,6 @@
     return viewerState.activeTab;
   }
 
-  async function getActivePdfContext() {
-    const tab = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
-    if (!tab) throw new Error('No rulebook is selected.');
-    const book = getBook(tab);
-    const app = await ensureViewerLoaded(tab);
-    const startedAt = performance.now();
-    let pdfDocument = app?.pdfDocument || app?.pdfViewer?.pdfDocument;
-    while (!pdfDocument && performance.now() - startedAt < 20000) {
-      await new Promise((resolve) => window.setTimeout(resolve, 50));
-      pdfDocument = app?.pdfDocument || app?.pdfViewer?.pdfDocument;
-    }
-    if (!book || !pdfDocument) throw new Error('The active PDF is not ready yet.');
-    const pdfPage = Math.max(1, Number(app?.pdfViewer?.currentPageNumber || app?.page || 1));
-    return {
-      tab,
-      book,
-      app,
-      pdfDocument,
-      pdfPage,
-      totalPages: Number(pdfDocument.numPages || 1),
-      displayPage: toDisplayPage(book, pdfPage),
-    };
-  }
-
   function isTabLoading(tab) {
     const viewer = viewerState.viewers.get(tab);
     return Boolean(viewer?.loading || viewer?.readyPromise);
@@ -986,7 +962,6 @@
     setTabAndPage,
     getDisplayPage,
     getActiveTab,
-    getActivePdfContext,
     isTabLoading,
     refreshActiveTitle,
     refreshActiveViewer,

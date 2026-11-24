@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261123-workspace-tab-display-name';
+const CACHE_NAME = 'gm-reference-shell-v20261124-sidebar-default-path-fix';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

@@ -2,7 +2,7 @@
 
 <!-- Optional initiative portrait: set the front-matter portrait field to an image path such as images/portrait.png. -->
 
-**Type:** Extra / Wild Card
+- [ ] **Wild Card** (unchecked = Extra)
 
 ## Attributes
 
@@ -13,6 +13,10 @@ Agility d4, Smarts d4, Spirit d4, Strength d4, Vigor d4
 Athletics d4, Fighting d4, Notice d4
 
 **Pace:** 6; **Parry:** 2; **Toughness:** 2
+
+**Count:** {{counter:{{SLUG}}-count|1|99|true}}
+
+**Wounds:** {{counter:{{SLUG}}-wounds|0|4|true}}
 
 ## Special Abilities
 

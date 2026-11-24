@@ -32,7 +32,17 @@
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (saved && Array.isArray(saved.combatants)) return {
         round: Number(saved.round) || 0,
-        combatants: saved.combatants,
+        combatants: saved.combatants.filter(item => item && typeof item === 'object').map(item => {
+          const entityType = item.entityType === 'monster' ? 'monster' : 'character';
+          const count = Number(item.count);
+          return {
+            ...item,
+            entityType,
+            wildcard: entityType === 'monster' ? Boolean(item.wildcard) : true,
+            bennies: entityType === 'monster' ? 0 : (Number(item.bennies) || 0),
+            count: Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 1,
+          };
+        }),
         activeId: saved.activeId || null,
         initiativeDeck: saved.initiativeDeck || null,
         extraDeck: Array.isArray(saved.extraDeck) ? saved.extraDeck : shuffledDeck(),
@@ -150,7 +160,7 @@
     if (definition.enforceMax && definition.max !== null) value = Math.min(definition.max, value);
     return { ...definition, value };
   }
-  function countersFromOpenDocument(markdown) {
+  function countersFromOpenDocument(markdown, entityType = '') {
     const source = String(markdown || '');
     const trackers = {};
     const pattern = /\{\{counter\??:([^|}]+)\|([^|}]*)\|([^|}]*)\|([^}]+)\}\}/gi;
@@ -160,7 +170,9 @@
       const cellStart = Math.max(lineStart, source.lastIndexOf('|', match.index) + 1);
       const label = source.slice(cellStart, match.index).replace(/[*_`]/g, ' ').toLowerCase();
       const resource = /\bbenn(?:y|ies)\b/i.test(label) ? 'bennies'
-        : /\bwounds?\b/i.test(label) ? 'wounds' : '';
+        : /\bwounds?\b/i.test(label) ? 'wounds'
+        : /\bcount\b|\bnumber\b/i.test(label) ? 'count' : '';
+      if (entityType === 'monster' && resource === 'bennies') continue;
       if (!resource || trackers[resource]) continue;
       trackers[resource] = readCounterDefinition(match[1], match[2], match[3], match[4]);
     }
@@ -182,19 +194,33 @@
     const heading = text.match(/^#\s+(.+)$/m)?.[1]?.trim();
     const filename = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || '';
     const name = fields.name || heading || filename;
+    const wildCardTask = text.match(/^\s*[-*+]\s+\[([ xX])\]\s+(?:\*\*)?Wild Card\b/im);
+    const wildcard = type === 'monster'
+      ? (wildCardTask ? /x/i.test(wildCardTask[1]) : /^(?:true|yes|1|on)$/i.test(fields.wildcard || ''))
+      : true;
     return name ? {
       name,
       aliases: [...new Set([name, heading, filename].filter(Boolean))],
       type,
-      trackers: countersFromOpenDocument(text),
+      trackers: countersFromOpenDocument(text, type),
       portraitPath: fields.portrait || '',
-      hasPortrait: Object.prototype.hasOwnProperty.call(fields, 'portrait')
+      hasPortrait: Object.prototype.hasOwnProperty.call(fields, 'portrait'),
+      wildcard
     } : null;
   }
   function normalizedCombatantName(name){
     return String(name||'').toLocaleLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   }
-  async function syncOpenPortraits(){
+  function trackerKeysFor(combatant) {
+    return combatant.entityType === 'monster'
+      ? [combatant.wildcard ? 'wounds' : 'count']
+      : ['bennies', 'wounds'];
+  }
+  function trackerNameFor(combatant) {
+    if (combatant.entityType !== 'monster') return 'Bennies and Wounds';
+    return combatant.wildcard ? 'Wounds' : 'Monster count';
+  }
+  async function syncOpenDocuments(){
     const gm=parentGM();
     const sidebar=gm?.sidebarData;
     const readFile=gm?.data?.readFile;
@@ -209,7 +235,19 @@
       const aliases=new Set(entry.aliases.map(normalizedCombatantName));
       state.combatants.forEach(combatant=>{
         if(!aliases.has(normalizedCombatantName(combatant.name)))return;
+        const modeChanged=combatant.entityType!==entry.type||(entry.type==='monster'&&Boolean(combatant.wildcard)!==entry.wildcard);
         if(combatant.entityType!==entry.type){combatant.entityType=entry.type;changed=true;}
+        if(entry.type==='monster'){
+          if(Boolean(combatant.wildcard)!==entry.wildcard){combatant.wildcard=entry.wildcard;changed=true;}
+          if(Number(combatant.bennies)!==0){combatant.bennies=0;changed=true;}
+          if(!Number.isFinite(Number(combatant.count))){combatant.count=1;changed=true;}
+          if(modeChanged&&!combatant.trackResources){combatant.trackResources=true;changed=true;}
+        }
+        for(const [key,tracker] of Object.entries(entry.trackers||{})){
+          if(combatant[key]!==tracker.value){combatant[key]=tracker.value;changed=true;}
+        }
+        const nextTrackers=entry.trackers||{};
+        if(JSON.stringify(combatant.gmTrackers||{})!==JSON.stringify(nextTrackers)){combatant.gmTrackers=nextTrackers;changed=true;}
         if(entry.hasPortrait&&combatant.portraitPath!==entry.portraitPath){combatant.portraitPath=entry.portraitPath;changed=true;}
       });
     }
@@ -249,16 +287,23 @@
         const key = item.name.trim().toLocaleLowerCase();
         const current = existing.get(key);
         if (current) {
-          const hasTrackers=Boolean(item.trackers.bennies||item.trackers.wounds);
+          const activeTrackerKeys=item.type==='monster'?(item.wildcard?['wounds']:['count']):['bennies','wounds'];
+          const hasTrackers=activeTrackerKeys.some(key=>Boolean(item.trackers[key]));
           const needsType=current.entityType!==item.type;
-          if(!hasTrackers&&!item.hasPortrait&&!needsType)return;
+          const needsWildcard=item.type==='monster'&&Boolean(current.wildcard)!==item.wildcard;
+          if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsWildcard)return;
           if(hasTrackers){
-            current.bennies = item.trackers.bennies?.value ?? current.bennies ?? 0;
-            current.wounds = item.trackers.wounds?.value ?? current.wounds ?? 0;
+            Object.entries(item.trackers).forEach(([key,tracker])=>{current[key]=tracker.value;});
             current.trackResources = true;
             current.gmTrackers = item.trackers;
           }
           if(item.hasPortrait)current.portraitPath=item.portraitPath;
+          if(item.type==='monster'){
+            current.bennies=0;
+            if(!Number.isFinite(Number(current.count)))current.count=item.trackers.count?.value??1;
+            current.wildcard=item.wildcard;
+            if((needsType||needsWildcard)&&!current.trackResources)current.trackResources=true;
+          }
           current.entityType=item.type;
           synced += 1;
           return;
@@ -267,10 +312,12 @@
           id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
           name: item.name,
           entityType: item.type,
+          wildcard: item.wildcard,
           card: null,
-          bennies: item.trackers.bennies?.value ?? 0,
+          bennies: item.type==='monster' ? 0 : (item.trackers.bennies?.value ?? 0),
           wounds: item.trackers.wounds?.value ?? 0,
-          trackResources: Boolean(item.trackers.bennies || item.trackers.wounds),
+          count: item.trackers.count?.value ?? 1,
+          trackResources: item.type==='monster' || Boolean(item.trackers.bennies || item.trackers.wounds),
           gmTrackers: item.trackers,
           portraitPath: item.portraitPath
         };
@@ -398,8 +445,10 @@
       redraw.disabled=Boolean(combatant.cardOptions?.length);
       redraw.addEventListener('click',()=>redrawCard(combatant.id));
       const trackerToggle=document.createElement('button');trackerToggle.type='button';trackerToggle.className=`resource-toggle${combatant.trackResources?' selected':''}`;
-      trackerToggle.textContent=combatant.trackResources?'B/W ✓':'+ Track';
-      trackerToggle.title=`${combatant.trackResources?'Hide':'Show'} Bennie and Wound trackers for ${combatant.name}`;
+      const trackerName=trackerNameFor(combatant);
+      const trackerShortName=combatant.entityType==='monster'?(combatant.wildcard?'W':'Count'):'B/W';
+      trackerToggle.textContent=combatant.trackResources?`${trackerShortName} ✓`:'+ Track';
+      trackerToggle.title=`${combatant.trackResources?'Hide':'Show'} ${trackerName} tracker${combatant.entityType==='monster'&&!combatant.wildcard?'':'s'} for ${combatant.name}`;
       trackerToggle.setAttribute('aria-label',trackerToggle.title);
       trackerToggle.addEventListener('click',()=>{combatant.trackResources=!combatant.trackResources;save();render();});
       const remove = document.createElement('button'); remove.type='button'; remove.className='row-menu'; remove.textContent='×'; remove.title=`Remove ${combatant.name}`; remove.setAttribute('aria-label',remove.title);
@@ -413,8 +462,13 @@
       row.append(portrait,card,name,marker,turnArrows,status,redraw,trackerToggle,remove);
       if(combatant.trackResources){
         const resources=document.createElement('div');resources.className='resource-trackers';
-        resources.append(makeResourceCounter(combatant,'bennies','Bennies',0,99));
-        resources.append(makeResourceCounter(combatant,'wounds','Wounds',0,3));
+        const trackerKeys=trackerKeysFor(combatant);
+        if(trackerKeys.length===1)resources.classList.add('is-single');
+        trackerKeys.forEach(key=>{
+          const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
+          const max=key==='wounds'?3:key==='count'?99:99;
+          resources.append(makeResourceCounter(combatant,key,label,0,max));
+        });
         row.append(resources);
       }
       ui.list.append(row);
@@ -572,8 +626,8 @@
     if(linkedTracker?.enforceMax&&Number.isFinite(linkedTracker.max))max=linkedTracker.max;
     const group=document.createElement('div');group.className='resource-counter';
     const title=document.createElement('span');title.className='resource-name';
-    const icon=document.createElement('span');icon.className=`resource-icon ${key==='bennies'?'coin':'heart'}`;
-    icon.textContent=key==='bennies'?'🪙':'♥';icon.setAttribute('aria-hidden','true');
+    const icon=document.createElement('span');icon.className=`resource-icon ${key==='bennies'?'coin':key==='count'?'count':'heart'}`;
+    icon.textContent=key==='bennies'?'🪙':key==='count'?'#':'♥';icon.setAttribute('aria-hidden','true');
     const titleText=document.createElement('span');titleText.className='resource-label';titleText.textContent=label;
     title.append(icon,titleText);group.append(title);
     const controls=document.createElement('div');controls.className='resource-stepper';
@@ -706,7 +760,7 @@
   }
   ui.form.addEventListener('submit',event=>{
     event.preventDefault();const name=ui.name.value.trim();if(!name)return;
-    state.combatants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,entityType:'character',card:null,bennies:0,wounds:0,trackResources:false});
+    state.combatants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,entityType:'character',wildcard:true,card:null,bennies:0,wounds:0,trackResources:false});
     ui.name.value='';save();render();ui.name.focus();
   });
   ui.deal.addEventListener('click',deal);
@@ -722,8 +776,8 @@
     importOpenButton.addEventListener('click', importOpenDocuments);
   }
   window.addEventListener('message',event=>{
-    if(event.source!==window.parent||event.data?.type!=='gm-refresh-initiative-portraits')return;
-    syncOpenPortraits().catch(()=>{});
+    if(event.source!==window.parent||!['gm-refresh-initiative-documents','gm-refresh-initiative-portraits'].includes(event.data?.type))return;
+    syncOpenDocuments().catch(()=>{});
   });
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
@@ -1014,6 +1068,6 @@
   if(document.documentElement.classList.contains('embedded')&&window.parent!==window){
     window.WildCardToolsReady=true;
     window.parent.postMessage({type:'gm-tools-ready'},'*');
-    syncOpenPortraits().catch(()=>{});
+    syncOpenDocuments().catch(()=>{});
   }
 })();

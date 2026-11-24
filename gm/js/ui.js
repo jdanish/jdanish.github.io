@@ -2756,7 +2756,7 @@
           if (saved === false) throw new Error('The document save function reported failure.');
           if (portraitInput) {
             document.getElementById('toolsFrame')?.contentWindow?.postMessage(
-              { type: 'gm-refresh-initiative-portraits' }, '*'
+              { type: 'gm-refresh-initiative-documents' }, '*'
             );
           }
         } else {

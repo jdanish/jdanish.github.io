@@ -823,7 +823,7 @@ window.SIDEBAR_SECTIONS = [];
       if (lineIndex < 0) return;
       lines[lineIndex] = lines[lineIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${input.checked ? 'x' : ' '}]`);
       importMarkdownFromText('current', lines.join('\n'), getWorkspaceSectionKind(activeDocumentMeta, activeDocumentPath));
-      saveActiveDocument().catch(() => {});
+      saveActiveDocument().then(notifyInitiativeDocumentRefresh).catch(() => {});
     });
 
     root.addEventListener('keydown', (event) => {
@@ -921,11 +921,22 @@ window.SIDEBAR_SECTIONS = [];
   }
 
   function hasStoredOverride(kind) {
-    return Boolean(localStorage.getItem(STORAGE_KEYS[kind]));
+    return Boolean(String(localStorage.getItem(STORAGE_KEYS[kind]) || '').trim());
   }
 
   function hasLegacyOverride(kind) {
-    return Boolean(localStorage.getItem(LEGACY_STORAGE_KEYS[kind]));
+    const value = String(localStorage.getItem(LEGACY_STORAGE_KEYS[kind]) || '').trim();
+    if (!value) return false;
+    try {
+      const parsed = JSON.parse(value);
+      const sections = Array.isArray(parsed) ? parsed
+        : Array.isArray(parsed?.sections) ? parsed.sections
+        : Array.isArray(parsed?.[kind]) ? parsed[kind]
+        : null;
+      return sections ? sections.length > 0 : Boolean(parsed && typeof parsed === 'object');
+    } catch {
+      return true;
+    }
   }
 
   function loadStoredMarkdown(kind) {
@@ -1072,7 +1083,7 @@ window.SIDEBAR_SECTIONS = [];
     const raw = String(path || '').trim();
     if (!raw) return '';
     const normalized = raw.replace(/^\.\//, '').replace(/^data\//i, '');
-    if (/^current(?:\.md)?$/i.test(normalized)) return 'notes/sierrakilo.md';
+    if (/^current(?:\.md)?$/i.test(normalized)) return 'notes/sierra-kilo-fin.md';
     return normalized;
   }
 
@@ -1109,9 +1120,9 @@ window.SIDEBAR_SECTIONS = [];
     return { ...activeDocumentMeta, path: activeDocumentPath, markdown: currentMarkdown };
   }
 
-  function notifyInitiativePortraitRefresh() {
+  function notifyInitiativeDocumentRefresh() {
     document.getElementById('toolsFrame')?.contentWindow?.postMessage(
-      { type: 'gm-refresh-initiative-portraits' }, '*'
+      { type: 'gm-refresh-initiative-documents' }, '*'
     );
   }
 
@@ -1183,7 +1194,7 @@ window.SIDEBAR_SECTIONS = [];
     const meta = parseDocumentMeta(path, text);
     activeDocumentPath = path;
     activeDocumentMeta = meta;
-    notifyInitiativePortraitRefresh();
+    notifyInitiativeDocumentRefresh();
     if (!openDocumentPaths.includes(path)) openDocumentPaths.push(path);
     importMarkdownFromText('current', stripFrontMatter(text), getWorkspaceSectionKind(meta, path));
     await saveWorkspaceState();
@@ -1232,7 +1243,7 @@ window.SIDEBAR_SECTIONS = [];
     const meta = parseDocumentMeta(path, raw);
     activeDocumentMeta = meta;
     if (raw) importMarkdownFromText('current', stripFrontMatter(raw), getWorkspaceSectionKind(meta, path));
-    notifyInitiativePortraitRefresh();
+    notifyInitiativeDocumentRefresh();
     await saveWorkspaceState();
     return true;
   }
@@ -1330,7 +1341,7 @@ window.SIDEBAR_SECTIONS = [];
 
   async function tryLoadExternalMarkdown(kind, bust = false) {
     const suffix = bust ? `?v=${Date.now()}-${Math.random().toString(36).slice(2)}` : '';
-    const sourcePath = kind === 'current' ? 'notes/sierrakilo.md' : `${kind}.md`;
+    const sourcePath = kind === 'current' ? 'notes/sierra-kilo-fin.md' : `${kind}.md`;
     const url = `data/${sourcePath}${suffix}`;
     try {
       const response = await fetch(url, {

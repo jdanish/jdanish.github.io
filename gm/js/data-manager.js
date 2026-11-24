@@ -6,7 +6,7 @@
   const HANDLE_KEY = 'data-directory';
   const DATA_ROOT = '';
   const DEFAULT_FILES = ['rules.md', 'workspace.json', 'index.json'];
-  const DEFAULT_NOTE_PATH = 'notes/sierrakilo.md';
+  const DEFAULT_NOTE_PATH = 'notes/sierra-kilo-fin.md';
   const SERVER_STORAGE_KEY = 'gm_server_data_url_v1';
   const DEFAULT_SERVER_URL = new URL('../data/', import.meta.url).href;
   const state = {
@@ -454,8 +454,37 @@
       '---',
       '',
     ].join('\n');
-    await writeFile(path, `${frontMatter}${String(markdown || '').trim()}\n`);
+    const documentSlug = path.split('/').pop().replace(/\.md$/i, '');
+    const body = safeType === 'monster'
+      ? ensureMonsterTrackingFields(markdown, documentSlug)
+      : String(markdown || '').trim();
+    await writeFile(path, `${frontMatter}${body}\n`);
     return path;
+  }
+
+  function ensureMonsterTrackingFields(markdown, documentSlug) {
+    let source = String(markdown || '').trim();
+    const safeSlug = String(documentSlug || 'monster').toLowerCase().replace(/[^a-z0-9-]+/g, '-') || 'monster';
+    const checkboxPattern = /^\s*[-*+]\s+\[([ xX])\]\s+.*\bWild Card\b.*$/im;
+    if (!checkboxPattern.test(source)) {
+      const heading = source.match(/^#\s+.+$/m);
+      const checkbox = '- [ ] **Wild Card** (unchecked = Extra)';
+      source = heading
+        ? source.replace(heading[0], `${heading[0]}\n\n${checkbox}`)
+        : `${checkbox}\n\n${source}`;
+    }
+
+    const trackingFields = [];
+    if (!/\*\*Count:\*\*\s*\{\{counter\??:/i.test(source)) {
+      trackingFields.push(`**Count:** {{counter:${safeSlug}-count|1|99|true}}`);
+    }
+    if (!/\*\*Wounds?:\*\*\s*\{\{counter\??:/i.test(source)) {
+      trackingFields.push(`**Wounds:** {{counter:${safeSlug}-wounds|0|4|true}}`);
+    }
+    if (trackingFields.length) {
+      source = source.replace(checkboxPattern, (checkbox) => `${checkbox}\n\n${trackingFields.join('\n\n')}`);
+    }
+    return source;
   }
 
   function triggerDownload(blob, filename) {
@@ -592,6 +621,7 @@
     listFiles,
     readAllFiles,
     loadFolderContents,
+    ensureMonsterTrackingFields,
     writeTextDocument,
     downloadFolder,
     supportsAccess,

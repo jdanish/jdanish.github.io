@@ -151,7 +151,7 @@
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'initiative-portrait-edit-load-20261123');
+      moduleUrl.searchParams.set('v', 'sidebar-default-path-fix-20261124');
       await import(moduleUrl.href);
       await window.GM.data?.init?.();
     } catch (err) {
@@ -163,7 +163,7 @@
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
         // Cache-bust the reference-index module so browser deployments cannot
         // keep an older copy whose helpers do not match the current scanner.
-        moduleUrl.searchParams.set('v', '20260818-local-password-clean-editor');
+        moduleUrl.searchParams.set('v', 'pdfjs-6.5.438-20261124');
         await import(moduleUrl.href);
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);
@@ -172,7 +172,7 @@
 
     try {
       const moduleUrl = new URL('./monster-importer.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'monster-preserve-selection-lines-20261123h');
+      moduleUrl.searchParams.set('v', 'sidebar-default-path-fix-20261124');
       await import(moduleUrl.href);
     } catch (err) {
       console.error('Monster importer failed to load', err);
@@ -192,7 +192,7 @@
         }
       }
       document.getElementById('toolsFrame')?.contentWindow?.postMessage(
-        { type: 'gm-refresh-initiative-portraits' }, '*'
+        { type: 'gm-refresh-initiative-documents' }, '*'
       );
       await window.GM.referenceIndex?.loadIndexFile?.();
       if (window.GM.referenceIndex && window.GM.data?.getStatus?.().connected && !window.GM.data?.getStatus?.().readOnly) {
