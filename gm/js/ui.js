@@ -3063,10 +3063,20 @@
       window.GM.sidebarData?.importMarkdownFromText?.('current', folder.current);
     }
 
+    try {
+      const sharedConfig = await window.GM.data?.readFile?.('config.js');
+      if (sharedConfig) window.GM.ui?.loadSharedBookConfig?.(sharedConfig);
+    } catch (err) {
+      console.warn('Shared rulebook config could not be loaded after data connection:', err);
+    }
     await window.GM.referenceIndex?.loadIndexFile?.();
     window.GM.ui?.setSidebarTab?.('current');
     renderSidebar();
     buildTabs();
+    await window.GM.pdfviewer?.reloadForConfig?.();
+    document.getElementById('toolsFrame')?.contentWindow?.postMessage(
+      { type: 'gm-refresh-initiative-portraits' }, '*'
+    );
   }
 
   async function openDocumentBrowser() {
@@ -3202,6 +3212,7 @@
       lines.push(`    order: ${idx + 1},`);
       lines.push(`    title: ${JSON.stringify(String(book.title || key))},`);
       lines.push(`    file: ${JSON.stringify(String(book.file || ''))},`);
+      lines.push(`    pdfName: ${JSON.stringify(String(book.pdfName || ''))},`);
       lines.push(`    pageOffset: ${Number(book.pageOffset) || 0},`);
       lines.push(`    defaultPage: ${Number(book.defaultPage) || 1},`);
       lines.push(`    defaultScale: ${Number(book.defaultScale) || 1.25},`);
@@ -3262,8 +3273,94 @@
       titleInput.value = book.title || key;
       titleInput.placeholder = 'Display name';
       const fileInput = document.createElement('input');
-      fileInput.value = book.file || '';
-      fileInput.placeholder = 'PDF path, e.g. pdfs/newbook.pdf';
+      const originalFileRef = String(book.file || '');
+      const originalIsDrive = /^drive-file:/i.test(originalFileRef);
+      const originalIsLocal = /^local-file:/i.test(originalFileRef);
+      fileInput.dataset.fileRef = originalIsDrive || originalIsLocal ? originalFileRef : '';
+      fileInput.dataset.pdfName = String(book.pdfName || '');
+      fileInput.value = originalIsDrive || originalIsLocal
+        ? (book.pdfName || (originalIsDrive ? 'Selected Google Drive PDF' : 'Selected local PDF'))
+        : originalFileRef;
+      fileInput.placeholder = 'Select a PDF or enter a connected-folder path';
+      const sourceBadge = document.createElement('div');
+      sourceBadge.className = 'rulebook-pdf-source';
+      const updatePdfSourceBadge = async () => {
+        const reference = fileInput.dataset.fileRef || String(fileInput.value || '').trim();
+        const connection = window.GM.data?.getStatus?.() || {};
+        let label = 'Choose a PDF from Google Drive or this device.';
+        if (/^drive-file:/i.test(reference)) {
+          label = `Google Drive · ${fileInput.dataset.pdfName || fileInput.value || 'selected PDF'}`;
+        } else if (/^local-file:/i.test(reference)) {
+          label = `This device · ${fileInput.dataset.pdfName || fileInput.value || 'selected PDF'}`;
+        } else if (reference && connection.connected && connection.mode === 'google-drive') {
+          label = `Google Drive folder · ${reference}`;
+        } else if (reference && connection.connected && connection.mode === 'local') {
+          label = `Connected local folder · ${reference}`;
+        } else if (reference) {
+          label = `Not linked · connect local data or Google Drive to use ${reference}`;
+        }
+        sourceBadge.textContent = label;
+        const currentReference = reference;
+        const cached = await window.GM.data?.isPdfCached?.(reference);
+        if ((fileInput.dataset.fileRef || String(fileInput.value || '').trim()) !== currentReference || !reference) return;
+        if (cached) sourceBadge.textContent += ' · Cached on this device';
+        else if (/\.pdf$/i.test(reference) || /^(drive-file|local-file):/i.test(reference)) sourceBadge.textContent += ' · Caches locally after first open';
+      };
+      fileInput.addEventListener('input', () => {
+        fileInput.dataset.fileRef = '';
+        fileInput.dataset.pdfName = '';
+        updatePdfSourceBadge();
+      });
+      updatePdfSourceBadge();
+      window.addEventListener('gm-pdf-cache-updated', updatePdfSourceBadge);
+      window.addEventListener('gm-data-connection-changed', updatePdfSourceBadge);
+      const chooseDrivePdf = document.createElement('button');
+      chooseDrivePdf.type = 'button';
+      chooseDrivePdf.textContent = 'Choose Drive PDF';
+      const chooseLocalPdf = document.createElement('button');
+      chooseLocalPdf.type = 'button';
+      chooseLocalPdf.textContent = 'Choose Local PDF';
+      const refreshDrivePickerButton = () => {
+        const connection = window.GM.data?.getStatus?.() || {};
+        chooseDrivePdf.disabled = connection.mode !== 'google-drive' || !connection.connected;
+        chooseDrivePdf.title = chooseDrivePdf.disabled ? 'Connect Google Drive first' : 'Choose a PDF from Google Drive';
+        chooseLocalPdf.disabled = !window.GM.data?.supportsLocalPdfPicker?.() || connection.mode !== 'local' || !connection.connected;
+        chooseLocalPdf.title = chooseLocalPdf.disabled ? 'Connect a local data folder in a browser that supports local file bookmarks' : 'Choose a PDF from this device';
+      };
+      refreshDrivePickerButton();
+      window.addEventListener('gm-data-connection-changed', refreshDrivePickerButton);
+      chooseDrivePdf.addEventListener('click', async () => {
+        chooseDrivePdf.disabled = true;
+        try {
+          const selected = await window.GM.data.chooseGoogleDrivePdf();
+          if (selected) {
+            fileInput.dataset.fileRef = selected.file;
+            fileInput.dataset.pdfName = selected.name;
+            fileInput.value = selected.name;
+            fileInput.title = selected.name;
+            updatePdfSourceBadge();
+            status.textContent = `Selected ${selected.name}. Save config.js to keep this rulebook linked.`;
+          }
+        } catch (err) {
+          status.textContent = `Google Drive PDF selection failed: ${err?.message || err}`;
+        } finally { refreshDrivePickerButton(); }
+      });
+      chooseLocalPdf.addEventListener('click', async () => {
+        chooseLocalPdf.disabled = true;
+        try {
+          const selected = await window.GM.data.chooseLocalPdf();
+          if (selected) {
+            fileInput.dataset.fileRef = selected.file;
+            fileInput.dataset.pdfName = selected.name;
+            fileInput.value = selected.name;
+            fileInput.title = selected.name;
+            updatePdfSourceBadge();
+            status.textContent = `Selected ${selected.name} from this device. Save config.js to keep this rulebook linked in this browser.`;
+          }
+        } catch (err) {
+          if (err?.name !== 'AbortError') status.textContent = `Local PDF selection failed: ${err?.message || err}`;
+        } finally { refreshDrivePickerButton(); }
+      });
       const offsetInput = document.createElement('input');
       offsetInput.type = 'number';
       offsetInput.value = Number(book.pageOffset) || 0;
@@ -3279,7 +3376,7 @@
       remove.textContent = 'Remove';
       remove.addEventListener('click', () => row.remove());
 
-      row.append(keyInput, titleInput, fileInput, offsetInput, visibleLabel, remove);
+      row.append(keyInput, titleInput, fileInput, chooseDrivePdf, chooseLocalPdf, offsetInput, visibleLabel, remove, sourceBadge);
       list.appendChild(row);
     };
 
@@ -3291,7 +3388,7 @@
     add.type = 'button';
     add.textContent = 'Add book';
     add.addEventListener('click', () => addRow(`book_${list.children.length + 1}`, {
-      title: 'New Book', file: 'pdfs/newbook.pdf', pageOffset: 0,
+      title: 'New Book', file: '', pageOffset: 0,
       defaultPage: 1, defaultScale: 1.25, defaultVisible: false,
       preload: false, pages: [{ label: 'TOC', page: 1 }]
     }, false));
@@ -3306,7 +3403,8 @@
           ...(row._originalBook || {}),
           order: idx + 1,
           title: String(inputs[1]?.value || key).trim(),
-          file: String(inputs[2]?.value || '').trim(),
+          file: String(inputs[2]?.dataset?.fileRef || inputs[2]?.value || '').trim(),
+          pdfName: String(inputs[2]?.dataset?.pdfName || '').trim(),
           pageOffset: Number(inputs[3]?.value) || 0,
           defaultVisible: Boolean(inputs[4]?.checked),
         };
@@ -3335,6 +3433,7 @@
       }
       try {
         await window.GM.data.writeFile('config.js', configText);
+        await window.GM.pdfviewer?.reloadForConfig?.();
         status.textContent = 'Saved config.js to the data folder.';
       } catch (err) {
         status.textContent = `Save failed: ${err?.message || err}`;
@@ -3350,7 +3449,7 @@
 
     const help = document.createElement('p');
     help.className = 'book-visibility-intro';
-    help.textContent = 'Add, rename, remove, or point rulebooks at PDFs in the pdfs folder. Existing page shortcuts and settings are preserved. Changes apply immediately.';
+    help.textContent = 'Choose each rulebook PDF from Google Drive, this device, or the connected local folder. PDFs are not loaded from the web server. Existing page shortcuts and settings are preserved.';
 
     const actions = document.createElement('div');
     actions.className = 'rulebook-manager-actions';
@@ -3378,15 +3477,19 @@
     const updateConnectionUi = () => {
       const status = window.GM.data?.getStatus?.() || {};
       intro.textContent = status.connected
-        ? (status.readOnly ? 'Connected to server data (read-only). Changes cannot be saved back to the server.' : `Connected data folder: ${status.name || 'folder'}`)
-        : 'Connect a data folder or server data source to manage character, monster, note, current, and index files.';
+        ? (status.readOnly
+          ? 'Connected to server data (read-only). Changes cannot be saved back to the server.'
+          : (status.mode === 'google-drive'
+            ? `Google Drive data folder: ${status.name || 'folder'}${status.driveDataPrefix ? `/${status.driveDataPrefix}` : ''} — ${status.driveFileCount} files, ${status.driveFolderCount} subfolders, ${status.driveMarkdownCount} Markdown files; rules.md ${status.driveHasRules ? 'found' : 'not found'}. Choose rulebook PDFs separately in Rulebook Manager.`
+            : `Connected data folder: ${status.name || 'folder'}${status.localDataPrefix ? `/${status.localDataPrefix}` : ''}`))
+        : 'Connect a local folder, Google Drive folder, or server data source to manage character, monster, note, current, and index files.';
 
       const readOnly = Boolean(status.readOnly);
       modeBadge.className = `sidebar-data-mode-badge ${readOnly ? 'is-readonly' : (status.connected ? 'is-editable' : 'is-disconnected')}`;
       modeBadge.innerHTML = readOnly
         ? '<span aria-hidden="true">🔒</span><strong>READ-ONLY</strong><span>Server data</span>'
         : (status.connected
-          ? '<span aria-hidden="true">✎</span><strong>EDITABLE</strong><span>Local data folder</span>'
+          ? `<span aria-hidden="true">✎</span><strong>EDITABLE</strong><span>${status.mode === 'google-drive' ? 'Google Drive' : 'Local data folder'}</span>`
           : '<span aria-hidden="true">○</span><strong>NOT CONNECTED</strong><span>No data source</span>');
     };
     updateConnectionUi();
@@ -3432,13 +3535,15 @@
     const folderActions = document.createElement('div');
     folderActions.className = 'sidebar-data-actions';
     const connectBtn = document.createElement('button'); connectBtn.type='button';
-    { const status = window.GM.data?.getStatus?.() || {}; connectBtn.textContent = status.readOnly ? 'Reconnect Server Data' : (status.connected ? 'Reconnect Folder' : 'Connect Data Folder'); }
+    { const status = window.GM.data?.getStatus?.() || {}; connectBtn.textContent = status.readOnly ? 'Reconnect Server Data' : (status.connected && status.mode !== 'google-drive' ? 'Reconnect Local Folder' : 'Connect Local Folder'); }
     connectBtn.addEventListener('click', async () => {
       try {
         const status = window.GM.data?.getStatus?.() || {};
-        const ok = status.readOnly
+        const ok = status.mode === 'google-drive'
+          ? await window.GM.data.chooseFolder()
+          : (status.readOnly
           ? await window.GM.data.reconnectServerFolder?.()
-          : (status.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder());
+          : (status.connected ? await window.GM.data.reconnect({ prompt:true }) : await window.GM.data.chooseFolder()));
         if (ok) {
           await refreshFromConnectedFolder();
           await window.GM.referenceIndex?.loadIndexFile?.();
@@ -3446,6 +3551,66 @@
           updateDataPanelState();
         }
       } catch (err) { alert(`Could not connect to the data folder: ${err?.message || err}`); }
+    });
+    const driveBtn = document.createElement('button');
+    driveBtn.type = 'button';
+    const updateDriveButton = () => {
+      const status = window.GM.data?.getStatus?.() || {};
+      driveBtn.textContent = status.mode === 'google-drive'
+        ? 'Reconnect Google Drive'
+        : (status.driveConfigured ? 'Connect Google Drive Folder' : 'Set Up Google Drive Folder');
+    };
+    updateDriveButton();
+    driveBtn.addEventListener('click', async () => {
+      driveBtn.disabled = true;
+      driveBtn.textContent = 'Connecting to Google Drive…';
+      intro.textContent = 'Connecting to Google Drive…';
+      try {
+        const status = window.GM.data?.getStatus?.() || {};
+        if (status.mode === 'google-drive' && status.driveConfigured) {
+          await window.GM.data.reconnectGoogleDrive?.({ prompt: '' });
+        } else {
+          intro.textContent = 'Choose GM/data, or choose GM if it contains a data subfolder with rules.md, characters, monsters, and notes. PDFs in GM/pdfs are selected separately in Rulebook Manager.';
+          const settings = window.GM.data?.getGoogleDriveSettings?.() || {};
+          const clientId = settings.clientId || window.prompt('Google OAuth web client ID:', '');
+          if (clientId === null) return;
+          const apiKey = settings.apiKey || window.prompt('Google API key (restrict it to Google Drive API and Picker API):', '');
+          if (apiKey === null) return;
+          const projectNumber = settings.projectNumber || window.prompt('Google Cloud project number:', '');
+          if (projectNumber === null) return;
+          const ok = await window.GM.data.chooseGoogleDriveFolder?.({ clientId, apiKey, projectNumber });
+          if (!ok) return;
+        }
+        intro.textContent = 'Reading the selected Google Drive folder…';
+        await refreshFromConnectedFolder();
+        await window.GM.referenceIndex?.loadIndexFile?.();
+        window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+        updateDataPanelState();
+      } catch (err) { alert(`Could not connect to Google Drive: ${err?.message || err}`); }
+      finally { driveBtn.disabled = false; updateDriveButton(); }
+    });
+    const changeDriveFolderBtn = document.createElement('button');
+    changeDriveFolderBtn.type = 'button';
+    changeDriveFolderBtn.textContent = 'Change Google Drive Folder';
+    changeDriveFolderBtn.hidden = window.GM.data?.getStatus?.().mode !== 'google-drive';
+    changeDriveFolderBtn.addEventListener('click', async () => {
+      changeDriveFolderBtn.disabled = true;
+      changeDriveFolderBtn.textContent = 'Changing folder…';
+      intro.textContent = 'Choose GM/data, or choose GM if it contains a data subfolder with rules.md, characters, monsters, and notes. PDFs in GM/pdfs are selected separately in Rulebook Manager.';
+      try {
+        const settings = window.GM.data?.getGoogleDriveSettings?.() || {};
+        const ok = await window.GM.data.chooseGoogleDriveFolder?.({ ...settings, prompt: '' });
+        if (!ok) return;
+        intro.textContent = 'Reading the selected Google Drive folder…';
+        await refreshFromConnectedFolder();
+        await window.GM.referenceIndex?.loadIndexFile?.();
+        window.dispatchEvent(new CustomEvent('gm-reference-index-changed'));
+        updateDataPanelState();
+      } catch (err) { alert(`Could not change the Google Drive folder: ${err?.message || err}`); }
+      finally {
+        changeDriveFolderBtn.disabled = false;
+        changeDriveFolderBtn.textContent = 'Change Google Drive Folder';
+      }
     });
     const serverBtn = document.createElement('button');
     serverBtn.type='button';
@@ -3561,11 +3726,13 @@
     const updateDataPanelState = () => {
       updateConnectionUi();
       const status = window.GM.data?.getStatus?.() || {};
-      connectBtn.textContent = status.readOnly ? 'Reconnect Server Data' : (status.connected ? 'Reconnect Folder' : 'Connect Data Folder');
+      connectBtn.textContent = status.readOnly ? 'Reconnect Server Data' : (status.connected && status.mode !== 'google-drive' ? 'Reconnect Local Folder' : 'Connect Local Folder');
+      updateDriveButton();
+      changeDriveFolderBtn.hidden = status.mode !== 'google-drive';
       indexSaveBtn.disabled = !status.connected || status.readOnly;
     };
 
-    folderActions.append(connectBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn, updateAppBtn);
+    folderActions.append(connectBtn, driveBtn, changeDriveFolderBtn, serverBtn, newFolderBtn, downloadFolderBtn, generateServerDataBtn, docsBtn, updateAppBtn);
     indexSection.body.append(indexBtn, indexSaveBtn);
     dataSection.body.appendChild(folderActions);
 
@@ -3980,7 +4147,23 @@
           updateTrackerInputs(event.data.key, event.data.value);
           return;
         }
+        if (event.data?.type === 'gm-open-document') {
+          const path = String(event.data.path || '').trim();
+          if (!path) return;
+          (async () => {
+            try {
+              await window.GM.sidebarData?.openDocument?.(path);
+              setWorkspaceMode('rulebooks');
+              setSidebarTab('current');
+              if (isMobileSidebarViewport()) setMobileSidebarOpen(true);
+            } catch (err) {
+              showToast(`Could not open ${path}: ${err?.message || err}`);
+            }
+          })();
+          return;
+        }
         if (event.data?.type !== 'gm-tools-ready') return;
+        event.source.postMessage({ type: 'gm-refresh-initiative-portraits' }, '*');
         if (toolsDiceRollPending) {
           event.source.postMessage(toolsDiceRollPending, '*');
           toolsDiceRollPending = null;
@@ -4082,6 +4265,7 @@
     getSidebarTab,
     isMobileSidebarViewport,
     setMobileSidebarOpen,
+    refreshConnectedData: refreshFromConnectedFolder,
 
     setSidebarTab,
     openRulebookManager,

@@ -227,18 +227,47 @@
     return document.getElementById('viewerFrame');
   }
 
-  function buildViewerSrc(book, displayPage, scaleValue) {
+  function buildViewerSrc(book, displayPage, scaleValue, resolvedPdfUrl = '') {
     const pdfPage = toPdfPage(book, displayPage);
     const zoom = isMobileViewerMode()
       ? 'page-width'
       : serializeZoomValue(scaleValue);
 
-    // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
-    const filePath = `../../../${book.file}`;
+    const filePath = resolvedPdfUrl;
 
     return `libs/pdfjs/web/viewer.html?file=${encodeURIComponent(filePath)}#page=${pdfPage}${
       zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
     }`;
+  }
+
+  async function resolveBookPdfUrl(book) {
+    const source = String(book?.file || '').trim();
+    const driveFile = source.match(/^drive-file:(.+)$/i);
+    if (driveFile) {
+      const url = await window.GM.data?.resolveDriveFileUrl?.(driveFile[1]);
+      if (!url) throw new Error('Could not open this PDF from Google Drive. Choose it again in Rulebook Manager.');
+      return url;
+    }
+    const localFile = source.match(/^local-file:(.+)$/i);
+    if (localFile) {
+      const url = await window.GM.data?.resolveLocalPdfUrl?.(localFile[1]);
+      if (!url) throw new Error('Could not open this local PDF. Choose it again in Rulebook Manager.');
+      return url;
+    }
+
+    const dataStatus = window.GM.data?.getStatus?.() || {};
+    if (dataStatus.mode === 'google-drive') {
+      const url = await window.GM.data?.resolveAssetUrl?.(source);
+      if (url) return url;
+      if (!dataStatus.connected) throw new Error('Google Drive needs to reconnect before this PDF can be opened.');
+      throw new Error(`Could not find “${source}” in the connected Google Drive folder. Choose the PDF in Rulebook Manager.`);
+    }
+    if (dataStatus.mode === 'local' && dataStatus.connected) {
+      const url = await window.GM.data?.resolveAssetUrl?.(source);
+      if (url) return url;
+      throw new Error(`Could not find “${source}” in the connected local folder. Choose a local PDF in Rulebook Manager.`);
+    }
+    throw new Error('PDFs are not loaded from the web server. Connect a local folder or Google Drive, then choose a PDF in Rulebook Manager.');
   }
 
   function createViewer(tab) {
@@ -300,6 +329,15 @@
 
     const next = Boolean(isLoading);
     viewer.loading = next;
+    if (next) {
+      viewer.wrapper.classList.remove('has-error');
+      viewer.loadingEl.replaceChildren();
+      const spinner = document.createElement('span');
+      spinner.className = 'viewer-spinner';
+      const label = document.createElement('span');
+      label.textContent = 'Loading pages...';
+      viewer.loadingEl.append(spinner, label);
+    }
     viewer.wrapper.classList.toggle('loading', next);
     window.GM.ui?.setTabLoading?.(tab, next);
   }
@@ -679,7 +717,8 @@
       try {
         const scaleValue = resolveScaleValue(tab);
         const displayPage = getDisplayPage(tab);
-        const src = buildViewerSrc(viewer.book, displayPage, scaleValue);
+        const pdfUrl = await resolveBookPdfUrl(viewer.book);
+        const src = buildViewerSrc(viewer.book, displayPage, scaleValue, pdfUrl);
 
         if (!viewer.iframe.src || viewer.iframe.src !== src) {
           viewer.iframe.src = src;
@@ -703,6 +742,13 @@
         }
 
         return app;
+      } catch (err) {
+        viewer.wrapper.classList.add('has-error');
+        viewer.loadingEl.replaceChildren();
+        const message = document.createElement('span');
+        message.textContent = err?.message || 'This PDF could not be opened.';
+        viewer.loadingEl.append(message);
+        return null;
       } finally {
         viewer.readyPromise = null;
         setViewerLoading(tab, false);
@@ -913,6 +959,19 @@
     return setPageInActiveViewer(tab, displayPage, { scale: resolveScaleValue(tab) });
   }
 
+  async function reloadForConfig() {
+    const tabs = [...viewerState.viewers.keys()];
+    tabs.forEach((tab) => disposeViewer(tab));
+    const active = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
+    const page = active ? getDisplayPage(active) : 1;
+    viewerState.activeTab = null;
+    viewerState.initialized = false;
+    viewerState.initPromise = null;
+    if (active && getBook(active)) await setTabAndPage(active, page);
+    else await preloadAllViewers();
+    viewerState.initialized = true;
+  }
+
   async function preloadAllViewers() {
     if (isMobileViewerMode()) {
       const tabs = Object.keys(getBooks());
@@ -943,6 +1002,8 @@
   }
 
   async function init() {
+    const dataStatus = window.GM.data?.getStatus?.() || {};
+    if (!dataStatus.connected || dataStatus.mode === 'server') return null;
     if (viewerState.initPromise) return viewerState.initPromise;
 
     viewerState.initPromise = (async () => {
@@ -965,6 +1026,7 @@
     isTabLoading,
     refreshActiveTitle,
     refreshActiveViewer,
+    reloadForConfig,
     getCurrentDisplayPage,
     highlightText: (query) => {
       const tab = viewerState.activeTab;
@@ -975,12 +1037,4 @@
     toDisplayPage,
     getBookOrder,
   };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      init().catch((err) => console.error(err));
-    }, { once: true });
-  } else {
-    init().catch((err) => console.error(err));
-  }
 })();

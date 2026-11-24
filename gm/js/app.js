@@ -87,73 +87,49 @@
     }
   }
 
-  const GM_PAGE_PASSWORD = 'gm';
-  let gmPageUnlocked = false;
-
-  function requirePagePassword() {
-    if (gmPageUnlocked) return true;
-
-    const isLocalDevelopment =
-      window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.hostname === '[::1]';
-
-    if (isLocalDevelopment) {
-      gmPageUnlocked = true;
-      document.documentElement.classList.remove('gm-password-locked');
-      return true;
-    }
-
-    document.documentElement.classList.add('gm-password-locked');
-    if (document.querySelector('.gm-password-overlay')) return false;
-
+  function showGoogleDriveConnectPrompt() {
+    const status = window.GM.data?.getStatus?.() || {};
+    if (status.mode !== 'google-drive' || status.connected || !status.driveConfigured) return;
+    if (document.querySelector('.gm-drive-connect-overlay')) return;
     const overlay = document.createElement('div');
-    overlay.className = 'gm-password-overlay';
+    overlay.className = 'gm-drive-connect-overlay';
     overlay.innerHTML = `
-      <div class="gm-password-card" role="dialog" aria-modal="true" aria-labelledby="gm-password-title">
-        <h1 id="gm-password-title">Game Master</h1>
-        <p>Enter the password to open the GM tools.</p>
-        <form class="gm-password-form">
-          <input type="password" autocomplete="current-password" aria-label="Password" required>
-          <button type="submit">Unlock</button>
-          <div class="gm-password-error" aria-live="polite"></div>
-        </form>
-      </div>
-    `;
-
+      <div class="gm-drive-connect-card" role="dialog" aria-modal="true" aria-labelledby="gm-drive-connect-title">
+        <h1 id="gm-drive-connect-title">Connect Google Drive</h1>
+        <p>Sign in to load the selected data folder and its rulebooks.</p>
+        <button type="button" class="primary gm-drive-connect-button">Continue with Google</button>
+        <div class="gm-drive-connect-error" aria-live="polite"></div>
+      </div>`;
     document.body.appendChild(overlay);
-    const form = overlay.querySelector('.gm-password-form');
-    const input = form?.querySelector('input');
-    const error = overlay.querySelector('.gm-password-error');
-
-    form?.addEventListener('submit', (event) => {
-      event.preventDefault();
-      if (input?.value === GM_PAGE_PASSWORD) {
-        gmPageUnlocked = true;
+    const button = overlay.querySelector('.gm-drive-connect-button');
+    const error = overlay.querySelector('.gm-drive-connect-error');
+    button?.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Connecting…';
+      if (error) error.textContent = '';
+      try {
+        const connected = await window.GM.data.reconnectGoogleDrive({ prompt: '' });
+        if (!connected) throw new Error('No Google Drive folder is selected. Open Data Management and choose the GM folder first.');
+        await window.GM.ui?.refreshConnectedData?.();
         overlay.remove();
-        document.documentElement.classList.remove('gm-password-locked');
-        window.dispatchEvent(new CustomEvent('gm-page-unlocked'));
-        init().catch(console.error);
-        return;
+      } catch (err) {
+        if (error) error.textContent = err?.message || String(err);
+        button.disabled = false;
+        button.textContent = 'Continue with Google';
       }
-      if (error) error.textContent = 'Incorrect password.';
-      input?.select?.();
     });
-
-    window.setTimeout(() => input?.focus?.(), 0);
-    return false;
   }
 
   async function init() {
-    if (!requirePagePassword()) return;
     window.GM.storage = window.GM.storage || {};
     registerPwa().catch(() => {});
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'initiative-portrait-edit-load-20261123');
+      moduleUrl.searchParams.set('v', 'drive-folder-prefix-initiative-click-20261124');
       await import(moduleUrl.href);
       await window.GM.data?.init?.();
+      window.GM.data?.prepareGoogleDrive?.().catch((err) => console.warn('Google Drive libraries did not preload:', err));
     } catch (err) {
       console.error('Data folder manager failed to load', err);
     }
@@ -211,14 +187,17 @@
     window.GM.notes?.init?.();
     window.GM.search?.init?.();
     window.GM.ui?.init?.();
-    try {
-      const sharedConfig = await window.GM.data?.readFile?.('config.js');
-      if (sharedConfig) window.GM.ui?.loadSharedBookConfig?.(sharedConfig);
-    } catch (err) {
-      console.warn('Shared rulebook config could not be loaded:', err);
+    if (window.GM.data?.getStatus?.().connected) {
+      try {
+        const sharedConfig = await window.GM.data?.readFile?.('config.js');
+        if (sharedConfig) window.GM.ui?.loadSharedBookConfig?.(sharedConfig);
+      } catch (err) {
+        console.warn('Shared rulebook config could not be loaded:', err);
+      }
     }
     await checkLocalLibraries();
     await window.GM.pdfviewer?.init?.();
+    showGoogleDriveConnectPrompt();
     window.GM.capture?.init?.();
 
     // Start search indexing after the viewer is already on screen.

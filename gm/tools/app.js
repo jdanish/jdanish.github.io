@@ -184,6 +184,7 @@
     const name = fields.name || heading || filename;
     return name ? {
       name,
+      path: String(path || ''),
       aliases: [...new Set([name, heading, filename].filter(Boolean))],
       type,
       trackers: countersFromOpenDocument(text),
@@ -211,6 +212,7 @@
         if(!aliases.has(normalizedCombatantName(combatant.name)))return;
         if(combatant.entityType!==entry.type){combatant.entityType=entry.type;changed=true;}
         if(entry.hasPortrait&&combatant.portraitPath!==entry.portraitPath){combatant.portraitPath=entry.portraitPath;changed=true;}
+        if(entry.path&&combatant.sourcePath!==entry.path){combatant.sourcePath=entry.path;changed=true;}
       });
     }
     if(changed){save();render();}
@@ -251,7 +253,8 @@
         if (current) {
           const hasTrackers=Boolean(item.trackers.bennies||item.trackers.wounds);
           const needsType=current.entityType!==item.type;
-          if(!hasTrackers&&!item.hasPortrait&&!needsType)return;
+          const needsPath=Boolean(item.path&&current.sourcePath!==item.path);
+          if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsPath)return;
           if(hasTrackers){
             current.bennies = item.trackers.bennies?.value ?? current.bennies ?? 0;
             current.wounds = item.trackers.wounds?.value ?? current.wounds ?? 0;
@@ -260,6 +263,7 @@
           }
           if(item.hasPortrait)current.portraitPath=item.portraitPath;
           current.entityType=item.type;
+          if(item.path)current.sourcePath=item.path;
           synced += 1;
           return;
         }
@@ -272,7 +276,8 @@
           wounds: item.trackers.wounds?.value ?? 0,
           trackResources: Boolean(item.trackers.bennies || item.trackers.wounds),
           gmTrackers: item.trackers,
-          portraitPath: item.portraitPath
+          portraitPath: item.portraitPath,
+          sourcePath: item.path
         };
         additions.push(combatant);
         existing.set(key, combatant);
@@ -376,7 +381,12 @@
       portraitImage.alt='';portraitImage.loading='eager';portraitImage.draggable=false;
       portrait.append(silhouette,portraitImage);
       attachPortraitSource(portrait,portraitImage,combatant.portraitPath);
-      const name = document.createElement('span'); name.className='combatant-name'; name.textContent=combatant.name;
+      const name = document.createElement('button'); name.type='button'; name.className='combatant-name combatant-open-document'; name.textContent=combatant.name;
+      name.disabled=!combatant.sourcePath||!parentGM();
+      name.title=name.disabled?'Import this open document to link it here':`Open ${combatant.name}`;
+      if(combatant.sourcePath)name.addEventListener('click',()=>{
+        if(window.parent!==window)window.parent.postMessage({type:'gm-open-document',path:combatant.sourcePath},'*');
+      });
       const status = document.createElement('span'); status.className='row-status';
       status.textContent = combatant.card ? (combatant.card.joker ? 'WILD' : `#${String(index+1).padStart(2,'0')}`) : 'WAITING';
       if (combatant.card?.joker) status.className='joker-tag';

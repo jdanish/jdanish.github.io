@@ -339,3 +339,6 @@ html[data-theme="light"] .card-face.pending{background:#f8fafc;color:#64748b;bor
 
 .combatant-portrait.is-monster{background:#2b2433;border-color:#735c8c;color:#d4a1ff;--portrait-cutout:#2b2433}
 html[data-theme="light"] .combatant-portrait.is-monster{background:#f5f0fa;border-color:#c4a9d8;color:#795294;--portrait-cutout:#f5f0fa}
+.combatant-open-document{padding:0;border:0;background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.combatant-open-document:hover:not(:disabled){color:var(--acid)}
+.combatant-open-document:disabled{cursor:default}

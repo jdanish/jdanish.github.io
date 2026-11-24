@@ -629,6 +629,13 @@ details[open] > summary::before { transform: rotate(90deg); }
 .viewer.loading .viewer-loading {
   display: flex;
 }
+.viewer.has-error .viewer-loading {
+  display: flex;
+  padding: 1.5rem;
+  color: var(--text);
+  background: rgba(11, 13, 18, 0.88);
+  overflow-wrap: anywhere;
+}
 .viewer-spinner {
   width: 26px;
   height: 26px;
@@ -4728,16 +4735,12 @@ html[data-theme="light"] .gm-workspace-tab-edit {
   align-self: center;
 }
 
-html.gm-password-locked body > * { visibility: hidden; }
-html.gm-password-locked .gm-password-overlay { visibility: visible; }
-.gm-password-overlay { position: fixed; inset: 0; z-index: 2147483647; display: grid; place-items: center; padding: 1rem; background: rgba(0,0,0,.82); }
-.gm-password-card { width: min(92vw, 380px); padding: 1.4rem; border-radius: 12px; background: var(--sidebar-bg, #222); color: var(--sidebar-text, #fff); box-shadow: 0 12px 40px rgba(0,0,0,.45); }
-.gm-password-card h1 { margin: 0 0 .4rem; font-size: 1.25rem; }
-.gm-password-card p { margin: 0 0 1rem; opacity: .8; }
-.gm-password-form { display: grid; gap: .65rem; }
-.gm-password-form input { width: 100%; box-sizing: border-box; padding: .7rem .8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,.2); }
-.gm-password-form button { padding: .7rem .8rem; border-radius: 8px; }
-.gm-password-error { min-height: 1.1rem; color: #ff8c8c; font-size: .85rem; }
+.gm-drive-connect-overlay { position: fixed; inset: 0; z-index: 2147483647; display: grid; place-items: center; padding: 1rem; background: rgba(0,0,0,.82); }
+.gm-drive-connect-card { width: min(92vw, 420px); padding: 1.4rem; border-radius: 12px; background: var(--sidebar-bg, #222); color: var(--sidebar-text, #fff); box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+.gm-drive-connect-card h1 { margin: 0 0 .4rem; font-size: 1.25rem; }
+.gm-drive-connect-card p { margin: 0 0 1rem; opacity: .8; }
+.gm-drive-connect-button { width: 100%; padding: .7rem .8rem; border-radius: 8px; }
+.gm-drive-connect-error { min-height: 1.1rem; margin-top: .65rem; color: #ff8c8c; font-size: .85rem; }
 
 .editor-toolbar button.saved-preview-button {
   position: relative;
@@ -5010,8 +5013,9 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
 }
 
 .rulebook-manager-list { display:grid; gap:.6rem; max-height:55vh; overflow:auto; }
-.rulebook-manager-row { display:grid; grid-template-columns:minmax(90px,1fr) minmax(140px,1.5fr) minmax(150px,2fr) 80px auto auto; gap:.45rem; align-items:center; }
+.rulebook-manager-row { display:grid; grid-template-columns:minmax(90px,1fr) minmax(140px,1.5fr) minmax(150px,2fr) auto auto 80px auto auto; gap:.45rem; align-items:center; }
 .rulebook-manager-row input { min-width:0; }
+.rulebook-pdf-source { grid-column:1 / -1; margin-top:-.2rem; font-size:.78rem; opacity:.76; overflow-wrap:anywhere; }
 .rulebook-manager-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.8rem; }
 .rulebook-manager-visible { white-space:nowrap; }
 .rulebook-manager-status { margin-top:.7rem; opacity:.8; }
