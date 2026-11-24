@@ -209,7 +209,7 @@
   }
 
   function downloadMonsterMarkdown(parsed, markdown, fallbackReason = '') {
-    const frontMatter = `---\ntype: monster\nname: ${parsed.name.replace(/[\r\n]/g, ' ')}\n---\n\n`;
+    const frontMatter = `---\ntype: monster\nname: ${parsed.name.replace(/[\r\n]/g, ' ')}\nportrait:\n---\n\n`;
     const blob = new Blob([frontMatter, markdown.trim(), '\n'], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

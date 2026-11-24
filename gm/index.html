@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=workspace-tab-display-name-20261123">
+  <link rel="stylesheet" href="css/styles.css?v=reader-mode-20261124">
 </head>
 <body>
   <div class="app">
@@ -75,6 +75,7 @@
 
       <div class="rulebooks-controls" aria-label="Rulebook controls">
         <button id="bookVisibilityButton" type="button" class="icon-button" aria-label="Choose visible books" title="Choose visible books">☰</button>
+        <button id="pdfReaderModeButton" type="button" class="icon-button pdf-reader-mode-button" aria-label="Open Reader view" title="Open Reader view" aria-expanded="false" hidden>Reader view</button>
       </div>
 
       <div class="tabs" id="tabs"></div>
@@ -90,6 +91,27 @@
     </main>
   </div>
 
+  <section class="pdf-reader-overlay" id="pdfReaderOverlay" role="dialog" aria-modal="true" aria-labelledby="pdfReaderTitle" hidden>
+    <header class="pdf-reader-header">
+      <div class="pdf-reader-heading">
+        <strong id="pdfReaderTitle">Reader Mode</strong>
+        <span id="pdfReaderPage" aria-live="polite"></span>
+      </div>
+      <div class="pdf-reader-actions" aria-label="Reader controls">
+        <button type="button" class="pdf-reader-control" id="pdfReaderPrevious" aria-label="Previous page" title="Previous page">‹</button>
+        <button type="button" class="pdf-reader-control" id="pdfReaderNext" aria-label="Next page" title="Next page">›</button>
+        <span class="pdf-reader-action-divider" aria-hidden="true"></span>
+        <button type="button" class="pdf-reader-control pdf-reader-text-size" id="pdfReaderSmaller" aria-label="Decrease text size" title="Decrease text size">A−</button>
+        <button type="button" class="pdf-reader-control pdf-reader-text-size" id="pdfReaderLarger" aria-label="Increase text size" title="Increase text size">A+</button>
+        <button type="button" class="pdf-reader-exit" id="pdfReaderOpenPdf">Open PDF</button>
+        <button type="button" class="pdf-reader-control pdf-reader-close" id="pdfReaderClose" aria-label="Close Reader Mode" title="Close Reader Mode">×</button>
+      </div>
+    </header>
+    <div class="pdf-reader-scroll" id="pdfReaderScroll" tabindex="0">
+      <article class="pdf-reader-content" id="pdfReaderContent"></article>
+    </div>
+  </section>
+
   <script src="js/utils.js"></script>
   <script src="data/config.js"></script>
   <script src="libs/codemirror/lib/codemirror.js"></script>
@@ -102,8 +124,9 @@
   <script src="js/notes.js"></script>
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js"></script>
-  <script src="js/pdfviewer.js?v=20260830-pinch-zoom"></script>
+  <script src="js/pdfviewer.js?v=reader-mode-20261124"></script>
+  <script src="js/reader-mode.js?v=reader-view-20261124b"></script>
   <script src="js/ui.js?v=workspace-tab-display-name-20261123"></script>
-  <script src="js/app.js?v=workspace-tab-display-name-20261123"></script>
+  <script src="js/app.js?v=pdfjs-6.5.438-20261124"></script>
 </body>
 </html>

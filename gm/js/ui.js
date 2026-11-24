@@ -2694,7 +2694,7 @@
       : 'Edit the Markdown source for this sidebar file. Use headings, lists, tables, and wiki links for PDF navigation.';
 
     let portraitInput = null;
-    if (kind === 'current' && String(activeDoc?.type || '').toLowerCase() === 'character') {
+    if (kind === 'current' && ['character', 'monster'].includes(String(activeDoc?.type || '').toLowerCase())) {
       const portraitField = document.createElement('label');
       portraitField.className = 'sidebar-md-portrait-field';
       portraitField.textContent = 'Initiative portrait image path';

@@ -450,7 +450,7 @@
       '---',
       `type: ${safeType}`,
       `name: ${String(name || slug).replace(/\n/g, ' ')}`,
-      ...(safeType === 'character' ? ['portrait:'] : []),
+      ...(['character', 'monster'].includes(safeType) ? ['portrait:'] : []),
       '---',
       '',
     ].join('\n');
