@@ -1284,7 +1284,10 @@ window.SIDEBAR_SECTIONS = [];
       }
     } else {
       await saveWorkspaceState();
-      window.GM.ui?.renderWorkspaceTabs?.();
+      // renderWorkspaceTabs() returns a new node for renderCurrentPanel(); calling
+      // it by itself leaves the existing tab strip in the DOM unchanged.
+      // Refresh the Current panel so a closed inactive document disappears now.
+      window.GM.ui?.refreshSidebarFromData?.();
     }
     return true;
   }
