@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261124-drive-folder-prefix-initiative-click';
+const CACHE_NAME = 'gm-reference-shell-v20261124-drive-write-silent-reconnect';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

@@ -96,7 +96,7 @@
     overlay.innerHTML = `
       <div class="gm-drive-connect-card" role="dialog" aria-modal="true" aria-labelledby="gm-drive-connect-title">
         <h1 id="gm-drive-connect-title">Connect Google Drive</h1>
-        <p>Sign in to load the selected data folder and its rulebooks.</p>
+        <p>Reconnect to the selected Drive folder. If Google asks, approve access so the app can edit your existing data files.</p>
         <button type="button" class="primary gm-drive-connect-button">Continue with Google</button>
         <div class="gm-drive-connect-error" aria-live="polite"></div>
       </div>`;
@@ -126,7 +126,7 @@
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'drive-folder-prefix-initiative-click-20261124');
+      moduleUrl.searchParams.set('v', 'drive-write-silent-reconnect-20261124');
       await import(moduleUrl.href);
       await window.GM.data?.init?.();
       window.GM.data?.prepareGoogleDrive?.().catch((err) => console.warn('Google Drive libraries did not preload:', err));

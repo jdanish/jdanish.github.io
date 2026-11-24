@@ -232,11 +232,11 @@
     if (!state.driveTokenClient) {
       state.driveTokenClient = window.google.accounts.oauth2.initTokenClient({
         client_id: state.drive.clientId,
-        // Read all Drive files so a selected data folder can be scanned
-        // recursively. Keep drive.file as well for writes to files the user
-        // selects with Picker and for files created by this app.
-        scope: 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file',
+        // The app edits existing files discovered inside the selected folder,
+        // including files that were not individually opened with Picker.
+        scope: 'https://www.googleapis.com/auth/drive',
         callback: () => {},
+        error_callback: () => {},
       });
     }
     const token = await new Promise((resolve, reject) => {
@@ -245,6 +245,7 @@
         else if (!response?.access_token) reject(new Error('Google did not return an access token.'));
         else resolve(response.access_token);
       };
+      state.driveTokenClient.error_callback = (error) => reject(new Error(error?.message || 'Google authorization could not open.'));
       state.driveTokenClient.requestAccessToken({ prompt });
     });
     state.driveAccessToken = token;
@@ -1279,12 +1280,21 @@
         return;
       }
 
-      // Google authorization must be started by a user gesture, so keep the
-      // selected Drive folder configured but let the user reconnect from the
-      // data manager after the page is interactive.
+      // Try to reuse the existing Google session and previously granted Drive
+      // access without showing a prompt. If Google needs user interaction, the
+      // app remains configured and the existing connect overlay can request it.
       if (state.drive?.folderId) {
-        state.connected = false;
-        state.lastError = '';
+        try {
+          await authorizeDrive({ prompt: 'none' });
+          state.driveIndexLoaded = false;
+          await refreshDriveIndex({ force: true });
+          state.connected = true;
+          state.lastError = '';
+        } catch (err) {
+          state.driveAccessToken = '';
+          state.connected = false;
+          state.lastError = err?.message || String(err);
+        }
         return;
       }
 
