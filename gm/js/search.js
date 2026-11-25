@@ -23,6 +23,10 @@
     sidebarIndex: [],
     referenceTypeFilter: '',
     referenceBookFilter: '',
+    resultOrder: (() => {
+      try { return localStorage.getItem('gmSearchResultOrder') === 'relevance' ? 'relevance' : 'source'; }
+      catch { return 'source'; }
+    })(),
   };
 
   function getBooks() {
@@ -197,6 +201,28 @@
     return String(type || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, (letter) => letter.toLocaleUpperCase());
   }
 
+  function textMatchScore(query, value, exactScore, startsScore, containsScore) {
+    const q = normalizeSearchQuery(query);
+    const text = normalizeSearchQuery(value);
+    if (!q || !text.includes(q)) return 0;
+    if (text === q) return exactScore;
+    if (text.startsWith(q)) return startsScore;
+    return containsScore;
+  }
+
+  function countQueryMatches(text, query) {
+    const source = normalizeSearchQuery(text);
+    const q = normalizeSearchQuery(query);
+    if (!q) return 0;
+    let count = 0;
+    let cursor = 0;
+    while ((cursor = source.indexOf(q, cursor)) !== -1) {
+      count += 1;
+      cursor += q.length;
+    }
+    return count;
+  }
+
   function getSidebarNotesText() {
     return String(window.GM.notes?.getText?.() || window.GM.storage?.state?.sidebarNotes || '').trim();
   }
@@ -256,18 +282,41 @@
         const source = String(entry?.source || '');
         const bookKey = source.split('/')[0];
         const bookTitle = window.BOOKS?.[bookKey]?.title || bookKey;
-        const haystack = normalizeSearchQuery([entry?.label, category, humanizeIndexType(category), bookTitle, source, ...aliases].join(' '));
-        const idx = haystack.indexOf(q);
-        if (idx < 0) return;
+        const label = String(entry?.label || key);
+        const labelScore = textMatchScore(q, label, 1000, 900, 800);
+        const aliasMatches = aliases.map((alias) => ({
+          alias,
+          score: textMatchScore(q, alias, 700, 650, 600),
+        })).filter((item) => item.score > 0).sort((a, b) => b.score - a.score);
+        const typeScore = textMatchScore(q, humanizeIndexType(category), 500, 500, 500);
+        const bookScore = textMatchScore(q, bookTitle, 400, 400, 400);
+        const sourceScore = textMatchScore(q, source, 350, 350, 350);
+        const aliasScore = aliasMatches[0]?.score || 0;
+        const relevanceScore = Math.max(labelScore, aliasScore, typeScore, bookScore, sourceScore);
+        if (!relevanceScore) return;
+        const matchField = labelScore ? 'Name' : aliasMatches.length ? 'Alias' : typeScore ? 'Type' : bookScore ? 'Book' : 'Source';
+        const matchReason = labelScore === 1000 ? 'Exact name'
+          : labelScore === 900 ? 'Name starts with query'
+            : labelScore ? 'Name contains query'
+              : aliasScore === 700 ? 'Exact alias'
+                : aliasScore === 650 ? 'Alias starts with query'
+                  : aliasScore ? 'Alias contains query'
+                    : typeScore ? 'Entry type'
+                      : bookScore ? 'Book title'
+                        : 'Source reference';
+        const idx = normalizeSearchQuery([label, ...aliases, humanizeIndexType(category), bookTitle].join(' ')).indexOf(q);
         results.push({
           type: 'reference',
           category,
           key,
-          label: String(entry?.label || key),
+          label,
           source: String(entry?.source || ''),
           aliases,
           snippet: '',
           score: idx,
+          relevanceScore,
+          matchField,
+          matchReason,
           entry: { category, key, ...entry },
         });
       });
@@ -310,11 +359,21 @@
     searchState.sidebarIndex.forEach((item) => {
       const idx = item.searchText.indexOf(q);
       if (idx < 0) return;
+      const blockTitleScore = textMatchScore(q, item.blockTitle, 450, 430, 410);
+      const sectionTitleScore = textMatchScore(q, item.sectionTitle, 400, 380, 360);
+      const bodyMatchCount = countQueryMatches(item.searchText, q);
 
       results.push({
         ...getSidebarHitResult(item, q),
         highlight: q,
         score: idx,
+        relevanceScore: Math.max(
+          blockTitleScore,
+          sectionTitleScore,
+          150 + Math.min(20, bodyMatchCount) * 3,
+        ),
+        matchField: blockTitleScore || sectionTitleScore ? 'Title' : 'Sidebar text',
+        matchReason: blockTitleScore ? 'Sidebar title' : sectionTitleScore ? 'Section title' : 'Sidebar text',
       });
     });
 
@@ -332,6 +391,9 @@
         snippet: extractSnippet(notes, q),
         highlight: q,
         score: notes.toLowerCase().indexOf(q),
+        relevanceScore: 150 + Math.min(20, countQueryMatches(notes, q)) * 3,
+        matchField: 'Sidebar notes',
+        matchReason: 'Sidebar notes',
       });
     }
 
@@ -474,6 +536,9 @@
           snippet: extractSnippet(page.text, q),
           query,
           score: idx,
+          relevanceScore: 200 + Math.min(20, countQueryMatches(page.text, q)) * 3,
+          matchField: 'PDF text',
+          matchReason: `${countQueryMatches(page.text, q)} occurrences in PDF text`,
         });
       });
     }
@@ -569,6 +634,18 @@
     status.className = 'search-results-status';
     status.textContent = statusText || `${referenceHits.length + sidebarHits.length + pdfHits.length} matches`;
 
+    const orderSelect = document.createElement('select');
+    orderSelect.className = 'search-result-order';
+    orderSelect.setAttribute('aria-label', 'Search result order');
+    orderSelect.title = 'Choose how search results are organized';
+    orderSelect.innerHTML = '<option value="source">By source</option><option value="relevance">By relevance</option>';
+    orderSelect.value = searchState.resultOrder;
+    orderSelect.addEventListener('change', () => {
+      searchState.resultOrder = orderSelect.value === 'relevance' ? 'relevance' : 'source';
+      try { localStorage.setItem('gmSearchResultOrder', searchState.resultOrder); } catch { /* ignore storage failures */ }
+      renderResults(query, referenceHits, sidebarHits, pdfHits, statusText);
+    });
+
     const collapseButton = document.createElement('button');
     collapseButton.type = 'button';
     collapseButton.className = 'btn search-collapse-button';
@@ -580,35 +657,30 @@
     });
     searchState.dom.collapseButtonEl = collapseButton;
 
-    right.appendChild(status);
+    right.append(orderSelect, status);
     right.appendChild(collapseButton);
 
     header.appendChild(left);
     header.appendChild(right);
     resultsEl.appendChild(header);
 
+    const categories = [...new Set(referenceHits.map((hit) => hit.category))].sort();
+    const books = [...new Set(referenceHits.map((hit) => String(hit.source || '').split('/')[0]).filter(Boolean))]
+      .sort((a, b) => (getBookOrder(a) - getBookOrder(b)) || a.localeCompare(b));
+    if (searchState.referenceTypeFilter && !categories.includes(searchState.referenceTypeFilter)) searchState.referenceTypeFilter = '';
+    if (searchState.referenceBookFilter && !books.includes(searchState.referenceBookFilter)) searchState.referenceBookFilter = '';
+    const filteredReferenceHits = referenceHits.filter((hit) => {
+      const bookKey = String(hit.source || '').split('/')[0];
+      return (!searchState.referenceTypeFilter || hit.category === searchState.referenceTypeFilter)
+        && (!searchState.referenceBookFilter || bookKey === searchState.referenceBookFilter);
+    });
+
     if (referenceHits.length) {
-      const group = document.createElement('details');
-      group.className = 'search-group';
-      group.open = true;
-
-      const summary = document.createElement('summary');
-      summary.textContent = `Reference Index (${referenceHits.length})`;
-      group.appendChild(summary);
-
-      const body = document.createElement('div');
-      body.className = 'search-group-body';
-
-      const categories = [...new Set(referenceHits.map((hit) => hit.category))].sort();
-      const books = [...new Set(referenceHits.map((hit) => String(hit.source || '').split('/')[0]).filter(Boolean))]
-        .sort((a, b) => (getBookOrder(a) - getBookOrder(b)) || a.localeCompare(b));
-      if (searchState.referenceTypeFilter && !categories.includes(searchState.referenceTypeFilter)) searchState.referenceTypeFilter = '';
-      if (searchState.referenceBookFilter && !books.includes(searchState.referenceBookFilter)) searchState.referenceBookFilter = '';
       const filters = document.createElement('div');
-      filters.className = 'search-reference-filters';
+      filters.className = 'search-reference-filters search-reference-filters-global';
       const typeFilter = document.createElement('select');
       typeFilter.setAttribute('aria-label', 'Filter index results by type');
-      typeFilter.innerHTML = '<option value="">All types</option>';
+      typeFilter.innerHTML = '<option value="">All index types</option>';
       categories.forEach((category) => {
         const option = document.createElement('option');
         option.value = category;
@@ -618,7 +690,7 @@
       typeFilter.value = searchState.referenceTypeFilter;
       const bookFilter = document.createElement('select');
       bookFilter.setAttribute('aria-label', 'Filter index results by book');
-      bookFilter.innerHTML = '<option value="">All books</option>';
+      bookFilter.innerHTML = '<option value="">All index books</option>';
       books.forEach((bookKey) => {
         const option = document.createElement('option');
         option.value = bookKey;
@@ -626,25 +698,16 @@
         bookFilter.appendChild(option);
       });
       bookFilter.value = searchState.referenceBookFilter;
+      const count = document.createElement('span');
+      count.className = 'search-reference-count';
+      count.textContent = `${filteredReferenceHits.length} of ${referenceHits.length} index matches`;
       const clearFilters = document.createElement('button');
       clearFilters.type = 'button';
       clearFilters.className = 'btn search-reference-clear';
       clearFilters.textContent = 'Clear filters';
       clearFilters.hidden = !searchState.referenceTypeFilter && !searchState.referenceBookFilter;
-      filters.append(typeFilter, bookFilter, clearFilters);
-      body.appendChild(filters);
-
-      const filteredReferenceHits = referenceHits.filter((hit) => {
-        const bookKey = String(hit.source || '').split('/')[0];
-        return (!searchState.referenceTypeFilter || hit.category === searchState.referenceTypeFilter)
-          && (!searchState.referenceBookFilter || bookKey === searchState.referenceBookFilter);
-      });
-      const resultCount = document.createElement('div');
-      resultCount.className = 'search-reference-count';
-      resultCount.textContent = searchState.referenceTypeFilter || searchState.referenceBookFilter
-        ? `${filteredReferenceHits.length} of ${referenceHits.length} index matches`
-        : `${referenceHits.length} index matches`;
-      body.appendChild(resultCount);
+      filters.append(typeFilter, bookFilter, count, clearFilters);
+      resultsEl.appendChild(filters);
       typeFilter.addEventListener('change', () => {
         searchState.referenceTypeFilter = typeFilter.value;
         renderResults(query, referenceHits, sidebarHits, pdfHits, statusText);
@@ -658,7 +721,91 @@
         searchState.referenceBookFilter = '';
         renderResults(query, referenceHits, sidebarHits, pdfHits, statusText);
       });
+    }
 
+    if (searchState.resultOrder === 'relevance') {
+      const ranked = [
+        ...filteredReferenceHits.map((hit) => ({ kind: 'reference', hit, score: hit.relevanceScore || 0 })),
+        ...sidebarHits.map((hit) => ({ kind: 'sidebar', hit, score: hit.relevanceScore || 0 })),
+        ...pdfHits.map((hit) => ({ kind: 'pdf', hit, score: hit.relevanceScore || 0 })),
+      ].sort((a, b) => b.score - a.score
+        || (a.kind === b.kind ? 0 : a.kind.localeCompare(b.kind))
+        || String(a.hit.label || a.hit.title || a.hit.bookTitle || '').localeCompare(String(b.hit.label || b.hit.title || b.hit.bookTitle || '')));
+      const group = document.createElement('details');
+      group.className = 'search-group search-relevance-group';
+      group.open = true;
+      const summary = document.createElement('summary');
+      summary.textContent = `Ranked by relevance (${ranked.length})`;
+      group.appendChild(summary);
+      const body = document.createElement('div');
+      body.className = 'search-group-body';
+
+      ranked.forEach(({ kind, hit }) => {
+        if (kind === 'reference') {
+          const sourceParts = String(hit.source || '').split('/');
+          const bookKey = sourceParts[0] || '';
+          const page = (sourceParts[1] || '').split('?')[0] || '—';
+          const item = document.createElement('div');
+          item.className = 'search-result-item search-reference-result';
+          item.innerHTML = `
+            <button type="button" class="btn search-result-main" data-search-hit="reference">
+              <div class="search-result-title">${window.GM.utils.escapeHtml(hit.label)}</div>
+              <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.matchReason || (hit.matchField + ' match'))} · ${window.GM.utils.escapeHtml(humanizeIndexType(hit.category))} · ${window.GM.utils.escapeHtml(window.BOOKS?.[bookKey]?.title || bookKey || 'Book')} · p. ${window.GM.utils.escapeHtml(page)}</div>
+              ${hit.snippet ? `<div class="search-result-snippet">${highlightedSnippet(hit.snippet, hit.snippetMatch || query)}</div>` : ''}
+            </button>
+            <div class="search-result-actions"><button type="button" class="btn" data-reference-action="edit">Edit</button></div>
+          `;
+          item.querySelector('[data-search-hit="reference"]')?.addEventListener('click', () => window.GM.referenceIndex?.jumpToEntry?.(hit.entry));
+          item.querySelector('[data-reference-action="edit"]')?.addEventListener('click', () => window.GM.referenceIndex?.openEntryEditor?.(hit.entry));
+          body.appendChild(item);
+          return;
+        }
+
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'btn search-result-item';
+        if (kind === 'sidebar') {
+          item.dataset.searchHit = hit.type || 'sidebar';
+          item.dataset.highlight = hit.highlight || query;
+          item.dataset.sectionKey = hit.sectionKey || '';
+          item.dataset.sectionTab = hit.sectionTab || 'rules';
+          item.dataset.blockKey = hit.blockKey || '';
+          item.innerHTML = `<div class="search-result-title">${window.GM.utils.escapeHtml(hit.title || hit.blockTitle || 'Sidebar')}</div>
+            <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.matchReason || hit.matchField || 'Sidebar')} · ${window.GM.utils.escapeHtml(hit.sectionTitle || '')}</div>
+            <div class="search-result-snippet">${highlightedSnippet(hit.snippet || '', query)}</div>`;
+        } else {
+          item.dataset.tab = hit.tab;
+          item.dataset.page = String(hit.displayPage);
+          item.dataset.highlight = hit.query || query;
+          item.innerHTML = `<div class="search-result-title">${window.GM.utils.escapeHtml(hit.bookTitle)} · p. ${window.GM.utils.escapeHtml(hit.displayPage)}</div>
+            <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.matchReason || hit.matchField || 'PDF text')}</div>
+            <div class="search-result-snippet">${highlightedSnippet(hit.snippet || '', query)}</div>`;
+        }
+        body.appendChild(item);
+      });
+
+      if (!ranked.length) {
+        const empty = document.createElement('div');
+        empty.className = 'search-empty';
+        empty.textContent = referenceHits.length ? 'No index entries match these filters.' : 'No matches found.';
+        body.appendChild(empty);
+      }
+      group.addEventListener('toggle', syncSearchCollapseButtonState);
+      group.appendChild(body);
+      resultsEl.appendChild(group);
+      syncSearchCollapseButtonState();
+      return;
+    }
+
+    if (referenceHits.length) {
+      const group = document.createElement('details');
+      group.className = 'search-group';
+      group.open = true;
+      const summary = document.createElement('summary');
+      summary.textContent = `Reference Index (${filteredReferenceHits.length})`;
+      group.appendChild(summary);
+      const body = document.createElement('div');
+      body.className = 'search-group-body';
       filteredReferenceHits.forEach((hit) => {
         const item = document.createElement('div');
         item.className = 'search-result-item search-reference-result';
@@ -673,8 +820,7 @@
             <button type="button" class="btn" data-reference-action="pdf">Open in Book</button>
           </div>
         `;
-        const main = item.querySelector('[data-search-hit="reference"]');
-        main.addEventListener('click', () => window.GM.referenceIndex?.openEntryEditor?.(hit.entry));
+        item.querySelector('[data-search-hit="reference"]')?.addEventListener('click', () => window.GM.referenceIndex?.openEntryEditor?.(hit.entry));
         item.querySelector('[data-reference-action="edit"]')?.addEventListener('click', () => window.GM.referenceIndex?.openEntryEditor?.(hit.entry));
         item.querySelector('[data-reference-action="pdf"]')?.addEventListener('click', () => window.GM.referenceIndex?.jumpToEntry?.(hit.entry));
         body.appendChild(item);
@@ -685,7 +831,6 @@
         empty.textContent = 'No index entries match these filters.';
         body.appendChild(empty);
       }
-
       group.addEventListener('toggle', syncSearchCollapseButtonState);
       group.appendChild(body);
       resultsEl.appendChild(group);

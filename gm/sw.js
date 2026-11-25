@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-search-index-page-context';
+const CACHE_NAME = 'gm-reference-shell-v20261125-search-sort-toggle';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 
