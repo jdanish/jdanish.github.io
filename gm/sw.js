@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-sidebar-status-controller-js-folder';
+const CACHE_NAME = 'gm-reference-shell-v20261125-status-checkbox-logging-removed';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

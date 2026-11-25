@@ -235,7 +235,7 @@
   }
   function applyNoteShaken(path,name,checked){
     const combatant=findDocumentCombatant(path,name);
-    if(!combatant)return;
+    if(!combatant)return false;
     const shaken=Boolean(checked);
     if(combatant.entityType==='monster'&&!combatant.wildcard){
       combatant.extraShaken=Array.from({length:Math.max(0,Math.min(99,Math.trunc(Number(combatant.count)||0)))},()=>shaken);
@@ -247,10 +247,11 @@
     combatant.trackResources=true;
     save();
     render();
+    return true;
   }
   function applyNoteWildCard(path,name,checked){
     const combatant=findDocumentCombatant(path,name);
-    if(!combatant)return;
+    if(!combatant)return false;
     combatant.entityType='monster';
     combatant.wildcard=Boolean(checked);
     combatant.bennies=0;
@@ -258,6 +259,7 @@
     combatant.trackResources=true;
     save();
     render();
+    return true;
   }
   function trackerKeysFor(combatant) {
     return combatant.entityType === 'monster'
@@ -293,8 +295,12 @@
       const entry=nameFromOpenDocument(path,markdown);
       if(!entry)continue;
       const aliases=new Set(entry.aliases.map(normalizedCombatantName));
+      const documentPath=normalizedDocumentPath(entry.path);
       state.combatants.forEach(combatant=>{
-        if(!aliases.has(normalizedCombatantName(combatant.name)))return;
+        const combatantPath=normalizedDocumentPath(combatant.documentPath);
+        const pathMatches=Boolean(documentPath&&combatantPath===documentPath);
+        const nameMatches=aliases.has(normalizedCombatantName(combatant.name));
+        if((documentPath&&combatantPath&&!pathMatches)||(!(documentPath&&combatantPath)&&!nameMatches))return;
         const modeChanged=combatant.entityType!==entry.type||(entry.type==='monster'&&Boolean(combatant.wildcard)!==entry.wildcard);
         if(entry.path&&combatant.documentPath!==entry.path){combatant.documentPath=entry.path;changed=true;}
         if(combatant.entityType!==entry.type){combatant.entityType=entry.type;changed=true;}
@@ -970,8 +976,9 @@
   window.WildCardTools = window.WildCardTools || {};
   window.WildCardTools.applyInitiativeNoteTask = (path,name,task,checked)=>{
     const normalizedTask=String(task||'').toLowerCase();
-    if(normalizedTask==='shaken')applyNoteShaken(path,name,checked);
-    else if(normalizedTask==='wild card')applyNoteWildCard(path,name,checked);
+    if(normalizedTask==='shaken')return applyNoteShaken(path,name,checked);
+    if(normalizedTask==='wild card')return applyNoteWildCard(path,name,checked);
+    return false;
   };
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));

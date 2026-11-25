@@ -15,6 +15,7 @@ window.SIDEBAR_SECTIONS = [];
     current: 'gm_sidebar_current_json_v1',
   };
   const handledTaskCheckboxChanges = new WeakSet();
+  const processedTaskCheckboxValues = new WeakMap();
 
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
@@ -591,7 +592,7 @@ window.SIDEBAR_SECTIONS = [];
         const task = match[3].match(/^\[([ xX])\]\s+([\s\S]+)$/);
         if (task) {
           const checked = /x/i.test(task[1]);
-          html += `<li class="note-task-item"><label class="note-task-label"><input type="checkbox" class="sidebar-task-checkbox" data-task-text="${escapeHtml(match[3])}"${checked ? ' checked' : ''}><span>${renderInline(task[2])}</span></label>`;
+          html += `<li class="note-task-item"><label class="note-task-label"><input type="checkbox" class="sidebar-task-checkbox" data-task-text="${escapeHtml(task[2])}"${checked ? ' checked' : ''}><span>${renderInline(task[2])}</span></label>`;
         } else {
           html += `<li>${renderInline(match[3])}`;
         }
@@ -772,7 +773,8 @@ window.SIDEBAR_SECTIONS = [];
     if (!root || root.dataset.trackerEventsBound === 'true') return;
     root.dataset.trackerEventsBound = 'true';
 
-    root.querySelectorAll('.sidebar-task-checkbox').forEach((input) => {
+    const taskCheckboxes = root.querySelectorAll('.sidebar-task-checkbox');
+    taskCheckboxes.forEach((input) => {
       if (input.dataset.taskChangeBound === 'true') return;
       input.dataset.taskChangeBound = 'true';
       input.addEventListener('change', (event) => handleMarkdownTaskChange(input, event));
@@ -1119,21 +1121,34 @@ window.SIDEBAR_SECTIONS = [];
   function handleMarkdownTaskChange(input, event) {
     if (event && handledTaskCheckboxChanges.has(event)) return;
     if (event) handledTaskCheckboxChanges.add(event);
-    if (!input || !activeDocumentPath) return;
+    if (!input) return;
+    const checked = Boolean(input.checked);
+    if (processedTaskCheckboxValues.get(input) === checked) return;
     const taskText = input?.dataset?.taskText || '';
-    const checked = Boolean(input?.checked);
-    const lines = String(currentMarkdown || '').split('\n');
+    if (!activeDocumentPath) return;
+    const normalizeTaskText = (value) => String(value || '').replace(/\r/g, '').replace(/[*_`]/g, '').replace(/\s+/g, ' ').trim().toLocaleLowerCase();
+    const statusTask = taskText.replace(/[*_`]/g, '').trim().match(/^(Shaken|Wild\s+Card)\b/i);
+    const normalizedTaskText = normalizeTaskText(taskText);
+    const lines = String(currentMarkdown || '').replace(/\r\n?/g, '\n').split('\n');
     const lineIndex = lines.findIndex((line) => {
       const match = line.match(/^\s*([-*+])\s+\[([ xX])\]\s+([\s\S]+)$/);
-      return match && match[3] === taskText;
+      if (!match) return false;
+      const candidate = normalizeTaskText(match[3]);
+      if (candidate === normalizedTaskText) return true;
+      if (!statusTask) return false;
+      return statusTask[1].toLocaleLowerCase() === 'shaken'
+        ? /^shaken\b/.test(candidate)
+        : /^wild\s+card\b/.test(candidate);
     });
-    if (lineIndex < 0) return;
+    if (lineIndex < 0) {
+      return;
+    }
+    processedTaskCheckboxValues.set(input, checked);
 
     lines[lineIndex] = lines[lineIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${checked ? 'x' : ' '}]`);
     importMarkdownFromText('current', lines.join('\n'), getWorkspaceSectionKind(activeDocumentMeta, activeDocumentPath));
 
     const normalizedPath = normalizeWorkspaceDocumentPath(activeDocumentPath);
-    const statusTask = taskText.replace(/[*_`]/g, '').trim().match(/^(Shaken|Wild\s+Card)\b/i);
     if (statusTask && /^(?:characters|monsters)\//i.test(normalizedPath)) {
       const payload = {
         type: 'gm-initiative-task-changed',
@@ -1154,7 +1169,9 @@ window.SIDEBAR_SECTIONS = [];
       }
     }
 
-    saveActiveDocument().then(notifyInitiativeDocumentRefresh).catch((error) => {
+    saveActiveDocument().then(() => {
+      notifyInitiativeDocumentRefresh();
+    }).catch((error) => {
       console.warn('Could not save the status change from the note', error);
     });
   }
@@ -1163,7 +1180,17 @@ window.SIDEBAR_SECTIONS = [];
   // recreated without its local event bindings.
   document.addEventListener('change', (event) => {
     const input = event.target?.closest?.('.sidebar-task-checkbox');
-    if (input) handleMarkdownTaskChange(input, event);
+    if (input) {
+      handleMarkdownTaskChange(input, event);
+    }
+  }, true);
+  document.addEventListener('click', (event) => {
+    const input = event.target?.closest?.('.sidebar-task-checkbox')
+      || event.target?.closest?.('.note-task-label')?.querySelector?.('.sidebar-task-checkbox');
+    if (!input) return;
+    window.setTimeout(() => {
+      handleMarkdownTaskChange(input);
+    }, 0);
   }, true);
 
   async function updateInitiativeTask(path, taskName, checked) {
