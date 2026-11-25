@@ -91,27 +91,19 @@ body[data-active-tool-panel="chase"] .chase-panel{display:block!important}
 body[data-active-tool-panel="dramatic"] .dramatic-panel{display:block!important}
 .initiative-panel,.dice-panel,.card-draw-panel,.chase-panel,.dramatic-panel{width:100%;margin:0}
 .dice-panel,.card-draw-panel,.chase-panel,.dramatic-panel{padding:26px 30px}
-.chase-range-card{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:24px;padding:16px 18px;background:var(--panel2);border:1px solid var(--line);border-radius:10px}
-.chase-range-card>div:first-child{display:flex;flex-direction:column;gap:5px}
-.chase-range-card strong{font:600 25px var(--display);color:var(--acid)}
-.chase-range-card strong small{font:10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-.range-controls{display:flex;gap:8px}
-.range-button{width:38px;height:38px;border:1px solid #414857;border-radius:8px;background:#191d24;color:var(--acid);font-size:21px;cursor:pointer}
-.range-button:hover{border-color:var(--acid)}
-.chase-guidance{margin:10px 2px 20px;color:var(--muted);font-size:11px;line-height:1.5}
 .chase-section-heading{display:flex;justify-content:space-between;align-items:center;margin:0 1px 10px;font:10px var(--mono);letter-spacing:1.2px;color:#92979f}
 .chase-deck-count{color:var(--muted);font-size:9px;letter-spacing:.4px}
 .chase-add-form{display:flex;gap:8px}
-.chase-add-form input,.chase-add-form select{min-width:0;background:#111317;border:1px solid #30343a;border-radius:7px;padding:11px 12px;font:12px var(--sans);color:var(--text);outline:none}
+.chase-add-form input{min-width:0;background:#111317;border:1px solid #30343a;border-radius:7px;padding:11px 12px;font:12px var(--sans);color:var(--text);outline:none}
 .chase-add-form input{flex:1}
-.chase-add-form select{width:112px}
-.chase-add-form input:focus,.chase-add-form select:focus{border-color:#6980a9}
+.chase-add-form input:focus{border-color:#6980a9}
 .chase-participant-list{display:flex;flex-direction:column;gap:7px;margin-top:12px}
-.chase-participant-row{min-height:58px;padding:8px 11px;display:flex;align-items:center;gap:12px;background:#1c1f24;border:1px solid #2a2e35;border-radius:8px}
+.chase-participant-row{min-height:58px;padding:8px 11px;display:grid;grid-template-columns:42px minmax(0,1fr) 24px;align-items:center;gap:8px;background:#1c1f24;border:1px solid #2a2e35;border-radius:8px}
 .chase-participant-row.is-joker{border-color:#897544;background:linear-gradient(100deg,#332e21,#1d2024)}
-.chase-participant-name{flex:1;min-width:0;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chase-side{font:9px var(--mono);letter-spacing:.7px;color:#9ca6b6}
-.chase-side.pursuit{color:var(--acid)}
+.chase-participant-row.has-complication{border-color:#a6534c;box-shadow:inset 3px 0 #d56b61}
+.chase-participant-details{display:flex;align-items:center;gap:9px;min-width:0}
+.chase-participant-swatch{flex:0 0 13px;width:13px;height:13px;border:1px solid #ffffff88;border-radius:50%;background:var(--chase-token-color)}
+.chase-participant-name{min-width:0;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chase-empty{min-height:105px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#858991;text-align:center}
 .chase-empty[hidden]{display:none}
 .chase-empty strong{font-size:12px;color:#c2c6cc}
@@ -119,14 +111,49 @@ body[data-active-tool-panel="dramatic"] .dramatic-panel{display:block!important}
 .chase-actions{display:flex;justify-content:flex-end;margin-top:12px}
 .chase-actions .button{padding:11px 14px}
 .chase-actions .button:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.chase-notes-label{margin-top:22px}
-.chase-notes{width:100%;resize:vertical;min-height:76px;background:#111317;border:1px solid #30343a;border-radius:7px;padding:10px 12px;font:12px/1.5 var(--sans);color:var(--text);outline:none}
-.chase-notes:focus{border-color:#6980a9}
+.chase-track-section,.chase-complications{margin-top:24px}
+.chase-reference-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+.chase-reference-grid .chase-maneuvers,.chase-reference-grid .chase-complications{min-width:0;margin-top:0}
+.chase-track-hint{font:9px var(--sans);letter-spacing:0;color:var(--muted)}
+.chase-track-scroll,.chase-complication-scroll{overflow-x:auto;padding-bottom:5px}
+.chase-track{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:7px;min-width:650px}
+.chase-track-slot{min-width:0;min-height:110px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid #303743;border-radius:8px;background:#171b22}
+.chase-track-slot.drag-over{border-color:var(--acid);background:#202d3a;box-shadow:0 0 0 2px #7cc4ff44}
+.chase-track-position{font:8px var(--mono);letter-spacing:.5px;color:var(--muted)}
+.card-face.chase-track-face{flex:0 0 auto;width:32px;height:39px;font-size:15px}
+.chase-track-tokens{width:100%;min-height:27px;display:flex;justify-content:center;align-content:flex-start;flex-wrap:wrap;gap:4px}
+.chase-token-control{display:flex;align-items:center;gap:1px}
+.chase-token-move{width:14px;height:24px;padding:0;border:0;border-radius:4px;background:transparent;color:var(--muted);font:15px var(--sans);line-height:1;cursor:pointer}
+.chase-token-move:hover:not(:disabled){background:var(--panel2);color:var(--text)}
+.chase-token-move:disabled{opacity:.25;cursor:not-allowed}
+.chase-token{width:24px;height:24px;display:grid;place-items:center;border:1px solid #ffffff99;border-radius:50%;background:var(--chase-token-color,#2563eb);color:#fff;font:700 8px var(--mono);cursor:default}
+.chase-token{touch-action:none;user-select:none;cursor:grab}
+.chase-token.is-dragging{opacity:.35;transform:scale(1.12)}
+body.chase-token-dragging{user-select:none}
+.chase-token.triggers-complication{box-shadow:0 0 0 2px #d56b61,0 0 10px #d56b6188}
+.chase-complication-hint{margin:0 1px 10px;color:var(--muted);font-size:10px;line-height:1.5}
+.chase-complication-table,.chase-maneuver-table{width:100%;min-width:0;table-layout:fixed;border-collapse:separate;border-spacing:0;font-size:9px}
+.chase-complication-table th,.chase-complication-table td{padding:9px 10px;border-bottom:1px solid #30343b;text-align:left;vertical-align:middle}
+.chase-maneuver-table th,.chase-maneuver-table td{padding:8px 7px;border-bottom:1px solid #30343b;text-align:left;vertical-align:top;overflow-wrap:anywhere;line-height:1.4}
+.chase-complication-table thead th{background:#20242a;color:#b7c0ce;font:9px var(--mono);letter-spacing:.55px;text-transform:uppercase}
+.chase-maneuver-table thead th{background:#20242a;color:#b7c0ce;font:8px var(--mono);letter-spacing:.4px;text-transform:uppercase}
+.chase-complication-table tbody th{white-space:nowrap;color:var(--text);font-weight:650}
+.chase-maneuver-table tbody th{color:var(--text);font-weight:650}
+.chase-action-type{display:inline-block;margin-left:3px;padding:2px 4px;border:1px solid #465264;border-radius:4px;color:#aebbd0;font:7px var(--mono);letter-spacing:.2px;white-space:nowrap;vertical-align:1px}
+.chase-complication-table tbody tr{background:#191d23}
+.chase-complication-table tbody tr.is-highlighted{background:#392725;box-shadow:inset 3px 0 #d56b61}
+.chase-suit-symbol{display:inline-block;width:16px;text-align:center;font-size:14px}
+.chase-suit-symbol.red{color:#e87970}
+.chase-complication-participants{min-width:0;overflow-wrap:anywhere}
+.chase-complication-tag{display:inline-block;margin:2px 3px 2px 0;padding:3px 6px;border:1px solid #a6534c;border-radius:999px;background:#482b28;color:#ffd0ca;font-size:9px;white-space:nowrap}
 html[data-theme="light"] .tool-tabs{background:var(--bg);border-color:var(--line)}
 html[data-theme="light"] .tool-tab{background:#fff;color:#475569;border-color:#cbd5e1}
 html[data-theme="light"] .tool-tab.active{background:#eff6ff;color:#1f2937;border-color:#93c5fd}
 @media(max-width:760px){.tool-tabs{padding:8px 10px;gap:5px}.tool-tab{min-height:38px;padding:7px 5px;font-size:11px}.layout{margin:12px auto 24px;padding:0 12px}.initiative-panel{padding:20px 18px 0;min-height:0}.dice-panel,.card-draw-panel,.chase-panel{padding:20px}}
-@media(max-width:520px){.tool-tabs{gap:4px;padding:7px 8px}.tool-tab{font-size:10px;letter-spacing:-.1px}.layout{margin-top:10px;padding:0 10px}.initiative-panel{padding:18px 14px 0}.chase-add-form{flex-wrap:wrap}.chase-add-form input{flex-basis:calc(100% - 108px)}.chase-add-form select{flex:0 0 96px}.chase-add-form .button{flex:1;min-height:38px}.chase-participant-row{gap:8px;padding:7px}.chase-side{font-size:8px}.chase-range-card{padding:13px 14px}.dice-panel,.card-draw-panel,.chase-panel{padding:18px 14px}}
+@media(max-width:680px){.chase-reference-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.tool-tabs{gap:4px;padding:7px 8px}.tool-tab{font-size:10px;letter-spacing:-.1px}.layout{margin-top:10px;padding:0 10px}.initiative-panel{padding:18px 14px 0}.chase-add-form{flex-wrap:wrap}.chase-add-form input{flex-basis:100%}.chase-add-form .button{flex:1;min-height:38px}.chase-participant-row{gap:8px;padding:7px}.dice-panel,.card-draw-panel,.chase-panel{padding:18px 14px}}
+@media(max-width:760px){.tool-tab-refresh-button{flex:0 0 38px;width:38px;min-height:38px}}
+@media(max-width:520px){.tool-tab-refresh-button{flex-basis:34px;width:34px;min-height:38px;font-size:17px}.chase-participant-row{grid-template-columns:32px minmax(0,1fr) 20px;gap:6px;padding:6px}.chase-participant-name{font-size:11px}}
 body[data-active-tool-panel="dramatic"] .layout{display:block}
 .dramatic-panel{grid-column:1/-1;max-width:820px;justify-self:center}
 .dramatic-intro{max-width:620px;margin:12px 0 22px;color:var(--muted);font-size:12px;line-height:1.55}
@@ -175,7 +202,6 @@ html[data-theme="light"] .button-primary,
 html[data-theme="light"] .button-roll { background:#2563eb; color:#fff; }
 html[data-theme="light"] .button-add,
 html[data-theme="light"] .button-secondary,
-html[data-theme="light"] .range-button,
 html[data-theme="light"] .turn-arrow,
 html[data-theme="light"] .turn-button,
 html[data-theme="light"] .resource-stepper button,
@@ -189,7 +215,6 @@ html[data-theme="light"] .card-choice-button {
 html[data-theme="light"] .button-add { color:#1d4ed8; }
 html[data-theme="light"] .button-add:hover,
 html[data-theme="light"] .button-secondary:hover,
-html[data-theme="light"] .range-button:hover,
 html[data-theme="light"] .turn-arrow:hover,
 html[data-theme="light"] .turn-button:hover,
 html[data-theme="light"] .resource-stepper button:hover:not(:disabled),
@@ -213,13 +238,16 @@ html[data-theme="light"] .turn-button.next-turn:hover {
   border-color:#1d4ed8;
   color:#fff;
 }
-html[data-theme="light"] .chase-notes {
-  background:#fff;
-  border-color:#cbd5e1;
-  color:#1f2937;
-}
-html[data-theme="light"] .chase-notes::placeholder { color:#64748b; }
-html[data-theme="light"] .chase-notes:focus { border-color:#3b82f6; }
+html[data-theme="light"] .chase-participant-row{background:#f8fafc;border-color:#cbd5e1}
+html[data-theme="light"] .chase-token-move:hover:not(:disabled){background:#eff6ff;color:#1d4ed8}
+html[data-theme="light"] .chase-track-slot{background:#f8fafc;border-color:#cbd5e1}
+html[data-theme="light"] .chase-track-position{color:#64748b}
+html[data-theme="light"] .chase-token{border-color:#ffffff;color:#fff}
+html[data-theme="light"] .chase-complication-table th,html[data-theme="light"] .chase-complication-table td{border-color:#cbd5e1}
+html[data-theme="light"] .chase-complication-table thead th{background:#e2e8f0;color:#334155}
+html[data-theme="light"] .chase-complication-table tbody tr{background:#fff}
+html[data-theme="light"] .chase-complication-table tbody tr.is-highlighted{background:#fee2e2}
+html[data-theme="light"] .chase-complication-tag{background:#fee2e2;border-color:#fca5a5;color:#7f1d1d}
 html[data-theme="light"] .die-glyph { background:#eff6ff; color:#2563eb; }
 html[data-theme="light"] .multi-result-heading { border-bottom-color:#dbe3ed; }
 html[data-theme="light"] .multi-result-heading strong { color:#1d4ed8; }

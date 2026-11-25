@@ -56,7 +56,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=tools-tab-refresh-location-20261125">
+  <link rel="stylesheet" href="styles.css?v=chase-maneuvers-20261125">
   <link rel="stylesheet" href="initiative-portraits.css?v=wild-card-extra-icons-20261125">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
@@ -128,24 +128,54 @@
         <div><div class="eyebrow">THE PURSUIT</div><h1 id="chaseTitle">Chase</h1></div>
         <div class="panel-heading-actions"><div class="round-badge"><span class="eyebrow">ROUND</span><strong id="chaseRound">00</strong></div><button class="icon-button" id="resetChase" title="Reset this chase" aria-label="Reset this chase">↻</button></div>
       </div>
-      <div class="chase-range-card">
-        <div><span class="eyebrow">CHASE RANGE</span><strong><span id="chaseRange">5</span> <small>increments</small></strong></div>
-        <div class="range-controls"><button type="button" class="range-button" id="rangeDown" aria-label="Decrease range">−</button><button type="button" class="range-button" id="rangeUp" aria-label="Increase range">+</button></div>
-      </div>
-      <p class="chase-guidance">Track the overall gap between the lead and pursuers here. Draw a fresh action card for each participant each round.</p>
       <div class="chase-section-heading"><span>PARTICIPANTS <span class="muted" id="chaseParticipantCount">0</span></span><span class="chase-deck-count" id="chaseDeckStatus">54 cards left</span></div>
       <form class="chase-add-form" id="chaseAddForm">
         <label class="sr-only" for="chaseParticipantName">Participant name</label>
         <input id="chaseParticipantName" maxlength="32" placeholder="Add a driver, runner, or vehicle…" autocomplete="off" required>
-        <label class="sr-only" for="chaseParticipantSide">Chase side</label>
-        <select id="chaseParticipantSide"><option value="lead">Ahead</option><option value="pursuit">Chasing</option></select>
         <button class="button button-add" type="submit">＋ <span>Add</span></button>
       </form>
       <div class="chase-participant-list" id="chaseParticipantList"></div>
-      <div class="chase-empty" id="chaseEmpty"><strong>No chase participants yet</strong><span>Add the lead and anyone trying to catch them.</span></div>
+      <div class="chase-empty" id="chaseEmpty"><strong>No chase participants yet</strong><span>Add the vehicles or characters in the chase.</span></div>
       <div class="chase-actions"><button type="button" class="button button-secondary" id="dealChaseCards">↻ Deal next round</button></div>
-      <label class="field-label chase-notes-label" for="chaseNotes">CHASE NOTES <span class="optional-label">OPTIONAL</span></label>
-      <textarea id="chaseNotes" class="chase-notes" rows="3" maxlength="500" placeholder="Hazards, obstacles, or details to remember…"></textarea>
+      <section class="chase-track-section" aria-labelledby="chaseTrackTitle">
+        <div class="chase-section-heading"><span id="chaseTrackTitle">CHASE CARD TRACK</span><span class="chase-track-hint">Drag tokens or use arrows to move</span></div>
+        <div class="chase-track-scroll"><div class="chase-track" id="chaseTrack" aria-label="Nine chase cards from rear to lead"></div></div>
+      </section>
+      <div class="chase-reference-grid">
+        <section class="chase-maneuvers" aria-labelledby="chaseManeuversTitle">
+          <div class="chase-section-heading"><span id="chaseManeuversTitle">MANEUVERS</span></div>
+          <p class="chase-complication-hint">Quick reference. F = Free Action; A = Action.</p>
+          <div class="chase-complication-scroll">
+            <table class="chase-maneuver-table">
+              <thead><tr><th scope="col">Maneuver</th><th scope="col">Brief summary</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Change Position <span class="chase-action-type" title="Free Action or Action">F / A</span></th><td>Roll to move 1 Chase Card (2 on a raise). Once per turn; as an action, add +2.</td></tr>
+                <tr><th scope="row">Flee <span class="chase-action-type" title="Action">A</span></th><td>At least 4 cards from the closest foe? Roll to escape (−4, easing with more distance).</td></tr>
+                <tr><th scope="row">Force <span class="chase-action-type" title="Action">A</span></th><td>Opposed maneuvering rolls on the same card; a win Bumps the rival.</td></tr>
+                <tr><th scope="row">Ram <span class="chase-action-type" title="Action">A</span></th><td>Opposed maneuvering rolls on the same card; a win deals vehicle collision damage both ways.</td></tr>
+                <tr><th scope="row">Evade <span class="chase-action-type" title="Free Action or Action">F / A</span></th><td>Reduce incoming and outgoing attacks by 2; taking it as an action makes the penalty 4.</td></tr>
+                <tr><th scope="row">Hold Steady <span class="chase-action-type" title="Free Action">F</span></th><td>Ignore Unstable Platform and Running penalties; attacks against you gain +2 until your next turn.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section class="chase-complications" aria-labelledby="chaseComplicationsTitle">
+          <div class="chase-section-heading"><span id="chaseComplicationsTitle">COMPLICATIONS</span></div>
+          <p class="chase-complication-hint">A Club Action Card triggers a complication. The participant’s Chase Card suit sets the modifier and failure result.</p>
+          <div class="chase-complication-scroll">
+            <table class="chase-complication-table">
+              <thead><tr><th scope="col">Chase Card Suit</th><th scope="col">Modifier</th><th scope="col">Failure result</th><th scope="col">Triggered for</th></tr></thead>
+              <tbody>
+                <tr data-chase-suit="spades"><th scope="row"><span class="chase-suit-symbol">♠</span> Spades</th><td>—</td><td>Treat as a Critical Failure on a maneuvering roll.</td><td class="chase-complication-participants"></td></tr>
+                <tr data-chase-suit="hearts"><th scope="row"><span class="chase-suit-symbol red">♥</span> Hearts</th><td>—</td><td>The character or vehicle is Bumped.</td><td class="chase-complication-participants"></td></tr>
+                <tr data-chase-suit="diamonds"><th scope="row"><span class="chase-suit-symbol red">♦</span> Diamonds</th><td>−2</td><td>The character or vehicle is Bumped.</td><td class="chase-complication-participants"></td></tr>
+                <tr data-chase-suit="clubs"><th scope="row"><span class="chase-suit-symbol">♣</span> Clubs</th><td>−2</td><td>Treat as a Critical Failure on a maneuvering roll.</td><td class="chase-complication-participants"></td></tr>
+                <tr data-chase-suit="joker"><th scope="row"><span class="chase-suit-symbol">★</span> Joker</th><td>+2</td><td>The character or vehicle is Bumped up to two Chase Cards.</td><td class="chase-complication-participants"></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </section>
     <section class="panel dramatic-panel" id="dramaticPanel" role="tabpanel" aria-labelledby="dramaticTab dramaticTitle">
       <div class="panel-heading">
@@ -183,6 +213,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=tools-tab-refresh-location-20261125"></script>
+  <script src="app.js?v=chase-maneuvers-20261125"></script>
 </body>
 </html>

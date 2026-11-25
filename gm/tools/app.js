@@ -6,6 +6,7 @@
     {name:'Spades', symbol:'♠', rank:3, red:false}
   ];
   const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const CHASE_TOKEN_COLORS = ['#2563eb','#dc2626','#15803d','#7e22ce','#c2410c','#0f766e','#be185d','#4338ca','#a16207','#0369a1','#4d7c0f','#9333ea'];
   const STORAGE_KEY = 'wildcard-table-v1';
   const $ = (selector) => document.querySelector(selector);
   const ui = {
@@ -26,6 +27,7 @@
   let cardDealTimer = null;
   let activeDrawAnimationId = null;
   let drawAnimationTimer = null;
+  let chaseTokenDrag = null;
   let rollAnimationSequence = 0;
   let rollAnimationTimer = null;
 
@@ -96,19 +98,24 @@
   }
   function normalizeChase(chase) {
     const source = chase && typeof chase === 'object' ? chase : {};
-    const participants = Array.isArray(source.participants) ? source.participants.filter(item => item && typeof item.name === 'string').map(item => ({
-      id: item.id || `${Date.now()}-${Math.random()}`,
-      name: item.name.slice(0, 32),
-      side: item.side === 'pursuit' ? 'pursuit' : 'lead',
-      card: item.card || null
-    })) : [];
-    const range = Number(source.range);
+    const usedColors = new Set();
+    const participants = Array.isArray(source.participants) ? source.participants.filter(item => item && typeof item.name === 'string').map((item,index) => {
+      const storedColor = CHASE_TOKEN_COLORS.includes(item.color) && !usedColors.has(item.color) ? item.color : '';
+      const color = storedColor || CHASE_TOKEN_COLORS.find(candidate => !usedColors.has(candidate)) || CHASE_TOKEN_COLORS[index % CHASE_TOKEN_COLORS.length];
+      usedColors.add(color);
+      return {
+        id: item.id || `${Date.now()}-${Math.random()}`,
+        name: item.name.slice(0, 32),
+        card: item.card || null,
+        color,
+        position: Number.isFinite(Number(item.position)) ? Math.max(0, Math.min(8, Math.trunc(Number(item.position)))) : (item.side === 'pursuit' ? 0 : 8)
+      };
+    }) : [];
     return {
       round: Math.max(0, Math.trunc(Number(source.round) || 0)),
-      range: Number.isFinite(range) ? Math.max(0, Math.min(20, Math.trunc(range))) : 5,
       participants,
+      trackCards: Array.isArray(source.trackCards) && source.trackCards.length === 9 ? source.trackCards : shuffledDeck().slice(0, 9),
       deck: source.deck && Array.isArray(source.deck.draw) && Array.isArray(source.deck.discard) ? source.deck : null,
-      notes: String(source.notes || '').slice(0, 500)
     };
   }
   function beginCardDealAnimation(ids, jokerIds = []) {
@@ -731,6 +738,59 @@
         || a.name.localeCompare(b.name);
     });
   }
+  function isChaseComplication(participant) {
+    return Boolean(participant.card && !participant.card.joker && participant.card.suit?.name === 'Clubs');
+  }
+  function chaseTrackSuitKey(card) {
+    return card?.joker ? 'joker' : String(card?.suit?.name || '').toLocaleLowerCase();
+  }
+  function participantTokenLabel(name) {
+    const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+    return words.length > 1 ? `${words[0][0]}${words[words.length - 1][0]}`.toLocaleUpperCase() : (words[0] || '?').slice(0, 2).toLocaleUpperCase();
+  }
+  function nextChaseTokenColor() {
+    const used = new Set(state.chase.participants.map(participant=>participant.color));
+    return CHASE_TOKEN_COLORS.find(color=>!used.has(color)) || CHASE_TOKEN_COLORS[state.chase.participants.length % CHASE_TOKEN_COLORS.length];
+  }
+  function clearChaseTokenDrag() {
+    document.querySelectorAll('.chase-track-slot.drag-over').forEach(slot=>slot.classList.remove('drag-over'));
+    document.querySelectorAll('.chase-token.is-dragging').forEach(token=>token.classList.remove('is-dragging'));
+    document.body.classList.remove('chase-token-dragging');
+    chaseTokenDrag = null;
+  }
+  function bindChaseTokenDrag(token, participant) {
+    token.addEventListener('pointerdown',event=>{
+      if(!event.isPrimary||event.button!==0)return;
+      chaseTokenDrag={id:participant.id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,started:false};
+      try{token.setPointerCapture(event.pointerId);}catch{}
+    });
+    token.addEventListener('pointermove',event=>{
+      if(!chaseTokenDrag||chaseTokenDrag.id!==participant.id||chaseTokenDrag.pointerId!==event.pointerId)return;
+      if(!chaseTokenDrag.started&&Math.hypot(event.clientX-chaseTokenDrag.startX,event.clientY-chaseTokenDrag.startY)<8)return;
+      chaseTokenDrag.started=true;
+      event.preventDefault();
+      token.classList.add('is-dragging');
+      document.body.classList.add('chase-token-dragging');
+      const slot=document.elementFromPoint(event.clientX,event.clientY)?.closest('.chase-track-slot');
+      document.querySelectorAll('.chase-track-slot.drag-over').forEach(item=>item.classList.toggle('drag-over',item===slot));
+      slot?.classList.add('drag-over');
+    });
+    const finish=event=>{
+      if(!chaseTokenDrag||chaseTokenDrag.id!==participant.id||chaseTokenDrag.pointerId!==event.pointerId)return;
+      const started=chaseTokenDrag.started;
+      const slot=started?document.elementFromPoint(event.clientX,event.clientY)?.closest('.chase-track-slot'):null;
+      const position=slot?Number(slot.dataset.position):NaN;
+      const current=state.chase.participants.find(item=>item.id===participant.id);
+      const moved=Boolean(current&&Number.isInteger(position)&&position>=0&&position<9&&current.position!==position);
+      if(moved)current.position=position;
+      clearChaseTokenDrag();
+      if(moved){save();render();}
+    };
+    token.addEventListener('pointerup',finish);
+    token.addEventListener('pointercancel',event=>{
+      if(chaseTokenDrag?.id===participant.id&&chaseTokenDrag.pointerId===event.pointerId)clearChaseTokenDrag();
+    });
+  }
   function renderChase() {
     const chase = state.chase;
     const list = $('#chaseParticipantList');
@@ -738,25 +798,67 @@
     chaseOrder().forEach(participant => {
       const row = document.createElement('div');
       const isDealing=cardDealAnimationIds.has(participant.id);
-      row.className = `chase-participant-row${participant.card?.joker ? ' is-joker' : ''}${isDealing?' is-dealing':''}`;
+      const hasComplication = isChaseComplication(participant);
+      row.className = `chase-participant-row${participant.card?.joker ? ' is-joker' : ''}${hasComplication ? ' has-complication' : ''}${isDealing?' is-dealing':''}`;
       if(isDealing)row.style.setProperty('--deal-delay',`${Math.min((cardDealAnimationOrder.get(participant.id)||0)*55,850)}ms`);
       const card=participant.card?cardFace(participant.card):Object.assign(document.createElement('div'),{className:'card-face pending',textContent:'···'});
       if(isDealing&&participant.card)card.classList.add('is-dealing-card');
       row.append(card);
+      const details=document.createElement('div');details.className='chase-participant-details';
+      const swatch=document.createElement('span');swatch.className='chase-participant-swatch';swatch.style.setProperty('--chase-token-color',participant.color);swatch.setAttribute('aria-hidden','true');
       const name = document.createElement('span'); name.className = 'chase-participant-name'; name.textContent = participant.name;
-      const side = document.createElement('span'); side.className = `chase-side ${participant.side}`; side.textContent = participant.side === 'pursuit' ? 'CHASING' : 'AHEAD';
+      details.append(swatch,name);
       const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'row-menu'; remove.textContent = '×';
       remove.title = `Remove ${participant.name} from chase`; remove.setAttribute('aria-label', remove.title);
       remove.addEventListener('click', () => { chase.participants = chase.participants.filter(item => item.id !== participant.id); save(); render(); });
-      row.append(name, side, remove);
+      row.append(details, remove);
       list.append(row);
+    });
+    const track = $('#chaseTrack');
+    track.replaceChildren();
+    chase.trackCards.forEach((trackCard,index)=>{
+      const slot = document.createElement('div'); slot.className='chase-track-slot';
+      slot.dataset.position=String(index);
+      const position = document.createElement('span'); position.className='chase-track-position'; position.textContent=`CARD ${index+1}`;
+      const face = cardFace(trackCard); face.classList.add('chase-track-face');
+      const tokens = document.createElement('div'); tokens.className='chase-track-tokens';
+      chase.participants.filter(participant=>participant.position===index).forEach(participant=>{
+        const tokenControl=document.createElement('div');tokenControl.className='chase-token-control';
+        const moveBack=document.createElement('button');moveBack.type='button';moveBack.className='chase-token-move';moveBack.textContent='‹';moveBack.disabled=participant.position<=0;
+        moveBack.title=`Move ${participant.name} back one Chase Card`;moveBack.setAttribute('aria-label',moveBack.title);
+        moveBack.addEventListener('click',()=>{participant.position=Math.max(0,participant.position-1);save();render();});
+        const token = document.createElement('span');
+        token.className=`chase-token${isChaseComplication(participant)?' triggers-complication':''}`;
+        token.style.setProperty('--chase-token-color',participant.color);
+        token.textContent=participantTokenLabel(participant.name);
+        token.title=`${participant.name}${isChaseComplication(participant)?' · Club Action Card: complication':''}`;
+        token.setAttribute('aria-label',token.title);
+        bindChaseTokenDrag(token,participant);
+        const moveAhead=document.createElement('button');moveAhead.type='button';moveAhead.className='chase-token-move';moveAhead.textContent='›';moveAhead.disabled=participant.position>=8;
+        moveAhead.title=`Move ${participant.name} ahead one Chase Card`;moveAhead.setAttribute('aria-label',moveAhead.title);
+        moveAhead.addEventListener('click',()=>{participant.position=Math.min(8,participant.position+1);save();render();});
+        tokenControl.append(moveBack,token,moveAhead);tokens.append(tokenControl);
+      });
+      slot.append(position,face,tokens); track.append(slot);
+    });
+    const complicationNames = new Map();
+    chase.participants.filter(isChaseComplication).forEach(participant=>{
+      const trackCard=chase.trackCards[participant.position];
+      const suitKey=chaseTrackSuitKey(trackCard);
+      if(!complicationNames.has(suitKey))complicationNames.set(suitKey,[]);
+      complicationNames.get(suitKey).push(participant.name);
+    });
+    document.querySelectorAll('.chase-complication-table tbody tr').forEach(row=>{
+      const namesCell=row.querySelector('.chase-complication-participants');
+      const names=complicationNames.get(row.dataset.chaseSuit)||[];
+      row.classList.toggle('is-highlighted',names.length>0);
+      namesCell.replaceChildren();
+      names.forEach(name=>{const tag=document.createElement('span');tag.className='chase-complication-tag';tag.textContent=name;namesCell.append(tag);});
     });
     $('#chaseParticipantCount').textContent = chase.participants.length;
     $('#chaseRound').textContent = String(chase.round).padStart(2, '0');
-    $('#chaseRange').textContent = chase.range;
     $('#chaseEmpty').hidden = chase.participants.length > 0;
     $('#chaseDeckStatus').textContent = `${chase.deck?.draw?.length ?? 54} cards left`;
-    $('#chaseNotes').value = chase.notes;
     $('#dealChaseCards').disabled = chase.participants.length === 0;
   }
   function renderDramaticTask() {
@@ -1108,15 +1210,12 @@
   $('#chaseAddForm').addEventListener('submit',event=>{
     event.preventDefault();
     const name=$('#chaseParticipantName').value.trim();if(!name)return;
-    state.chase.participants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,side:$('#chaseParticipantSide').value==='pursuit'?'pursuit':'lead',card:null});
+    state.chase.participants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,card:null,color:nextChaseTokenColor(),position:0});
     $('#chaseParticipantName').value='';save();render();$('#chaseParticipantName').focus();
   });
   $('#dealChaseCards').addEventListener('click',dealChaseRound);
-  $('#rangeDown').addEventListener('click',()=>{state.chase.range=Math.max(0,state.chase.range-1);save();render();});
-  $('#rangeUp').addEventListener('click',()=>{state.chase.range=Math.min(20,state.chase.range+1);save();render();});
-  $('#chaseNotes').addEventListener('input',event=>{state.chase.notes=event.target.value.slice(0,500);save();});
   $('#resetChase').addEventListener('click',()=>{
-    if(!confirm('Reset the chase participants, cards, range, and notes?'))return;
+    if(!confirm('Reset the chase participants and cards?'))return;
     state.chase=normalizeChase(null);save();render();
   });
   $('#clearCombatants').addEventListener('click',()=>{
