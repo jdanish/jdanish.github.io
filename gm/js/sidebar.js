@@ -14,6 +14,7 @@ window.SIDEBAR_SECTIONS = [];
     rules: 'gm_sidebar_rules_json_v1',
     current: 'gm_sidebar_current_json_v1',
   };
+  const handledTaskCheckboxChanges = new WeakSet();
 
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
@@ -774,7 +775,7 @@ window.SIDEBAR_SECTIONS = [];
     root.querySelectorAll('.sidebar-task-checkbox').forEach((input) => {
       if (input.dataset.taskChangeBound === 'true') return;
       input.dataset.taskChangeBound = 'true';
-      input.addEventListener('change', () => handleMarkdownTaskChange(input));
+      input.addEventListener('change', (event) => handleMarkdownTaskChange(input, event));
     });
 
     const persist = (tracker, nextValue) => {
@@ -1115,7 +1116,9 @@ window.SIDEBAR_SECTIONS = [];
     );
   }
 
-  function handleMarkdownTaskChange(input) {
+  function handleMarkdownTaskChange(input, event) {
+    if (event && handledTaskCheckboxChanges.has(event)) return;
+    if (event) handledTaskCheckboxChanges.add(event);
     if (!input || !activeDocumentPath) return;
     const taskText = input?.dataset?.taskText || '';
     const checked = Boolean(input?.checked);
@@ -1132,19 +1135,36 @@ window.SIDEBAR_SECTIONS = [];
     const normalizedPath = normalizeWorkspaceDocumentPath(activeDocumentPath);
     const statusTask = taskText.replace(/[*_`]/g, '').trim().match(/^(Shaken|Wild\s+Card)\b/i);
     if (statusTask && /^(?:characters|monsters)\//i.test(normalizedPath)) {
-      document.getElementById('toolsFrame')?.contentWindow?.postMessage({
+      const payload = {
         type: 'gm-initiative-task-changed',
         path: normalizedPath,
         name: activeDocumentMeta.name,
         task: statusTask[1],
         checked,
-      }, '*');
+      };
+      const toolsWindow = document.getElementById('toolsFrame')?.contentWindow;
+      try {
+        if (typeof toolsWindow?.WildCardTools?.applyInitiativeNoteTask === 'function') {
+          toolsWindow.WildCardTools.applyInitiativeNoteTask(payload.path, payload.name, payload.task, payload.checked);
+        } else {
+          toolsWindow?.postMessage(payload, '*');
+        }
+      } catch {
+        toolsWindow?.postMessage(payload, '*');
+      }
     }
 
     saveActiveDocument().then(notifyInitiativeDocumentRefresh).catch((error) => {
       console.warn('Could not save the status change from the note', error);
     });
   }
+
+  // Capture changes even when the checkbox is rendered in a pane that was
+  // recreated without its local event bindings.
+  document.addEventListener('change', (event) => {
+    const input = event.target?.closest?.('.sidebar-task-checkbox');
+    if (input) handleMarkdownTaskChange(input, event);
+  }, true);
 
   async function updateInitiativeTask(path, taskName, checked) {
     const normalizedPath = normalizeWorkspaceDocumentPath(path);

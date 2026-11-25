@@ -221,13 +221,20 @@
   function normalizedCombatantName(name){
     return String(name||'').toLocaleLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   }
-  function applyNoteShaken(path,name,checked){
-    const normalizedPath=String(path||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase();
+  function normalizedDocumentPath(path){
+    return String(path||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').replace(/^data\//i,'').toLocaleLowerCase();
+  }
+  function findDocumentCombatant(path,name){
+    const normalizedPath=normalizedDocumentPath(path);
+    if(normalizedPath){
+      const byPath=state.combatants.find(item=>normalizedDocumentPath(item.documentPath)===normalizedPath);
+      if(byPath)return byPath;
+    }
     const normalizedName=normalizedCombatantName(name);
-    const combatant=state.combatants.find(item=>
-      (normalizedPath&&String(item.documentPath||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase()===normalizedPath)
-      ||(normalizedName&&normalizedCombatantName(item.name)===normalizedName)
-    );
+    return normalizedName?state.combatants.find(item=>normalizedCombatantName(item.name)===normalizedName):null;
+  }
+  function applyNoteShaken(path,name,checked){
+    const combatant=findDocumentCombatant(path,name);
     if(!combatant)return;
     const shaken=Boolean(checked);
     if(combatant.entityType==='monster'&&!combatant.wildcard){
@@ -242,12 +249,7 @@
     render();
   }
   function applyNoteWildCard(path,name,checked){
-    const normalizedPath=String(path||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase();
-    const normalizedName=normalizedCombatantName(name);
-    const combatant=state.combatants.find(item=>
-      (normalizedPath&&String(item.documentPath||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase()===normalizedPath)
-      ||(normalizedName&&normalizedCombatantName(item.name)===normalizedName)
-    );
+    const combatant=findDocumentCombatant(path,name);
     if(!combatant)return;
     combatant.entityType='monster';
     combatant.wildcard=Boolean(checked);
@@ -965,6 +967,12 @@
     if(!['gm-refresh-initiative-documents','gm-refresh-initiative-portraits'].includes(event.data?.type))return;
     syncOpenDocuments().catch(()=>{});
   });
+  window.WildCardTools = window.WildCardTools || {};
+  window.WildCardTools.applyInitiativeNoteTask = (path,name,task,checked)=>{
+    const normalizedTask=String(task||'').toLowerCase();
+    if(normalizedTask==='shaken')applyNoteShaken(path,name,checked);
+    else if(normalizedTask==='wild card')applyNoteWildCard(path,name,checked);
+  };
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
   });

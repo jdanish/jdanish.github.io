@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-pdfjs-6-5-438-worker-path';
+const CACHE_NAME = 'gm-reference-shell-v20261125-sidebar-status-controller-js-folder';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 
