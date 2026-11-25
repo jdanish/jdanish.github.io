@@ -6357,6 +6357,10 @@
         "label": "Aboleth",
         "source": "swpf_bestiary/13?highlight=Aboleth"
       },
+      "adept@@sfc": {
+        "label": "Adept",
+        "source": "sfc/272?highlight=Adept"
+      },
       "aeon@@swpf_bestiary_2": {
         "label": "Aeon",
         "source": "swpf_bestiary_2/14?highlight=Aeon"
@@ -6364,6 +6368,26 @@
       "aeons@@swpf_advanced_players_guide_2": {
         "label": "Aeons",
         "source": "swpf_advanced_players_guide_2/106?highlight=Aeons"
+      },
+      "aerial stalker@@sfc": {
+        "label": "Aerial Stalker",
+        "source": "sfc/229?highlight=Aerial%20Stalker"
+      },
+      "air elemental@@fantasy": {
+        "label": "Air Elemental",
+        "source": "fantasy/193?highlight=Air%20Elemental"
+      },
+      "air elemental@@swade": {
+        "label": "Air Elemental",
+        "source": "swade/181?highlight=Air%20Elemental"
+      },
+      "air elemental, elder@@fantasy": {
+        "label": "Air Elemental, Elder",
+        "source": "fantasy/193?highlight=Air%20Elemental%2C%20Elder"
+      },
+      "air elemental, small@@fantasy": {
+        "label": "Air Elemental, Small",
+        "source": "fantasy/193?highlight=Air%20Elemental%2C%20Small"
       },
       "akata@@swpf_bestiary_2": {
         "label": "Akata",
@@ -6373,6 +6397,18 @@
         "label": "Akhana",
         "source": "swpf_bestiary_2/15?highlight=Akhana"
       },
+      "ak’ab@@secret_world": {
+        "label": "Ak’ab",
+        "source": "secret_world/203?highlight=Ak%E2%80%99ab"
+      },
+      "alligator-lion hybrid@@horror": {
+        "label": "Alligator-Lion Hybrid",
+        "source": "horror/102?highlight=Alligator-Lion%20Hybrid"
+      },
+      "alligator/crocodile@@swade": {
+        "label": "Alligator/Crocodile",
+        "source": "swade/179?highlight=Alligator%2FCrocodile"
+      },
       "alligator/crocodile@@swpf_bestiary": {
         "label": "Alligator/Crocodile",
         "source": "swpf_bestiary/14?highlight=Alligator%2FCrocodile"
@@ -6381,9 +6417,17 @@
         "label": "Alligator/Crocodile",
         "source": "swpf_core/246?highlight=Alligator%2FCrocodile"
       },
+      "ama-no-jaku@@horror": {
+        "label": "Ama-No-Jaku",
+        "source": "horror/102?highlight=Ama-No-Jaku"
+      },
       "amphib colonist@@rifts_atlantis": {
         "label": "Amphib Colonist",
         "source": "rifts_atlantis/162?highlight=Amphib%20Colonist"
+      },
+      "ancient vampire@@swade": {
+        "label": "Ancient Vampire",
+        "source": "swade/189?highlight=Ancient%20Vampire"
       },
       "angels@@swpf_advanced_players_guide_2": {
         "label": "Angels",
@@ -6392,6 +6436,14 @@
       "angels@@swpf_bestiary_2": {
         "label": "Angels",
         "source": "swpf_bestiary_2/20?highlight=Angels"
+      },
+      "animal skeleton@@fantasy": {
+        "label": "Animal Skeleton",
+        "source": "fantasy/239?highlight=Animal%20Skeleton"
+      },
+      "animal zombie@@fantasy": {
+        "label": "Animal Zombie",
+        "source": "fantasy/249?highlight=Animal%20Zombie"
       },
       "animate dream@@swpf_bestiary_2": {
         "label": "Animate Dream",
@@ -6409,9 +6461,49 @@
         "label": "Ankylosaurus",
         "source": "swpf_bestiary_2/57?highlight=Ankylosaurus"
       },
+      "ant, colossal@@horror": {
+        "label": "Ant, Colossal",
+        "source": "horror/104?highlight=Ant%2C%20Colossal"
+      },
+      "apex@@sfc": {
+        "label": "Apex",
+        "source": "sfc/229?highlight=Apex"
+      },
+      "apprentice@@fantasy": {
+        "label": "Apprentice",
+        "source": "fantasy/220?highlight=Apprentice"
+      },
+      "aquarian@@fantasy": {
+        "label": "Aquarian",
+        "source": "fantasy/174?highlight=Aquarian"
+      },
+      "aquarian@@sfc": {
+        "label": "Aquarian",
+        "source": "sfc/230?highlight=Aquarian"
+      },
+      "aquatic dinosaur@@fantasy": {
+        "label": "Aquatic Dinosaur",
+        "source": "fantasy/188?highlight=Aquatic%20Dinosaur"
+      },
+      "arachne@@fantasy": {
+        "label": "Arachne",
+        "source": "fantasy/174?highlight=Arachne"
+      },
+      "arachnos, the many legged spider-god@@horror": {
+        "label": "Arachnos, the Many Legged Spider-God",
+        "source": "horror/114?highlight=Arachnos%2C%20the%20Many%20Legged%20Spider-God"
+      },
       "arbiter@@swpf_bestiary_2": {
         "label": "Arbiter",
         "source": "swpf_bestiary_2/84?highlight=Arbiter"
+      },
+      "arc beetle@@sfc": {
+        "label": "Arc Beetle",
+        "source": "sfc/230?highlight=Arc%20Beetle"
+      },
+      "archmage@@fantasy": {
+        "label": "Archmage",
+        "source": "fantasy/221?highlight=Archmage"
       },
       "archons@@swpf_advanced_players_guide_2": {
         "label": "Archons",
@@ -6421,9 +6513,21 @@
         "label": "Archons",
         "source": "swpf_bestiary/16?highlight=Archons"
       },
+      "aspect of cthulhu@@doom_guard": {
+        "label": "Aspect of Cthulhu",
+        "source": "doom_guard/118?highlight=Aspect%20of%20Cthulhu"
+      },
+      "assassin@@fantasy": {
+        "label": "Assassin",
+        "source": "fantasy/174?highlight=Assassin"
+      },
       "assassin vine@@swpf_bestiary_2": {
         "label": "Assassin Vine",
         "source": "swpf_bestiary_2/23?highlight=Assassin%20Vine"
+      },
+      "assimilator@@sfc": {
+        "label": "Assimilator",
+        "source": "sfc/231?highlight=Assimilator"
       },
       "astradaemon@@swpf_bestiary_2": {
         "label": "Astradaemon",
@@ -6433,17 +6537,17 @@
         "label": "Astral Deva",
         "source": "swpf_bestiary_2/21?highlight=Astral%20Deva"
       },
+      "aswang@@horror": {
+        "label": "Aswang",
+        "source": "horror/105?highlight=Aswang"
+      },
       "athach@@swpf_bestiary_2": {
         "label": "Athach",
         "source": "swpf_bestiary_2/23?highlight=Athach"
       },
-      "atlantean nomad@@rifts_atlantis": {
-        "label": "Atlantean Nomad",
-        "source": "rifts_atlantis/181?highlight=Atlantean%20Nomad"
-      },
-      "atlantean undead slayer@@rifts_atlantis": {
-        "label": "Atlantean Undead Slayer",
-        "source": "rifts_atlantis/181?highlight=Atlantean%20Undead%20Slayer"
+      "atomic elemental@@sfc": {
+        "label": "Atomic Elemental",
+        "source": "sfc/248?highlight=Atomic%20Elemental"
       },
       "attic whisperer@@swpf_bestiary_2": {
         "label": "Attic Whisperer",
@@ -6457,17 +6561,57 @@
         "label": "Automaton",
         "source": "rifts_na_foes/35?highlight=Automaton"
       },
+      "avion@@fantasy": {
+        "label": "Avion",
+        "source": "fantasy/175?highlight=Avion"
+      },
+      "avion@@sfc": {
+        "label": "Avion",
+        "source": "sfc/232?highlight=Avion"
+      },
+      "avrok@@sfc": {
+        "label": "Avrok",
+        "source": "sfc/232?highlight=Avrok"
+      },
+      "balor@@fantasy": {
+        "label": "Balor",
+        "source": "fantasy/183?highlight=Balor"
+      },
       "balor@@swpf_bestiary": {
         "label": "Balor",
         "source": "swpf_bestiary/26?highlight=Balor"
+      },
+      "bandit@@fantasy": {
+        "label": "Bandit",
+        "source": "fantasy/175?highlight=Bandit"
+      },
+      "bandit chief@@fantasy": {
+        "label": "Bandit Chief",
+        "source": "fantasy/175?highlight=Bandit%20Chief"
+      },
+      "banshee@@horror": {
+        "label": "Banshee",
+        "source": "horror/105?highlight=Banshee"
       },
       "banshee@@swpf_bestiary_2": {
         "label": "Banshee",
         "source": "swpf_bestiary_2/25?highlight=Banshee"
       },
+      "barbarian@@fantasy": {
+        "label": "Barbarian",
+        "source": "fantasy/175?highlight=Barbarian"
+      },
       "barbed (hamatula)@@swpf_bestiary_2": {
         "label": "Barbed (Hamatula)",
         "source": "swpf_bestiary_2/52?highlight=Barbed%20%28Hamatula%29"
+      },
+      "barbed-tongue lizard@@sfc": {
+        "label": "Barbed-Tongue Lizard",
+        "source": "sfc/232?highlight=Barbed-Tongue%20Lizard"
+      },
+      "barghest@@fantasy": {
+        "label": "Barghest",
+        "source": "fantasy/176?highlight=Barghest"
       },
       "barghest@@swpf_bestiary": {
         "label": "Barghest",
@@ -6477,13 +6621,45 @@
         "label": "Barghest, Greater",
         "source": "swpf_bestiary/18?highlight=Barghest%2C%20Greater"
       },
+      "barrow dweller@@horror": {
+        "label": "Barrow Dweller",
+        "source": "horror/106?highlight=Barrow%20Dweller"
+      },
       "basidirond@@swpf_bestiary_2": {
         "label": "Basidirond",
         "source": "swpf_bestiary_2/25?highlight=Basidirond"
       },
+      "basilisk@@fantasy": {
+        "label": "Basilisk",
+        "source": "fantasy/176?highlight=Basilisk"
+      },
       "basilisk@@swpf_bestiary": {
         "label": "Basilisk",
         "source": "swpf_bestiary/19?highlight=Basilisk"
+      },
+      "bat swarm@@horror": {
+        "label": "Bat Swarm",
+        "source": "horror/161?highlight=Bat%20Swarm"
+      },
+      "bat, giant@@horror": {
+        "label": "Bat, Giant",
+        "source": "horror/106?highlight=Bat%2C%20Giant"
+      },
+      "batspider@@sfc": {
+        "label": "Batspider",
+        "source": "sfc/232?highlight=Batspider"
+      },
+      "battle drone@@sfc": {
+        "label": "Battle Drone",
+        "source": "sfc/244?highlight=Battle%20Drone"
+      },
+      "battle drone@@starbreaker_core": {
+        "label": "Battle Drone",
+        "source": "starbreaker_core/207?highlight=Battle%20Drone"
+      },
+      "bear@@swade": {
+        "label": "Bear",
+        "source": "swade/179?highlight=Bear"
       },
       "bear@@swpf_bestiary": {
         "label": "Bear",
@@ -6501,6 +6677,10 @@
         "label": "Bearded (Barbazu)",
         "source": "swpf_bestiary_2/53?highlight=Bearded%20%28Barbazu%29"
       },
+      "beast golem@@horror": {
+        "label": "Beast Golem",
+        "source": "horror/133?highlight=Beast%20Golem"
+      },
       "bebilith@@swpf_bestiary_2": {
         "label": "Bebilith",
         "source": "swpf_bestiary_2/26?highlight=Bebilith"
@@ -6513,6 +6693,14 @@
         "label": "Belier (Bdellavritra)",
         "source": "swpf_bestiary_2/54?highlight=Belier%20%28Bdellavritra%29"
       },
+      "beyonder@@fantasy": {
+        "label": "Beyonder",
+        "source": "fantasy/177?highlight=Beyonder"
+      },
+      "bird of prey@@fantasy": {
+        "label": "Bird of Prey",
+        "source": "fantasy/178?highlight=Bird%20of%20Prey"
+      },
       "bird of prey@@swpf_bestiary": {
         "label": "Bird of Prey",
         "source": "swpf_bestiary/20?highlight=Bird%20of%20Prey"
@@ -6521,13 +6709,41 @@
         "label": "Bird of Prey",
         "source": "swpf_core/246?highlight=Bird%20of%20Prey"
       },
+      "black coachman’s horses@@horror": {
+        "label": "Black Coachman’s Horses",
+        "source": "horror/108?highlight=Black%20Coachman%E2%80%99s%20Horses"
+      },
       "black dragon, adult@@swpf_bestiary": {
         "label": "Black Dragon, Adult",
         "source": "swpf_bestiary/34?highlight=Black%20Dragon%2C%20Adult"
       },
+      "black knight@@fantasy": {
+        "label": "Black Knight",
+        "source": "fantasy/183?highlight=Black%20Knight"
+      },
       "black pudding@@swpf_bestiary": {
         "label": "Black Pudding",
         "source": "swpf_bestiary/20?highlight=Black%20Pudding"
+      },
+      "black shuck@@horror": {
+        "label": "Black Shuck",
+        "source": "horror/126?highlight=Black%20Shuck"
+      },
+      "black tree@@horror": {
+        "label": "Black Tree",
+        "source": "horror/109?highlight=Black%20Tree"
+      },
+      "black-eyed child@@secret_world": {
+        "label": "Black-Eyed Child",
+        "source": "secret_world/209?highlight=Black-Eyed%20Child"
+      },
+      "black-eyed kid@@horror": {
+        "label": "Black-Eyed Kid",
+        "source": "horror/108?highlight=Black-Eyed%20Kid"
+      },
+      "bleeder rabbit@@sfc": {
+        "label": "Bleeder Rabbit",
+        "source": "sfc/233?highlight=Bleeder%20Rabbit"
       },
       "blink dog@@swpf_bestiary_2": {
         "label": "Blink Dog",
@@ -6537,9 +6753,25 @@
         "label": "Blink Dog Sages",
         "source": "swpf_bestiary_2/28?highlight=Blink%20Dog%20Sages"
       },
+      "blob@@horror": {
+        "label": "Blob",
+        "source": "horror/110?highlight=Blob"
+      },
+      "blood golem@@horror": {
+        "label": "Blood Golem",
+        "source": "horror/134?highlight=Blood%20Golem"
+      },
+      "blood mist@@horror": {
+        "label": "Blood Mist",
+        "source": "horror/110?highlight=Blood%20Mist"
+      },
       "blue dragon, adult@@swpf_bestiary": {
         "label": "Blue Dragon, Adult",
         "source": "swpf_bestiary/35?highlight=Blue%20Dragon%2C%20Adult"
+      },
+      "boar@@fantasy": {
+        "label": "Boar",
+        "source": "fantasy/178?highlight=Boar"
       },
       "boar@@swpf_bestiary": {
         "label": "Boar",
@@ -6553,9 +6785,49 @@
         "label": "Boar, Dire",
         "source": "swpf_bestiary/21?highlight=Boar%2C%20Dire"
       },
+      "bogeymen@@secret_world": {
+        "label": "Bogeymen",
+        "source": "secret_world/205?highlight=Bogeymen"
+      },
       "boggard@@swpf_bestiary_2": {
         "label": "Boggard",
         "source": "swpf_bestiary_2/28?highlight=Boggard"
+      },
+      "bombard@@sfc": {
+        "label": "Bombard",
+        "source": "sfc/287?highlight=Bombard"
+      },
+      "bombardier bird swarm@@sfc": {
+        "label": "Bombardier Bird swarm",
+        "source": "sfc/287?highlight=Bombardier%20Bird%20swarm"
+      },
+      "bone golem@@fantasy": {
+        "label": "Bone Golem",
+        "source": "fantasy/211?highlight=Bone%20Golem"
+      },
+      "bone golem@@horror": {
+        "label": "Bone Golem",
+        "source": "horror/134?highlight=Bone%20Golem"
+      },
+      "bone spider@@sfc": {
+        "label": "Bone Spider",
+        "source": "sfc/233?highlight=Bone%20Spider"
+      },
+      "bore worm swarm@@sfc": {
+        "label": "Bore Worm Swarm",
+        "source": "sfc/287?highlight=Bore%20Worm%20Swarm"
+      },
+      "bozrak (air demon)@@starbreaker_core": {
+        "label": "Bozrak (Air Demon)",
+        "source": "starbreaker_core/208?highlight=Bozrak%20%28Air%20Demon%29"
+      },
+      "brain eater@@sfc": {
+        "label": "Brain Eater",
+        "source": "sfc/234?highlight=Brain%20Eater"
+      },
+      "brainiac@@sfc": {
+        "label": "Brainiac",
+        "source": "sfc/235?highlight=Brainiac"
       },
       "brass dragon, adult@@swpf_bestiary": {
         "label": "Brass Dragon, Adult",
@@ -6569,6 +6841,10 @@
         "label": "Brine Dragon, Wyrmling",
         "source": "swpf_bestiary_2/61?highlight=Brine%20Dragon%2C%20Wyrmling"
       },
+      "bristled gorer@@sfc": {
+        "label": "Bristled Gorer",
+        "source": "sfc/235?highlight=Bristled%20Gorer"
+      },
       "brodkil@@rifts_na_foes": {
         "label": "Brodkil",
         "source": "rifts_na_foes/69?highlight=Brodkil"
@@ -6581,25 +6857,49 @@
         "label": "Bronze Dragon, Adult",
         "source": "swpf_bestiary/38?highlight=Bronze%20Dragon%2C%20Adult"
       },
+      "brownie@@fantasy": {
+        "label": "Brownie",
+        "source": "fantasy/198?highlight=Brownie"
+      },
       "brownie@@swpf_bestiary_2": {
         "label": "Brownie",
         "source": "swpf_bestiary_2/29?highlight=Brownie"
+      },
+      "bugbear@@fantasy": {
+        "label": "Bugbear",
+        "source": "fantasy/178?highlight=Bugbear"
       },
       "bugbear@@swpf_bestiary": {
         "label": "Bugbear",
         "source": "swpf_bestiary/22?highlight=Bugbear"
       },
+      "bull@@swade": {
+        "label": "Bull",
+        "source": "swade/179?highlight=Bull"
+      },
       "bunyip@@swpf_bestiary": {
         "label": "Bunyip",
         "source": "swpf_bestiary/22?highlight=Bunyip"
+      },
+      "burrower@@fantasy": {
+        "label": "Burrower",
+        "source": "fantasy/179?highlight=Burrower"
       },
       "bythos@@swpf_bestiary_2": {
         "label": "Bythos",
         "source": "swpf_bestiary_2/15?highlight=Bythos"
       },
+      "bêtes noires of gévaudan@@secret_world": {
+        "label": "Bêtes Noires of Gévaudan",
+        "source": "secret_world/210?highlight=B%C3%AAtes%20Noires%20of%20G%C3%A9vaudan"
+      },
       "cacodaemon@@swpf_bestiary_2": {
         "label": "Cacodaemon",
         "source": "swpf_bestiary_2/36?highlight=Cacodaemon"
+      },
+      "captain@@fantasy": {
+        "label": "Captain",
+        "source": "fantasy/236?highlight=Captain"
       },
       "captain of the guard@@swpf_bestiary": {
         "label": "Captain of the Guard",
@@ -6609,9 +6909,17 @@
         "label": "Carnivorous Blob",
         "source": "swpf_bestiary_2/29?highlight=Carnivorous%20Blob"
       },
+      "carnivorous plant@@horror": {
+        "label": "Carnivorous Plant",
+        "source": "horror/111?highlight=Carnivorous%20Plant"
+      },
       "carrion golem@@swpf_bestiary_2": {
         "label": "Carrion Golem",
         "source": "swpf_bestiary_2/74?highlight=Carrion%20Golem"
+      },
+      "cat, large@@fantasy": {
+        "label": "Cat, Large",
+        "source": "fantasy/179?highlight=Cat%2C%20Large"
       },
       "cat, large@@swpf_bestiary": {
         "label": "Cat, Large",
@@ -6625,6 +6933,14 @@
         "label": "Cat, Large Dire",
         "source": "swpf_bestiary/23?highlight=Cat%2C%20Large%20Dire"
       },
+      "cat, small@@horror": {
+        "label": "Cat, Small",
+        "source": "horror/112?highlight=Cat%2C%20Small"
+      },
+      "cat, small@@swade": {
+        "label": "Cat, Small",
+        "source": "swade/180?highlight=Cat%2C%20Small"
+      },
       "cat, small@@swpf_bestiary": {
         "label": "Cat, Small",
         "source": "swpf_bestiary/23?highlight=Cat%2C%20Small"
@@ -6633,13 +6949,37 @@
         "label": "Cat, Small",
         "source": "swpf_core/247?highlight=Cat%2C%20Small"
       },
+      "celestial@@fantasy": {
+        "label": "Celestial",
+        "source": "fantasy/179?highlight=Celestial"
+      },
+      "celestial horror@@spc": {
+        "label": "Celestial Horror",
+        "source": "spc/121?highlight=Celestial%20Horror"
+      },
+      "centaur@@fantasy": {
+        "label": "Centaur",
+        "source": "fantasy/180?highlight=Centaur"
+      },
       "centaur@@swpf_bestiary": {
         "label": "Centaur",
         "source": "swpf_bestiary/23?highlight=Centaur"
       },
+      "century beast@@fantasy": {
+        "label": "Century Beast",
+        "source": "fantasy/180?highlight=Century%20Beast"
+      },
       "ceustodaemon@@swpf_bestiary_2": {
         "label": "Ceustodaemon",
         "source": "swpf_bestiary_2/36?highlight=Ceustodaemon"
+      },
+      "changeling, greater@@fantasy": {
+        "label": "Changeling, Greater",
+        "source": "fantasy/184?highlight=Changeling%2C%20Greater"
+      },
+      "changeling, lesser@@fantasy": {
+        "label": "Changeling, Lesser",
+        "source": "fantasy/184?highlight=Changeling%2C%20Lesser"
       },
       "charda@@swpf_bestiary_2": {
         "label": "Charda",
@@ -6649,9 +6989,53 @@
         "label": "Charybdis",
         "source": "swpf_bestiary_2/31?highlight=Charybdis"
       },
+      "cher@@sfc": {
+        "label": "Cher",
+        "source": "sfc/229?highlight=Cher"
+      },
+      "chieftain@@fantasy": {
+        "label": "Chieftain",
+        "source": "fantasy/176?highlight=Chieftain"
+      },
+      "chimera@@fantasy": {
+        "label": "Chimera",
+        "source": "fantasy/181?highlight=Chimera"
+      },
       "chimera@@swpf_bestiary_2": {
         "label": "Chimera",
         "source": "swpf_bestiary_2/32?highlight=Chimera"
+      },
+      "chosen slayer@@horror": {
+        "label": "Chosen Slayer",
+        "source": "horror/112?highlight=Chosen%20Slayer"
+      },
+      "chupacabra@@horror": {
+        "label": "Chupacabra",
+        "source": "horror/112?highlight=Chupacabra"
+      },
+      "chupacabra@@secret_world": {
+        "label": "Chupacabra",
+        "source": "secret_world/212?highlight=Chupacabra"
+      },
+      "clay familiar@@secret_world_na": {
+        "label": "Clay Familiar",
+        "source": "secret_world_na/90?highlight=Clay%20Familiar"
+      },
+      "cleric@@fantasy": {
+        "label": "Cleric",
+        "source": "fantasy/181?highlight=Cleric"
+      },
+      "cleric of death@@fantasy": {
+        "label": "Cleric of Death",
+        "source": "fantasy/181?highlight=Cleric%20of%20Death"
+      },
+      "cleric of light@@fantasy": {
+        "label": "Cleric of Light",
+        "source": "fantasy/181?highlight=Cleric%20of%20Light"
+      },
+      "cleric of war@@fantasy": {
+        "label": "Cleric of War",
+        "source": "fantasy/181?highlight=Cleric%20of%20War"
       },
       "cloaker@@swpf_bestiary_2": {
         "label": "Cloaker",
@@ -6669,17 +7053,97 @@
         "label": "Cloud Dragon, Wyrmling",
         "source": "swpf_bestiary_2/62?highlight=Cloud%20Dragon%2C%20Wyrmling"
       },
+      "cockatrice@@fantasy": {
+        "label": "Cockatrice",
+        "source": "fantasy/182?highlight=Cockatrice"
+      },
       "cockatrice@@swpf_bestiary": {
         "label": "Cockatrice",
         "source": "swpf_bestiary/24?highlight=Cockatrice"
+      },
+      "collector@@fantasy": {
+        "label": "Collector",
+        "source": "fantasy/185?highlight=Collector"
+      },
+      "collector demon@@horror": {
+        "label": "Collector Demon",
+        "source": "horror/118?highlight=Collector%20Demon"
+      },
+      "combat drone@@sfc": {
+        "label": "Combat Drone",
+        "source": "sfc/244?highlight=Combat%20Drone"
+      },
+      "common fighter@@fantasy": {
+        "label": "Common Fighter",
+        "source": "fantasy/200?highlight=Common%20Fighter"
+      },
+      "common ratling@@fantasy": {
+        "label": "Common Ratling",
+        "source": "fantasy/232?highlight=Common%20Ratling"
+      },
+      "common troll@@fantasy": {
+        "label": "Common Troll",
+        "source": "fantasy/243?highlight=Common%20Troll"
+      },
+      "commoner@@fantasy": {
+        "label": "Commoner",
+        "source": "fantasy/182?highlight=Commoner"
+      },
+      "contaminator@@sfc": {
+        "label": "Contaminator",
+        "source": "sfc/263?highlight=Contaminator"
       },
       "copper dragon, adult@@swpf_bestiary": {
         "label": "Copper Dragon, Adult",
         "source": "swpf_bestiary/40?highlight=Copper%20Dragon%2C%20Adult"
       },
+      "corpse golem@@fantasy": {
+        "label": "Corpse Golem",
+        "source": "fantasy/211?highlight=Corpse%20Golem"
+      },
+      "corpse golem@@horror": {
+        "label": "Corpse Golem",
+        "source": "horror/134?highlight=Corpse%20Golem"
+      },
+      "corpse worm swarm@@horror": {
+        "label": "Corpse Worm Swarm",
+        "source": "horror/112?highlight=Corpse%20Worm%20Swarm"
+      },
+      "courtier@@fantasy": {
+        "label": "Courtier",
+        "source": "fantasy/226?highlight=Courtier"
+      },
+      "covajek@@starbreaker_core": {
+        "label": "Covajek",
+        "source": "starbreaker_core/208?highlight=Covajek"
+      },
       "crag linnorm@@swpf_bestiary": {
         "label": "Crag Linnorm",
         "source": "swpf_bestiary/81?highlight=Crag%20Linnorm"
+      },
+      "crawling ones@@doom_guard": {
+        "label": "Crawling Ones",
+        "source": "doom_guard/119?highlight=Crawling%20Ones"
+      },
+      "crazalphasalius, the fire storm@@horror": {
+        "label": "Crazalphasalius, the Fire Storm",
+        "source": "horror/115?highlight=Crazalphasalius%2C%20the%20Fire%20Storm"
+      },
+      "creature from the id@@sfc": {
+        "label": "Creature from the ID",
+        "source": "sfc/237?highlight=Creature%20from%20the%20ID"
+      },
+      "creeping hand@@horror": {
+        "label": "Creeping Hand",
+        "source": "horror/113?highlight=Creeping%20Hand"
+      },
+      "crew member@@fantasy": {
+        "label": "Crew Member",
+        "source": "fantasy/236?highlight=Crew%20Member"
+      },
+      "crocotta@@fantasy": {
+        "label": "Crocotta",
+        "source": "fantasy/182?highlight=Crocotta"
       },
       "crystal dragon, adult@@swpf_bestiary_2": {
         "label": "Crystal Dragon, Adult",
@@ -6688,6 +7152,18 @@
       "crystal dragon, wyrmling@@swpf_bestiary_2": {
         "label": "Crystal Dragon, Wyrmling",
         "source": "swpf_bestiary_2/64?highlight=Crystal%20Dragon%2C%20Wyrmling"
+      },
+      "cyber dog@@sfc": {
+        "label": "Cyber Dog",
+        "source": "sfc/237?highlight=Cyber%20Dog"
+      },
+      "cyborg commando@@sfc": {
+        "label": "Cyborg Commando",
+        "source": "sfc/238?highlight=Cyborg%20Commando"
+      },
+      "cyclops@@fantasy": {
+        "label": "Cyclops",
+        "source": "fantasy/203?highlight=Cyclops"
       },
       "cyclops@@swpf_bestiary_2": {
         "label": "Cyclops",
@@ -6725,33 +7201,129 @@
         "label": "Daemons",
         "source": "swpf_advanced_players_guide_2/107?highlight=Daemons"
       },
+      "daniken@@sfc": {
+        "label": "Daniken",
+        "source": "sfc/238?highlight=Daniken"
+      },
+      "danse macabre@@horror": {
+        "label": "Danse Macabre",
+        "source": "horror/114?highlight=Danse%20Macabre"
+      },
+      "dark god@@horror": {
+        "label": "Dark God",
+        "source": "horror/114?highlight=Dark%20God"
+      },
+      "dark man@@horror": {
+        "label": "Dark Man",
+        "source": "horror/117?highlight=Dark%20Man"
+      },
       "dark naga@@swpf_bestiary": {
         "label": "Dark Naga",
         "source": "swpf_bestiary/91?highlight=Dark%20Naga"
+      },
+      "dark sider@@sfc": {
+        "label": "Dark Sider",
+        "source": "sfc/240?highlight=Dark%20Sider"
+      },
+      "dark sider warrior@@sfc": {
+        "label": "Dark Sider Warrior",
+        "source": "sfc/240?highlight=Dark%20Sider%20Warrior"
       },
       "dark slayer@@swpf_bestiary_2": {
         "label": "Dark Slayer",
         "source": "swpf_bestiary_2/44?highlight=Dark%20Slayer"
       },
+      "dark unicorn@@fantasy": {
+        "label": "Dark Unicorn",
+        "source": "fantasy/245?highlight=Dark%20Unicorn"
+      },
+      "dark watcher@@secret_world_na": {
+        "label": "Dark Watcher",
+        "source": "secret_world_na/91?highlight=Dark%20Watcher"
+      },
+      "darkmantle@@fantasy": {
+        "label": "Darkmantle",
+        "source": "fantasy/183?highlight=Darkmantle"
+      },
       "darkmantle@@swpf_bestiary": {
         "label": "Darkmantle",
         "source": "swpf_bestiary/25?highlight=Darkmantle"
+      },
+      "darkraptor@@sfc": {
+        "label": "Darkraptor",
+        "source": "sfc/239?highlight=Darkraptor"
+      },
+      "death worm@@horror": {
+        "label": "Death Worm",
+        "source": "horror/117?highlight=Death%20Worm"
+      },
+      "death worm@@sfc": {
+        "label": "Death Worm",
+        "source": "sfc/240?highlight=Death%20Worm"
       },
       "deathweb@@swpf_bestiary": {
         "label": "Deathweb",
         "source": "swpf_bestiary/25?highlight=Deathweb"
       },
+      "decapitator@@sfc": {
+        "label": "Decapitator",
+        "source": "sfc/241?highlight=Decapitator"
+      },
       "decapus@@swpf_bestiary_2": {
         "label": "Decapus",
         "source": "swpf_bestiary_2/45?highlight=Decapus"
+      },
+      "deep diver@@sfc": {
+        "label": "Deep Diver",
+        "source": "sfc/241?highlight=Deep%20Diver"
+      },
+      "deep one@@secret_world": {
+        "label": "Deep One",
+        "source": "secret_world/216?highlight=Deep%20One"
+      },
+      "deep one sea singer@@doom_guard": {
+        "label": "Deep One Sea Singer",
+        "source": "doom_guard/121?highlight=Deep%20One%20Sea%20Singer"
+      },
+      "deep ones@@doom_guard": {
+        "label": "Deep Ones",
+        "source": "doom_guard/121?highlight=Deep%20Ones"
+      },
+      "deep space worm@@sfc": {
+        "label": "Deep Space Worm",
+        "source": "sfc/241?highlight=Deep%20Space%20Worm"
+      },
+      "deeper ones@@doom_guard": {
+        "label": "Deeper Ones",
+        "source": "doom_guard/122?highlight=Deeper%20Ones"
       },
       "deinonychus@@swpf_bestiary_2": {
         "label": "Deinonychus",
         "source": "swpf_bestiary_2/58?highlight=Deinonychus"
       },
+      "demon@@fantasy": {
+        "label": "Demon",
+        "source": "fantasy/183?highlight=Demon"
+      },
+      "demon@@horror": {
+        "label": "Demon",
+        "source": "horror/117?highlight=Demon"
+      },
       "demon@@rifts_na_foes": {
         "label": "Demon",
         "source": "rifts_na_foes/90?highlight=Demon"
+      },
+      "demon worm@@horror": {
+        "label": "Demon Worm",
+        "source": "horror/119?highlight=Demon%20Worm"
+      },
+      "demonic legionnaire@@horror": {
+        "label": "Demonic Legionnaire",
+        "source": "horror/118?highlight=Demonic%20Legionnaire"
+      },
+      "demonic soldier@@fantasy": {
+        "label": "Demonic Soldier",
+        "source": "fantasy/185?highlight=Demonic%20Soldier"
       },
       "demonrunner@@rifts_atlantis": {
         "label": "Demonrunner",
@@ -6777,9 +7349,21 @@
         "label": "Derghodaemon",
         "source": "swpf_bestiary_2/37?highlight=Derghodaemon"
       },
+      "devastation seed@@spc": {
+        "label": "Devastation Seed",
+        "source": "spc/182?highlight=Devastation%20Seed"
+      },
+      "devil (mortal)@@horror": {
+        "label": "Devil (Mortal)",
+        "source": "horror/125?highlight=Devil%20%28Mortal%29"
+      },
       "devilfish@@swpf_bestiary_2": {
         "label": "Devilfish",
         "source": "swpf_bestiary_2/56?highlight=Devilfish"
+      },
+      "devilkin@@horror": {
+        "label": "Devilkin",
+        "source": "horror/125?highlight=Devilkin"
       },
       "devils@@swpf_advanced_players_guide_2": {
         "label": "Devils",
@@ -6793,13 +7377,49 @@
         "label": "Devils",
         "source": "swpf_bestiary_2/52?highlight=Devils"
       },
+      "dhampyr@@horror": {
+        "label": "Dhampyr",
+        "source": "horror/125?highlight=Dhampyr"
+      },
+      "dinosaur@@fantasy": {
+        "label": "Dinosaur",
+        "source": "fantasy/187?highlight=Dinosaur"
+      },
       "dinosaurs@@swpf_bestiary_2": {
         "label": "Dinosaurs",
         "source": "swpf_bestiary_2/57?highlight=Dinosaurs"
       },
+      "dire wolf@@fantasy": {
+        "label": "Dire Wolf",
+        "source": "fantasy/247?highlight=Dire%20Wolf"
+      },
+      "dire wolf@@horror": {
+        "label": "Dire Wolf",
+        "source": "horror/174?highlight=Dire%20Wolf"
+      },
+      "dire wolf@@swade": {
+        "label": "Dire Wolf",
+        "source": "swade/180?highlight=Dire%20Wolf"
+      },
+      "dismembered corpse@@horror": {
+        "label": "Dismembered Corpse",
+        "source": "horror/126?highlight=Dismembered%20Corpse"
+      },
       "djinni@@swpf_bestiary_2": {
         "label": "Djinni",
         "source": "swpf_bestiary_2/71?highlight=Djinni"
+      },
+      "dog@@horror": {
+        "label": "Dog",
+        "source": "horror/126?highlight=Dog"
+      },
+      "dog, junkyard@@horror": {
+        "label": "Dog, Junkyard",
+        "source": "horror/127?highlight=Dog%2C%20Junkyard"
+      },
+      "dog/wolf@@swade": {
+        "label": "Dog/Wolf",
+        "source": "swade/180?highlight=Dog%2FWolf"
       },
       "dog/wolf@@swpf_bestiary": {
         "label": "Dog/Wolf",
@@ -6809,9 +7429,29 @@
         "label": "Dog/Wolf",
         "source": "swpf_core/248?highlight=Dog%2FWolf"
       },
+      "doppelganger@@horror": {
+        "label": "Doppelganger",
+        "source": "horror/127?highlight=Doppelganger"
+      },
       "doppelganger@@swpf_bestiary": {
         "label": "Doppelganger",
         "source": "swpf_bestiary/32?highlight=Doppelganger"
+      },
+      "dover demon@@secret_world_na": {
+        "label": "Dover Demon",
+        "source": "secret_world_na/91?highlight=Dover%20Demon"
+      },
+      "dragon@@fantasy": {
+        "label": "Dragon",
+        "source": "fantasy/188?highlight=Dragon"
+      },
+      "dragon@@sfc": {
+        "label": "Dragon",
+        "source": "sfc/242?highlight=Dragon"
+      },
+      "dragon@@swade": {
+        "label": "Dragon",
+        "source": "swade/180?highlight=Dragon"
       },
       "dragon@@swpf_bestiary": {
         "label": "Dragon",
@@ -6829,13 +7469,61 @@
         "label": "Dragon, Primal",
         "source": "swpf_bestiary_2/60?highlight=Dragon%2C%20Primal"
       },
+      "dragonfolk@@fantasy": {
+        "label": "Dragonfolk",
+        "source": "fantasy/191?highlight=Dragonfolk"
+      },
+      "dragonfolk sorcerer@@fantasy": {
+        "label": "Dragonfolk Sorcerer",
+        "source": "fantasy/192?highlight=Dragonfolk%20Sorcerer"
+      },
+      "dragonfolk warrior@@fantasy": {
+        "label": "Dragonfolk Warrior",
+        "source": "fantasy/191?highlight=Dragonfolk%20Warrior"
+      },
       "dragonsaurus@@rifts_atlantis": {
         "label": "Dragonsaurus",
         "source": "rifts_atlantis/184?highlight=Dragonsaurus"
       },
+      "drake@@fantasy": {
+        "label": "Drake",
+        "source": "fantasy/192?highlight=Drake"
+      },
+      "drake@@swade": {
+        "label": "Drake",
+        "source": "swade/181?highlight=Drake"
+      },
+      "draken@@sfc": {
+        "label": "Draken",
+        "source": "sfc/243?highlight=Draken"
+      },
+      "draug@@secret_world": {
+        "label": "Draug",
+        "source": "secret_world/218?highlight=Draug"
+      },
+      "draug lord@@secret_world_na": {
+        "label": "Draug Lord",
+        "source": "secret_world_na/92?highlight=Draug%20Lord"
+      },
+      "draugr@@fantasy": {
+        "label": "Draugr",
+        "source": "fantasy/249?highlight=Draugr"
+      },
       "draugr@@swpf_bestiary_2": {
         "label": "Draugr",
         "source": "swpf_bestiary_2/66?highlight=Draugr"
+      },
+      "dream evil@@horror": {
+        "label": "Dream Evil",
+        "source": "horror/128?highlight=Dream%20Evil"
+      },
+      "dreamreaver@@horror": {
+        "label": "Dreamreaver",
+        "source": "horror/128?highlight=Dreamreaver"
+      },
+      "drendrit@@sfc": {
+        "label": "Drendrit",
+        "source": "sfc/243?highlight=Drendrit"
       },
       "dretch@@swpf_bestiary_2": {
         "label": "Dretch",
@@ -6845,6 +7533,10 @@
         "label": "Drider",
         "source": "swpf_bestiary/47?highlight=Drider"
       },
+      "drone@@sfc": {
+        "label": "Drone",
+        "source": "sfc/231?highlight=Drone"
+      },
       "drow@@swpf_bestiary": {
         "label": "Drow",
         "source": "swpf_bestiary/48?highlight=Drow"
@@ -6852,6 +7544,10 @@
       "drow noble@@swpf_bestiary": {
         "label": "Drow Noble",
         "source": "swpf_bestiary/48?highlight=Drow%20Noble"
+      },
+      "drownling@@horror": {
+        "label": "Drownling",
+        "source": "horror/129?highlight=Drownling"
       },
       "dryad@@swpf_bestiary": {
         "label": "Dryad",
@@ -6861,21 +7557,105 @@
         "label": "Dullahan",
         "source": "swpf_bestiary_2/67?highlight=Dullahan"
       },
+      "dwarf@@fantasy": {
+        "label": "Dwarf",
+        "source": "fantasy/192?highlight=Dwarf"
+      },
+      "dwarf, space@@sfc": {
+        "label": "Dwarf, Space",
+        "source": "sfc/245?highlight=Dwarf%2C%20Space"
+      },
+      "earth elemental@@fantasy": {
+        "label": "Earth Elemental",
+        "source": "fantasy/193?highlight=Earth%20Elemental"
+      },
+      "earth elemental@@swade": {
+        "label": "Earth Elemental",
+        "source": "swade/182?highlight=Earth%20Elemental"
+      },
+      "earth elemental, elder@@fantasy": {
+        "label": "Earth Elemental, Elder",
+        "source": "fantasy/194?highlight=Earth%20Elemental%2C%20Elder"
+      },
+      "earth elemental, small@@fantasy": {
+        "label": "Earth Elemental, Small",
+        "source": "fantasy/194?highlight=Earth%20Elemental%2C%20Small"
+      },
+      "earthquake beast@@sfc": {
+        "label": "Earthquake Beast",
+        "source": "sfc/245?highlight=Earthquake%20Beast"
+      },
       "efreeti@@swpf_bestiary_2": {
         "label": "Efreeti",
         "source": "swpf_bestiary_2/72?highlight=Efreeti"
+      },
+      "el charro negro@@secret_world_na": {
+        "label": "El Charro Negro",
+        "source": "secret_world_na/93?highlight=El%20Charro%20Negro"
+      },
+      "electro squid@@starbreaker_core": {
+        "label": "Electro Squid",
+        "source": "starbreaker_core/209?highlight=Electro%20Squid"
       },
       "elementals@@swpf_bestiary": {
         "label": "Elementals",
         "source": "swpf_bestiary/49?highlight=Elementals"
       },
+      "elephant@@fantasy": {
+        "label": "Elephant",
+        "source": "fantasy/196?highlight=Elephant"
+      },
       "elephant@@swpf_bestiary": {
         "label": "Elephant",
         "source": "swpf_bestiary/52?highlight=Elephant"
       },
+      "elephant, common@@fantasy": {
+        "label": "Elephant, Common",
+        "source": "fantasy/196?highlight=Elephant%2C%20Common"
+      },
+      "elephant, war@@fantasy": {
+        "label": "Elephant, War",
+        "source": "fantasy/196?highlight=Elephant%2C%20War"
+      },
+      "elf@@fantasy": {
+        "label": "Elf",
+        "source": "fantasy/196?highlight=Elf"
+      },
+      "elf, space@@sfc": {
+        "label": "Elf, Space",
+        "source": "sfc/245?highlight=Elf%2C%20Space"
+      },
+      "eliminator@@sfc": {
+        "label": "Eliminator",
+        "source": "sfc/246?highlight=Eliminator"
+      },
+      "elite zombie: einherjar@@horror": {
+        "label": "Elite Zombie: Einherjar",
+        "source": "horror/178?highlight=Elite%20Zombie%3A%20Einherjar"
+      },
       "elysian@@swpf_bestiary_2": {
         "label": "Elysian",
         "source": "swpf_bestiary_2/114?highlight=Elysian"
+      },
+      "emotion spirit@@horror": {
+        "label": "Emotion Spirit",
+        "source": "horror/129?highlight=Emotion%20Spirit"
+      },
+      "emotor@@sfc": {
+        "label": "Emotor",
+        "source": "sfc/247?highlight=Emotor"
+      },
+      "enceph@@sfc": {
+        "label": "Enceph",
+        "source": "sfc/288?highlight=Enceph"
+      },
+      "energy elemental@@sfc": {
+        "label": "Energy Elemental",
+        "source": "sfc/248?highlight=Energy%20Elemental"
+      },
+      "energy leech@@sfc": {
+        "label": "Energy Leech",
+        "source": "sfc/250?highlight=Energy%20Leech"
       },
       "ettercap@@swpf_bestiary": {
         "label": "Ettercap",
@@ -6885,17 +7665,109 @@
         "label": "Ettin",
         "source": "swpf_bestiary/54?highlight=Ettin"
       },
+      "evil clown@@horror": {
+        "label": "Evil Clown",
+        "source": "horror/129?highlight=Evil%20Clown"
+      },
       "faceless stalker@@swpf_bestiary_2": {
         "label": "Faceless Stalker",
         "source": "swpf_bestiary_2/68?highlight=Faceless%20Stalker"
+      },
+      "fear stalker@@horror": {
+        "label": "Fear Stalker",
+        "source": "horror/130?highlight=Fear%20Stalker"
+      },
+      "fetch@@horror": {
+        "label": "Fetch",
+        "source": "horror/127?highlight=Fetch"
+      },
+      "fey@@fantasy": {
+        "label": "Fey",
+        "source": "fantasy/198?highlight=Fey"
+      },
+      "fighter@@fantasy": {
+        "label": "Fighter",
+        "source": "fantasy/200?highlight=Fighter"
+      },
+      "filth@@secret_world": {
+        "label": "Filth",
+        "source": "secret_world/222?highlight=Filth"
+      },
+      "fire elemental@@fantasy": {
+        "label": "Fire Elemental",
+        "source": "fantasy/195?highlight=Fire%20Elemental"
+      },
+      "fire elemental@@swade": {
+        "label": "Fire Elemental",
+        "source": "swade/182?highlight=Fire%20Elemental"
+      },
+      "fire elemental, elder@@fantasy": {
+        "label": "Fire Elemental, Elder",
+        "source": "fantasy/195?highlight=Fire%20Elemental%2C%20Elder"
+      },
+      "fire elemental, small@@fantasy": {
+        "label": "Fire Elemental, Small",
+        "source": "fantasy/195?highlight=Fire%20Elemental%2C%20Small"
+      },
+      "fire giant@@fantasy": {
+        "label": "Fire Giant",
+        "source": "fantasy/203?highlight=Fire%20Giant"
+      },
+      "fire salamander@@fantasy": {
+        "label": "Fire Salamander",
+        "source": "fantasy/201?highlight=Fire%20Salamander"
+      },
+      "flaming skeleton@@fantasy": {
+        "label": "Flaming Skeleton",
+        "source": "fantasy/239?highlight=Flaming%20Skeleton"
+      },
+      "flesh golem@@secret_world_na": {
+        "label": "Flesh Golem",
+        "source": "secret_world_na/95?highlight=Flesh%20Golem"
+      },
+      "flesh ripper@@horror": {
+        "label": "Flesh Ripper",
+        "source": "horror/130?highlight=Flesh%20Ripper"
+      },
+      "floran@@sfc": {
+        "label": "Floran",
+        "source": "sfc/251?highlight=Floran"
+      },
+      "flying head@@horror": {
+        "label": "Flying Head",
+        "source": "horror/130?highlight=Flying%20Head"
+      },
+      "fractal ray@@sfc": {
+        "label": "Fractal Ray",
+        "source": "sfc/252?highlight=Fractal%20Ray"
+      },
+      "frost giant@@fantasy": {
+        "label": "Frost Giant",
+        "source": "fantasy/204?highlight=Frost%20Giant"
+      },
+      "frost mammoth@@fantasy": {
+        "label": "Frost Mammoth",
+        "source": "fantasy/222?highlight=Frost%20Mammoth"
+      },
+      "frost wolf@@fantasy": {
+        "label": "Frost Wolf",
+        "source": "fantasy/247?highlight=Frost%20Wolf"
       },
       "furies (erinyes)@@swpf_bestiary_2": {
         "label": "Furies (Erinyes)",
         "source": "swpf_bestiary_2/54?highlight=Furies%20%28Erinyes%29"
       },
+      "fury@@fantasy": {
+        "label": "Fury",
+        "source": "fantasy/201?highlight=Fury"
+      },
       "fury beetle@@rifts_na_foes": {
         "label": "Fury Beetle",
         "source": "rifts_na_foes/73?highlight=Fury%20Beetle"
+      },
+      "gargoyle@@fantasy": {
+        "label": "Gargoyle",
+        "source": "fantasy/202?highlight=Gargoyle"
       },
       "gargoyle@@rifts_na_foes": {
         "label": "Gargoyle",
@@ -6905,9 +7777,21 @@
         "label": "Gargoyle",
         "source": "swpf_bestiary/54?highlight=Gargoyle"
       },
+      "gelatinoid@@sfc": {
+        "label": "Gelatinoid",
+        "source": "sfc/252?highlight=Gelatinoid"
+      },
+      "gelatinous cube@@fantasy": {
+        "label": "Gelatinous Cube",
+        "source": "fantasy/229?highlight=Gelatinous%20Cube"
+      },
       "gelatinous cube@@swpf_bestiary": {
         "label": "Gelatinous Cube",
         "source": "swpf_bestiary/55?highlight=Gelatinous%20Cube"
+      },
+      "gene thief@@sfc": {
+        "label": "Gene Thief",
+        "source": "sfc/253?highlight=Gene%20Thief"
       },
       "genie@@swpf_bestiary_2": {
         "label": "Genie",
@@ -6921,17 +7805,57 @@
         "label": "Ghast",
         "source": "swpf_bestiary/55?highlight=Ghast"
       },
+      "ghevok@@sfc": {
+        "label": "Ghevok",
+        "source": "sfc/253?highlight=Ghevok"
+      },
+      "ghost@@horror": {
+        "label": "Ghost",
+        "source": "horror/131?highlight=Ghost"
+      },
+      "ghost@@swade": {
+        "label": "Ghost",
+        "source": "swade/182?highlight=Ghost"
+      },
       "ghost@@swpf_bestiary": {
         "label": "Ghost",
         "source": "swpf_bestiary/56?highlight=Ghost"
+      },
+      "ghost blade@@fantasy": {
+        "label": "Ghost Blade",
+        "source": "fantasy/203?highlight=Ghost%20Blade"
+      },
+      "ghoul@@fantasy": {
+        "label": "Ghoul",
+        "source": "fantasy/203?highlight=Ghoul"
+      },
+      "ghoul@@horror": {
+        "label": "Ghoul",
+        "source": "horror/132?highlight=Ghoul"
+      },
+      "ghoul@@secret_world": {
+        "label": "Ghoul",
+        "source": "secret_world/226?highlight=Ghoul"
       },
       "ghoul@@swpf_bestiary": {
         "label": "Ghoul",
         "source": "swpf_bestiary/56?highlight=Ghoul"
       },
+      "giant@@fantasy": {
+        "label": "Giant",
+        "source": "fantasy/203?highlight=Giant"
+      },
+      "giant@@sfc": {
+        "label": "Giant",
+        "source": "sfc/278?highlight=Giant"
+      },
       "giant@@swpf_bestiary": {
         "label": "Giant",
         "source": "swpf_bestiary/57?highlight=Giant"
+      },
+      "giant animal@@fantasy": {
+        "label": "Giant Animal",
+        "source": "fantasy/205?highlight=Giant%20Animal"
       },
       "giant animals@@swpf_bestiary": {
         "label": "Giant Animals",
@@ -6941,21 +7865,77 @@
         "label": "Giant Animals",
         "source": "swpf_bestiary_2/68?highlight=Giant%20Animals"
       },
+      "giant ant@@fantasy": {
+        "label": "Giant Ant",
+        "source": "fantasy/205?highlight=Giant%20Ant"
+      },
+      "giant bee@@fantasy": {
+        "label": "Giant Bee",
+        "source": "fantasy/205?highlight=Giant%20Bee"
+      },
+      "giant bird@@fantasy": {
+        "label": "Giant Bird",
+        "source": "fantasy/206?highlight=Giant%20Bird"
+      },
+      "giant centipede@@fantasy": {
+        "label": "Giant Centipede",
+        "source": "fantasy/206?highlight=Giant%20Centipede"
+      },
+      "giant crab@@fantasy": {
+        "label": "Giant Crab",
+        "source": "fantasy/206?highlight=Giant%20Crab"
+      },
       "giant eagle@@swpf_bestiary": {
         "label": "Giant Eagle",
         "source": "swpf_bestiary/65?highlight=Giant%20Eagle"
+      },
+      "giant herbivore@@fantasy": {
+        "label": "Giant Herbivore",
+        "source": "fantasy/187?highlight=Giant%20Herbivore"
       },
       "giant jellyfish@@swpf_bestiary_2": {
         "label": "Giant Jellyfish",
         "source": "swpf_bestiary_2/68?highlight=Giant%20Jellyfish"
       },
+      "giant lizard@@fantasy": {
+        "label": "Giant Lizard",
+        "source": "fantasy/206?highlight=Giant%20Lizard"
+      },
+      "giant mosquito@@fantasy": {
+        "label": "Giant Mosquito",
+        "source": "fantasy/207?highlight=Giant%20Mosquito"
+      },
+      "giant octopus@@fantasy": {
+        "label": "Giant Octopus",
+        "source": "fantasy/207?highlight=Giant%20Octopus"
+      },
       "giant octopus@@rifts_atlantis": {
         "label": "Giant Octopus",
         "source": "rifts_atlantis/186?highlight=Giant%20Octopus"
       },
+      "giant rat@@fantasy": {
+        "label": "Giant Rat",
+        "source": "fantasy/207?highlight=Giant%20Rat"
+      },
+      "giant scorpion@@fantasy": {
+        "label": "Giant Scorpion",
+        "source": "fantasy/207?highlight=Giant%20Scorpion"
+      },
+      "giant skeleton@@fantasy": {
+        "label": "Giant Skeleton",
+        "source": "fantasy/240?highlight=Giant%20Skeleton"
+      },
+      "giant snake@@fantasy": {
+        "label": "Giant Snake",
+        "source": "fantasy/208?highlight=Giant%20Snake"
+      },
       "giant snapping turtle@@swpf_bestiary_2": {
         "label": "Giant Snapping Turtle",
         "source": "swpf_bestiary_2/70?highlight=Giant%20Snapping%20Turtle"
+      },
+      "giant spider queen@@fantasy": {
+        "label": "Giant Spider Queen",
+        "source": "fantasy/208?highlight=Giant%20Spider%20Queen"
       },
       "giant squid@@rifts_atlantis": {
         "label": "Giant Squid",
@@ -6965,9 +7945,21 @@
         "label": "Giant Tick",
         "source": "swpf_bestiary_2/69?highlight=Giant%20Tick"
       },
+      "giant toad@@fantasy": {
+        "label": "Giant Toad",
+        "source": "fantasy/208?highlight=Giant%20Toad"
+      },
       "giant toad@@swpf_bestiary_2": {
         "label": "Giant Toad",
         "source": "swpf_bestiary_2/69?highlight=Giant%20Toad"
+      },
+      "giant worm@@swade": {
+        "label": "Giant Worm",
+        "source": "swade/183?highlight=Giant%20Worm"
+      },
+      "giant zombie@@fantasy": {
+        "label": "Giant Zombie",
+        "source": "fantasy/249?highlight=Giant%20Zombie"
       },
       "gigantic raging monster@@rifts_na_foes": {
         "label": "Gigantic Raging Monster",
@@ -6977,9 +7969,41 @@
         "label": "Glacier Toad",
         "source": "swpf_bestiary_2/70?highlight=Glacier%20Toad"
       },
+      "glass golem@@fantasy": {
+        "label": "Glass Golem",
+        "source": "fantasy/211?highlight=Glass%20Golem"
+      },
+      "glide monkeys@@fantasy": {
+        "label": "Glide Monkeys",
+        "source": "fantasy/209?highlight=Glide%20Monkeys"
+      },
+      "glitch@@sfc": {
+        "label": "Glitch",
+        "source": "sfc/254?highlight=Glitch"
+      },
+      "gluttony demon@@horror": {
+        "label": "Gluttony Demon",
+        "source": "horror/120?highlight=Gluttony%20Demon"
+      },
+      "gnoll@@fantasy": {
+        "label": "Gnoll",
+        "source": "fantasy/209?highlight=Gnoll"
+      },
       "gnoll@@swpf_bestiary": {
         "label": "Gnoll",
         "source": "swpf_bestiary/65?highlight=Gnoll"
+      },
+      "goblin@@fantasy": {
+        "label": "Goblin",
+        "source": "fantasy/209?highlight=Goblin"
+      },
+      "goblin@@horror": {
+        "label": "Goblin",
+        "source": "horror/133?highlight=Goblin"
+      },
+      "goblin@@swade": {
+        "label": "Goblin",
+        "source": "swade/183?highlight=Goblin"
       },
       "goblin@@swpf_bestiary": {
         "label": "Goblin",
@@ -6993,6 +8017,10 @@
         "label": "Goblin Dog",
         "source": "swpf_bestiary/66?highlight=Goblin%20Dog"
       },
+      "goblin shaman@@fantasy": {
+        "label": "Goblin Shaman",
+        "source": "fantasy/210?highlight=Goblin%20Shaman"
+      },
       "goblin snake@@swpf_bestiary": {
         "label": "Goblin Snake",
         "source": "swpf_bestiary/67?highlight=Goblin%20Snake"
@@ -7001,9 +8029,25 @@
         "label": "Goblin Warchanter",
         "source": "swpf_bestiary/67?highlight=Goblin%20Warchanter"
       },
+      "goblin warrior@@fantasy": {
+        "label": "Goblin Warrior",
+        "source": "fantasy/209?highlight=Goblin%20Warrior"
+      },
+      "goblin worg rider@@fantasy": {
+        "label": "Goblin Worg Rider",
+        "source": "fantasy/210?highlight=Goblin%20Worg%20Rider"
+      },
       "gold dragon, adult@@swpf_bestiary": {
         "label": "Gold Dragon, Adult",
         "source": "swpf_bestiary/40?highlight=Gold%20Dragon%2C%20Adult"
+      },
+      "golden ram@@fantasy": {
+        "label": "Golden Ram",
+        "source": "fantasy/210?highlight=Golden%20Ram"
+      },
+      "golem@@horror": {
+        "label": "Golem",
+        "source": "horror/133?highlight=Golem"
       },
       "golem@@swpf_bestiary": {
         "label": "Golem",
@@ -7013,17 +8057,57 @@
         "label": "Golem",
         "source": "swpf_bestiary_2/74?highlight=Golem"
       },
+      "grave guardian@@fantasy": {
+        "label": "Grave Guardian",
+        "source": "fantasy/213?highlight=Grave%20Guardian"
+      },
+      "gravebane@@horror": {
+        "label": "Gravebane",
+        "source": "horror/135?highlight=Gravebane"
+      },
+      "gray@@horror": {
+        "label": "Gray",
+        "source": "horror/135?highlight=Gray"
+      },
+      "gray goo@@sfc": {
+        "label": "Gray Goo",
+        "source": "sfc/255?highlight=Gray%20Goo"
+      },
       "gray render@@swpf_bestiary_2": {
         "label": "Gray Render",
         "source": "swpf_bestiary_2/75?highlight=Gray%20Render"
+      },
+      "grazer@@sfc": {
+        "label": "Grazer",
+        "source": "sfc/254?highlight=Grazer"
+      },
+      "great basilisk@@fantasy": {
+        "label": "Great Basilisk",
+        "source": "fantasy/177?highlight=Great%20Basilisk"
+      },
+      "great dragon@@fantasy": {
+        "label": "Great Dragon",
+        "source": "fantasy/191?highlight=Great%20Dragon"
+      },
+      "great trees@@fantasy": {
+        "label": "Great Trees",
+        "source": "fantasy/242?highlight=Great%20Trees"
       },
       "greater demon@@rifts_na_foes": {
         "label": "Greater Demon",
         "source": "rifts_na_foes/90?highlight=Greater%20Demon"
       },
+      "greater gargoyle@@fantasy": {
+        "label": "Greater Gargoyle",
+        "source": "fantasy/202?highlight=Greater%20Gargoyle"
+      },
       "green dragon, adult@@swpf_bestiary": {
         "label": "Green Dragon, Adult",
         "source": "swpf_bestiary/42?highlight=Green%20Dragon%2C%20Adult"
+      },
+      "gremlin@@sfc": {
+        "label": "Gremlin",
+        "source": "sfc/256?highlight=Gremlin"
       },
       "gremlin@@swpf_bestiary_2": {
         "label": "Gremlin",
@@ -7033,9 +8117,21 @@
         "label": "Grey Ooze",
         "source": "swpf_bestiary_2/79?highlight=Grey%20Ooze"
       },
+      "griffin@@fantasy": {
+        "label": "Griffin",
+        "source": "fantasy/213?highlight=Griffin"
+      },
       "griffon@@swpf_bestiary": {
         "label": "Griffon",
         "source": "swpf_bestiary/70?highlight=Griffon"
+      },
+      "guardian mummy@@fantasy": {
+        "label": "Guardian Mummy",
+        "source": "fantasy/224?highlight=Guardian%20Mummy"
+      },
+      "guardian mummy@@horror": {
+        "label": "Guardian Mummy",
+        "source": "horror/149?highlight=Guardian%20Mummy"
       },
       "guardian naga@@swpf_bestiary": {
         "label": "Guardian Naga",
@@ -7045,17 +8141,57 @@
         "label": "Gug",
         "source": "swpf_bestiary_2/80?highlight=Gug"
       },
+      "hag@@fantasy": {
+        "label": "Hag",
+        "source": "fantasy/214?highlight=Hag"
+      },
+      "hag@@horror": {
+        "label": "Hag",
+        "source": "horror/136?highlight=Hag"
+      },
       "hag@@swpf_bestiary": {
         "label": "Hag",
         "source": "swpf_bestiary/71?highlight=Hag"
+      },
+      "half-folk@@fantasy": {
+        "label": "Half-Folk",
+        "source": "fantasy/214?highlight=Half-Folk"
       },
       "handmaiden (gylous)@@swpf_bestiary_2": {
         "label": "Handmaiden (Gylous)",
         "source": "swpf_bestiary_2/55?highlight=Handmaiden%20%28Gylous%29"
       },
+      "harbinger@@horror": {
+        "label": "Harbinger",
+        "source": "horror/137?highlight=Harbinger"
+      },
+      "harpy@@fantasy": {
+        "label": "Harpy",
+        "source": "fantasy/214?highlight=Harpy"
+      },
       "harpy@@swpf_bestiary": {
         "label": "Harpy",
         "source": "swpf_bestiary/73?highlight=Harpy"
+      },
+      "hatchling@@fantasy": {
+        "label": "Hatchling",
+        "source": "fantasy/189?highlight=Hatchling"
+      },
+      "hate@@horror": {
+        "label": "Hate",
+        "source": "horror/137?highlight=Hate"
+      },
+      "haunted armor@@horror": {
+        "label": "Haunted Armor",
+        "source": "horror/138?highlight=Haunted%20Armor"
+      },
+      "haunted car@@horror": {
+        "label": "Haunted Car",
+        "source": "horror/138?highlight=Haunted%20Car"
+      },
+      "haunted portrait@@horror": {
+        "label": "Haunted Portrait",
+        "source": "horror/139?highlight=Haunted%20Portrait"
       },
       "hawrk-ka humanoid predators@@rifts_atlantis": {
         "label": "Hawrk-ka Humanoid Predators",
@@ -7065,41 +8201,121 @@
         "label": "Hawrk-ohl Humanoid Predators",
         "source": "rifts_atlantis/185?highlight=Hawrk-ohl%20Humanoid%20Predators"
       },
+      "haze barnacle@@sfc": {
+        "label": "Haze Barnacle",
+        "source": "sfc/257?highlight=Haze%20Barnacle"
+      },
+      "haze dragon@@sfc": {
+        "label": "Haze Dragon",
+        "source": "sfc/243?highlight=Haze%20Dragon"
+      },
       "hell hound@@swpf_bestiary": {
         "label": "Hell Hound",
         "source": "swpf_bestiary/74?highlight=Hell%20Hound"
+      },
+      "helldrake@@horror": {
+        "label": "Helldrake",
+        "source": "horror/139?highlight=Helldrake"
+      },
+      "hellhound@@fantasy": {
+        "label": "Hellhound",
+        "source": "fantasy/185?highlight=Hellhound"
+      },
+      "hellhound@@horror": {
+        "label": "Hellhound",
+        "source": "horror/120?highlight=Hellhound"
       },
       "hezrou@@swpf_bestiary_2": {
         "label": "Hezrou",
         "source": "swpf_bestiary_2/46?highlight=Hezrou"
       },
+      "high elf archer@@fantasy": {
+        "label": "High Elf Archer",
+        "source": "fantasy/197?highlight=High%20Elf%20Archer"
+      },
+      "high elf mage@@fantasy": {
+        "label": "High Elf Mage",
+        "source": "fantasy/197?highlight=High%20Elf%20Mage"
+      },
+      "high elf spearman@@fantasy": {
+        "label": "High Elf Spearman",
+        "source": "fantasy/197?highlight=High%20Elf%20Spearman"
+      },
+      "hill giant@@fantasy": {
+        "label": "Hill Giant",
+        "source": "fantasy/204?highlight=Hill%20Giant"
+      },
       "hippocampus@@swpf_bestiary_2": {
         "label": "Hippocampus",
         "source": "swpf_bestiary_2/80?highlight=Hippocampus"
+      },
+      "hippogriff@@fantasy": {
+        "label": "Hippogriff",
+        "source": "fantasy/214?highlight=Hippogriff"
       },
       "hippogriff@@swpf_bestiary_2": {
         "label": "Hippogriff",
         "source": "swpf_bestiary_2/81?highlight=Hippogriff"
       },
+      "hoarfrost warrior@@horror": {
+        "label": "Hoarfrost Warrior",
+        "source": "horror/140?highlight=Hoarfrost%20Warrior"
+      },
+      "hobgoblin@@fantasy": {
+        "label": "Hobgoblin",
+        "source": "fantasy/214?highlight=Hobgoblin"
+      },
       "hobgoblin@@swpf_bestiary": {
         "label": "Hobgoblin",
         "source": "swpf_bestiary/75?highlight=Hobgoblin"
+      },
+      "homunculus@@horror": {
+        "label": "Homunculus",
+        "source": "horror/141?highlight=Homunculus"
       },
       "horned whale@@rifts_atlantis": {
         "label": "Horned Whale",
         "source": "rifts_atlantis/187?highlight=Horned%20Whale"
       },
+      "horrornaut@@sfc": {
+        "label": "Horrornaut",
+        "source": "sfc/293?highlight=Horrornaut"
+      },
+      "horse@@swade": {
+        "label": "Horse",
+        "source": "swade/183?highlight=Horse"
+      },
+      "horse, elven@@fantasy": {
+        "label": "Horse, Elven",
+        "source": "fantasy/215?highlight=Horse%2C%20Elven"
+      },
       "horse, heavy@@swpf_bestiary": {
         "label": "Horse, Heavy",
         "source": "swpf_bestiary/75?highlight=Horse%2C%20Heavy"
+      },
+      "horse, heavy@@swpf_core": {
+        "label": "Horse, Heavy",
+        "source": "swpf_core/248?highlight=Horse%2C%20Heavy"
       },
       "horse, light@@swpf_bestiary": {
         "label": "Horse, Light",
         "source": "swpf_bestiary/75?highlight=Horse%2C%20Light"
       },
+      "horse, light@@swpf_core": {
+        "label": "Horse, Light",
+        "source": "swpf_core/248?highlight=Horse%2C%20Light"
+      },
+      "horse, war@@swade": {
+        "label": "Horse, War",
+        "source": "swade/184?highlight=Horse%2C%20War"
+      },
       "hound of tindalos@@swpf_bestiary_2": {
         "label": "Hound of Tindalos",
         "source": "swpf_bestiary_2/82?highlight=Hound%20of%20Tindalos"
+      },
+      "hounds of tindalos@@doom_guard": {
+        "label": "Hounds of Tindalos",
+        "source": "doom_guard/123?highlight=Hounds%20of%20Tindalos"
       },
       "howler@@swpf_bestiary_2": {
         "label": "Howler",
@@ -7108,6 +8324,18 @@
       "huge flying swarm things@@rifts_na_foes": {
         "label": "Huge Flying Swarm Things",
         "source": "rifts_na_foes/92?highlight=Huge%20Flying%20Swarm%20Things"
+      },
+      "hugger@@sfc": {
+        "label": "Hugger",
+        "source": "sfc/257?highlight=Hugger"
+      },
+      "hunter@@sfc": {
+        "label": "Hunter",
+        "source": "sfc/258?highlight=Hunter"
+      },
+      "hydra@@fantasy": {
+        "label": "Hydra",
+        "source": "fantasy/215?highlight=Hydra"
       },
       "hydra@@swpf_bestiary": {
         "label": "Hydra",
@@ -7121,9 +8349,41 @@
         "label": "Ice Linnorm",
         "source": "swpf_bestiary/81?highlight=Ice%20Linnorm"
       },
+      "ice/sand mummy@@horror": {
+        "label": "Ice/Sand Mummy",
+        "source": "horror/149?highlight=Ice%2FSand%20Mummy"
+      },
       "ichthyosaur@@rifts_atlantis": {
         "label": "Ichthyosaur",
         "source": "rifts_atlantis/187?highlight=Ichthyosaur"
+      },
+      "icthynite@@horror": {
+        "label": "Icthynite",
+        "source": "horror/141?highlight=Icthynite"
+      },
+      "icthynite hybrid@@horror": {
+        "label": "Icthynite Hybrid",
+        "source": "horror/142?highlight=Icthynite%20Hybrid"
+      },
+      "imp@@fantasy": {
+        "label": "Imp",
+        "source": "fantasy/186?highlight=Imp"
+      },
+      "imp@@horror": {
+        "label": "Imp",
+        "source": "horror/121?highlight=Imp"
+      },
+      "impaler@@sfc": {
+        "label": "Impaler",
+        "source": "sfc/259?highlight=Impaler"
+      },
+      "implanter@@horror": {
+        "label": "Implanter",
+        "source": "horror/175?highlight=Implanter"
+      },
+      "incubus/succubus@@secret_world_na": {
+        "label": "Incubus/Succubus",
+        "source": "secret_world_na/96?highlight=Incubus%2FSuccubus"
       },
       "inevitable@@swpf_bestiary_2": {
         "label": "Inevitable",
@@ -7133,25 +8393,89 @@
         "label": "Inevitables",
         "source": "swpf_advanced_players_guide_2/111?highlight=Inevitables"
       },
+      "insect, giant@@sfc": {
+        "label": "Insect, Giant",
+        "source": "sfc/259?highlight=Insect%2C%20Giant"
+      },
+      "insectoid@@sfc": {
+        "label": "Insectoid",
+        "source": "sfc/260?highlight=Insectoid"
+      },
       "intellect devourer@@swpf_bestiary": {
         "label": "Intellect Devourer",
         "source": "swpf_bestiary/76?highlight=Intellect%20Devourer"
+      },
+      "ironclaw@@sfc": {
+        "label": "Ironclaw",
+        "source": "sfc/260?highlight=Ironclaw"
+      },
+      "irrasc@@sfc": {
+        "label": "Irrasc",
+        "source": "sfc/260?highlight=Irrasc"
+      },
+      "jabber birds@@fantasy": {
+        "label": "Jabber Birds",
+        "source": "fantasy/215?highlight=Jabber%20Birds"
       },
       "jabberwock@@swpf_bestiary_2": {
         "label": "Jabberwock",
         "source": "swpf_bestiary_2/88?highlight=Jabberwock"
       },
+      "jack in the box@@horror": {
+        "label": "Jack in the Box",
+        "source": "horror/143?highlight=Jack%20in%20the%20Box"
+      },
+      "jester@@fantasy": {
+        "label": "Jester",
+        "source": "fantasy/226?highlight=Jester"
+      },
+      "jester monkey@@sfc": {
+        "label": "Jester Monkey",
+        "source": "sfc/266?highlight=Jester%20Monkey"
+      },
+      "jiangshi@@horror": {
+        "label": "Jiangshi",
+        "source": "horror/164?highlight=Jiangshi"
+      },
       "jinkin@@swpf_bestiary_2": {
         "label": "Jinkin",
         "source": "swpf_bestiary_2/77?highlight=Jinkin"
+      },
+      "jinn@@secret_world": {
+        "label": "Jinn",
+        "source": "secret_world/228?highlight=Jinn"
+      },
+      "jinni@@fantasy": {
+        "label": "Jinni",
+        "source": "fantasy/216?highlight=Jinni"
+      },
+      "jjrikillimsg, the howler of truth@@horror": {
+        "label": "Jjrikillimsg, the Howler of Truth",
+        "source": "horror/115?highlight=Jjrikillimsg%2C%20the%20Howler%20of%20Truth"
       },
       "kalavakus@@swpf_bestiary_2": {
         "label": "Kalavakus",
         "source": "swpf_bestiary_2/47?highlight=Kalavakus"
       },
+      "kalian@@sfc": {
+        "label": "Kalian",
+        "source": "sfc/261?highlight=Kalian"
+      },
       "kelpie@@swpf_bestiary_2": {
         "label": "Kelpie",
         "source": "swpf_bestiary_2/89?highlight=Kelpie"
+      },
+      "khazok@@fantasy": {
+        "label": "Khazok",
+        "source": "fantasy/216?highlight=Khazok"
+      },
+      "knight@@fantasy": {
+        "label": "Knight",
+        "source": "fantasy/216?highlight=Knight"
+      },
+      "kobold@@fantasy": {
+        "label": "Kobold",
+        "source": "fantasy/217?highlight=Kobold"
       },
       "kobold@@swpf_bestiary": {
         "label": "Kobold",
@@ -7161,6 +8485,10 @@
         "label": "Kolyarut",
         "source": "swpf_bestiary_2/85?highlight=Kolyarut"
       },
+      "konjar@@starbreaker_core": {
+        "label": "Konjar",
+        "source": "starbreaker_core/209?highlight=Konjar"
+      },
       "korred@@swpf_bestiary_2": {
         "label": "Korred",
         "source": "swpf_bestiary_2/90?highlight=Korred"
@@ -7169,13 +8497,33 @@
         "label": "Krenshar",
         "source": "swpf_bestiary_2/90?highlight=Krenshar"
       },
+      "krok@@sfc": {
+        "label": "Krok",
+        "source": "sfc/261?highlight=Krok"
+      },
       "kryygorth shellback@@rifts_atlantis": {
         "label": "Kryygorth Shellback",
         "source": "rifts_atlantis/185?highlight=Kryygorth%20Shellback"
       },
+      "kuchisake-onna@@horror": {
+        "label": "Kuchisake-Onna",
+        "source": "horror/143?highlight=Kuchisake-Onna"
+      },
+      "kushtaka@@secret_world_na": {
+        "label": "Kushtaka",
+        "source": "secret_world_na/97?highlight=Kushtaka"
+      },
       "kyton@@swpf_bestiary": {
         "label": "Kyton",
         "source": "swpf_bestiary/78?highlight=Kyton"
+      },
+      "la llorona@@secret_world_na": {
+        "label": "La Llorona",
+        "source": "secret_world_na/98?highlight=La%20Llorona"
+      },
+      "lamia@@fantasy": {
+        "label": "Lamia",
+        "source": "fantasy/217?highlight=Lamia"
       },
       "lamia@@swpf_bestiary": {
         "label": "Lamia",
@@ -7185,17 +8533,53 @@
         "label": "Lamia Matriarch",
         "source": "swpf_bestiary/79?highlight=Lamia%20Matriarch"
       },
+      "lasher@@fantasy": {
+        "label": "Lasher",
+        "source": "fantasy/186?highlight=Lasher"
+      },
+      "lava golem@@fantasy": {
+        "label": "Lava Golem",
+        "source": "fantasy/212?highlight=Lava%20Golem"
+      },
+      "leanhaum-shee@@horror": {
+        "label": "Leanhaum-Shee",
+        "source": "horror/144?highlight=Leanhaum-Shee"
+      },
+      "leech, giant@@horror": {
+        "label": "Leech, Giant",
+        "source": "horror/144?highlight=Leech%2C%20Giant"
+      },
       "lemur@@rifts_atlantis": {
         "label": "Lemur",
         "source": "rifts_atlantis/185?highlight=Lemur"
+      },
+      "lemur, aquatic@@rifts_atlantis": {
+        "label": "Lemur, Aquatic",
+        "source": "rifts_atlantis/185?highlight=Lemur%2C%20Aquatic"
+      },
+      "lemurian@@secret_world_na": {
+        "label": "Lemurian",
+        "source": "secret_world_na/99?highlight=Lemurian"
       },
       "leng spider@@swpf_bestiary_2": {
         "label": "Leng Spider",
         "source": "swpf_bestiary_2/91?highlight=Leng%20Spider"
       },
+      "leprechaun@@fantasy": {
+        "label": "Leprechaun",
+        "source": "fantasy/198?highlight=Leprechaun"
+      },
       "lesser demon@@rifts_na_foes": {
         "label": "Lesser Demon",
         "source": "rifts_na_foes/90?highlight=Lesser%20Demon"
+      },
+      "lesser wendigo@@horror": {
+        "label": "Lesser Wendigo",
+        "source": "horror/170?highlight=Lesser%20Wendigo"
+      },
+      "lesser xenos@@sfc": {
+        "label": "Lesser Xenos",
+        "source": "sfc/236?highlight=Lesser%20Xenos"
       },
       "leukodaemon@@swpf_bestiary_2": {
         "label": "Leukodaemon",
@@ -7209,9 +8593,25 @@
         "label": "Lhaksharut",
         "source": "swpf_bestiary_2/86?highlight=Lhaksharut"
       },
+      "lich@@fantasy": {
+        "label": "Lich",
+        "source": "fantasy/218?highlight=Lich"
+      },
+      "lich@@swade": {
+        "label": "Lich",
+        "source": "swade/184?highlight=Lich"
+      },
       "lich@@swpf_bestiary": {
         "label": "Lich",
         "source": "swpf_bestiary/79?highlight=Lich"
+      },
+      "lich, dread@@horror": {
+        "label": "Lich, Dread",
+        "source": "horror/145?highlight=Lich%2C%20Dread"
+      },
+      "light elemental@@sfc": {
+        "label": "Light Elemental",
+        "source": "sfc/249?highlight=Light%20Elemental"
       },
       "line ray@@rifts_atlantis": {
         "label": "Line Ray",
@@ -7221,6 +8621,10 @@
         "label": "Linnorm",
         "source": "swpf_bestiary/80?highlight=Linnorm"
       },
+      "lion@@swade": {
+        "label": "Lion",
+        "source": "swade/184?highlight=Lion"
+      },
       "lion@@swpf_bestiary": {
         "label": "Lion",
         "source": "swpf_bestiary/82?highlight=Lion"
@@ -7228,6 +8632,22 @@
       "lion@@swpf_core": {
         "label": "Lion",
         "source": "swpf_core/248?highlight=Lion"
+      },
+      "living god@@horror": {
+        "label": "Living God",
+        "source": "horror/145?highlight=Living%20God"
+      },
+      "living grimoire@@horror": {
+        "label": "Living Grimoire",
+        "source": "horror/146?highlight=Living%20Grimoire"
+      },
+      "living planet@@sfc": {
+        "label": "Living Planet",
+        "source": "sfc/262?highlight=Living%20Planet"
+      },
+      "living topiary@@horror": {
+        "label": "Living Topiary",
+        "source": "horror/146?highlight=Living%20Topiary"
       },
       "lizard king@@swpf_bestiary": {
         "label": "Lizard King",
@@ -7237,9 +8657,21 @@
         "label": "Lizardfolk",
         "source": "swpf_bestiary/83?highlight=Lizardfolk"
       },
+      "lobber monkey@@sfc": {
+        "label": "Lobber Monkey",
+        "source": "sfc/266?highlight=Lobber%20Monkey"
+      },
+      "locust@@secret_world": {
+        "label": "Locust",
+        "source": "secret_world/230?highlight=Locust"
+      },
       "lorica wraith@@rifts_atlantis": {
         "label": "Lorica Wraith",
         "source": "rifts_atlantis/188?highlight=Lorica%20Wraith"
+      },
+      "lycanthrope@@fantasy": {
+        "label": "Lycanthrope",
+        "source": "fantasy/218?highlight=Lycanthrope"
       },
       "lycanthrope@@swpf_bestiary": {
         "label": "Lycanthrope",
@@ -7249,6 +8681,14 @@
         "label": "Lycanthrope",
         "source": "swpf_bestiary_2/92?highlight=Lycanthrope"
       },
+      "mage@@fantasy": {
+        "label": "Mage",
+        "source": "fantasy/220?highlight=Mage"
+      },
+      "mage bane@@fantasy": {
+        "label": "Mage Bane",
+        "source": "fantasy/221?highlight=Mage%20Bane"
+      },
       "magma dragon, adult@@swpf_bestiary_2": {
         "label": "Magma Dragon, Adult",
         "source": "swpf_bestiary_2/65?highlight=Magma%20Dragon%2C%20Adult"
@@ -7257,9 +8697,37 @@
         "label": "Magma Dragon, Wyrmling",
         "source": "swpf_bestiary_2/65?highlight=Magma%20Dragon%2C%20Wyrmling"
       },
+      "malific@@sfc": {
+        "label": "Malific",
+        "source": "sfc/263?highlight=Malific"
+      },
+      "mammoth@@fantasy": {
+        "label": "Mammoth",
+        "source": "fantasy/221?highlight=Mammoth"
+      },
+      "man-dog hybrid@@horror": {
+        "label": "Man-Dog Hybrid",
+        "source": "horror/103?highlight=Man-Dog%20Hybrid"
+      },
+      "man-insect hybrid@@horror": {
+        "label": "Man-Insect Hybrid",
+        "source": "horror/103?highlight=Man-Insect%20Hybrid"
+      },
+      "man-reptile hybrid@@horror": {
+        "label": "Man-Reptile Hybrid",
+        "source": "horror/103?highlight=Man-Reptile%20Hybrid"
+      },
+      "manananggal@@horror": {
+        "label": "Manananggal",
+        "source": "horror/165?highlight=Manananggal"
+      },
       "mandragora@@swpf_bestiary_2": {
         "label": "Mandragora",
         "source": "swpf_bestiary_2/94?highlight=Mandragora"
+      },
+      "manticore@@fantasy": {
+        "label": "Manticore",
+        "source": "fantasy/222?highlight=Manticore"
       },
       "manticore@@swpf_bestiary": {
         "label": "Manticore",
@@ -7273,6 +8741,46 @@
         "label": "Marilith",
         "source": "swpf_bestiary_2/48?highlight=Marilith"
       },
+      "marionette golem@@horror": {
+        "label": "Marionette Golem",
+        "source": "horror/135?highlight=Marionette%20Golem"
+      },
+      "marsh troll@@fantasy": {
+        "label": "Marsh Troll",
+        "source": "fantasy/244?highlight=Marsh%20Troll"
+      },
+      "master assassin@@fantasy": {
+        "label": "Master Assassin",
+        "source": "fantasy/174?highlight=Master%20Assassin"
+      },
+      "master assassin@@sfc": {
+        "label": "Master Assassin",
+        "source": "sfc/230?highlight=Master%20Assassin"
+      },
+      "master thief@@fantasy": {
+        "label": "Master Thief",
+        "source": "fantasy/241?highlight=Master%20Thief"
+      },
+      "mature dragon@@fantasy": {
+        "label": "Mature Dragon",
+        "source": "fantasy/190?highlight=Mature%20Dragon"
+      },
+      "mauler monkey@@sfc": {
+        "label": "Mauler Monkey",
+        "source": "sfc/266?highlight=Mauler%20Monkey"
+      },
+      "mech@@swade": {
+        "label": "Mech",
+        "source": "swade/184?highlight=Mech"
+      },
+      "mechanoid@@sfc": {
+        "label": "Mechanoid",
+        "source": "sfc/263?highlight=Mechanoid"
+      },
+      "medusa@@fantasy": {
+        "label": "Medusa",
+        "source": "fantasy/222?highlight=Medusa"
+      },
       "medusa@@swpf_bestiary": {
         "label": "Medusa",
         "source": "swpf_bestiary/86?highlight=Medusa"
@@ -7285,6 +8793,30 @@
         "label": "Mephit",
         "source": "swpf_bestiary/87?highlight=Mephit"
       },
+      "mermaid@@fantasy": {
+        "label": "Mermaid",
+        "source": "fantasy/223?highlight=Mermaid"
+      },
+      "metal golem@@fantasy": {
+        "label": "Metal Golem",
+        "source": "fantasy/212?highlight=Metal%20Golem"
+      },
+      "metal juggernaut@@horror": {
+        "label": "Metal Juggernaut",
+        "source": "horror/147?highlight=Metal%20Juggernaut"
+      },
+      "mi-go@@doom_guard": {
+        "label": "Mi-Go",
+        "source": "doom_guard/124?highlight=Mi-Go"
+      },
+      "mimic@@fantasy": {
+        "label": "Mimic",
+        "source": "fantasy/223?highlight=Mimic"
+      },
+      "mimic@@sfc": {
+        "label": "Mimic",
+        "source": "sfc/265?highlight=Mimic"
+      },
       "mimic@@swpf_bestiary": {
         "label": "Mimic",
         "source": "swpf_bestiary/88?highlight=Mimic"
@@ -7292,6 +8824,18 @@
       "mindless minion@@rifts_na_foes": {
         "label": "Mindless Minion",
         "source": "rifts_na_foes/65?highlight=Mindless%20Minion"
+      },
+      "minion of todoto@@horror": {
+        "label": "Minion of Todoto",
+        "source": "horror/116?highlight=Minion%20of%20Todoto"
+      },
+      "minotaur@@fantasy": {
+        "label": "Minotaur",
+        "source": "fantasy/224?highlight=Minotaur"
+      },
+      "minotaur@@swade": {
+        "label": "Minotaur",
+        "source": "swade/185?highlight=Minotaur"
       },
       "minotaur@@swpf_bestiary": {
         "label": "Minotaur",
@@ -7301,13 +8845,37 @@
         "label": "Mohrg",
         "source": "swpf_bestiary/89?highlight=Mohrg"
       },
+      "monkey@@sfc": {
+        "label": "Monkey",
+        "source": "sfc/266?highlight=Monkey"
+      },
       "morlock@@swpf_bestiary": {
         "label": "Morlock",
         "source": "swpf_bestiary/90?highlight=Morlock"
       },
+      "moss man@@fantasy": {
+        "label": "Moss Man",
+        "source": "fantasy/224?highlight=Moss%20Man"
+      },
+      "mothman@@secret_world": {
+        "label": "Mothman",
+        "source": "secret_world/233?highlight=Mothman"
+      },
       "mothman@@swpf_bestiary_2": {
         "label": "Mothman",
         "source": "swpf_bestiary_2/94?highlight=Mothman"
+      },
+      "motley skeleton@@fantasy": {
+        "label": "Motley Skeleton",
+        "source": "fantasy/239?highlight=Motley%20Skeleton"
+      },
+      "mucus frog@@sfc": {
+        "label": "Mucus Frog",
+        "source": "sfc/266?highlight=Mucus%20Frog"
+      },
+      "mule@@swade": {
+        "label": "Mule",
+        "source": "swade/185?highlight=Mule"
       },
       "mule@@swpf_bestiary": {
         "label": "Mule",
@@ -7317,25 +8885,85 @@
         "label": "Mule",
         "source": "swpf_core/249?highlight=Mule"
       },
+      "mummy@@fantasy": {
+        "label": "Mummy",
+        "source": "fantasy/224?highlight=Mummy"
+      },
+      "mummy@@horror": {
+        "label": "Mummy",
+        "source": "horror/147?highlight=Mummy"
+      },
       "mummy@@swpf_bestiary": {
         "label": "Mummy",
         "source": "swpf_bestiary/90?highlight=Mummy"
+      },
+      "mummy lord@@fantasy": {
+        "label": "Mummy Lord",
+        "source": "fantasy/225?highlight=Mummy%20Lord"
       },
       "murder wraith@@rifts_na_foes": {
         "label": "Murder Wraith",
         "source": "rifts_na_foes/26?highlight=Murder%20Wraith"
       },
+      "mutant@@horror": {
+        "label": "Mutant",
+        "source": "horror/150?highlight=Mutant"
+      },
+      "naga@@fantasy": {
+        "label": "Naga",
+        "source": "fantasy/225?highlight=Naga"
+      },
       "naga@@swpf_bestiary": {
         "label": "Naga",
         "source": "swpf_bestiary/91?highlight=Naga"
+      },
+      "naga sorcerer@@fantasy": {
+        "label": "Naga Sorcerer",
+        "source": "fantasy/225?highlight=Naga%20Sorcerer"
+      },
+      "naga warrior@@fantasy": {
+        "label": "Naga Warrior",
+        "source": "fantasy/225?highlight=Naga%20Warrior"
+      },
+      "nagin@@horror": {
+        "label": "Nagin",
+        "source": "horror/150?highlight=Nagin"
+      },
+      "nature spirit@@fantasy": {
+        "label": "Nature Spirit",
+        "source": "fantasy/198?highlight=Nature%20Spirit"
       },
       "necrophidius@@swpf_bestiary_2": {
         "label": "Necrophidius",
         "source": "swpf_bestiary_2/95?highlight=Necrophidius"
       },
+      "needlebush@@sfc": {
+        "label": "Needlebush",
+        "source": "sfc/267?highlight=Needlebush"
+      },
+      "neo-animal@@sfc": {
+        "label": "Neo-Animal",
+        "source": "sfc/267?highlight=Neo-Animal"
+      },
+      "neo-chimpanzee@@sfc": {
+        "label": "Neo-Chimpanzee",
+        "source": "sfc/267?highlight=Neo-Chimpanzee"
+      },
+      "neo-dog@@sfc": {
+        "label": "Neo-Dog",
+        "source": "sfc/267?highlight=Neo-Dog"
+      },
+      "neo-dolphin@@sfc": {
+        "label": "Neo-Dolphin",
+        "source": "sfc/268?highlight=Neo-Dolphin"
+      },
       "nessian hell hound@@swpf_bestiary": {
         "label": "Nessian Hell Hound",
         "source": "swpf_bestiary/74?highlight=Nessian%20Hell%20Hound"
+      },
+      "neural cloud@@sfc": {
+        "label": "Neural Cloud",
+        "source": "sfc/268?highlight=Neural%20Cloud"
       },
       "neuron beast@@rifts_na_foes": {
         "label": "Neuron Beast",
@@ -7344,6 +8972,10 @@
       "night hag@@swpf_bestiary": {
         "label": "Night Hag",
         "source": "swpf_bestiary/72?highlight=Night%20Hag"
+      },
+      "nightmare@@fantasy": {
+        "label": "Nightmare",
+        "source": "fantasy/187?highlight=Nightmare"
       },
       "nightmare@@swpf_bestiary": {
         "label": "Nightmare",
@@ -7369,13 +9001,37 @@
         "label": "Nightshade, Nightwing",
         "source": "swpf_bestiary_2/100?highlight=Nightshade%2C%20Nightwing"
       },
+      "noble@@fantasy": {
+        "label": "Noble",
+        "source": "fantasy/226?highlight=Noble"
+      },
+      "nohgotha hive insects@@starbreaker_core": {
+        "label": "Nohgotha Hive Insects",
+        "source": "starbreaker_core/210?highlight=Nohgotha%20Hive%20Insects"
+      },
+      "noppera-bō@@horror": {
+        "label": "Noppera-Bō",
+        "source": "horror/151?highlight=Noppera-B%C5%8D"
+      },
+      "nosika@@starbreaker_core": {
+        "label": "Nosika",
+        "source": "starbreaker_core/212?highlight=Nosika"
+      },
       "nuglub@@swpf_bestiary_2": {
         "label": "Nuglub",
         "source": "swpf_bestiary_2/77?highlight=Nuglub"
       },
+      "nymph@@fantasy": {
+        "label": "Nymph",
+        "source": "fantasy/199?highlight=Nymph"
+      },
       "nymph@@swpf_bestiary": {
         "label": "Nymph",
         "source": "swpf_bestiary/93?highlight=Nymph"
+      },
+      "observer@@fantasy": {
+        "label": "Observer",
+        "source": "fantasy/226?highlight=Observer"
       },
       "ochre jelly@@swpf_bestiary": {
         "label": "Ochre Jelly",
@@ -7385,9 +9041,33 @@
         "label": "Octo Dragon",
         "source": "rifts_atlantis/188?highlight=Octo%20Dragon"
       },
+      "officer@@fantasy": {
+        "label": "Officer",
+        "source": "fantasy/201?highlight=Officer"
+      },
+      "ogopogo@@secret_world_na": {
+        "label": "Ogopogo",
+        "source": "secret_world_na/101?highlight=Ogopogo"
+      },
+      "ogre@@fantasy": {
+        "label": "Ogre",
+        "source": "fantasy/227?highlight=Ogre"
+      },
+      "ogre@@swade": {
+        "label": "Ogre",
+        "source": "swade/185?highlight=Ogre"
+      },
       "ogre@@swpf_bestiary": {
         "label": "Ogre",
         "source": "swpf_bestiary/94?highlight=Ogre"
+      },
+      "ogre chief@@fantasy": {
+        "label": "Ogre Chief",
+        "source": "fantasy/228?highlight=Ogre%20Chief"
+      },
+      "ogre mage@@fantasy": {
+        "label": "Ogre Mage",
+        "source": "fantasy/228?highlight=Ogre%20Mage"
       },
       "ogre mage, oni@@swpf_bestiary": {
         "label": "Ogre Mage, Oni",
@@ -7405,25 +9085,77 @@
         "label": "Olethrodaemon",
         "source": "swpf_bestiary_2/40?highlight=Olethrodaemon"
       },
+      "omega crab@@sfc": {
+        "label": "Omega Crab",
+        "source": "sfc/269?highlight=Omega%20Crab"
+      },
       "omox@@swpf_bestiary_2": {
         "label": "Omox",
         "source": "swpf_bestiary_2/48?highlight=Omox"
+      },
+      "oni@@secret_world": {
+        "label": "Oni",
+        "source": "secret_world/235?highlight=Oni"
+      },
+      "ooze@@fantasy": {
+        "label": "Ooze",
+        "source": "fantasy/228?highlight=Ooze"
+      },
+      "oracle@@sfc": {
+        "label": "Oracle",
+        "source": "sfc/269?highlight=Oracle"
+      },
+      "orc@@fantasy": {
+        "label": "Orc",
+        "source": "fantasy/229?highlight=Orc"
+      },
+      "orc@@swade": {
+        "label": "Orc",
+        "source": "swade/185?highlight=Orc"
       },
       "orc@@swpf_bestiary": {
         "label": "Orc",
         "source": "swpf_bestiary/96?highlight=Orc"
       },
+      "orc chieftain@@fantasy": {
+        "label": "Orc Chieftain",
+        "source": "fantasy/229?highlight=Orc%20Chieftain"
+      },
+      "orc shaman@@fantasy": {
+        "label": "Orc Shaman",
+        "source": "fantasy/230?highlight=Orc%20Shaman"
+      },
+      "orc warrior@@fantasy": {
+        "label": "Orc Warrior",
+        "source": "fantasy/229?highlight=Orc%20Warrior"
+      },
+      "orc, chieftain@@swade": {
+        "label": "Orc, Chieftain",
+        "source": "swade/185?highlight=Orc%2C%20Chieftain"
+      },
       "orc, chieftain@@swpf_bestiary": {
         "label": "Orc, Chieftain",
         "source": "swpf_bestiary/96?highlight=Orc%2C%20Chieftain"
+      },
+      "orthocone@@sfc": {
+        "label": "Orthocone",
+        "source": "sfc/269?highlight=Orthocone"
       },
       "ostrosaurus@@rifts_na_foes": {
         "label": "Ostrosaurus",
         "source": "rifts_na_foes/78?highlight=Ostrosaurus"
       },
+      "other giant monsters@@spc": {
+        "label": "Other Giant Monsters",
+        "source": "spc/131?highlight=Other%20Giant%20Monsters"
+      },
       "otyugh@@swpf_bestiary": {
         "label": "Otyugh",
         "source": "swpf_bestiary/96?highlight=Otyugh"
+      },
+      "owlbear@@fantasy": {
+        "label": "Owlbear",
+        "source": "fantasy/230?highlight=Owlbear"
       },
       "owlbear@@swpf_bestiary": {
         "label": "Owlbear",
@@ -7433,13 +9165,41 @@
         "label": "Paracletus",
         "source": "swpf_bestiary_2/16?highlight=Paracletus"
       },
+      "parasite zombie@@sfc": {
+        "label": "Parasite Zombie",
+        "source": "sfc/293?highlight=Parasite%20Zombie"
+      },
+      "pazuzu@@horror": {
+        "label": "Pazuzu",
+        "source": "horror/121?highlight=Pazuzu"
+      },
+      "pegasus@@fantasy": {
+        "label": "Pegasus",
+        "source": "fantasy/230?highlight=Pegasus"
+      },
       "pegasus@@swpf_bestiary_2": {
         "label": "Pegasus",
         "source": "swpf_bestiary_2/101?highlight=Pegasus"
       },
+      "pendulum bird@@sfc": {
+        "label": "Pendulum Bird",
+        "source": "sfc/269?highlight=Pendulum%20Bird"
+      },
+      "pentamouth@@sfc": {
+        "label": "Pentamouth",
+        "source": "sfc/269?highlight=Pentamouth"
+      },
+      "peryton@@fantasy": {
+        "label": "Peryton",
+        "source": "fantasy/231?highlight=Peryton"
+      },
       "phase spider@@swpf_bestiary": {
         "label": "Phase spider",
         "source": "swpf_bestiary/97?highlight=Phase%20spider"
+      },
+      "phoenix@@fantasy": {
+        "label": "Phoenix",
+        "source": "fantasy/231?highlight=Phoenix"
       },
       "phoenix@@swpf_bestiary": {
         "label": "Phoenix",
@@ -7453,29 +9213,81 @@
         "label": "Pit Fiend",
         "source": "swpf_bestiary/31?highlight=Pit%20Fiend"
       },
+      "pixie@@fantasy": {
+        "label": "Pixie",
+        "source": "fantasy/199?highlight=Pixie"
+      },
       "pixie@@swpf_bestiary": {
         "label": "Pixie",
         "source": "swpf_bestiary/98?highlight=Pixie"
+      },
+      "plague demon@@horror": {
+        "label": "Plague Demon",
+        "source": "horror/122?highlight=Plague%20Demon"
       },
       "planetar@@swpf_bestiary_2": {
         "label": "Planetar",
         "source": "swpf_bestiary_2/21?highlight=Planetar"
       },
+      "plasma elemental@@sfc": {
+        "label": "Plasma Elemental",
+        "source": "sfc/249?highlight=Plasma%20Elemental"
+      },
       "pleroma@@swpf_bestiary_2": {
         "label": "Pleroma",
         "source": "swpf_bestiary_2/17?highlight=Pleroma"
+      },
+      "possessor@@horror": {
+        "label": "Possessor",
+        "source": "horror/123?highlight=Possessor"
+      },
+      "possessor@@sfc": {
+        "label": "Possessor",
+        "source": "sfc/270?highlight=Possessor"
       },
       "pseudodragon@@swpf_bestiary_2": {
         "label": "Pseudodragon",
         "source": "swpf_bestiary_2/102?highlight=Pseudodragon"
       },
+      "psi beast@@sfc": {
+        "label": "Psi Beast",
+        "source": "sfc/271?highlight=Psi%20Beast"
+      },
+      "psi booster@@sfc": {
+        "label": "Psi Booster",
+        "source": "sfc/271?highlight=Psi%20Booster"
+      },
+      "psi eater@@sfc": {
+        "label": "Psi Eater",
+        "source": "sfc/272?highlight=Psi%20Eater"
+      },
+      "psi-knight@@sfc": {
+        "label": "Psi-Knight",
+        "source": "sfc/272?highlight=Psi-Knight"
+      },
+      "psionicist@@sfc": {
+        "label": "Psionicist",
+        "source": "sfc/272?highlight=Psionicist"
+      },
       "pteranodon@@swpf_bestiary_2": {
         "label": "Pteranodon",
         "source": "swpf_bestiary_2/58?highlight=Pteranodon"
       },
+      "pterosaur@@fantasy": {
+        "label": "Pterosaur",
+        "source": "fantasy/188?highlight=Pterosaur"
+      },
       "pugwampi@@swpf_bestiary_2": {
         "label": "Pugwampi",
         "source": "swpf_bestiary_2/78?highlight=Pugwampi"
+      },
+      "pukwudgie@@secret_world": {
+        "label": "Pukwudgie",
+        "source": "secret_world/236?highlight=Pukwudgie"
+      },
+      "puppet master@@sfc": {
+        "label": "Puppet Master",
+        "source": "sfc/272?highlight=Puppet%20Master"
       },
       "purple worm@@swpf_bestiary": {
         "label": "Purple Worm",
@@ -7485,17 +9297,117 @@
         "label": "Purrodaemon",
         "source": "swpf_bestiary_2/42?highlight=Purrodaemon"
       },
+      "quadrapus@@sfc": {
+        "label": "Quadrapus",
+        "source": "sfc/273?highlight=Quadrapus"
+      },
+      "quadroid@@sfc": {
+        "label": "Quadroid",
+        "source": "sfc/273?highlight=Quadroid"
+      },
+      "quaking horror, greater@@doom_guard": {
+        "label": "Quaking Horror, Greater",
+        "source": "doom_guard/125?highlight=Quaking%20Horror%2C%20Greater"
+      },
+      "quaking horrors@@doom_guard": {
+        "label": "Quaking Horrors",
+        "source": "doom_guard/125?highlight=Quaking%20Horrors"
+      },
+      "quatha@@sfc": {
+        "label": "Quatha",
+        "source": "sfc/274?highlight=Quatha"
+      },
+      "queen@@horror": {
+        "label": "Queen",
+        "source": "horror/175?highlight=Queen"
+      },
+      "queen@@sfc": {
+        "label": "Queen",
+        "source": "sfc/258?highlight=Queen"
+      },
+      "rabid bear@@horror": {
+        "label": "Rabid Bear",
+        "source": "horror/153?highlight=Rabid%20Bear"
+      },
+      "radbeast@@sfc": {
+        "label": "Radbeast",
+        "source": "sfc/274?highlight=Radbeast"
+      },
+      "rakashan@@fantasy": {
+        "label": "Rakashan",
+        "source": "fantasy/231?highlight=Rakashan"
+      },
+      "rakashan@@sfc": {
+        "label": "Rakashan",
+        "source": "sfc/275?highlight=Rakashan"
+      },
+      "rake@@horror": {
+        "label": "Rake",
+        "source": "horror/153?highlight=Rake"
+      },
+      "rakshasa@@fantasy": {
+        "label": "Rakshasa",
+        "source": "fantasy/232?highlight=Rakshasa"
+      },
       "rakshasa@@swpf_bestiary": {
         "label": "Rakshasa",
         "source": "swpf_bestiary/100?highlight=Rakshasa"
+      },
+      "ralkresh of the thousand maws@@horror": {
+        "label": "ralkresh of the Thousand Maws",
+        "source": "horror/116?highlight=ralkresh%20of%20the%20Thousand%20Maws"
+      },
+      "ranger@@fantasy": {
+        "label": "Ranger",
+        "source": "fantasy/232?highlight=Ranger"
+      },
+      "raptor (birds of prey)@@swade": {
+        "label": "Raptor (Birds of Prey)",
+        "source": "swade/186?highlight=Raptor%20%28Birds%20of%20Prey%29"
+      },
+      "rascal@@sfc": {
+        "label": "Rascal",
+        "source": "sfc/275?highlight=Rascal"
       },
       "rat, dire@@swpf_bestiary": {
         "label": "Rat, Dire",
         "source": "swpf_bestiary/100?highlight=Rat%2C%20Dire"
       },
+      "ratling@@fantasy": {
+        "label": "Ratling",
+        "source": "fantasy/232?highlight=Ratling"
+      },
+      "ratling assassin@@fantasy": {
+        "label": "Ratling Assassin",
+        "source": "fantasy/233?highlight=Ratling%20Assassin"
+      },
+      "ratling gunner@@fantasy": {
+        "label": "Ratling Gunner",
+        "source": "fantasy/233?highlight=Ratling%20Gunner"
+      },
+      "ratling wyrd@@fantasy": {
+        "label": "Ratling Wyrd",
+        "source": "fantasy/233?highlight=Ratling%20Wyrd"
+      },
+      "ravager@@sfc": {
+        "label": "Ravager",
+        "source": "sfc/275?highlight=Ravager"
+      },
+      "reater mummy@@horror": {
+        "label": "reater Mummy",
+        "source": "horror/148?highlight=reater%20Mummy"
+      },
+      "recycler@@sfc": {
+        "label": "Recycler",
+        "source": "sfc/264?highlight=Recycler"
+      },
       "red dragon, adult@@swpf_bestiary": {
         "label": "Red Dragon, Adult",
         "source": "swpf_bestiary/43?highlight=Red%20Dragon%2C%20Adult"
+      },
+      "redcap@@fantasy": {
+        "label": "Redcap",
+        "source": "fantasy/234?highlight=Redcap"
       },
       "redcap@@swpf_bestiary": {
         "label": "Redcap",
@@ -7509,73 +9421,221 @@
         "label": "Remorhaz",
         "source": "swpf_bestiary/101?highlight=Remorhaz"
       },
+      "revenant@@secret_world": {
+        "label": "Revenant",
+        "source": "secret_world/236?highlight=Revenant"
+      },
       "revenant@@swpf_bestiary": {
         "label": "Revenant",
         "source": "swpf_bestiary/102?highlight=Revenant"
+      },
+      "rhino-beast@@starbreaker_core": {
+        "label": "Rhino-Beast",
+        "source": "starbreaker_core/215?highlight=Rhino-Beast"
       },
       "rhino-buffalo@@rifts_na_foes": {
         "label": "Rhino-Buffalo",
         "source": "rifts_na_foes/76?highlight=Rhino-Buffalo"
       },
+      "rhinoceros@@fantasy": {
+        "label": "Rhinoceros",
+        "source": "fantasy/234?highlight=Rhinoceros"
+      },
       "rhinoceros@@swpf_bestiary": {
         "label": "Rhinoceros",
         "source": "swpf_bestiary/102?highlight=Rhinoceros"
+      },
+      "roc@@fantasy": {
+        "label": "Roc",
+        "source": "fantasy/234?highlight=Roc"
       },
       "roc@@swpf_bestiary": {
         "label": "Roc",
         "source": "swpf_bestiary/103?highlight=Roc"
       },
+      "rokurokubi@@horror": {
+        "label": "Rokurokubi",
+        "source": "horror/153?highlight=Rokurokubi"
+      },
       "roper@@swpf_bestiary": {
         "label": "Roper",
         "source": "swpf_bestiary/104?highlight=Roper"
+      },
+      "rug fiend@@horror": {
+        "label": "Rug Fiend",
+        "source": "horror/154?highlight=Rug%20Fiend"
+      },
+      "rust monster@@fantasy": {
+        "label": "Rust Monster",
+        "source": "fantasy/234?highlight=Rust%20Monster"
       },
       "rust monster@@swpf_bestiary": {
         "label": "Rust Monster",
         "source": "swpf_bestiary/104?highlight=Rust%20Monster"
       },
+      "sabre-toothed tiger@@fantasy": {
+        "label": "Sabre-Toothed Tiger",
+        "source": "fantasy/235?highlight=Sabre-Toothed%20Tiger"
+      },
+      "sahaugin@@fantasy": {
+        "label": "Sahaugin",
+        "source": "fantasy/235?highlight=Sahaugin"
+      },
       "sahuagin@@swpf_bestiary_2": {
         "label": "Sahuagin",
         "source": "swpf_bestiary_2/103?highlight=Sahuagin"
+      },
+      "sailor@@fantasy": {
+        "label": "Sailor",
+        "source": "fantasy/236?highlight=Sailor"
       },
       "salamander@@swpf_bestiary_2": {
         "label": "Salamander",
         "source": "swpf_bestiary_2/104?highlight=Salamander"
       },
+      "sand troll@@fantasy": {
+        "label": "Sand Troll",
+        "source": "fantasy/244?highlight=Sand%20Troll"
+      },
       "sandman@@swpf_bestiary_2": {
         "label": "Sandman",
         "source": "swpf_bestiary_2/105?highlight=Sandman"
+      },
+      "sandmaw@@sfc": {
+        "label": "Sandmaw",
+        "source": "sfc/276?highlight=Sandmaw"
+      },
+      "sasquatch@@horror": {
+        "label": "Sasquatch",
+        "source": "horror/154?highlight=Sasquatch"
+      },
+      "sasquatch@@secret_world_na": {
+        "label": "Sasquatch",
+        "source": "secret_world_na/102?highlight=Sasquatch"
+      },
+      "satyr@@fantasy": {
+        "label": "Satyr",
+        "source": "fantasy/200?highlight=Satyr"
       },
       "satyr@@swpf_bestiary": {
         "label": "Satyr",
         "source": "swpf_bestiary/105?highlight=Satyr"
       },
+      "saurian@@fantasy": {
+        "label": "Saurian",
+        "source": "fantasy/235?highlight=Saurian"
+      },
+      "saurian@@sfc": {
+        "label": "Saurian",
+        "source": "sfc/276?highlight=Saurian"
+      },
+      "scarecrow@@secret_world": {
+        "label": "Scarecrow",
+        "source": "secret_world/238?highlight=Scarecrow"
+      },
       "scarecrow@@swpf_bestiary_2": {
         "label": "Scarecrow",
         "source": "swpf_bestiary_2/106?highlight=Scarecrow"
+      },
+      "scarecrow, foul@@horror": {
+        "label": "Scarecrow, Foul",
+        "source": "horror/155?highlight=Scarecrow%2C%20Foul"
       },
       "sceaduinar@@swpf_bestiary_2": {
         "label": "Sceaduinar",
         "source": "swpf_bestiary_2/106?highlight=Sceaduinar"
       },
+      "scoopjaw@@sfc": {
+        "label": "Scoopjaw",
+        "source": "sfc/277?highlight=Scoopjaw"
+      },
+      "scorpion folk@@fantasy": {
+        "label": "Scorpion Folk",
+        "source": "fantasy/235?highlight=Scorpion%20Folk"
+      },
+      "scrap golem@@secret_world_na": {
+        "label": "Scrap Golem",
+        "source": "secret_world_na/102?highlight=Scrap%20Golem"
+      },
+      "scrap parasite@@sfc": {
+        "label": "Scrap Parasite",
+        "source": "sfc/277?highlight=Scrap%20Parasite"
+      },
+      "screaming skull@@horror": {
+        "label": "Screaming Skull",
+        "source": "horror/155?highlight=Screaming%20Skull"
+      },
+      "scylla@@sfc": {
+        "label": "Scylla",
+        "source": "sfc/277?highlight=Scylla"
+      },
       "scylla@@swpf_bestiary_2": {
         "label": "Scylla",
         "source": "swpf_bestiary_2/107?highlight=Scylla"
+      },
+      "sea giant@@fantasy": {
+        "label": "Sea Giant",
+        "source": "fantasy/205?highlight=Sea%20Giant"
       },
       "sea maw@@rifts_atlantis": {
         "label": "Sea Maw",
         "source": "rifts_atlantis/189?highlight=Sea%20Maw"
       },
+      "sea serpent@@fantasy": {
+        "label": "Sea Serpent",
+        "source": "fantasy/236?highlight=Sea%20Serpent"
+      },
       "sea titan@@rifts_atlantis": {
         "label": "Sea Titan",
         "source": "rifts_atlantis/160?highlight=Sea%20Titan"
+      },
+      "sea troll@@fantasy": {
+        "label": "Sea Troll",
+        "source": "fantasy/244?highlight=Sea%20Troll"
       },
       "sea wolf@@rifts_atlantis": {
         "label": "Sea Wolf",
         "source": "rifts_atlantis/162?highlight=Sea%20Wolf"
       },
+      "seaweed fiend@@horror": {
+        "label": "Seaweed Fiend",
+        "source": "horror/155?highlight=Seaweed%20Fiend"
+      },
+      "seducer@@horror": {
+        "label": "Seducer",
+        "source": "horror/123?highlight=Seducer"
+      },
+      "sentient vehicle@@sfc": {
+        "label": "Sentient Vehicle",
+        "source": "sfc/278?highlight=Sentient%20Vehicle"
+      },
+      "serpentfolk@@fantasy": {
+        "label": "Serpentfolk",
+        "source": "fantasy/236?highlight=Serpentfolk"
+      },
       "serpentfolk@@swpf_bestiary_2": {
         "label": "Serpentfolk",
         "source": "swpf_bestiary_2/108?highlight=Serpentfolk"
+      },
+      "serpentfolk mage@@fantasy": {
+        "label": "Serpentfolk Mage",
+        "source": "fantasy/237?highlight=Serpentfolk%20Mage"
+      },
+      "serpentfolk suzerain@@fantasy": {
+        "label": "Serpentfolk Suzerain",
+        "source": "fantasy/237?highlight=Serpentfolk%20Suzerain"
+      },
+      "serpentfolk warrior@@fantasy": {
+        "label": "Serpentfolk Warrior",
+        "source": "fantasy/236?highlight=Serpentfolk%20Warrior"
+      },
+      "setneru@@sfc": {
+        "label": "Setneru",
+        "source": "sfc/278?highlight=Setneru"
+      },
+      "shadow@@fantasy": {
+        "label": "Shadow",
+        "source": "fantasy/238?highlight=Shadow"
       },
       "shadow@@swpf_bestiary": {
         "label": "Shadow",
@@ -7584,6 +9644,10 @@
       "shadow@@swpf_bestiary_2": {
         "label": "Shadow",
         "source": "swpf_bestiary_2/49?highlight=Shadow"
+      },
+      "shadow killer@@horror": {
+        "label": "Shadow Killer",
+        "source": "horror/157?highlight=Shadow%20Killer"
       },
       "shadow serpent@@rifts_atlantis": {
         "label": "Shadow Serpent",
@@ -7597,9 +9661,21 @@
         "label": "Shaitan",
         "source": "swpf_bestiary_2/73?highlight=Shaitan"
       },
+      "shaman@@fantasy": {
+        "label": "Shaman",
+        "source": "fantasy/176?highlight=Shaman"
+      },
+      "shambling mound@@fantasy": {
+        "label": "Shambling Mound",
+        "source": "fantasy/238?highlight=Shambling%20Mound"
+      },
       "shambling mound@@swpf_bestiary": {
         "label": "Shambling Mound",
         "source": "swpf_bestiary/106?highlight=Shambling%20Mound"
+      },
+      "shark@@swade": {
+        "label": "Shark",
+        "source": "swade/186?highlight=Shark"
       },
       "shark@@swpf_bestiary": {
         "label": "Shark",
@@ -7609,6 +9685,10 @@
         "label": "Shark",
         "source": "swpf_core/249?highlight=Shark"
       },
+      "shark, great white@@swade": {
+        "label": "Shark, Great White",
+        "source": "swade/186?highlight=Shark%2C%20Great%20White"
+      },
       "shemhazian@@swpf_bestiary_2": {
         "label": "Shemhazian",
         "source": "swpf_bestiary_2/50?highlight=Shemhazian"
@@ -7617,21 +9697,41 @@
         "label": "Shining Child",
         "source": "swpf_bestiary_2/109?highlight=Shining%20Child"
       },
+      "shock ray@@sfc": {
+        "label": "Shock Ray",
+        "source": "sfc/278?highlight=Shock%20Ray"
+      },
       "shocker lizard@@swpf_bestiary": {
         "label": "Shocker Lizard",
         "source": "swpf_bestiary/107?highlight=Shocker%20Lizard"
+      },
+      "shoggoth@@doom_guard": {
+        "label": "Shoggoth",
+        "source": "doom_guard/126?highlight=Shoggoth"
       },
       "shoggoth@@swpf_bestiary": {
         "label": "Shoggoth",
         "source": "swpf_bestiary/107?highlight=Shoggoth"
       },
+      "shredder@@sfc": {
+        "label": "Shredder",
+        "source": "sfc/279?highlight=Shredder"
+      },
       "silver dragon, adult@@swpf_bestiary": {
         "label": "Silver Dragon, Adult",
         "source": "swpf_bestiary/45?highlight=Silver%20Dragon%2C%20Adult"
       },
+      "simulacrum@@sfc": {
+        "label": "Simulacrum",
+        "source": "sfc/262?highlight=Simulacrum"
+      },
       "sinspawn@@swpf_bestiary": {
         "label": "Sinspawn",
         "source": "swpf_bestiary/108?highlight=Sinspawn"
+      },
+      "siren bush@@fantasy": {
+        "label": "Siren Bush",
+        "source": "fantasy/238?highlight=Siren%20Bush"
       },
       "skaveling@@swpf_bestiary": {
         "label": "Skaveling",
@@ -7641,13 +9741,41 @@
         "label": "Skelebot",
         "source": "rifts_na_foes/16?highlight=Skelebot"
       },
+      "skeletal animal@@horror": {
+        "label": "Skeletal Animal",
+        "source": "horror/157?highlight=Skeletal%20Animal"
+      },
+      "skeletal champion@@fantasy": {
+        "label": "Skeletal Champion",
+        "source": "fantasy/240?highlight=Skeletal%20Champion"
+      },
       "skeletal champion@@swpf_bestiary": {
         "label": "Skeletal Champion",
         "source": "swpf_bestiary/110?highlight=Skeletal%20Champion"
       },
+      "skeletal riding horse@@horror": {
+        "label": "Skeletal Riding Horse",
+        "source": "horror/158?highlight=Skeletal%20Riding%20Horse"
+      },
+      "skeletal t-rex@@horror": {
+        "label": "Skeletal T-Rex",
+        "source": "horror/158?highlight=Skeletal%20T-Rex"
+      },
+      "skeleton@@fantasy": {
+        "label": "Skeleton",
+        "source": "fantasy/239?highlight=Skeleton"
+      },
+      "skeleton@@horror": {
+        "label": "Skeleton",
+        "source": "horror/158?highlight=Skeleton"
+      },
       "skeleton@@rifts_na_foes": {
         "label": "Skeleton",
         "source": "rifts_na_foes/28?highlight=Skeleton"
+      },
+      "skeleton@@swade": {
+        "label": "Skeleton",
+        "source": "swade/186?highlight=Skeleton"
       },
       "skeleton@@swpf_bestiary": {
         "label": "Skeleton",
@@ -7657,9 +9785,41 @@
         "label": "Skeleton",
         "source": "swpf_core/249?highlight=Skeleton"
       },
+      "skeleton warrior@@horror": {
+        "label": "Skeleton Warrior",
+        "source": "horror/158?highlight=Skeleton%20Warrior"
+      },
+      "skeleton, human@@swpf_core": {
+        "label": "Skeleton, Human",
+        "source": "swpf_core/249?highlight=Skeleton%2C%20Human"
+      },
+      "skinner@@horror": {
+        "label": "Skinner",
+        "source": "horror/159?highlight=Skinner"
+      },
+      "skinwalker@@secret_world_na": {
+        "label": "Skinwalker",
+        "source": "secret_world_na/104?highlight=Skinwalker"
+      },
       "skulk@@swpf_bestiary_2": {
         "label": "Skulk",
         "source": "swpf_bestiary_2/109?highlight=Skulk"
+      },
+      "slender man@@horror": {
+        "label": "Slender Man",
+        "source": "horror/159?highlight=Slender%20Man"
+      },
+      "slime@@fantasy": {
+        "label": "Slime",
+        "source": "fantasy/228?highlight=Slime"
+      },
+      "smog cloud@@horror": {
+        "label": "Smog Cloud",
+        "source": "horror/160?highlight=Smog%20Cloud"
+      },
+      "snake@@swade": {
+        "label": "Snake",
+        "source": "swade/187?highlight=Snake"
       },
       "snake@@swpf_bestiary": {
         "label": "Snake",
@@ -7668,6 +9828,18 @@
       "snake@@swpf_core": {
         "label": "Snake",
         "source": "swpf_core/249?highlight=Snake"
+      },
+      "snake, constrictor@@swpf_core": {
+        "label": "Snake, Constrictor",
+        "source": "swpf_core/249?highlight=Snake%2C%20Constrictor"
+      },
+      "snake, venomous@@swpf_core": {
+        "label": "Snake, Venomous",
+        "source": "swpf_core/249?highlight=Snake%2C%20Venomous"
+      },
+      "snapdragon@@sfc": {
+        "label": "Snapdragon",
+        "source": "sfc/243?highlight=Snapdragon"
       },
       "soldiers@@swpf_bestiary": {
         "label": "Soldiers",
@@ -7681,33 +9853,181 @@
         "label": "Soulbound Doll",
         "source": "swpf_bestiary_2/111?highlight=Soulbound%20Doll"
       },
+      "space barnacle@@sfc": {
+        "label": "Space Barnacle",
+        "source": "sfc/280?highlight=Space%20Barnacle"
+      },
+      "space cowboy@@sfc": {
+        "label": "Space Cowboy",
+        "source": "sfc/280?highlight=Space%20Cowboy"
+      },
+      "space leviathan@@sfc": {
+        "label": "Space Leviathan",
+        "source": "sfc/280?highlight=Space%20Leviathan"
+      },
+      "space sargassum@@sfc": {
+        "label": "Space Sargassum",
+        "source": "sfc/281?highlight=Space%20Sargassum"
+      },
+      "spear tree@@sfc": {
+        "label": "Spear Tree",
+        "source": "sfc/281?highlight=Spear%20Tree"
+      },
+      "spearfinger@@horror": {
+        "label": "Spearfinger",
+        "source": "horror/160?highlight=Spearfinger"
+      },
       "spectre@@swpf_bestiary": {
         "label": "Spectre",
         "source": "swpf_bestiary/112?highlight=Spectre"
+      },
+      "spectres@@secret_world": {
+        "label": "Spectres",
+        "source": "secret_world/240?highlight=Spectres"
+      },
+      "sphinx@@fantasy": {
+        "label": "Sphinx",
+        "source": "fantasy/240?highlight=Sphinx"
       },
       "sphinx@@swpf_bestiary_2": {
         "label": "Sphinx",
         "source": "swpf_bestiary_2/111?highlight=Sphinx"
       },
+      "spider, colossal@@horror": {
+        "label": "Spider, colossal",
+        "source": "horror/160?highlight=Spider%2C%20colossal"
+      },
+      "spider, giant@@swade": {
+        "label": "Spider, Giant",
+        "source": "swade/187?highlight=Spider%2C%20Giant"
+      },
+      "spider-folk@@fantasy": {
+        "label": "Spider-Folk",
+        "source": "fantasy/241?highlight=Spider-Folk"
+      },
+      "spiker-lizard@@starbreaker_core": {
+        "label": "Spiker-Lizard",
+        "source": "starbreaker_core/215?highlight=Spiker-Lizard"
+      },
+      "spined demon@@horror": {
+        "label": "Spined Demon",
+        "source": "horror/124?highlight=Spined%20Demon"
+      },
       "spirit naga@@swpf_bestiary": {
         "label": "Spirit Naga",
         "source": "swpf_bestiary/92?highlight=Spirit%20Naga"
+      },
+      "spit worm@@sfc": {
+        "label": "Spit Worm",
+        "source": "sfc/282?highlight=Spit%20Worm"
+      },
+      "spitter@@sfc": {
+        "label": "Spitter",
+        "source": "sfc/282?highlight=Spitter"
       },
       "spriggan@@swpf_bestiary_2": {
         "label": "Spriggan",
         "source": "swpf_bestiary_2/112?highlight=Spriggan"
       },
+      "springtail@@sfc": {
+        "label": "Springtail",
+        "source": "sfc/282?highlight=Springtail"
+      },
+      "squire@@fantasy": {
+        "label": "Squire",
+        "source": "fantasy/217?highlight=Squire"
+      },
+      "stalker@@sfc": {
+        "label": "Stalker",
+        "source": "sfc/283?highlight=Stalker"
+      },
+      "stannion@@sfc": {
+        "label": "Stannion",
+        "source": "sfc/284?highlight=Stannion"
+      },
+      "star shrike@@doom_guard": {
+        "label": "Star Shrike",
+        "source": "doom_guard/127?highlight=Star%20Shrike"
+      },
       "stegosaurus@@swpf_bestiary_2": {
         "label": "Stegosaurus",
         "source": "swpf_bestiary_2/58?highlight=Stegosaurus"
+      },
+      "stomper@@sfc": {
+        "label": "Stomper",
+        "source": "sfc/286?highlight=Stomper"
+      },
+      "stone gargoyle@@fantasy": {
+        "label": "Stone Gargoyle",
+        "source": "fantasy/202?highlight=Stone%20Gargoyle"
+      },
+      "stone golem@@fantasy": {
+        "label": "Stone Golem",
+        "source": "fantasy/212?highlight=Stone%20Golem"
+      },
+      "stone golem@@secret_world_na": {
+        "label": "Stone Golem",
+        "source": "secret_world_na/106?highlight=Stone%20Golem"
       },
       "storm crab@@rifts_atlantis": {
         "label": "Storm Crab",
         "source": "rifts_atlantis/190?highlight=Storm%20Crab"
       },
+      "storm giant@@fantasy": {
+        "label": "Storm Giant",
+        "source": "fantasy/205?highlight=Storm%20Giant"
+      },
       "storm rider@@rifts_atlantis": {
         "label": "Storm Rider",
         "source": "rifts_atlantis/190?highlight=Storm%20Rider"
+      },
+      "straw golem@@fantasy": {
+        "label": "Straw Golem",
+        "source": "fantasy/213?highlight=Straw%20Golem"
+      },
+      "stryder@@sfc": {
+        "label": "Stryder",
+        "source": "sfc/286?highlight=Stryder"
+      },
+      "stuffed animal fiend@@horror": {
+        "label": "Stuffed Animal Fiend",
+        "source": "horror/161?highlight=Stuffed%20Animal%20Fiend"
+      },
+      "stygian hounds@@spc": {
+        "label": "Stygian Hounds",
+        "source": "spc/120?highlight=Stygian%20Hounds"
+      },
+      "succubus/incubus@@fantasy": {
+        "label": "Succubus/Incubus",
+        "source": "fantasy/187?highlight=Succubus%2FIncubus"
+      },
+      "super zombie@@horror": {
+        "label": "Super Zombie",
+        "source": "horror/176?highlight=Super%20Zombie"
+      },
+      "supernatural serial killer@@horror": {
+        "label": "Supernatural Serial Killer",
+        "source": "horror/156?highlight=Supernatural%20Serial%20Killer"
+      },
+      "support drone@@sfc": {
+        "label": "Support Drone",
+        "source": "sfc/264?highlight=Support%20Drone"
+      },
+      "swamp hag@@horror": {
+        "label": "Swamp Hag",
+        "source": "horror/137?highlight=Swamp%20Hag"
+      },
+      "swarm@@horror": {
+        "label": "Swarm",
+        "source": "horror/161?highlight=Swarm"
+      },
+      "swarm@@sfc": {
+        "label": "Swarm",
+        "source": "sfc/286?highlight=Swarm"
+      },
+      "swarm@@swade": {
+        "label": "Swarm",
+        "source": "swade/188?highlight=Swarm"
       },
       "swarm@@swpf_bestiary": {
         "label": "Swarm",
@@ -7716,6 +10036,10 @@
       "swarm@@swpf_core": {
         "label": "Swarm",
         "source": "swpf_core/250?highlight=Swarm"
+      },
+      "swarm things@@rifts_na_foes": {
+        "label": "Swarm Things",
+        "source": "rifts_na_foes/92?highlight=Swarm%20Things"
       },
       "tarn linnorm@@swpf_bestiary": {
         "label": "Tarn Linnorm",
@@ -7749,13 +10073,41 @@
         "label": "Thanatotic",
         "source": "swpf_bestiary_2/114?highlight=Thanatotic"
       },
+      "the black coach@@horror": {
+        "label": "The Black Coach",
+        "source": "horror/108?highlight=The%20Black%20Coach"
+      },
+      "the black coachman@@horror": {
+        "label": "The Black Coachman",
+        "source": "horror/107?highlight=The%20Black%20Coachman"
+      },
+      "the black judge@@horror": {
+        "label": "The Black Judge",
+        "source": "horror/109?highlight=The%20Black%20Judge"
+      },
+      "the jersey devil@@secret_world_na": {
+        "label": "The Jersey Devil",
+        "source": "secret_world_na/97?highlight=The%20Jersey%20Devil"
+      },
+      "the monster@@spc": {
+        "label": "The Monster",
+        "source": "spc/157?highlight=The%20Monster"
+      },
       "theletos@@swpf_bestiary_2": {
         "label": "Theletos",
         "source": "swpf_bestiary_2/19?highlight=Theletos"
       },
+      "thief@@fantasy": {
+        "label": "Thief",
+        "source": "fantasy/241?highlight=Thief"
+      },
       "thornhead@@rifts_na_foes": {
         "label": "Thornhead",
         "source": "rifts_na_foes/78?highlight=Thornhead"
+      },
+      "thrall@@horror": {
+        "label": "Thrall",
+        "source": "horror/164?highlight=Thrall"
       },
       "thrall sea serpent@@rifts_atlantis": {
         "label": "Thrall Sea Serpent",
@@ -7765,13 +10117,41 @@
         "label": "Thrasfyr",
         "source": "swpf_bestiary_2/113?highlight=Thrasfyr"
       },
+      "throxian@@sfc": {
+        "label": "Throxian",
+        "source": "sfc/287?highlight=Throxian"
+      },
+      "time elemental@@sfc": {
+        "label": "Time Elemental",
+        "source": "sfc/250?highlight=Time%20Elemental"
+      },
+      "titan eel@@sfc": {
+        "label": "Titan Eel",
+        "source": "sfc/289?highlight=Titan%20Eel"
+      },
       "titans@@swpf_bestiary_2": {
         "label": "Titans",
         "source": "swpf_bestiary_2/113?highlight=Titans"
       },
+      "todoto, the mutator@@horror": {
+        "label": "Todoto, the Mutator",
+        "source": "horror/116?highlight=Todoto%2C%20the%20Mutator"
+      },
+      "torment demon@@horror": {
+        "label": "Torment Demon",
+        "source": "horror/124?highlight=Torment%20Demon"
+      },
       "town/city guard@@swpf_bestiary": {
         "label": "Town/City Guard",
         "source": "swpf_bestiary/115?highlight=Town%2FCity%20Guard"
+      },
+      "town/city watch@@fantasy": {
+        "label": "Town/City Watch",
+        "source": "fantasy/241?highlight=Town%2FCity%20Watch"
+      },
+      "town/village militia@@fantasy": {
+        "label": "Town/Village Militia",
+        "source": "fantasy/242?highlight=Town%2FVillage%20Militia"
       },
       "townsfolk@@swpf_bestiary": {
         "label": "Townsfolk",
@@ -7781,9 +10161,25 @@
         "label": "Treant",
         "source": "swpf_bestiary/117?highlight=Treant"
       },
+      "tree folk@@fantasy": {
+        "label": "Tree Folk",
+        "source": "fantasy/242?highlight=Tree%20Folk"
+      },
+      "troglodyte@@fantasy": {
+        "label": "Troglodyte",
+        "source": "fantasy/243?highlight=Troglodyte"
+      },
       "troglodyte@@swpf_bestiary": {
         "label": "Troglodyte",
         "source": "swpf_bestiary/118?highlight=Troglodyte"
+      },
+      "troll@@fantasy": {
+        "label": "Troll",
+        "source": "fantasy/243?highlight=Troll"
+      },
+      "troll@@swade": {
+        "label": "Troll",
+        "source": "swade/188?highlight=Troll"
       },
       "troll@@swpf_bestiary": {
         "label": "Troll",
@@ -7793,6 +10189,10 @@
         "label": "Troll, Rock",
         "source": "swpf_bestiary_2/115?highlight=Troll%2C%20Rock"
       },
+      "true wendigo@@horror": {
+        "label": "True Wendigo",
+        "source": "horror/170?highlight=True%20Wendigo"
+      },
       "trumpet archon@@swpf_bestiary": {
         "label": "Trumpet Archon",
         "source": "swpf_bestiary/17?highlight=Trumpet%20Archon"
@@ -7801,9 +10201,17 @@
         "label": "Twigjack",
         "source": "swpf_bestiary_2/116?highlight=Twigjack"
       },
+      "typical cultist@@horror": {
+        "label": "Typical Cultist",
+        "source": "horror/113?highlight=Typical%20Cultist"
+      },
       "tyrannosaurus@@swpf_bestiary_2": {
         "label": "Tyrannosaurus",
         "source": "swpf_bestiary_2/59?highlight=Tyrannosaurus"
+      },
+      "tyrannosaurus rex@@fantasy": {
+        "label": "Tyrannosaurus Rex",
+        "source": "fantasy/188?highlight=Tyrannosaurus%20Rex"
       },
       "umbral dragon, adult@@swpf_bestiary_2": {
         "label": "Umbral Dragon, Adult",
@@ -7813,6 +10221,14 @@
         "label": "Umbral Dragon, Wyrmling",
         "source": "swpf_bestiary_2/66?highlight=Umbral%20Dragon%2C%20Wyrmling"
       },
+      "umbrella beast@@sfc": {
+        "label": "Umbrella Beast",
+        "source": "sfc/289?highlight=Umbrella%20Beast"
+      },
+      "unicorn@@fantasy": {
+        "label": "Unicorn",
+        "source": "fantasy/245?highlight=Unicorn"
+      },
       "unicorn@@swpf_bestiary": {
         "label": "Unicorn",
         "source": "swpf_bestiary/119?highlight=Unicorn"
@@ -7821,13 +10237,37 @@
         "label": "Urdefhan",
         "source": "swpf_bestiary_2/117?highlight=Urdefhan"
       },
+      "uslen@@sfc": {
+        "label": "Uslen",
+        "source": "sfc/290?highlight=Uslen"
+      },
+      "vampire@@horror": {
+        "label": "Vampire",
+        "source": "horror/162?highlight=Vampire"
+      },
+      "vampire@@secret_world": {
+        "label": "Vampire",
+        "source": "secret_world/242?highlight=Vampire"
+      },
+      "vampire@@swade": {
+        "label": "Vampire",
+        "source": "swade/188?highlight=Vampire"
+      },
       "vampire@@swpf_bestiary": {
         "label": "Vampire",
         "source": "swpf_bestiary/119?highlight=Vampire"
       },
+      "vampire, ancient@@horror": {
+        "label": "Vampire, Ancient",
+        "source": "horror/163?highlight=Vampire%2C%20Ancient"
+      },
       "vampire, wild@@rifts_na_foes": {
         "label": "Vampire, Wild",
         "source": "rifts_na_foes/79?highlight=Vampire%2C%20Wild"
+      },
+      "vampire, young@@horror": {
+        "label": "Vampire, Young",
+        "source": "horror/162?highlight=Vampire%2C%20Young"
       },
       "vampiric mist@@swpf_bestiary_2": {
         "label": "Vampiric Mist",
@@ -7841,6 +10281,38 @@
         "label": "Vegepygmy",
         "source": "swpf_bestiary_2/118?highlight=Vegepygmy"
       },
+      "velociraptor@@fantasy": {
+        "label": "Velociraptor",
+        "source": "fantasy/188?highlight=Velociraptor"
+      },
+      "ventriloquist’s dummy@@horror": {
+        "label": "Ventriloquist’s Dummy",
+        "source": "horror/169?highlight=Ventriloquist%E2%80%99s%20Dummy"
+      },
+      "veteran chosen slayer@@horror": {
+        "label": "Veteran Chosen Slayer",
+        "source": "horror/112?highlight=Veteran%20Chosen%20Slayer"
+      },
+      "veteran fighter@@fantasy": {
+        "label": "Veteran Fighter",
+        "source": "fantasy/201?highlight=Veteran%20Fighter"
+      },
+      "veteran knight@@fantasy": {
+        "label": "Veteran Knight",
+        "source": "fantasy/217?highlight=Veteran%20Knight"
+      },
+      "veteran mage@@fantasy": {
+        "label": "Veteran Mage",
+        "source": "fantasy/221?highlight=Veteran%20Mage"
+      },
+      "veteran ranger@@fantasy": {
+        "label": "Veteran Ranger",
+        "source": "fantasy/232?highlight=Veteran%20Ranger"
+      },
+      "veteran watch@@fantasy": {
+        "label": "Veteran Watch",
+        "source": "fantasy/242?highlight=Veteran%20Watch"
+      },
       "vexgit@@swpf_bestiary_2": {
         "label": "Vexgit",
         "source": "swpf_bestiary_2/79?highlight=Vexgit"
@@ -7853,17 +10325,85 @@
         "label": "Viper Vine",
         "source": "swpf_bestiary_2/119?highlight=Viper%20Vine"
       },
+      "voidling@@sfc": {
+        "label": "Voidling",
+        "source": "sfc/291?highlight=Voidling"
+      },
       "vrolikai@@swpf_bestiary_2": {
         "label": "Vrolikai",
         "source": "swpf_bestiary_2/51?highlight=Vrolikai"
+      },
+      "war droid@@horror": {
+        "label": "War Droid",
+        "source": "horror/169?highlight=War%20Droid"
+      },
+      "war drone@@sfc": {
+        "label": "War Drone",
+        "source": "sfc/265?highlight=War%20Drone"
+      },
+      "war tree@@fantasy": {
+        "label": "War Tree",
+        "source": "fantasy/246?highlight=War%20Tree"
+      },
+      "warrior@@fantasy": {
+        "label": "Warrior",
+        "source": "fantasy/176?highlight=Warrior"
+      },
+      "warrior@@horror": {
+        "label": "Warrior",
+        "source": "horror/175?highlight=Warrior"
+      },
+      "watch@@fantasy": {
+        "label": "Watch",
+        "source": "fantasy/242?highlight=Watch"
+      },
+      "watch captain@@fantasy": {
+        "label": "Watch Captain",
+        "source": "fantasy/242?highlight=Watch%20Captain"
+      },
+      "water elemental@@fantasy": {
+        "label": "Water Elemental",
+        "source": "fantasy/195?highlight=Water%20Elemental"
+      },
+      "water elemental@@swade": {
+        "label": "Water Elemental",
+        "source": "swade/182?highlight=Water%20Elemental"
+      },
+      "water elemental, elder@@fantasy": {
+        "label": "Water Elemental, Elder",
+        "source": "fantasy/195?highlight=Water%20Elemental%2C%20Elder"
+      },
+      "water elemental, small@@fantasy": {
+        "label": "Water Elemental, Small",
+        "source": "fantasy/196?highlight=Water%20Elemental%2C%20Small"
+      },
+      "water monster@@horror": {
+        "label": "Water Monster",
+        "source": "horror/170?highlight=Water%20Monster"
       },
       "water orm@@swpf_bestiary_2": {
         "label": "Water Orm",
         "source": "swpf_bestiary_2/120?highlight=Water%20Orm"
       },
+      "wendigo@@horror": {
+        "label": "Wendigo",
+        "source": "horror/170?highlight=Wendigo"
+      },
+      "wendigo@@secret_world": {
+        "label": "Wendigo",
+        "source": "secret_world/245?highlight=Wendigo"
+      },
       "wendigo@@swpf_bestiary": {
         "label": "Wendigo",
         "source": "swpf_bestiary/121?highlight=Wendigo"
+      },
+      "were-creature@@horror": {
+        "label": "Were-Creature",
+        "source": "horror/171?highlight=Were-Creature"
+      },
+      "werebear@@fantasy": {
+        "label": "Werebear",
+        "source": "fantasy/218?highlight=Werebear"
       },
       "werebear (hybrid form)@@swpf_bestiary_2": {
         "label": "Werebear (Hybrid Form)",
@@ -7872,6 +10412,42 @@
       "wereboar (hybrid form)@@swpf_bestiary_2": {
         "label": "Wereboar (Hybrid Form)",
         "source": "swpf_bestiary_2/93?highlight=Wereboar%20%28Hybrid%20Form%29"
+      },
+      "werejaguar@@horror": {
+        "label": "Werejaguar",
+        "source": "horror/171?highlight=Werejaguar"
+      },
+      "wererat@@fantasy": {
+        "label": "Wererat",
+        "source": "fantasy/219?highlight=Wererat"
+      },
+      "wereshark@@fantasy": {
+        "label": "Wereshark",
+        "source": "fantasy/220?highlight=Wereshark"
+      },
+      "wereshark@@horror": {
+        "label": "Wereshark",
+        "source": "horror/171?highlight=Wereshark"
+      },
+      "weretiger@@fantasy": {
+        "label": "Weretiger",
+        "source": "fantasy/220?highlight=Weretiger"
+      },
+      "werewolf@@horror": {
+        "label": "Werewolf",
+        "source": "horror/172?highlight=Werewolf"
+      },
+      "werewolf@@secret_world": {
+        "label": "Werewolf",
+        "source": "secret_world/246?highlight=Werewolf"
+      },
+      "werewolf@@swade": {
+        "label": "Werewolf",
+        "source": "swade/189?highlight=Werewolf"
+      },
+      "whale@@fantasy": {
+        "label": "Whale",
+        "source": "fantasy/246?highlight=Whale"
       },
       "whale@@swpf_bestiary_2": {
         "label": "Whale",
@@ -7885,9 +10461,25 @@
         "label": "White Dragon, Adult",
         "source": "swpf_bestiary/45?highlight=White%20Dragon%2C%20Adult"
       },
+      "white lady@@horror": {
+        "label": "White Lady",
+        "source": "horror/132?highlight=White%20Lady"
+      },
+      "wight@@fantasy": {
+        "label": "Wight",
+        "source": "fantasy/246?highlight=Wight"
+      },
       "wight@@swpf_bestiary": {
         "label": "Wight",
         "source": "swpf_bestiary/122?highlight=Wight"
+      },
+      "will o’ wisp@@horror": {
+        "label": "Will o’ Wisp",
+        "source": "horror/173?highlight=Will%20o%E2%80%99%20Wisp"
+      },
+      "will-o-the-wisp@@fantasy": {
+        "label": "Will-o-the-Wisp",
+        "source": "fantasy/246?highlight=Will-o-the-Wisp"
       },
       "will-o’-wisp@@swpf_bestiary": {
         "label": "Will-o’-Wisp",
@@ -7896,6 +10488,14 @@
       "winterwight@@swpf_bestiary_2": {
         "label": "Winterwight",
         "source": "swpf_bestiary_2/122?highlight=Winterwight"
+      },
+      "wire rat@@sfc": {
+        "label": "Wire Rat",
+        "source": "sfc/291?highlight=Wire%20Rat"
+      },
+      "witch@@horror": {
+        "label": "Witch",
+        "source": "horror/173?highlight=Witch"
       },
       "witchfire@@swpf_bestiary_2": {
         "label": "Witchfire",
@@ -7909,9 +10509,21 @@
         "label": "Witchwyrd",
         "source": "swpf_bestiary_2/123?highlight=Witchwyrd"
       },
+      "wolf@@fantasy": {
+        "label": "Wolf",
+        "source": "fantasy/247?highlight=Wolf"
+      },
+      "wolf@@horror": {
+        "label": "Wolf",
+        "source": "horror/174?highlight=Wolf"
+      },
       "wolf, dire@@swpf_bestiary": {
         "label": "Wolf, Dire",
         "source": "swpf_bestiary/32?highlight=Wolf%2C%20Dire"
+      },
+      "wolverine@@fantasy": {
+        "label": "Wolverine",
+        "source": "fantasy/247?highlight=Wolverine"
       },
       "wolverine@@swpf_bestiary": {
         "label": "Wolverine",
@@ -7921,17 +10533,45 @@
         "label": "Wolverine, Dire",
         "source": "swpf_bestiary/123?highlight=Wolverine%2C%20Dire"
       },
+      "wood elf archer@@fantasy": {
+        "label": "Wood Elf Archer",
+        "source": "fantasy/197?highlight=Wood%20Elf%20Archer"
+      },
+      "wood elf mage@@fantasy": {
+        "label": "Wood Elf Mage",
+        "source": "fantasy/197?highlight=Wood%20Elf%20Mage"
+      },
+      "wood hag@@horror": {
+        "label": "Wood Hag",
+        "source": "horror/136?highlight=Wood%20Hag"
+      },
+      "worg@@fantasy": {
+        "label": "Worg",
+        "source": "fantasy/247?highlight=Worg"
+      },
       "worg@@swpf_bestiary": {
         "label": "Worg",
         "source": "swpf_bestiary/124?highlight=Worg"
+      },
+      "worker drone@@sfc": {
+        "label": "Worker Drone",
+        "source": "sfc/289?highlight=Worker%20Drone"
       },
       "worm that walks@@swpf_bestiary_2": {
         "label": "Worm that Walks",
         "source": "swpf_bestiary_2/124?highlight=Worm%20that%20Walks"
       },
+      "wraith@@fantasy": {
+        "label": "Wraith",
+        "source": "fantasy/248?highlight=Wraith"
+      },
       "wraith@@swpf_bestiary": {
         "label": "Wraith",
         "source": "swpf_bestiary/124?highlight=Wraith"
+      },
+      "wyvern@@fantasy": {
+        "label": "Wyvern",
+        "source": "fantasy/248?highlight=Wyvern"
       },
       "wyvern@@swpf_bestiary": {
         "label": "Wyvern",
@@ -7941,6 +10581,14 @@
         "label": "Xacarba",
         "source": "swpf_bestiary_2/125?highlight=Xacarba"
       },
+      "xenoform@@horror": {
+        "label": "Xenoform",
+        "source": "horror/175?highlight=Xenoform"
+      },
+      "xerin@@sfc": {
+        "label": "Xerin",
+        "source": "sfc/291?highlight=Xerin"
+      },
       "xill@@swpf_bestiary": {
         "label": "Xill",
         "source": "swpf_bestiary/125?highlight=Xill"
@@ -7948,6 +10596,10 @@
       "xiticix@@rifts_na_foes": {
         "label": "Xiticix",
         "source": "rifts_na_foes/81?highlight=Xiticix"
+      },
+      "xok-xok@@sfc": {
+        "label": "Xok-Xok",
+        "source": "sfc/292?highlight=Xok-Xok"
       },
       "xorn@@swpf_bestiary": {
         "label": "Xorn",
@@ -7961,6 +10613,14 @@
         "label": "Yeth Hound",
         "source": "swpf_bestiary/126?highlight=Yeth%20Hound"
       },
+      "yeti@@fantasy": {
+        "label": "Yeti",
+        "source": "fantasy/248?highlight=Yeti"
+      },
+      "yeti@@sfc": {
+        "label": "Yeti",
+        "source": "sfc/292?highlight=Yeti"
+      },
       "yeti@@swpf_bestiary": {
         "label": "Yeti",
         "source": "swpf_bestiary/127?highlight=Yeti"
@@ -7969,13 +10629,41 @@
         "label": "Yll Tree Climber",
         "source": "rifts_atlantis/186?highlight=Yll%20Tree%20Climber"
       },
+      "young dragon@@fantasy": {
+        "label": "Young Dragon",
+        "source": "fantasy/189?highlight=Young%20Dragon"
+      },
+      "young trees@@fantasy": {
+        "label": "Young Trees",
+        "source": "fantasy/242?highlight=Young%20Trees"
+      },
       "yrthak@@swpf_bestiary_2": {
         "label": "Yrthak",
         "source": "swpf_bestiary_2/126?highlight=Yrthak"
       },
+      "zombie@@fantasy": {
+        "label": "Zombie",
+        "source": "fantasy/249?highlight=Zombie"
+      },
+      "zombie@@horror": {
+        "label": "Zombie",
+        "source": "horror/176?highlight=Zombie"
+      },
       "zombie@@rifts_na_foes": {
         "label": "Zombie",
         "source": "rifts_na_foes/28?highlight=Zombie"
+      },
+      "zombie@@secret_world": {
+        "label": "Zombie",
+        "source": "secret_world/247?highlight=Zombie"
+      },
+      "zombie@@sfc": {
+        "label": "Zombie",
+        "source": "sfc/292?highlight=Zombie"
+      },
+      "zombie@@swade": {
+        "label": "Zombie",
+        "source": "swade/190?highlight=Zombie"
       },
       "zombie@@swpf_bestiary": {
         "label": "Zombie",
@@ -7984,6 +10672,26 @@
       "zombie@@swpf_core": {
         "label": "Zombie",
         "source": "swpf_core/250?highlight=Zombie"
+      },
+      "zombie animals@@horror": {
+        "label": "Zombie Animals",
+        "source": "horror/178?highlight=Zombie%20Animals"
+      },
+      "zombie dragon@@horror": {
+        "label": "Zombie Dragon",
+        "source": "horror/178?highlight=Zombie%20Dragon"
+      },
+      "zombie lord@@horror": {
+        "label": "Zombie Lord",
+        "source": "horror/179?highlight=Zombie%20Lord"
+      },
+      "zombie warrior@@fantasy": {
+        "label": "Zombie Warrior",
+        "source": "fantasy/249?highlight=Zombie%20Warrior"
+      },
+      "zombie, human@@swpf_core": {
+        "label": "Zombie, Human",
+        "source": "swpf_core/250?highlight=Zombie%2C%20Human"
       },
       "zombie, juju@@swpf_bestiary_2": {
         "label": "Zombie, Juju",
@@ -7995,6 +10703,26 @@
       }
     },
     "npcs": {
+      "assassin@@sfc": {
+        "label": "Assassin",
+        "source": "sfc/230?highlight=Assassin"
+      },
+      "atlantean nomad@@rifts_atlantis": {
+        "label": "Atlantean Nomad",
+        "source": "rifts_atlantis/181?highlight=Atlantean%20Nomad"
+      },
+      "atlantean undead slayer@@rifts_atlantis": {
+        "label": "Atlantean Undead Slayer",
+        "source": "rifts_atlantis/181?highlight=Atlantean%20Undead%20Slayer"
+      },
+      "bounty hunter@@sfc": {
+        "label": "Bounty Hunter",
+        "source": "sfc/234?highlight=Bounty%20Hunter"
+      },
+      "captain@@sfc": {
+        "label": "Captain",
+        "source": "sfc/284?highlight=Captain"
+      },
       "captain jonas shrike@@rifts_na_foes": {
         "label": "Captain Jonas Shrike",
         "source": "rifts_na_foes/7?highlight=Captain%20Jonas%20Shrike"
@@ -8002,6 +10730,42 @@
       "captain nemo dobson@@rifts_atlantis": {
         "label": "Captain Nemo Dobson",
         "source": "rifts_atlantis/161?highlight=Captain%20Nemo%20Dobson"
+      },
+      "citizen@@sfc": {
+        "label": "Citizen",
+        "source": "sfc/237?highlight=Citizen"
+      },
+      "corporate executive@@sfc": {
+        "label": "Corporate Executive",
+        "source": "sfc/237?highlight=Corporate%20Executive"
+      },
+      "crazed serial killer@@horror": {
+        "label": "Crazed Serial Killer",
+        "source": "horror/156?highlight=Crazed%20Serial%20Killer"
+      },
+      "crew member@@sfc": {
+        "label": "Crew Member",
+        "source": "sfc/285?highlight=Crew%20Member"
+      },
+      "cult leader@@horror": {
+        "label": "Cult Leader",
+        "source": "horror/113?highlight=Cult%20Leader"
+      },
+      "cultist@@horror": {
+        "label": "Cultist",
+        "source": "horror/113?highlight=Cultist"
+      },
+      "cultist@@secret_world": {
+        "label": "Cultist",
+        "source": "secret_world/202?highlight=Cultist"
+      },
+      "diplomat/politician@@sfc": {
+        "label": "Diplomat/Politician",
+        "source": "sfc/242?highlight=Diplomat%2FPolitician"
+      },
+      "elite bounty hunter@@sfc": {
+        "label": "Elite Bounty Hunter",
+        "source": "sfc/234?highlight=Elite%20Bounty%20Hunter"
       },
       "emperor karl prosek@@rifts_gm_handbook": {
         "label": "Emperor Karl Prosek",
@@ -8015,9 +10779,25 @@
         "label": "Emperor Sabre Lasar",
         "source": "rifts_na_foes/47?highlight=Emperor%20Sabre%20Lasar"
       },
+      "engineer@@sfc": {
+        "label": "Engineer",
+        "source": "sfc/285?highlight=Engineer"
+      },
       "erin tarn@@rifts_gm_handbook": {
         "label": "Erin Tarn",
         "source": "rifts_gm_handbook/6?highlight=Erin%20Tarn"
+      },
+      "explorer@@sfc": {
+        "label": "Explorer",
+        "source": "sfc/251?highlight=Explorer"
+      },
+      "field agent@@secret_world": {
+        "label": "Field Agent",
+        "source": "secret_world/203?highlight=Field%20Agent"
+      },
+      "fisher@@sfc": {
+        "label": "Fisher",
+        "source": "sfc/251?highlight=Fisher"
       },
       "general dhara hammerheart@@rifts_gm_handbook": {
         "label": "General Dhara Hammerheart",
@@ -8031,9 +10811,41 @@
         "label": "Gilbert Fairchild",
         "source": "rifts_na_foes/40?highlight=Gilbert%20Fairchild"
       },
+      "gladiator@@horror": {
+        "label": "Gladiator",
+        "source": "horror/119?highlight=Gladiator"
+      },
+      "government agent@@horror": {
+        "label": "Government Agent",
+        "source": "horror/151?highlight=Government%20Agent"
+      },
+      "grunt@@sfc": {
+        "label": "Grunt",
+        "source": "sfc/279?highlight=Grunt"
+      },
+      "gunner@@sfc": {
+        "label": "Gunner",
+        "source": "sfc/285?highlight=Gunner"
+      },
+      "hacker@@sfc": {
+        "label": "Hacker",
+        "source": "sfc/256?highlight=Hacker"
+      },
+      "harpooner@@sfc": {
+        "label": "Harpooner",
+        "source": "sfc/256?highlight=Harpooner"
+      },
       "henderson “hank” macgruder@@rifts_gm_handbook": {
         "label": "Henderson “Hank” MacGruder",
         "source": "rifts_gm_handbook/28?highlight=Henderson%20%E2%80%9CHank%E2%80%9D%20MacGruder"
+      },
+      "law enforcement@@sfc": {
+        "label": "Law Enforcement",
+        "source": "sfc/262?highlight=Law%20Enforcement"
+      },
+      "librarian@@horror": {
+        "label": "Librarian",
+        "source": "horror/121?highlight=Librarian"
       },
       "lord alistair dunscon@@rifts_gm_handbook": {
         "label": "Lord Alistair Dunscon",
@@ -8047,6 +10859,26 @@
         "label": "Lord Coake",
         "source": "rifts_gm_handbook/19?highlight=Lord%20Coake"
       },
+      "mad scientist@@horror": {
+        "label": "Mad Scientist",
+        "source": "horror/146?highlight=Mad%20Scientist"
+      },
+      "marine@@sfc": {
+        "label": "Marine",
+        "source": "sfc/279?highlight=Marine"
+      },
+      "medical officer@@sfc": {
+        "label": "Medical Officer",
+        "source": "sfc/285?highlight=Medical%20Officer"
+      },
+      "merchant@@sfc": {
+        "label": "Merchant",
+        "source": "sfc/265?highlight=Merchant"
+      },
+      "miner@@sfc": {
+        "label": "Miner",
+        "source": "sfc/266?highlight=Miner"
+      },
       "new navy marine@@rifts_atlantis": {
         "label": "New Navy Marine",
         "source": "rifts_atlantis/160?highlight=New%20Navy%20Marine"
@@ -8055,17 +10887,101 @@
         "label": "New Navy Sailor",
         "source": "rifts_atlantis/160?highlight=New%20Navy%20Sailor"
       },
+      "occultist@@horror": {
+        "label": "Occultist",
+        "source": "horror/151?highlight=Occultist"
+      },
+      "ocean wizard@@rifts_atlantis": {
+        "label": "Ocean Wizard",
+        "source": "rifts_atlantis/182?highlight=Ocean%20Wizard"
+      },
+      "officer@@sfc": {
+        "label": "Officer",
+        "source": "sfc/280?highlight=Officer"
+      },
+      "pilot/navigator@@sfc": {
+        "label": "Pilot/Navigator",
+        "source": "sfc/286?highlight=Pilot%2FNavigator"
+      },
       "pirate@@rifts_atlantis": {
         "label": "Pirate",
         "source": "rifts_atlantis/182?highlight=Pirate"
+      },
+      "pirate@@sfc": {
+        "label": "Pirate",
+        "source": "sfc/270?highlight=Pirate"
+      },
+      "police@@horror": {
+        "label": "Police",
+        "source": "horror/151?highlight=Police"
+      },
+      "police lieutenant@@horror": {
+        "label": "Police Lieutenant",
+        "source": "horror/152?highlight=Police%20Lieutenant"
+      },
+      "police officer@@secret_world": {
+        "label": "Police Officer",
+        "source": "secret_world/203?highlight=Police%20Officer"
+      },
+      "police patrolmen@@horror": {
+        "label": "Police Patrolmen",
+        "source": "horror/152?highlight=Police%20Patrolmen"
+      },
+      "scientist@@sfc": {
+        "label": "Scientist",
+        "source": "sfc/276?highlight=Scientist"
+      },
+      "sea inquisitor@@rifts_atlantis": {
+        "label": "Sea Inquisitor",
+        "source": "rifts_atlantis/183?highlight=Sea%20Inquisitor"
+      },
+      "security guard@@horror": {
+        "label": "Security Guard",
+        "source": "horror/152?highlight=Security%20Guard"
+      },
+      "senior executive@@sfc": {
+        "label": "Senior Executive",
+        "source": "sfc/237?highlight=Senior%20Executive"
       },
       "sergeant olivia rodriguez@@rifts_na_foes": {
         "label": "Sergeant Olivia Rodriguez",
         "source": "rifts_na_foes/45?highlight=Sergeant%20Olivia%20Rodriguez"
       },
+      "serial killer@@horror": {
+        "label": "Serial Killer",
+        "source": "horror/156?highlight=Serial%20Killer"
+      },
+      "smuggler@@sfc": {
+        "label": "Smuggler",
+        "source": "sfc/279?highlight=Smuggler"
+      },
+      "soldier@@swade": {
+        "label": "Soldier",
+        "source": "swade/187?highlight=Soldier"
+      },
+      "spy@@sfc": {
+        "label": "Spy",
+        "source": "sfc/283?highlight=Spy"
+      },
+      "starship crew@@sfc": {
+        "label": "Starship Crew",
+        "source": "sfc/284?highlight=Starship%20Crew"
+      },
       "stone master@@rifts_atlantis": {
         "label": "Stone Master",
         "source": "rifts_atlantis/183?highlight=Stone%20Master"
+      },
+      "swat team@@horror": {
+        "label": "SWAT Team",
+        "source": "horror/152?highlight=SWAT%20Team"
+      },
+      "tainted musician@@horror": {
+        "label": "Tainted Musician",
+        "source": "horror/162?highlight=Tainted%20Musician"
+      },
+      "thug@@sfc": {
+        "label": "Thug",
+        "source": "sfc/289?highlight=Thug"
       },
       "town/city guard@@swpf_core": {
         "label": "Town/City Guard",
@@ -8075,13 +10991,29 @@
         "label": "Townsfolk",
         "source": "swpf_core/250?highlight=Townsfolk"
       },
+      "victim@@horror": {
+        "label": "Victim",
+        "source": "horror/169?highlight=Victim"
+      },
       "warlord jakuul@@rifts_na_foes": {
         "label": "Warlord Jakuul",
         "source": "rifts_na_foes/48?highlight=Warlord%20Jakuul"
       },
+      "warrior@@sfc": {
+        "label": "Warrior",
+        "source": "sfc/258?highlight=Warrior"
+      },
       "zargus the great@@rifts_na_foes": {
         "label": "Zargus the Great",
         "source": "rifts_na_foes/22?highlight=Zargus%20the%20Great"
+      },
+      "cult leader@@doom_guard": {
+        "label": "Cult Leader",
+        "source": "doom_guard/120?highlight=Cult%20Leader"
+      },
+      "cultists@@doom_guard": {
+        "label": "Cultists",
+        "source": "doom_guard/120?highlight=Cultists"
       }
     },
     "other": {
