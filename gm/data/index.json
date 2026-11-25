@@ -3931,13 +3931,6 @@
         "label": "Illuminati Operative",
         "source": "secret_world_na/63?highlight=ILLUMINATI%20OPERATIVE"
       },
-      "ltv (light tactical vehicle)@@starbreaker_star_marines": {
-        "label": "LTV (Light Tactical Vehicle)",
-        "source": "starbreaker_star_marines/51?highlight=LTV%20(Light%20Tactical%20Vehicle)",
-        "aliases": [
-          "LTV"
-        ]
-      },
       "mystic@@secret_world_na": {
         "label": "Mystic",
         "source": "secret_world_na/65?highlight=MYSTIC"
@@ -3965,10 +3958,6 @@
       "star marshal robo-horse@@starbreaker_star_marshals": {
         "label": "Star Marshal Robo-Horse",
         "source": "starbreaker_star_marshals/12?highlight=STAR%20MARSHAL%20ROBO-HORSE"
-      },
-      "tank bike@@starbreaker_star_marines": {
-        "label": "Tank Bike",
-        "source": "starbreaker_star_marines/53?highlight=Tank%20Bike"
       },
       "vz apc@@starbreaker_star_marines": {
         "label": "Vz Apc",
@@ -5025,6 +5014,24 @@
       }
     },
     "rules": {
+      "distracted@@swade": {
+        "label": "Distracted",
+        "source": "swade/99?highlight=DISTRACTED"
+      },
+      "rage@@horror": {
+        "label": "Rage",
+        "source": "horror/10?highlight=RAGE"
+      },
+      "rank die@@starbreaker_star_marines": {
+        "label": "Rank Die",
+        "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
+      },
+      "vulnerable@@swade": {
+        "label": "Vulnerable",
+        "source": "swade/99?highlight=VULNERABLE"
+      }
+    },
+    "setting_rules": {
       "acclimation@@sfc": {
         "label": "Acclimation",
         "source": "sfc/82?highlight=ACCLIMATION"
@@ -5204,10 +5211,6 @@
       "difficult healing@@sfc": {
         "label": "Difficult Healing",
         "source": "sfc/78?highlight=DIFFICULT%20HEALING"
-      },
-      "distracted@@swade": {
-        "label": "Distracted",
-        "source": "swade/99?highlight=DISTRACTED"
       },
       "downtime@@doom_guard": {
         "label": "Downtime",
@@ -5497,14 +5500,6 @@
         "label": "Pressure",
         "source": "sfc/83?highlight=PRESSURE"
       },
-      "rage@@horror": {
-        "label": "Rage",
-        "source": "horror/10?highlight=RAGE"
-      },
-      "rank die@@starbreaker_star_marines": {
-        "label": "Rank Die",
-        "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
-      },
       "reap the rewards@@starbreaker_core": {
         "label": "Reap the Rewards",
         "source": "starbreaker_core/108?highlight=REAP%20THE%20REWARDS"
@@ -5745,6 +5740,50 @@
       }
     },
     "status_conditions": {
+      "bleeding out@@swade": {
+        "label": "Bleeding Out",
+        "source": "swade/95?highlight=BLEEDING%20OUT"
+      },
+      "bound@@swade": {
+        "label": "Bound",
+        "source": "swade/202?highlight=BOUND"
+      },
+      "breakdown@@doom_guard": {
+        "label": "Breakdown",
+        "source": "doom_guard/40?highlight=BREAKDOWN"
+      },
+      "distracted@@swade": {
+        "label": "Distracted",
+        "source": "swade/99?highlight=DISTRACTED"
+      },
+      "entangled@@swade": {
+        "label": "Entangled",
+        "source": "swade/202?highlight=ENTANGLED"
+      },
+      "exhausted@@swade": {
+        "label": "Exhausted",
+        "source": "swade/202?highlight=EXHAUSTED"
+      },
+      "fatigued@@swade": {
+        "label": "Fatigued",
+        "source": "swade/202?highlight=FATIGUED"
+      },
+      "incapacitation@@swade": {
+        "label": "Incapacitation",
+        "source": "swade/202?highlight=INCAPACITATION"
+      },
+      "panicked@@swade": {
+        "label": "Panicked",
+        "source": "swade/123?highlight=PANICKED"
+      },
+      "prone@@swade": {
+        "label": "Prone",
+        "source": "swade/92?highlight=PRONE"
+      },
+      "shaken@@swade": {
+        "label": "Shaken",
+        "source": "swade/202?highlight=SHAKEN"
+      },
       "stunned@@swade": {
         "label": "Stunned",
         "source": "swade/105?highlight=Stunned"
@@ -5752,9 +5791,565 @@
       "vulnerable@@swade": {
         "label": "Vulnerable",
         "source": "swade/99?highlight=VULNERABLE"
+      },
+      "wounds@@swade": {
+        "label": "Wounds",
+        "source": "swade/202?highlight=WOUNDS"
       }
     },
-    "vehicles": {},
+    "vehicles": {
+      "ah-64 apache@@swade": {
+        "label": "AH-64 Apache",
+        "source": "swade/84?highlight=AH-64%20APACHE"
+      },
+      "apc@@starbreaker_star_marines": {
+        "label": "APC",
+        "source": "starbreaker_star_marines/51?highlight=APC"
+      },
+      "assault walker (class iv)@@sfc": {
+        "label": "Assault Walker (Class IV)",
+        "source": "sfc/189?highlight=ASSAULT%20WALKER%20%28CLASS%20IV%29"
+      },
+      "atmospheric stealth fighter (class i)@@sfc": {
+        "label": "Atmospheric Stealth Fighter (Class I)",
+        "source": "sfc/177?highlight=ATMOSPHERIC%20STEALTH%20FIGHTER%20%28CLASS%20I%29"
+      },
+      "attack submarine (class iv)@@sfc": {
+        "label": "Attack Submarine (Class IV)",
+        "source": "sfc/175?highlight=ATTACK%20SUBMARINE%20%28CLASS%20IV%29"
+      },
+      "av-8b harrier@@swade": {
+        "label": "AV-8B Harrier",
+        "source": "swade/84?highlight=AV-8B%20HARRIER"
+      },
+      "b-17 flying fortress@@swade": {
+        "label": "B-17 Flying Fortress",
+        "source": "swade/83?highlight=B-17%20FLYING%20FORTRESS"
+      },
+      "barracuda@@ne_invasion": {
+        "label": "Barracuda",
+        "source": "ne_invasion/117?highlight=BARRACUDA"
+      },
+      "battlecruiser (class v)@@sfc": {
+        "label": "Battlecruiser (Class V)",
+        "source": "sfc/160?highlight=BATTLECRUISER%20%28CLASS%20V%29"
+      },
+      "battleship (class vii)@@sfc": {
+        "label": "Battleship (Class VII)",
+        "source": "sfc/176?highlight=BATTLESHIP%20%28CLASS%20VII%29"
+      },
+      "bf-109@@swade": {
+        "label": "BF-109",
+        "source": "swade/83?highlight=BF-109"
+      },
+      "bicycle@@swade": {
+        "label": "Bicycle",
+        "source": "swade/82?highlight=BICYCLE"
+      },
+      "biplane@@swade": {
+        "label": "Biplane",
+        "source": "swade/83?highlight=BIPLANE"
+      },
+      "btr 70 apc@@swade": {
+        "label": "BTR 70 APC",
+        "source": "swade/83?highlight=BTR%2070%20APC"
+      },
+      "bulk transport (class iv)@@sfc": {
+        "label": "Bulk Transport (Class IV)",
+        "source": "sfc/156?highlight=BULK%20TRANSPORT%20%28CLASS%20IV%29"
+      },
+      "carriage@@swade": {
+        "label": "Carriage",
+        "source": "swade/82?highlight=CARRIAGE"
+      },
+      "cessna skyhawk@@swade": {
+        "label": "Cessna Skyhawk",
+        "source": "swade/83?highlight=CESSNA%20SKYHAWK"
+      },
+      "chieftain street bike@@spc": {
+        "label": "Chieftain Street Bike",
+        "source": "spc/18?highlight=CHIEFTAIN%20STREET%20BIKE"
+      },
+      "chieftain street bikes@@doom_guard": {
+        "label": "Chieftain Street Bikes",
+        "source": "doom_guard/35?highlight=CHIEFTAIN%20STREET%20BIKES"
+      },
+      "combat hover cycle (class i)@@sfc": {
+        "label": "Combat Hover Cycle (Class I)",
+        "source": "sfc/173?highlight=COMBAT%20HOVER%20CYCLE%20%28CLASS%20I%29"
+      },
+      "commercial starliner (class iii)@@sfc": {
+        "label": "Commercial Starliner (Class III)",
+        "source": "sfc/155?highlight=COMMERCIAL%20STARLINER%20%28CLASS%20III%29"
+      },
+      "compact car@@swade": {
+        "label": "Compact Car",
+        "source": "swade/82?highlight=COMPACT%20CAR"
+      },
+      "corvette (class iv)@@sfc": {
+        "label": "Corvette (Class IV)",
+        "source": "sfc/158?highlight=CORVETTE%20%28CLASS%20IV%29"
+      },
+      "cruiser (class v)@@sfc": {
+        "label": "Cruiser (Class V)",
+        "source": "sfc/159?highlight=CRUISER%20%28CLASS%20V%29"
+      },
+      "cruiser, stealth (class iv)@@sfc": {
+        "label": "Cruiser, Stealth (Class IV)",
+        "source": "sfc/158?highlight=CRUISER%2C%20STEALTH%20%28CLASS%20IV%29"
+      },
+      "dirt bike@@swade": {
+        "label": "Dirt Bike",
+        "source": "swade/82?highlight=DIRT%20BIKE"
+      },
+      "dreadnought (class vi)@@sfc": {
+        "label": "Dreadnought (Class VI)",
+        "source": "sfc/161?highlight=DREADNOUGHT%20%28CLASS%20VI%29"
+      },
+      "dropship (class iv)@@sfc": {
+        "label": "Dropship (Class IV)",
+        "source": "sfc/157?highlight=DROPSHIP%20%28CLASS%20IV%29"
+      },
+      "early car@@swade": {
+        "label": "Early Car",
+        "source": "swade/82?highlight=EARLY%20CAR"
+      },
+      "exploration crawler (class ii)@@sfc": {
+        "label": "Exploration Crawler (Class II)",
+        "source": "sfc/172?highlight=EXPLORATION%20CRAWLER%20%28CLASS%20II%29"
+      },
+      "exploration rover (class i)@@sfc": {
+        "label": "Exploration Rover (Class I)",
+        "source": "sfc/172?highlight=EXPLORATION%20ROVER%20%28CLASS%20I%29"
+      },
+      "f-15 eagle@@swade": {
+        "label": "F-15 Eagle",
+        "source": "swade/84?highlight=F-15%20EAGLE"
+      },
+      "fast attack vtol (class ii)@@sfc": {
+        "label": "Fast Attack VTOL (Class II)",
+        "source": "sfc/177?highlight=FAST%20ATTACK%20VTOL%20%28CLASS%20II%29"
+      },
+      "galactic exploration vessel (class v)@@sfc": {
+        "label": "Galactic Exploration Vessel (Class V)",
+        "source": "sfc/160?highlight=GALACTIC%20EXPLORATION%20VESSEL%20%28CLASS%20V%29"
+      },
+      "galleon@@swade": {
+        "label": "Galleon",
+        "source": "swade/84?highlight=GALLEON"
+      },
+      "galley@@swade": {
+        "label": "Galley",
+        "source": "swade/84?highlight=GALLEY"
+      },
+      "gatewalker mass transport@@starbreaker_core": {
+        "label": "Gatewalker Mass Transport",
+        "source": "starbreaker_core/102?highlight=GATEWALKER%20MASS%20TRANSPORT"
+      },
+      "gravcycle, cruiser@@starbreaker_core": {
+        "label": "Gravcycle, Cruiser",
+        "source": "starbreaker_core/103?highlight=GRAVCYCLE%2C%20CRUISER"
+      },
+      "grizzly battle tank@@spc": {
+        "label": "Grizzly Battle Tank",
+        "source": "spc/20?highlight=GRIZZLY%20BATTLE%20TANK"
+      },
+      "heavy fighter (class iv)@@sfc": {
+        "label": "Heavy Fighter (Class IV)",
+        "source": "sfc/158?highlight=HEAVY%20FIGHTER%20%28CLASS%20IV%29"
+      },
+      "heavy fire support (class iv)@@sfc": {
+        "label": "Heavy Fire Support (Class IV)",
+        "source": "sfc/188?highlight=HEAVY%20FIRE%20SUPPORT%20%28CLASS%20IV%29"
+      },
+      "heavy frigate (class iv)@@sfc": {
+        "label": "Heavy Frigate (Class IV)",
+        "source": "sfc/158?highlight=HEAVY%20FRIGATE%20%28CLASS%20IV%29"
+      },
+      "helicopter@@swade": {
+        "label": "Helicopter",
+        "source": "swade/83?highlight=HELICOPTER"
+      },
+      "hornet class swarm fighter@@starbreaker_core": {
+        "label": "Hornet Class Swarm Fighter",
+        "source": "starbreaker_core/101?highlight=HORNET%20CLASS%20SWARM%20FIGHTER"
+      },
+      "hover apc@@swade": {
+        "label": "Hover APC",
+        "source": "swade/83?highlight=HOVER%20APC"
+      },
+      "hover bike (class i)@@sfc": {
+        "label": "Hover Bike (Class I)",
+        "source": "sfc/172?highlight=HOVER%20BIKE%20%28CLASS%20I%29"
+      },
+      "hover jeep (class ii)@@sfc": {
+        "label": "Hover Jeep (Class II)",
+        "source": "sfc/173?highlight=HOVER%20JEEP%20%28CLASS%20II%29"
+      },
+      "hover limousine (class i)@@sfc": {
+        "label": "Hover Limousine (Class I)",
+        "source": "sfc/172?highlight=HOVER%20LIMOUSINE%20%28CLASS%20I%29"
+      },
+      "hover skiff (class i)@@sfc": {
+        "label": "Hover Skiff (Class I)",
+        "source": "sfc/173?highlight=HOVER%20SKIFF%20%28CLASS%20I%29"
+      },
+      "hover tank (class iii)@@sfc": {
+        "label": "Hover Tank (Class III)",
+        "source": "sfc/174?highlight=HOVER%20TANK%20%28CLASS%20III%29"
+      },
+      "hover tank@@swade": {
+        "label": "Hover Tank",
+        "source": "swade/83?highlight=HOVER%20TANK"
+      },
+      "hover truck (class i)@@sfc": {
+        "label": "Hover Truck (Class I)",
+        "source": "sfc/172?highlight=HOVER%20TRUCK%20%28CLASS%20I%29"
+      },
+      "hydrofoil@@swade": {
+        "label": "Hydrofoil",
+        "source": "swade/84?highlight=HYDROFOIL"
+      },
+      "infantry gun mecha (class v)@@sfc": {
+        "label": "Infantry Gun Mecha (Class V)",
+        "source": "sfc/189?highlight=INFANTRY%20GUN%20MECHA%20%28CLASS%20V%29"
+      },
+      "infantry support walker (class ii)@@sfc": {
+        "label": "Infantry Support Walker (Class II)",
+        "source": "sfc/187?highlight=INFANTRY%20SUPPORT%20WALKER%20%28CLASS%20II%29"
+      },
+      "japanese zero@@swade": {
+        "label": "Japanese Zero",
+        "source": "swade/83?highlight=JAPANESE%20ZERO"
+      },
+      "jeep@@swade": {
+        "label": "Jeep",
+        "source": "swade/82?highlight=JEEP"
+      },
+      "juggernaut apc@@spc": {
+        "label": "Juggernaut APC",
+        "source": "spc/19?highlight=JUGGERNAUT%20APC"
+      },
+      "juggernaut@@doom_guard": {
+        "label": "Juggernaut",
+        "source": "doom_guard/35?highlight=JUGGERNAUT"
+      },
+      "king crab@@ne_invasion": {
+        "label": "King Crab",
+        "source": "ne_invasion/118?highlight=KING%20CRAB"
+      },
+      "learjet@@swade": {
+        "label": "Learjet",
+        "source": "swade/83?highlight=LEARJET"
+      },
+      "light carrier (class iv)@@sfc": {
+        "label": "Light Carrier (Class IV)",
+        "source": "sfc/176?highlight=LIGHT%20CARRIER%20%28CLASS%20IV%29"
+      },
+      "light fighter (class ii)@@sfc": {
+        "label": "Light Fighter (Class II)",
+        "source": "sfc/157?highlight=LIGHT%20FIGHTER%20%28CLASS%20II%29"
+      },
+      "light scout (class ii)@@sfc": {
+        "label": "Light Scout (Class II)",
+        "source": "sfc/187?highlight=LIGHT%20SCOUT%20%28CLASS%20II%29"
+      },
+      "ltv (light tactical vehicle)@@starbreaker_star_marines": {
+        "label": "LTV (Light Tactical Vehicle)",
+        "source": "starbreaker_star_marines/52?highlight=LTV%20%28LIGHT%20TACTICAL%20VEHICLE%29",
+        "aliases": [
+          "LTV"
+        ]
+      },
+      "m1a1 abrams@@swade": {
+        "label": "M1A1 Abrams",
+        "source": "swade/83?highlight=M1A1%20ABRAMS"
+      },
+      "m2 bradley@@swade": {
+        "label": "M2 Bradley",
+        "source": "swade/83?highlight=M2%20BRADLEY"
+      },
+      "m4 sherman@@swade": {
+        "label": "M4 Sherman",
+        "source": "swade/82?highlight=M4%20SHERMAN"
+      },
+      "m5a1 stuart@@swade": {
+        "label": "M5A1 Stuart",
+        "source": "swade/82?highlight=M5A1%20STUART"
+      },
+      "main battle tank (class iv)@@sfc": {
+        "label": "Main Battle Tank (Class IV)",
+        "source": "sfc/174?highlight=MAIN%20BATTLE%20TANK%20%28CLASS%20IV%29"
+      },
+      "mako attack sub@@spc": {
+        "label": "Mako Attack Sub",
+        "source": "spc/19?highlight=MAKO%20ATTACK%20SUB"
+      },
+      "manta class long-range scout vessel@@starbreaker_core": {
+        "label": "Manta Class Long-Range Scout Vessel",
+        "source": "starbreaker_core/101?highlight=MANTA%20CLASS%20LONG-RANGE%20SCOUT%20VESSEL"
+      },
+      "manta@@ne_invasion": {
+        "label": "Manta",
+        "source": "ne_invasion/118?highlight=MANTA"
+      },
+      "medium brawler (class iii)@@sfc": {
+        "label": "Medium Brawler (Class III)",
+        "source": "sfc/188?highlight=MEDIUM%20BRAWLER%20%28CLASS%20III%29"
+      },
+      "mid-sized car@@swade": {
+        "label": "Mid-Sized Car",
+        "source": "swade/82?highlight=MID-SIZED%20CAR"
+      },
+      "mini sub (class i)@@sfc": {
+        "label": "Mini Sub (Class I)",
+        "source": "sfc/172?highlight=MINI%20SUB%20%28CLASS%20I%29"
+      },
+      "minivan@@swade": {
+        "label": "Minivan",
+        "source": "swade/82?highlight=MINIVAN"
+      },
+      "multi-purpose transport (class iii)@@sfc": {
+        "label": "Multi-Purpose Transport (Class III)",
+        "source": "sfc/155?highlight=MULTI-PURPOSE%20TRANSPORT%20%28CLASS%20III%29"
+      },
+      "naval destroyer (class vi)@@sfc": {
+        "label": "Naval Destroyer (Class VI)",
+        "source": "sfc/175?highlight=NAVAL%20DESTROYER%20%28CLASS%20VI%29"
+      },
+      "p-51 mustang@@swade": {
+        "label": "P-51 Mustang",
+        "source": "swade/83?highlight=P-51%20MUSTANG"
+      },
+      "passenger liner (class iv)@@sfc": {
+        "label": "Passenger Liner (Class IV)",
+        "source": "sfc/155?highlight=PASSENGER%20LINER%20%28CLASS%20IV%29"
+      },
+      "patrol boat (class ii)@@sfc": {
+        "label": "Patrol Boat (Class II)",
+        "source": "sfc/174?highlight=PATROL%20BOAT%20%28CLASS%20II%29"
+      },
+      "patrol boat, river@@swade": {
+        "label": "Patrol Boat, River",
+        "source": "swade/84?highlight=PATROL%20BOAT%2C%20RIVER"
+      },
+      "peregrine jump jet@@doom_guard": {
+        "label": "Peregrine Jump Jet",
+        "source": "doom_guard/35?highlight=PEREGRINE%20JUMP%20JET"
+      },
+      "peregrine jump jet@@spc": {
+        "label": "Peregrine Jump Jet",
+        "source": "spc/20?highlight=PEREGRINE%20JUMP%20JET"
+      },
+      "pirate cruiser@@starbreaker_core": {
+        "label": "Pirate Cruiser",
+        "source": "starbreaker_core/102?highlight=PIRATE%20CRUISER"
+      },
+      "planetary assault ship (class v)@@sfc": {
+        "label": "Planetary Assault Ship (Class V)",
+        "source": "sfc/160?highlight=PLANETARY%20ASSAULT%20SHIP%20%28CLASS%20V%29"
+      },
+      "planetary transport (class iii)@@sfc": {
+        "label": "Planetary Transport (Class III)",
+        "source": "sfc/154?highlight=PLANETARY%20TRANSPORT%20%28CLASS%20III%29"
+      },
+      "private launch (class i)@@sfc": {
+        "label": "Private Launch (Class I)",
+        "source": "sfc/154?highlight=PRIVATE%20LAUNCH%20%28CLASS%20I%29"
+      },
+      "pt boat (ww2)@@swade": {
+        "label": "PT Boat (WW2)",
+        "source": "swade/84?highlight=PT%20BOAT%20%28WW2%29"
+      },
+      "pz ivj@@swade": {
+        "label": "Pz IVJ",
+        "source": "swade/82?highlight=PZ%20IVJ"
+      },
+      "pz vi tiger ii@@swade": {
+        "label": "Pz VI Tiger II",
+        "source": "swade/82?highlight=PZ%20VI%20TIGER%20II"
+      },
+      "racer (class ii)@@sfc": {
+        "label": "Racer (Class II)",
+        "source": "sfc/154?highlight=RACER%20%28CLASS%20II%29"
+      },
+      "recon bike@@starbreaker_star_marines": {
+        "label": "Recon Bike",
+        "source": "starbreaker_star_marines/53?highlight=RECON%20BIKE"
+      },
+      "recon fav@@starbreaker_star_marines": {
+        "label": "Recon FAV",
+        "source": "starbreaker_star_marines/55?highlight=RECON%20FAV"
+      },
+      "rowboat@@swade": {
+        "label": "Rowboat",
+        "source": "swade/84?highlight=ROWBOAT"
+      },
+      "sand snake@@starbreaker_core": {
+        "label": "Sand Snake",
+        "source": "starbreaker_core/103?highlight=SAND%20SNAKE"
+      },
+      "sargasso@@ne_invasion": {
+        "label": "Sargasso",
+        "source": "ne_invasion/118?highlight=SARGASSO"
+      },
+      "science vessel (class iii)@@sfc": {
+        "label": "Science Vessel (Class III)",
+        "source": "sfc/155?highlight=SCIENCE%20VESSEL%20%28CLASS%20III%29"
+      },
+      "sea devil@@doom_guard": {
+        "label": "Sea Devil",
+        "source": "doom_guard/35?highlight=SEA%20DEVIL"
+      },
+      "security patrol craft (class ii)@@sfc": {
+        "label": "Security Patrol Craft (Class II)",
+        "source": "sfc/154?highlight=SECURITY%20PATROL%20CRAFT%20%28CLASS%20II%29"
+      },
+      "semi-truck@@swade": {
+        "label": "Semi-Truck",
+        "source": "swade/82?highlight=SEMI-TRUCK"
+      },
+      "shuttle (class ii)@@sfc": {
+        "label": "Shuttle (Class II)",
+        "source": "sfc/154?highlight=SHUTTLE%20%28CLASS%20II%29"
+      },
+      "small yacht@@swade": {
+        "label": "Small Yacht",
+        "source": "swade/84?highlight=SMALL%20YACHT"
+      },
+      "space colony (class vi)@@sfc": {
+        "label": "Space Colony (Class VI)",
+        "source": "sfc/156?highlight=SPACE%20COLONY%20%28CLASS%20VI%29"
+      },
+      "space shuttle@@swade": {
+        "label": "Space Shuttle",
+        "source": "swade/83?highlight=SPACE%20SHUTTLE"
+      },
+      "space station (class iv)@@sfc": {
+        "label": "Space Station (Class IV)",
+        "source": "sfc/156?highlight=SPACE%20STATION%20%28CLASS%20IV%29"
+      },
+      "speed boat@@swade": {
+        "label": "Speed Boat",
+        "source": "swade/84?highlight=SPEED%20BOAT"
+      },
+      "spitfire mk iia@@swade": {
+        "label": "Spitfire Mk IIA",
+        "source": "swade/83?highlight=SPITFIRE%20MK%20IIA"
+      },
+      "sports car@@swade": {
+        "label": "Sports Car",
+        "source": "swade/82?highlight=SPORTS%20CAR"
+      },
+      "sports utility vehicle@@swade": {
+        "label": "Sports Utility Vehicle",
+        "source": "swade/82?highlight=SPORTS%20UTILITY%20VEHICLE"
+      },
+      "ssa navy cruiser@@starbreaker_star_marines": {
+        "label": "SSA Navy Cruiser",
+        "source": "starbreaker_star_marines/49?highlight=SSA%20NAVY%20CRUISER"
+      },
+      "star marine dropship@@starbreaker_star_marines": {
+        "label": "Star Marine Dropship",
+        "source": "starbreaker_star_marines/48?highlight=STAR%20MARINE%20DROPSHIP"
+      },
+      "star marshal hover bike@@starbreaker_star_marshals": {
+        "label": "Star Marshal Hover Bike",
+        "source": "starbreaker_star_marshals/11?highlight=STAR%20MARSHAL%20HOVER%20BIKE"
+      },
+      "star marshal robo-horse@@starbreaker_star_marshals": {
+        "label": "Star Marshal Robo-Horse",
+        "source": "starbreaker_star_marshals/12?highlight=STAR%20MARSHAL%20ROBO-HORSE"
+      },
+      "star raven class light transport@@starbreaker_core": {
+        "label": "Star Raven Class Light Transport",
+        "source": "starbreaker_core/101?highlight=STAR%20RAVEN%20CLASS%20LIGHT%20TRANSPORT"
+      },
+      "starfighter (class ii)@@sfc": {
+        "label": "Starfighter (Class II)",
+        "source": "sfc/157?highlight=STARFIGHTER%20%28CLASS%20II%29"
+      },
+      "stingray@@ne_invasion": {
+        "label": "Stingray",
+        "source": "ne_invasion/118?highlight=STINGRAY"
+      },
+      "street bike@@swade": {
+        "label": "Street Bike",
+        "source": "swade/82?highlight=STREET%20BIKE"
+      },
+      "stripped raven light transport@@starbreaker_core": {
+        "label": "Stripped Raven Light Transport",
+        "source": "starbreaker_core/101?highlight=STRIPPED%20RAVEN%20LIGHT%20TRANSPORT"
+      },
+      "su-27@@swade": {
+        "label": "SU-27",
+        "source": "swade/84?highlight=SU-27"
+      },
+      "t-34/76@@swade": {
+        "label": "T-34/76",
+        "source": "swade/82?highlight=T-34%2F76"
+      },
+      "t-72 mbt@@swade": {
+        "label": "T-72 MBT",
+        "source": "swade/83?highlight=T-72%20MBT"
+      },
+      "t-80 mbt@@swade": {
+        "label": "T-80 MBT",
+        "source": "swade/83?highlight=T-80%20MBT"
+      },
+      "tank bike@@starbreaker_star_marines": {
+        "label": "Tank Bike",
+        "source": "starbreaker_star_marines/54?highlight=TANK%20BIKE"
+      },
+      "uh-1 (huey)@@swade": {
+        "label": "UH-1 (Huey)",
+        "source": "swade/84?highlight=UH-1%20%28HUEY%29"
+      },
+      "vari-mech fighter (class ii)@@sfc": {
+        "label": "Vari-Mech Fighter (Class II)",
+        "source": "sfc/187?highlight=VARI-MECH%20FIGHTER%20%28CLASS%20II%29"
+      },
+      "viper tank cycle@@starbreaker_core": {
+        "label": "Viper Tank Cycle",
+        "source": "starbreaker_core/103?highlight=VIPER%20TANK%20CYCLE"
+      },
+      "vtol patrol craft (class ii)@@sfc": {
+        "label": "VTOL Patrol Craft (Class II)",
+        "source": "sfc/176?highlight=VTOL%20PATROL%20CRAFT%20%28CLASS%20II%29"
+      },
+      "vtol sports car (class i)@@sfc": {
+        "label": "VTOL Sports Car (Class I)",
+        "source": "sfc/173?highlight=VTOL%20SPORTS%20CAR%20%28CLASS%20I%29"
+      },
+      "vz apc@@starbreaker_star_marines": {
+        "label": "VZ APC",
+        "source": "starbreaker_star_marines/56?highlight=VZ%20APC"
+      },
+      "vz dropship@@starbreaker_star_marines": {
+        "label": "VZ Dropship",
+        "source": "starbreaker_star_marines/50?highlight=VZ%20DROPSHIP"
+      },
+      "vz fast track@@starbreaker_star_marines": {
+        "label": "VZ Fast Track",
+        "source": "starbreaker_star_marines/57?highlight=VZ%20FAST%20TRACK"
+      },
+      "vz ltv@@starbreaker_star_marines": {
+        "label": "VZ LTV",
+        "source": "starbreaker_star_marines/58?highlight=VZ%20LTV"
+      },
+      "wheeled apc (class ii)@@sfc": {
+        "label": "Wheeled APC (Class II)",
+        "source": "sfc/174?highlight=WHEELED%20APC%20%28CLASS%20II%29"
+      },
+      "world killer (class vii)@@sfc": {
+        "label": "World Killer (Class VII)",
+        "source": "sfc/161?highlight=WORLD%20KILLER%20%28CLASS%20VII%29"
+      },
+      "yacht (class iii)@@sfc": {
+        "label": "Yacht (Class III)",
+        "source": "sfc/155?highlight=YACHT%20%28CLASS%20III%29"
+      }
+    },
     "weapons": {
       "acid pellet pistol@@starbreaker_core": {
         "label": "Acid Pellet Pistol",
