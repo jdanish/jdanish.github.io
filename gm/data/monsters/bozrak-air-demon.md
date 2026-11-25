@@ -8,7 +8,7 @@ portrait:
 
 The [[starbreaker_core/208?highlight=BOZRAK|BOZRAK]], aerial predators of Sismistra, are held in superstitious terror by the nahkyra even in these enlightened times.
 
-- [ ] **Wild Card** (unchecked = Extra)
+- [ ] **Wild Card**
 
 ## Attributes
 

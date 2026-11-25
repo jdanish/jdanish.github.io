@@ -6,13 +6,9 @@ portrait:
 
 # Dragon
 
-- [x] **Wild Card**
-
-**Count:** {{counter:dragon-count|1|99|true}}
-
-**Wounds:** {{counter:dragon-wounds|0|4|true}}
-
 Dragons are fire-breathing monsters that bring doom and despair to the villages they ravage. Such creatures should not be fought lightly as they are more than a match for even a party of experienced adventurers. These beasts are quite intelligent as well, and use all of their advantages when confronted by would-be dragon-slayers.
+
+- [x] **Wild Card**
 
 ## Attributes
 
