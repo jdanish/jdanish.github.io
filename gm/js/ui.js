@@ -3189,7 +3189,7 @@
       window.GM.popup?.hide?.();
       createMonsterImportButton().click();
     });
-    window.GM.popup?.show?.({ title:'Data Documents', content:wrap, className:'gm-document-browser-popup', width:620, closeOnScroll:false });
+    window.GM.popup?.show?.({ title:'Data Documents', content:wrap, className:'gm-document-browser-popup', width:620, y:20, closeOnScroll:false });
     await renderDocuments();
     return wrap;
   }

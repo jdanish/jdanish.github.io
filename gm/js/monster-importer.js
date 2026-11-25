@@ -108,7 +108,7 @@
   }
 
   function parseStatBlock(text) {
-    let raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    let raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\u0084/g, '•');
     // PDF text selection can flatten a whole stat block into one line. Put
     // its description and familiar stat labels back on boundaries before
     // parsing, otherwise the whole selection can be mistaken for the name.

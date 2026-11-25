@@ -153,17 +153,15 @@
     if (!state.current || !state.panelEl || !state.rootEl) return;
     if (state.dragging) return;
 
-    const currentLeft = Number.isFinite(state.current.left) ? state.current.left : null;
-    const currentTop = Number.isFinite(state.current.top) ? state.current.top : null;
-    if (currentLeft !== null && currentTop !== null) {
-      applyPosition(currentLeft, currentTop);
-      return;
-    }
-
     const centered = getCenteredPosition();
-    state.current.left = centered.left;
-    state.current.top = centered.top;
-    applyPosition(centered.left, centered.top);
+    const { height, vh } = measure();
+    const left = Number.isFinite(state.current.left) ? state.current.left : centered.left;
+    const top = Number.isFinite(state.current.top)
+      ? state.current.top
+      : clamp(centered.top + (Number(state.current.offsetY) || 0), MARGIN, Math.max(MARGIN, vh - height - MARGIN));
+    state.current.left = left;
+    state.current.top = top;
+    applyPosition(left, top);
   }
 
   function startDrag(event) {
@@ -230,8 +228,8 @@
 
     state.current = {
       anchor: options.anchor || null,
-      left: Number.isFinite(Number(options.x)) ? Number(options.x) : null,
-      top: Number.isFinite(Number(options.y)) ? Number(options.y) : null,
+      left: options.x != null && Number.isFinite(Number(options.x)) ? Number(options.x) : null,
+      top: options.y != null && Number.isFinite(Number(options.y)) ? Number(options.y) : null,
       onClose: typeof options.onClose === 'function' ? options.onClose : null,
       beforeClose: typeof options.beforeClose === 'function' ? options.beforeClose : null,
       closeOnScroll: options.closeOnScroll !== false,
@@ -239,6 +237,7 @@
       closeOnEscape: options.closeOnEscape !== false,
       resizable: options.resizable === true,
       modal: options.modal !== false,
+      offsetY: Number.isFinite(Number(options.offsetY)) ? Number(options.offsetY) : 0,
     };
 
     state.rootEl.className = `gm-popup-root${options.rootClass ? ` ${options.rootClass}` : ''}${options.modal === false ? ' gm-popup-root-nonmodal' : ''}`;
@@ -258,9 +257,14 @@
     state.panelEl.classList.remove('dragging');
 
     window.setTimeout(() => {
-      const positioned = (Number.isFinite(state.current.left) && Number.isFinite(state.current.top))
-        ? { left: state.current.left, top: state.current.top }
-        : getCenteredPosition();
+      const centered = getCenteredPosition();
+      const { height, vh } = measure();
+      const positioned = {
+        left: Number.isFinite(state.current.left) ? state.current.left : centered.left,
+        top: Number.isFinite(state.current.top)
+          ? state.current.top
+          : clamp(centered.top + state.current.offsetY, MARGIN, Math.max(MARGIN, vh - height - MARGIN)),
+      };
       state.current.left = positioned.left;
       state.current.top = positioned.top;
       applyPosition(positioned.left, positioned.top);

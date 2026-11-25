@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-status-checkbox-logging-removed';
+const CACHE_NAME = 'gm-reference-shell-v20261125-data-documents-top';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 
