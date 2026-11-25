@@ -3943,6 +3943,10 @@
         "label": "Playing to the Tropes",
         "source": "horror/45?highlight=PLAYING%20TO%20THE%20TROPES"
       },
+      "rage@@horror": {
+        "label": "Rage",
+        "source": "horror/10?highlight=RAGE"
+      },
       "recon bike@@starbreaker_star_marines": {
         "label": "Recon Bike",
         "source": "starbreaker_star_marines/52?highlight=Recon%20Bike"
@@ -3994,10 +3998,6 @@
       "vz ltv@@starbreaker_star_marines": {
         "label": "Vz Ltv",
         "source": "starbreaker_star_marines/57?highlight=VZ%20LTV"
-      },
-      "rage@@horror": {
-        "label": "Rage",
-        "source": "horror/10?highlight=RAGE"
       }
     },
     "powers": {
@@ -5038,9 +5038,401 @@
       }
     },
     "rules": {
+      "actions@@swade": {
+        "label": "Actions",
+        "source": "swade/90?highlight=Actions"
+      },
+      "aim bonus@@swade": {
+        "label": "Aim Bonus",
+        "source": "swade/92?highlight=Aim"
+      },
+      "aim@@combat_ref": {
+        "label": "Aim",
+        "source": "combat_ref/1?highlight=Aim"
+      },
+      "aiming@@swade": {
+        "label": "Aiming",
+        "source": "swade/92?highlight=Aim"
+      },
+      "area of effect and cover@@combat_ref": {
+        "label": "Area of Effect and Cover",
+        "source": "combat_ref/1?highlight=Area%20of%20Effect"
+      },
+      "area of effect@@combat_ref": {
+        "label": "Area of Effect",
+        "source": "combat_ref/1?highlight=Area%20of%20Effect"
+      },
+      "called shot modifiers@@combat_ref": {
+        "label": "Called Shot Modifiers",
+        "source": "combat_ref/1?highlight=Called%20Shots"
+      },
+      "called shot modifiers@@swade": {
+        "label": "Called Shot Modifiers",
+        "source": "swade/96?highlight=Called%20Shot"
+      },
+      "called shots@@combat_ref": {
+        "label": "Called Shots",
+        "source": "combat_ref/1?highlight=Called%20Shots"
+      },
+      "called shots@@swade": {
+        "label": "Called Shots",
+        "source": "swade/96?highlight=Called%20Shot"
+      },
+      "chases and vehicles@@swade": {
+        "label": "Chases and Vehicles",
+        "source": "swade/113?highlight=Chases%20%26%20Vehicles"
+      },
+      "combat options & situational rules@@combat_ref": {
+        "label": "Combat Options & Situational Rules",
+        "source": "combat_ref/1?highlight=Combat%20Options%20%26%20Situational%20Rules"
+      },
+      "combat@@swade": {
+        "label": "Combat",
+        "source": "swade/90?highlight=Combat"
+      },
+      "cover modifiers@@combat_ref": {
+        "label": "Cover Modifiers",
+        "source": "combat_ref/1?highlight=Cover"
+      },
+      "cover modifiers@@swade": {
+        "label": "Cover Modifiers",
+        "source": "swade/98?highlight=Cover",
+        "aliases": [
+          "Cover bonus",
+          "Cover penalties"
+        ]
+      },
+      "cover@@combat_ref": {
+        "label": "Cover",
+        "source": "combat_ref/1?highlight=Cover"
+      },
+      "damage@@swade": {
+        "label": "Damage",
+        "source": "swade/93?highlight=Applying%20Damage"
+      },
+      "defend@@combat_ref": {
+        "label": "Defend",
+        "source": "combat_ref/1?highlight=Defend"
+      },
+      "defend@@swade": {
+        "label": "Defend",
+        "source": "swade/96?highlight=Defend"
+      },
+      "disarm@@combat_ref": {
+        "label": "Disarm",
+        "source": "combat_ref/1?highlight=Disarm"
+      },
+      "disarm@@swade": {
+        "label": "Disarm",
+        "source": "swade/99?highlight=Disarm"
+      },
+      "dramatic tasks@@swade": {
+        "label": "Dramatic Tasks",
+        "source": "swade/122?highlight=Dramatic%20Tasks"
+      },
+      "drop@@swade": {
+        "label": "Drop",
+        "source": "swade/99?highlight=Drop"
+      },
+      "entangle@@swade": {
+        "label": "Entangle",
+        "source": "swade/97?highlight=Entangle"
+      },
+      "fear@@swade": {
+        "label": "Fear",
+        "source": "swade/124?highlight=Fear"
+      },
+      "free actions@@swade": {
+        "label": "Free Actions",
+        "source": "swade/91?highlight=Free%20Actions"
+      },
+      "gang up bonus@@swade": {
+        "label": "Gang Up Bonus",
+        "source": "swade/100?highlight=Ganging%20Up"
+      },
+      "gang up@@swade": {
+        "label": "Gang Up",
+        "source": "swade/100?highlight=Ganging%20Up"
+      },
+      "ganging up bonus@@combat_ref": {
+        "label": "Ganging Up Bonus",
+        "source": "combat_ref/1?highlight=Ganging%20Up"
+      },
+      "ganging up@@combat_ref": {
+        "label": "Ganging Up",
+        "source": "combat_ref/1?highlight=Ganging%20Up"
+      },
+      "grappling@@combat_ref": {
+        "label": "Grappling",
+        "source": "combat_ref/1?highlight=Grappling"
+      },
+      "grappling@@swade": {
+        "label": "Grappling",
+        "source": "swade/97?highlight=Grappling"
+      },
+      "hazards@@swade": {
+        "label": "Hazards",
+        "source": "swade/125?highlight=Hazards"
+      },
+      "healing@@swade": {
+        "label": "Healing",
+        "source": "swade/96?highlight=Healing"
+      },
+      "hold@@swade": {
+        "label": "Hold",
+        "source": "swade/100?highlight=Hold"
+      },
+      "illumination penalties@@combat_ref": {
+        "label": "Illumination Penalties",
+        "source": "combat_ref/1?highlight=Illumination"
+      },
+      "illumination penalties@@swade": {
+        "label": "Illumination Penalties",
+        "source": "swade/101?highlight=Illumination",
+        "aliases": [
+          "Lighting modifiers"
+        ]
+      },
+      "illumination@@combat_ref": {
+        "label": "Illumination",
+        "source": "combat_ref/1?highlight=Illumination"
+      },
+      "improvised weapon penalty@@combat_ref": {
+        "label": "Improvised Weapon Penalty",
+        "source": "combat_ref/1?highlight=Improvised%20Weapons"
+      },
+      "interludes@@swade": {
+        "label": "Interludes",
+        "source": "swade/130?highlight=Interludes"
+      },
+      "interrupting actions@@swade": {
+        "label": "Interrupting Actions",
+        "source": "swade/101?highlight=Interrupting%20Actions"
+      },
+      "mass battles@@swade": {
+        "label": "Mass Battles",
+        "source": "swade/131?highlight=Mass%20Battles"
+      },
+      "movement@@swade": {
+        "label": "Movement",
+        "source": "swade/91?highlight=Movement"
+      },
+      "multi-action penalty@@swade": {
+        "label": "Multi-Action Penalty",
+        "source": "swade/90?highlight=Multi-Action%20Penalty"
+      },
+      "networking@@swade": {
+        "label": "Networking",
+        "source": "swade/133?highlight=Networking"
+      },
+      "obstacles as armor@@swade": {
+        "label": "Obstacles as Armor",
+        "source": "swade/98?highlight=Obstacles%20add%20to%20Armor"
+      },
+      "off hand attack@@combat_ref": {
+        "label": "Off Hand Attack",
+        "source": "combat_ref/1?highlight=Off%20Hand%20Attack"
+      },
+      "off-hand attack penalty@@combat_ref": {
+        "label": "Off-Hand Attack Penalty",
+        "source": "combat_ref/1?highlight=Off%20Hand%20Attack"
+      },
+      "off-hand attack penalty@@swade": {
+        "label": "Off-Hand Attack Penalty",
+        "source": "swade/103?highlight=Off-hand",
+        "aliases": [
+          "Off hand attack"
+        ]
+      },
+      "on hold@@swade": {
+        "label": "On Hold",
+        "source": "swade/101?highlight=On%20Hold"
+      },
+      "prone modifiers@@combat_ref": {
+        "label": "Prone Modifiers",
+        "source": "combat_ref/1?highlight=Prone"
+      },
+      "prone modifiers@@swade": {
+        "label": "Prone Modifiers",
+        "source": "swade/100?highlight=Prone"
+      },
+      "prone@@combat_ref": {
+        "label": "Prone",
+        "source": "combat_ref/1?highlight=Prone"
+      },
+      "prone@@swade": {
+        "label": "Prone",
+        "source": "swade/100?highlight=Prone"
+      },
+      "push@@combat_ref": {
+        "label": "Push",
+        "source": "combat_ref/1?highlight=Push"
+      },
+      "push@@swade": {
+        "label": "Push",
+        "source": "swade/103?highlight=Push"
+      },
+      "quick encounters@@swade": {
+        "label": "Quick Encounters",
+        "source": "swade/134?highlight=Quick%20Encounters"
+      },
+      "range modifiers@@combat_ref": {
+        "label": "Range Modifiers",
+        "source": "combat_ref/1?highlight=Range"
+      },
+      "range modifiers@@swade": {
+        "label": "Range Modifiers",
+        "source": "swade/96?highlight=Range",
+        "aliases": [
+          "Range penalties"
+        ]
+      },
+      "range, cover, and scale@@swade": {
+        "label": "Range, Cover, and Scale",
+        "source": "swade/96?highlight=Range%2C%20Cover"
+      },
+      "range@@combat_ref": {
+        "label": "Range",
+        "source": "combat_ref/1?highlight=Range"
+      },
+      "ranged attacks in melee@@swade": {
+        "label": "Ranged Attacks in Melee",
+        "source": "swade/100?highlight=Ranged%20Attacks%20in%20Melee"
+      },
       "rank die@@starbreaker_star_marines": {
         "label": "Rank Die",
         "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
+      },
+      "rate of fire@@swade": {
+        "label": "Rate of Fire",
+        "source": "swade/92?highlight=Rate%20of%20Fire"
+      },
+      "ready@@swade": {
+        "label": "Ready",
+        "source": "swade/104?highlight=Readying"
+      },
+      "recoil penalty@@combat_ref": {
+        "label": "Recoil Penalty",
+        "source": "combat_ref/1?highlight=Recoil"
+      },
+      "recoil penalty@@swade": {
+        "label": "Recoil Penalty",
+        "source": "swade/104?highlight=Recoil"
+      },
+      "recoil@@combat_ref": {
+        "label": "Recoil",
+        "source": "combat_ref/1?highlight=Recoil"
+      },
+      "recovering from shaken@@swade": {
+        "label": "Recovering from Shaken",
+        "source": "swade/90?highlight=recovering%20from%20being%20Shaken"
+      },
+      "relative speed penalty@@swade": {
+        "label": "Relative Speed Penalty",
+        "source": "swade/105?highlight=Relative%20Speed%20Penalty"
+      },
+      "reload@@combat_ref": {
+        "label": "Reload",
+        "source": "combat_ref/1?highlight=Reload"
+      },
+      "reload@@swade": {
+        "label": "Reload",
+        "source": "swade/104?highlight=Reload"
+      },
+      "retreating from melee@@swade": {
+        "label": "Retreating from Melee",
+        "source": "swade/108?highlight=retreats%20from%20melee"
+      },
+      "running penalty@@combat_ref": {
+        "label": "Running Penalty",
+        "source": "combat_ref/1?highlight=Running"
+      },
+      "running penalty@@swade": {
+        "label": "Running Penalty",
+        "source": "swade/91?highlight=Running"
+      },
+      "running@@swade": {
+        "label": "Running",
+        "source": "swade/91?highlight=Running"
+      },
+      "scale modifiers@@swade": {
+        "label": "Scale Modifiers",
+        "source": "swade/105?highlight=Size%20%26%20Scale",
+        "aliases": [
+          "Size modifiers"
+        ]
+      },
+      "shooting into melee@@swade": {
+        "label": "Shooting into Melee",
+        "source": "swade/100?highlight=Ranged%20Attacks%20in%20Melee"
+      },
+      "size table modifiers@@swade": {
+        "label": "Size Table Modifiers",
+        "source": "swade/105?highlight=Size%20%26%20Scale"
+      },
+      "soak rolls@@swade": {
+        "label": "Soak Rolls",
+        "source": "swade/95?highlight=Soak%20Rolls"
+      },
+      "social conflict@@swade": {
+        "label": "Social Conflict",
+        "source": "swade/143?highlight=Social%20Conflict"
+      },
+      "speed modifiers@@swade": {
+        "label": "Speed Modifiers",
+        "source": "swade/105?highlight=Relative%20Speed%20Penalty"
+      },
+      "support bonus limit@@swade": {
+        "label": "Support Bonus Limit",
+        "source": "swade/105?highlight=maximum%20bonus%20from%20all%20Support%20rolls"
+      },
+      "support@@combat_ref": {
+        "label": "Support",
+        "source": "combat_ref/1?highlight=Support"
+      },
+      "support@@swade": {
+        "label": "Support",
+        "source": "swade/105?highlight=Support"
+      },
+      "tests@@combat_ref": {
+        "label": "Tests",
+        "source": "combat_ref/1?highlight=Tests"
+      },
+      "tests@@swade": {
+        "label": "Tests",
+        "source": "swade/106?highlight=Tests"
+      },
+      "travel@@swade": {
+        "label": "Travel",
+        "source": "swade/144?highlight=Travel"
+      },
+      "two-weapon fighting@@swade": {
+        "label": "Two-Weapon Fighting",
+        "source": "swade/103?highlight=Two%20Weapons"
+      },
+      "two-weapon penalty@@swade": {
+        "label": "Two-Weapon Penalty",
+        "source": "swade/103?highlight=two%20firearms"
+      },
+      "unstable platform penalty@@swade": {
+        "label": "Unstable Platform Penalty",
+        "source": "swade/108?highlight=Unstable%20Platform"
+      },
+      "wealth@@swade": {
+        "label": "Wealth",
+        "source": "swade/145?highlight=Wealth"
+      },
+      "wild attack@@combat_ref": {
+        "label": "Wild Attack",
+        "source": "combat_ref/1?highlight=Wild%20Attack"
+      },
+      "wild attack@@swade": {
+        "label": "Wild Attack",
+        "source": "swade/97?highlight=Wild%20Attack"
+      },
+      "wound penalties@@swade": {
+        "label": "Wound Penalties",
+        "source": "swade/94?highlight=Wound%20Penalties"
       }
     },
     "setting_rules": {
@@ -5095,6 +5487,14 @@
       "buckets of blood@@horror": {
         "label": "Buckets of Blood",
         "source": "horror/38?highlight=BUCKETS%20OF%20BLOOD"
+      },
+      "carouse@@doom_guard": {
+        "label": "Carouse",
+        "source": "doom_guard/38?highlight=CAROUSE"
+      },
+      "center@@doom_guard": {
+        "label": "Center",
+        "source": "doom_guard/38?highlight=CENTER"
       },
       "clashes@@sfc": {
         "label": "Clashes",
@@ -5219,6 +5619,10 @@
       "dynamic backlash@@swade": {
         "label": "Dynamic Backlash",
         "source": "swade/137?highlight=DYNAMIC%20BACKLASH"
+      },
+      "earn@@doom_guard": {
+        "label": "Earn",
+        "source": "doom_guard/38?highlight=EARN"
       },
       "energy management@@sfc": {
         "label": "Energy Management",
@@ -5436,6 +5840,14 @@
         "label": "Pressure",
         "source": "sfc/83?highlight=PRESSURE"
       },
+      "research@@doom_guard": {
+        "label": "Research",
+        "source": "doom_guard/38?highlight=RESEARCH"
+      },
+      "rest@@doom_guard": {
+        "label": "Rest",
+        "source": "doom_guard/38?highlight=REST"
+      },
       "resurrection@@secret_world": {
         "label": "Resurrection",
         "source": "secret_world/79?highlight=RESURRECTION"
@@ -5508,6 +5920,10 @@
         "label": "Throwdown",
         "source": "spc/35?highlight=THROWDOWN"
       },
+      "train@@doom_guard": {
+        "label": "Train",
+        "source": "doom_guard/39?highlight=TRAIN"
+      },
       "training montage@@spc": {
         "label": "Training Montage",
         "source": "spc/35?highlight=TRAINING%20MONTAGE"
@@ -5575,30 +5991,6 @@
       "wound cap@@swade": {
         "label": "Wound Cap",
         "source": "swade/140?highlight=WOUND%20CAP"
-      },
-      "carouse@@doom_guard": {
-        "label": "Carouse",
-        "source": "doom_guard/38?highlight=CAROUSE"
-      },
-      "center@@doom_guard": {
-        "label": "Center",
-        "source": "doom_guard/38?highlight=CENTER"
-      },
-      "earn@@doom_guard": {
-        "label": "Earn",
-        "source": "doom_guard/38?highlight=EARN"
-      },
-      "research@@doom_guard": {
-        "label": "Research",
-        "source": "doom_guard/38?highlight=RESEARCH"
-      },
-      "rest@@doom_guard": {
-        "label": "Rest",
-        "source": "doom_guard/38?highlight=REST"
-      },
-      "train@@doom_guard": {
-        "label": "Train",
-        "source": "doom_guard/39?highlight=TRAIN"
       }
     },
     "skills": {
@@ -7402,6 +7794,829 @@
       "xemp staff@@sfc": {
         "label": "XEMP Staff",
         "source": "sfc/50?highlight=XEMP%20Staff"
+      }
+    },
+    "modifiers": {
+      "aim bonus@@swade": {
+        "label": "Aim Bonus",
+        "source": "swade/92?highlight=Aim"
+      },
+      "area of effect and cover@@combat_ref": {
+        "label": "Area of Effect and Cover",
+        "source": "combat_ref/1?highlight=Area%20of%20Effect"
+      },
+      "called shot modifiers@@combat_ref": {
+        "label": "Called Shot Modifiers",
+        "source": "combat_ref/1?highlight=Called%20Shots"
+      },
+      "called shot modifiers@@swade": {
+        "label": "Called Shot Modifiers",
+        "source": "swade/96?highlight=Called%20Shot"
+      },
+      "cover modifiers@@combat_ref": {
+        "label": "Cover Modifiers",
+        "source": "combat_ref/1?highlight=Cover"
+      },
+      "cover modifiers@@swade": {
+        "label": "Cover Modifiers",
+        "source": "swade/98?highlight=Cover",
+        "aliases": [
+          "Cover bonus",
+          "Cover penalties"
+        ]
+      },
+      "gang up bonus@@swade": {
+        "label": "Gang Up Bonus",
+        "source": "swade/100?highlight=Ganging%20Up"
+      },
+      "ganging up bonus@@combat_ref": {
+        "label": "Ganging Up Bonus",
+        "source": "combat_ref/1?highlight=Ganging%20Up"
+      },
+      "illumination penalties@@combat_ref": {
+        "label": "Illumination Penalties",
+        "source": "combat_ref/1?highlight=Illumination"
+      },
+      "illumination penalties@@swade": {
+        "label": "Illumination Penalties",
+        "source": "swade/101?highlight=Illumination",
+        "aliases": [
+          "Lighting modifiers"
+        ]
+      },
+      "improvised weapon penalty@@combat_ref": {
+        "label": "Improvised Weapon Penalty",
+        "source": "combat_ref/1?highlight=Improvised%20Weapons"
+      },
+      "multi-action penalty@@swade": {
+        "label": "Multi-Action Penalty",
+        "source": "swade/90?highlight=Multi-Actions"
+      },
+      "obstacles as armor@@swade": {
+        "label": "Obstacles as Armor",
+        "source": "swade/98?highlight=Obstacles%20add%20to%20Armor"
+      },
+      "off-hand attack penalty@@combat_ref": {
+        "label": "Off-Hand Attack Penalty",
+        "source": "combat_ref/1?highlight=Off%20Hand%20Attack"
+      },
+      "off-hand attack penalty@@swade": {
+        "label": "Off-Hand Attack Penalty",
+        "source": "swade/103?highlight=Off-hand",
+        "aliases": [
+          "Off hand attack"
+        ]
+      },
+      "prone modifiers@@combat_ref": {
+        "label": "Prone Modifiers",
+        "source": "combat_ref/1?highlight=Prone"
+      },
+      "prone modifiers@@swade": {
+        "label": "Prone Modifiers",
+        "source": "swade/100?highlight=Prone"
+      },
+      "range modifiers@@combat_ref": {
+        "label": "Range Modifiers",
+        "source": "combat_ref/1?highlight=Range"
+      },
+      "range modifiers@@swade": {
+        "label": "Range Modifiers",
+        "source": "swade/96?highlight=Range",
+        "aliases": [
+          "Range penalties"
+        ]
+      },
+      "range, cover, and scale@@swade": {
+        "label": "Range, Cover, and Scale",
+        "source": "swade/96?highlight=Range%2C%20Cover"
+      },
+      "rate of fire@@swade": {
+        "label": "Rate of Fire",
+        "source": "swade/92?highlight=Rate%20of%20Fire"
+      },
+      "recoil penalty@@combat_ref": {
+        "label": "Recoil Penalty",
+        "source": "combat_ref/1?highlight=Recoil"
+      },
+      "recoil penalty@@swade": {
+        "label": "Recoil Penalty",
+        "source": "swade/104?highlight=Recoil"
+      },
+      "relative speed penalty@@swade": {
+        "label": "Relative Speed Penalty",
+        "source": "swade/105?highlight=Relative%20Speed%20Penalty"
+      },
+      "running penalty@@combat_ref": {
+        "label": "Running Penalty",
+        "source": "combat_ref/1?highlight=Running"
+      },
+      "running penalty@@swade": {
+        "label": "Running Penalty",
+        "source": "swade/91?highlight=Running"
+      },
+      "scale modifiers@@swade": {
+        "label": "Scale Modifiers",
+        "source": "swade/105?highlight=Size%20%26%20Scale",
+        "aliases": [
+          "Size modifiers"
+        ]
+      },
+      "shooting into melee@@swade": {
+        "label": "Shooting into Melee",
+        "source": "swade/100?highlight=Ranged%20Attacks%20in%20Melee"
+      },
+      "size table modifiers@@swade": {
+        "label": "Size Table Modifiers",
+        "source": "swade/105?highlight=Size%20%26%20Scale"
+      },
+      "speed modifiers@@swade": {
+        "label": "Speed Modifiers",
+        "source": "swade/105?highlight=Relative%20Speed%20Penalty"
+      },
+      "support bonus limit@@swade": {
+        "label": "Support Bonus Limit",
+        "source": "swade/105?highlight=maximum%20bonus%20from%20all%20Support%20rolls"
+      },
+      "two-weapon penalty@@swade": {
+        "label": "Two-Weapon Penalty",
+        "source": "swade/103?highlight=two%20firearms"
+      },
+      "unstable platform penalty@@swade": {
+        "label": "Unstable Platform Penalty",
+        "source": "swade/108?highlight=Unstable%20Platform"
+      },
+      "wound penalties@@swade": {
+        "label": "Wound Penalties",
+        "source": "swade/94?highlight=Wound%20Penalties"
+      }
+    },
+    "situational_rules": {
+      "area effect attacks@@swade": {
+        "label": "Area Effect Attacks",
+        "source": "swade/96?highlight=Area%20Effect"
+      },
+      "breaking things@@swade": {
+        "label": "Breaking Things",
+        "source": "swade/98?highlight=Breaking%20Things"
+      },
+      "bump@@chase_ref": {
+        "label": "Bump",
+        "source": "chase_ref/1?highlight=Bump"
+      },
+      "change position@@chase_ref": {
+        "label": "Change Position",
+        "source": "chase_ref/1?highlight=Change%20Position"
+      },
+      "chase actions@@chase_ref": {
+        "label": "Chase Actions",
+        "source": "chase_ref/1?highlight=Chase%20Actions"
+      },
+      "chases@@swade": {
+        "label": "Chases",
+        "source": "swade/113?highlight=Chases%20%26%20Vehicles"
+      },
+      "complications@@chase_ref": {
+        "label": "Complications",
+        "source": "chase_ref/1?highlight=Complications"
+      },
+      "cover and obstacles@@swade": {
+        "label": "Cover and Obstacles",
+        "source": "swade/98?highlight=Cover%20%26%20Obstacles"
+      },
+      "disease@@swade": {
+        "label": "Disease",
+        "source": "swade/129?highlight=Disease"
+      },
+      "dramatic tasks@@swade": {
+        "label": "Dramatic Tasks",
+        "source": "swade/122?highlight=Dramatic%20Tasks"
+      },
+      "drowning@@swade": {
+        "label": "Drowning",
+        "source": "swade/126?highlight=Drowning"
+      },
+      "environmental conditions@@swade": {
+        "label": "Environmental Conditions",
+        "source": "swade/125?highlight=Hazards"
+      },
+      "environmental hazards@@swade": {
+        "label": "Environmental Hazards",
+        "source": "swade/125?highlight=Hazards"
+      },
+      "evade@@chase_ref": {
+        "label": "Evade",
+        "source": "chase_ref/1?highlight=Evade"
+      },
+      "falling@@swade": {
+        "label": "Falling",
+        "source": "swade/127?highlight=Falling"
+      },
+      "fatigue@@swade": {
+        "label": "Fatigue",
+        "source": "swade/128?highlight=Fatigue"
+      },
+      "fear checks@@swade": {
+        "label": "Fear Checks",
+        "source": "swade/124?highlight=Fear%20Table"
+      },
+      "force@@chase_ref": {
+        "label": "Force",
+        "source": "chase_ref/1?highlight=Force"
+      },
+      "healing and the golden hour@@swade": {
+        "label": "Healing and the Golden Hour",
+        "source": "swade/96?highlight=Golden%20Hour"
+      },
+      "hold steady@@chase_ref": {
+        "label": "Hold Steady",
+        "source": "chase_ref/1?highlight=Hold%20Steady"
+      },
+      "interludes@@swade": {
+        "label": "Interludes",
+        "source": "swade/130?highlight=Interludes"
+      },
+      "mass battles@@swade": {
+        "label": "Mass Battles",
+        "source": "swade/131?highlight=Mass%20Battles"
+      },
+      "networking@@swade": {
+        "label": "Networking",
+        "source": "swade/133?highlight=Networking"
+      },
+      "poison@@swade": {
+        "label": "Poison",
+        "source": "swade/129?highlight=Poison"
+      },
+      "quick encounters@@swade": {
+        "label": "Quick Encounters",
+        "source": "swade/134?highlight=Quick%20Encounters"
+      },
+      "situational rules@@swade": {
+        "label": "Situational Rules",
+        "source": "swade/97?highlight=Situational%20Rules"
+      },
+      "social conflicts@@swade": {
+        "label": "Social Conflicts",
+        "source": "swade/143?highlight=Social%20Conflict"
+      },
+      "traps@@swade": {
+        "label": "Traps",
+        "source": "swade/125?highlight=Traps"
+      },
+      "travel@@swade": {
+        "label": "Travel",
+        "source": "swade/144?highlight=Travel"
+      },
+      "vehicle maneuvers@@swade": {
+        "label": "Vehicle Maneuvers",
+        "source": "swade/113?highlight=Vehicle"
+      }
+    },
+    "tables": {
+      "acquisition mission table@@ne_invasion": {
+        "label": "Acquisition Mission Table",
+        "source": "ne_invasion/39?highlight=Acquisition%20Mission%20Table"
+      },
+      "atmosphere table@@sfc": {
+        "label": "Atmosphere Table",
+        "source": "sfc/191?highlight=Atmosphere"
+      },
+      "authority table@@sfc": {
+        "label": "Authority Table",
+        "source": "sfc/192?highlight=Authority"
+      },
+      "bolts and arrows table@@fantasy": {
+        "label": "Bolts and Arrows Table",
+        "source": "fantasy/153?highlight=Bolts%20%26%20Arrows"
+      },
+      "breakdown table@@doom_guard": {
+        "label": "Breakdown Table",
+        "source": "doom_guard/40?highlight=Breakdown%20Table"
+      },
+      "client table@@starbreaker_star_marines": {
+        "label": "Client Table",
+        "source": "starbreaker_star_marines/63?highlight=Client%20Table"
+      },
+      "components and penalties table@@horror": {
+        "label": "Components and Penalties Table",
+        "source": "horror/72?highlight=Component%20%26%20Penalties%20Table"
+      },
+      "cover bonus table@@swade": {
+        "label": "Cover Bonus Table",
+        "source": "swade/98?highlight=Cover%20Bonus"
+      },
+      "cover penalties table@@swade": {
+        "label": "Cover Penalties Table",
+        "source": "swade/98?highlight=Cover%20Penalties"
+      },
+      "crafting table@@fantasy": {
+        "label": "Crafting Table",
+        "source": "fantasy/169?highlight=Crafting%20Table"
+      },
+      "critical failure results@@swade": {
+        "label": "Critical Failure Results",
+        "source": "swade/116?highlight=Critical%20Failure"
+      },
+      "customs tables@@sfc": {
+        "label": "Customs Tables",
+        "source": "sfc/192?highlight=Customs"
+      },
+      "dilemma table@@sfc": {
+        "label": "Dilemma Table",
+        "source": "sfc/193?highlight=Dilemma"
+      },
+      "dominant government table@@sfc": {
+        "label": "Dominant Government Table",
+        "source": "sfc/192?highlight=Dominant%20Government"
+      },
+      "dominant terrain table@@sfc": {
+        "label": "Dominant Terrain Table",
+        "source": "sfc/191?highlight=Dominant%20Terrain"
+      },
+      "fear table@@swade": {
+        "label": "Fear Table",
+        "source": "swade/123?highlight=Fear%20Table"
+      },
+      "injury table@@swade": {
+        "label": "Injury Table",
+        "source": "swade/94?highlight=Injury%20Table"
+      },
+      "magic armor table@@fantasy": {
+        "label": "Magic Armor Table",
+        "source": "fantasy/151?highlight=Magic%20Armor"
+      },
+      "magic jewelry table@@fantasy": {
+        "label": "Magic Jewelry Table",
+        "source": "fantasy/153?highlight=Magic%20Jewelry"
+      },
+      "magic potions table@@fantasy": {
+        "label": "Magic Potions Table",
+        "source": "fantasy/153?highlight=Magic%20Potions"
+      },
+      "magic scrolls table@@fantasy": {
+        "label": "Magic Scrolls Table",
+        "source": "fantasy/154?highlight=Magic%20Scrolls"
+      },
+      "magic shields table@@fantasy": {
+        "label": "Magic Shields Table",
+        "source": "fantasy/151?highlight=Magic%20Shields"
+      },
+      "magic staves table@@fantasy": {
+        "label": "Magic Staves Table",
+        "source": "fantasy/152?highlight=Magic%20Staves"
+      },
+      "magic weapons table@@fantasy": {
+        "label": "Magic Weapons Table",
+        "source": "fantasy/152?highlight=Magic%20Weapons"
+      },
+      "mission type table@@ne_invasion": {
+        "label": "Mission Type Table",
+        "source": "ne_invasion/39?highlight=Mission%20Type%20Table"
+      },
+      "obstacle hardness table@@swade": {
+        "label": "Obstacle Hardness Table",
+        "source": "swade/98?highlight=Obstacle%20Hardness"
+      },
+      "out of control table@@swade": {
+        "label": "Out of Control Table",
+        "source": "swade/116?highlight=Out%20of%20Control"
+      },
+      "planetary gravity table@@sfc": {
+        "label": "Planetary Gravity Table",
+        "source": "sfc/191?highlight=Planetary%20Gravity"
+      },
+      "population density table@@sfc": {
+        "label": "Population Density Table",
+        "source": "sfc/192?highlight=Population%20Density"
+      },
+      "random treasure table@@fantasy": {
+        "label": "Random Treasure Table",
+        "source": "fantasy/150?highlight=Random%20Treasure%20Table"
+      },
+      "reaction table@@swade": {
+        "label": "Reaction Table",
+        "source": "swade/32?highlight=Reaction%20Table"
+      },
+      "reconnaissance mission table@@ne_invasion": {
+        "label": "Reconnaissance Mission Table",
+        "source": "ne_invasion/40?highlight=Reconnaissance%20Mission%20Table"
+      },
+      "recovery mission table@@ne_invasion": {
+        "label": "Recovery Mission Table",
+        "source": "ne_invasion/39?highlight=Recovery%20Mission%20Table"
+      },
+      "recruitment mission table@@ne_invasion": {
+        "label": "Recruitment Mission Table",
+        "source": "ne_invasion/40?highlight=Recruitment%20Mission%20Table"
+      },
+      "relative speed penalty table@@swade": {
+        "label": "Relative Speed Penalty Table",
+        "source": "swade/105?highlight=Relative%20Speed%20Penalty"
+      },
+      "sabotage mission table@@ne_invasion": {
+        "label": "Sabotage Mission Table",
+        "source": "ne_invasion/40?highlight=Sabotage%20Mission%20Table"
+      },
+      "search and destroy mission table@@ne_invasion": {
+        "label": "Search and Destroy Mission Table",
+        "source": "ne_invasion/41?highlight=Search%20and%20Destroy%20Mission%20Table"
+      },
+      "size table@@swade": {
+        "label": "Size Table",
+        "source": "swade/178?highlight=Size%20Table"
+      },
+      "social conflict results table@@swade": {
+        "label": "Social Conflict Results Table",
+        "source": "swade/142?highlight=Social%20Conflict%20Results"
+      },
+      "spaceport table@@sfc": {
+        "label": "Spaceport Table",
+        "source": "sfc/193?highlight=Spaceport"
+      },
+      "standard mission complication table@@ne_invasion": {
+        "label": "Standard Mission Complication Table",
+        "source": "ne_invasion/41?highlight=Standard%20Mission%20Complication%20Table"
+      },
+      "standard mission location table@@ne_invasion": {
+        "label": "Standard Mission Location Table",
+        "source": "ne_invasion/41?highlight=Standard%20Mission%20Location%20Table"
+      },
+      "standard mission opposition table@@ne_invasion": {
+        "label": "Standard Mission Opposition Table",
+        "source": "ne_invasion/41?highlight=Standard%20Mission%20Opposition%20Table"
+      },
+      "systems table@@sfc": {
+        "label": "Systems Table",
+        "source": "sfc/95?highlight=Systems%20Table"
+      },
+      "tome table@@fantasy": {
+        "label": "Tome Table",
+        "source": "fantasy/155?highlight=Tome"
+      },
+      "train fear table@@doom_guard": {
+        "label": "Train Fear Table",
+        "source": "doom_guard/39?highlight=Train%20Fear%20Table"
+      },
+      "vehicle critical hit table@@swade": {
+        "label": "Vehicle Critical Hit Table",
+        "source": "swade/116?highlight=Vehicle%20Critical%20Hit"
+      },
+      "wondrous items table@@fantasy": {
+        "label": "Wondrous Items Table",
+        "source": "fantasy/155?highlight=Wondrous%20Items"
+      }
+    },
+    "setting_references": {
+      "chase reference: maneuvers@@chase_ref": {
+        "label": "Chase Reference: Maneuvers",
+        "source": "chase_ref/1?highlight=Maneuvering"
+      },
+      "combat reference: combat options@@combat_ref": {
+        "label": "Combat Reference: Combat Options",
+        "source": "combat_ref/1?highlight=Combat%20Options%20%26%20Situational%20Rules"
+      },
+      "combat reference: modifiers@@combat_ref": {
+        "label": "Combat Reference: Modifiers",
+        "source": "combat_ref/1?highlight=Range"
+      },
+      "combat survival guide: combat@@combat_sg": {
+        "label": "Combat Survival Guide: Combat",
+        "source": "combat_sg/1?highlight=Combat"
+      },
+      "combat survival guide: modifiers@@combat_sg": {
+        "label": "Combat Survival Guide: Modifiers",
+        "source": "combat_sg/2?highlight=Modifiers"
+      },
+      "doom guard: beyond legacy city@@doom_guard": {
+        "label": "Doom Guard: Beyond Legacy City",
+        "source": "doom_guard/23?highlight=Beyond%20Legacy%20City"
+      },
+      "doom guard: legacy city@@doom_guard": {
+        "label": "Doom Guard: Legacy City",
+        "source": "doom_guard/8?highlight=Legacy%20City"
+      },
+      "necessary evil: a world of evil@@ne_invasion": {
+        "label": "Necessary Evil: A World of Evil",
+        "source": "ne_invasion/18?highlight=A%20World%20of%20Evil"
+      },
+      "necessary evil: star city gazetteer@@ne_invasion": {
+        "label": "Necessary Evil: Star City Gazetteer",
+        "source": "ne_invasion/25?highlight=Star%20City%20Gazetteer"
+      },
+      "necessary evil: the rest of the world@@ne_invasion": {
+        "label": "Necessary Evil: The Rest of the World",
+        "source": "ne_invasion/12?highlight=The%20Rest%20of%20the%20World"
+      },
+      "secret world of north america: points of interest@@secret_world_na": {
+        "label": "Secret World of North America: Points of Interest",
+        "source": "secret_world_na/11?highlight=Points%20of%20Interest"
+      },
+      "secret world: factions and favors@@secret_world": {
+        "label": "Secret World: Factions and Favors",
+        "source": "secret_world/80?highlight=Factions%20and%20Favors"
+      },
+      "secret world: persons of interest@@secret_world": {
+        "label": "Secret World: Persons of Interest",
+        "source": "secret_world/141?highlight=Persons%20of%20Interest"
+      },
+      "starbreaker core: setting rules@@starbreaker_core": {
+        "label": "Starbreaker Core: Setting Rules",
+        "source": "starbreaker_core/105?highlight=Setting%20Rules"
+      },
+      "starbreaker star marines: setting overview@@starbreaker_star_marines": {
+        "label": "Starbreaker Star Marines: Setting Overview",
+        "source": "starbreaker_star_marines/3?highlight=Star%20Marines"
+      },
+      "starbreaker star marines: theaters of conflict@@starbreaker_star_marines": {
+        "label": "Starbreaker Star Marines: Theaters of Conflict",
+        "source": "starbreaker_star_marines/9?highlight=Theaters%20of%20Conflict"
+      },
+      "starbreaker star marshals: making a marshal@@starbreaker_star_marshals": {
+        "label": "Starbreaker Star Marshals: Making a Marshal",
+        "source": "starbreaker_star_marshals/7?highlight=Making%20a%20Marshal"
+      },
+      "starbreaker: a guide to the galaxy@@starbreaker_core": {
+        "label": "Starbreaker: A Guide to the Galaxy",
+        "source": "starbreaker_core/10?highlight=A%20Guide%20to%20the%20Galaxy"
+      },
+      "starbreaker: the corvo incident@@starbreaker_core": {
+        "label": "Starbreaker: The Corvo Incident",
+        "source": "starbreaker_core/15?highlight=The%20Corvo%20Incident"
+      },
+      "starbreaker: the galaxy today@@starbreaker_core": {
+        "label": "Starbreaker: The Galaxy Today",
+        "source": "starbreaker_core/9?highlight=The%20Galaxy%20Today"
+      }
+    },
+    "factions": {
+      "death’s head@@doom_guard": {
+        "label": "Death’s Head",
+        "source": "doom_guard/27?highlight=Death%E2%80%99s%20Head"
+      },
+      "doom guard@@doom_guard": {
+        "label": "Doom Guard",
+        "source": "doom_guard/4?highlight=Doom%20Guard"
+      },
+      "nohgotha remnants@@starbreaker_star_marines": {
+        "label": "Nohgotha Remnants",
+        "source": "starbreaker_star_marines/10?highlight=Nohgotha%20Remnants"
+      },
+      "omegan resistance@@ne_invasion": {
+        "label": "Omegan Resistance",
+        "source": "ne_invasion/5?highlight=Omegans"
+      },
+      "the council of venice@@secret_world": {
+        "label": "The Council of Venice",
+        "source": "secret_world/187?highlight=Council%20of%20Venice"
+      },
+      "the dragon@@secret_world": {
+        "label": "The Dragon",
+        "source": "secret_world/64?highlight=Dragon"
+      },
+      "the four families@@doom_guard": {
+        "label": "The Four Families",
+        "source": "doom_guard/26?highlight=Four%20Families"
+      },
+      "the hollows@@doom_guard": {
+        "label": "The Hollows",
+        "source": "doom_guard/26?highlight=Hollows"
+      },
+      "the illuminati@@secret_world": {
+        "label": "The Illuminati",
+        "source": "secret_world/63?highlight=Illuminati"
+      },
+      "the morninglight@@secret_world": {
+        "label": "The Morninglight",
+        "source": "secret_world/153?highlight=Morninglight"
+      },
+      "the orochi@@secret_world": {
+        "label": "The Orochi",
+        "source": "secret_world/72?highlight=Orochi"
+      },
+      "the phoenicians@@secret_world": {
+        "label": "The Phoenicians",
+        "source": "secret_world/76?highlight=Phoenicians"
+      },
+      "the proteans@@ne_invasion": {
+        "label": "The Proteans",
+        "source": "ne_invasion/19?highlight=Proteans"
+      },
+      "the templars@@secret_world": {
+        "label": "The Templars",
+        "source": "secret_world/62?highlight=Templars"
+      },
+      "the v’sori empire@@ne_invasion": {
+        "label": "The V’sori Empire",
+        "source": "ne_invasion/4?highlight=V%E2%80%99sori"
+      },
+      "vulkolasi union@@starbreaker_core": {
+        "label": "Vulkolasi Union",
+        "source": "starbreaker_core/8?highlight=Vulkolasi%20Union"
+      }
+    },
+    "locations": {
+      "agartha@@secret_world": {
+        "label": "Agartha",
+        "source": "secret_world/15?highlight=Agartha"
+      },
+      "athena station@@starbreaker_core": {
+        "label": "Athena Station",
+        "source": "starbreaker_core/10?highlight=Athena%20Station"
+      },
+      "atlantis@@ne_invasion": {
+        "label": "Atlantis",
+        "source": "ne_invasion/11?highlight=Atlantis"
+      },
+      "boston@@secret_world_na": {
+        "label": "Boston",
+        "source": "secret_world_na/53?highlight=Boston"
+      },
+      "corvo@@starbreaker_core": {
+        "label": "Corvo",
+        "source": "starbreaker_core/13?highlight=Corvo"
+      },
+      "downtown@@ne_invasion": {
+        "label": "Downtown",
+        "source": "ne_invasion/6?highlight=Downtown"
+      },
+      "eastpoint@@ne_invasion": {
+        "label": "Eastpoint",
+        "source": "ne_invasion/8?highlight=Eastpoint"
+      },
+      "laporta@@starbreaker_star_marines": {
+        "label": "Laporta",
+        "source": "starbreaker_star_marines/11?highlight=Laporta"
+      },
+      "legacy city@@doom_guard": {
+        "label": "Legacy City",
+        "source": "doom_guard/8?highlight=Legacy%20City"
+      },
+      "london@@secret_world": {
+        "label": "London",
+        "source": "secret_world/69?highlight=London"
+      },
+      "manhattan@@ne_invasion": {
+        "label": "Manhattan",
+        "source": "ne_invasion/24?highlight=Manhattan"
+      },
+      "new orleans@@secret_world_na": {
+        "label": "New Orleans",
+        "source": "secret_world_na/13?highlight=New%20Orleans"
+      },
+      "new york@@secret_world_na": {
+        "label": "New York",
+        "source": "secret_world_na/8?highlight=New%20York"
+      },
+      "northpoint@@ne_invasion": {
+        "label": "Northpoint",
+        "source": "ne_invasion/27?highlight=Northpoint"
+      },
+      "oridium nebula@@starbreaker_core": {
+        "label": "Oridium Nebula",
+        "source": "starbreaker_core/17?highlight=Oridium%20Nebula"
+      },
+      "purgatory@@starbreaker_core": {
+        "label": "Purgatory",
+        "source": "starbreaker_core/11?highlight=Purgatory"
+      },
+      "sistroka: zaka@@starbreaker_core": {
+        "label": "Sistroka: Zaka",
+        "source": "starbreaker_core/19?highlight=Sistroka%3A%20Zaka"
+      },
+      "southpoint@@ne_invasion": {
+        "label": "Southpoint",
+        "source": "ne_invasion/9?highlight=Southpoint"
+      },
+      "sozin: dunar@@starbreaker_core": {
+        "label": "Sozin: Dunar",
+        "source": "starbreaker_core/16?highlight=Sozin%3A%20Dunar"
+      },
+      "star city@@ne_invasion": {
+        "label": "Star City",
+        "source": "ne_invasion/5?highlight=Star%20City"
+      },
+      "stygia@@doom_guard": {
+        "label": "Stygia",
+        "source": "doom_guard/6?highlight=Stygia"
+      },
+      "the spire@@doom_guard": {
+        "label": "The Spire",
+        "source": "doom_guard/22?highlight=The%20Spire"
+      },
+      "the v’sori enclave@@doom_guard": {
+        "label": "The V’sori Enclave",
+        "source": "doom_guard/21?highlight=V%E2%80%99sori%20Enclave"
+      },
+      "tokyo@@secret_world": {
+        "label": "Tokyo",
+        "source": "secret_world/8?highlight=Tokyo"
+      },
+      "uptown@@ne_invasion": {
+        "label": "Uptown",
+        "source": "ne_invasion/6?highlight=Uptown"
+      }
+    },
+    "organizations": {
+      "council of venice@@secret_world": {
+        "label": "Council of Venice",
+        "source": "secret_world/187?highlight=Council%20of%20Venice"
+      },
+      "death’s head@@doom_guard": {
+        "label": "Death’s Head",
+        "source": "doom_guard/27?highlight=Death%E2%80%99s%20Head"
+      },
+      "doom guard@@doom_guard": {
+        "label": "Doom Guard",
+        "source": "doom_guard/4?highlight=Doom%20Guard"
+      },
+      "first legacy bank@@doom_guard": {
+        "label": "First Legacy Bank",
+        "source": "doom_guard/14?highlight=First%20Legacy%20Bank"
+      },
+      "first legacy security force@@doom_guard": {
+        "label": "First Legacy Security Force",
+        "source": "doom_guard/14?highlight=First%20Legacy%20Security%20Force",
+        "aliases": [
+          "FirstSec",
+          "FLSF"
+        ]
+      },
+      "legacy city police department@@doom_guard": {
+        "label": "Legacy City Police Department",
+        "source": "doom_guard/16?highlight=Legacy%20City%20Police%20Department",
+        "aliases": [
+          "LCPD"
+        ]
+      },
+      "legacy city university@@doom_guard": {
+        "label": "Legacy City University",
+        "source": "doom_guard/18?highlight=Legacy%20City%20University"
+      },
+      "legacy herald@@doom_guard": {
+        "label": "Legacy Herald",
+        "source": "doom_guard/18?highlight=Legacy%20Herald"
+      },
+      "morninglight@@secret_world": {
+        "label": "Morninglight",
+        "source": "secret_world/153?highlight=Morninglight"
+      },
+      "omegan cells@@ne_invasion": {
+        "label": "Omegan Cells",
+        "source": "ne_invasion/5?highlight=Omegan"
+      },
+      "orochi group@@secret_world": {
+        "label": "Orochi Group",
+        "source": "secret_world/72?highlight=Orochi"
+      },
+      "star marine corps@@starbreaker_star_marines": {
+        "label": "Star Marine Corps",
+        "source": "starbreaker_star_marines/5?highlight=Welcome%20to%20the%20Corps"
+      },
+      "star marshals@@starbreaker_star_marshals": {
+        "label": "Star Marshals",
+        "source": "starbreaker_star_marshals/7?highlight=Star%20Marshals"
+      },
+      "star systems alliance@@starbreaker_core": {
+        "label": "Star Systems Alliance",
+        "source": "starbreaker_core/7?highlight=SSA"
+      },
+      "the cult of the dreaming ones@@secret_world_na": {
+        "label": "The Cult of the Dreaming Ones",
+        "source": "secret_world_na/7?highlight=Dreaming%20One%20cult"
+      },
+      "the four families@@doom_guard": {
+        "label": "The Four Families",
+        "source": "doom_guard/26?highlight=Four%20Families"
+      },
+      "the longshoremen@@ne_invasion": {
+        "label": "The Longshoremen",
+        "source": "ne_invasion/31?highlight=Longshoremen"
+      },
+      "the syndicate@@starbreaker_star_marines": {
+        "label": "The Syndicate",
+        "source": "starbreaker_star_marines/11?highlight=Syndicate"
+      },
+      "vanguard defense force@@doom_guard": {
+        "label": "Vanguard Defense Force",
+        "source": "doom_guard/9?highlight=Vanguard%20Defense%20Force",
+        "aliases": [
+          "Vanguard"
+        ]
+      },
+      "vulkolasi union@@starbreaker_core": {
+        "label": "Vulkolasi Union",
+        "source": "starbreaker_core/8?highlight=Vulkolasi%20Union"
+      },
+      "v’sori empire@@ne_invasion": {
+        "label": "V’sori Empire",
+        "source": "ne_invasion/4?highlight=V%E2%80%99sori%20Empire"
+      },
+      "wadi@@doom_guard": {
+        "label": "WADI",
+        "source": "doom_guard/4?highlight=WADI",
+        "aliases": [
+          "World Anomaly Defense Initiative"
+        ]
       }
     }
   }

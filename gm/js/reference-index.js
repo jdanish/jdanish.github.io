@@ -453,12 +453,14 @@
     return deduped;
   }
 
-  const INDEX_TYPES = ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'vehicles', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'npcs', 'status_conditions', 'setting_rules', 'rules', 'other'];
+  const INDEX_TYPES = ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'vehicles', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'npcs', 'status_conditions', 'setting_rules', 'rules', 'modifiers', 'situational_rules', 'tables', 'setting_references', 'factions', 'locations', 'organizations', 'other'];
 
   function indexTypeLabel(type) {
     if (type === 'status_conditions') return 'status conditions';
     if (type === 'vehicles') return 'vehicles';
     if (type === 'setting_rules') return 'setting rules';
+    if (type === 'situational_rules') return 'situational rules';
+    if (type === 'setting_references') return 'setting references';
     return String(type || '');
   }
 
