@@ -21,6 +21,8 @@
     },
     previousSidebarTab: null,
     sidebarIndex: [],
+    referenceTypeFilter: '',
+    referenceBookFilter: '',
   };
 
   function getBooks() {
@@ -171,6 +173,30 @@
     return source.slice(start, end).replace(/\s+/g, ' ').trim();
   }
 
+  function highlightedSnippet(text, query) {
+    const value = String(text || '');
+    const term = String(query || '').trim();
+    const wrapper = document.createElement('span');
+    if (!term) {
+      wrapper.textContent = value;
+      return wrapper.innerHTML;
+    }
+    const start = value.toLocaleLowerCase().indexOf(term.toLocaleLowerCase());
+    if (start < 0) {
+      wrapper.textContent = value;
+      return wrapper.innerHTML;
+    }
+    wrapper.append(document.createTextNode(value.slice(0, start)));
+    const mark = document.createElement('mark');
+    mark.textContent = value.slice(start, start + term.length);
+    wrapper.append(mark, document.createTextNode(value.slice(start + term.length)));
+    return wrapper.innerHTML;
+  }
+
+  function humanizeIndexType(type) {
+    return String(type || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, (letter) => letter.toLocaleUpperCase());
+  }
+
   function getSidebarNotesText() {
     return String(window.GM.notes?.getText?.() || window.GM.storage?.state?.sidebarNotes || '').trim();
   }
@@ -227,9 +253,17 @@
     Object.entries(index).forEach(([category, bucket]) => {
       Object.entries(bucket || {}).forEach(([key, entry]) => {
         const aliases = Array.isArray(entry?.aliases) ? entry.aliases : [];
-        const haystack = normalizeSearchQuery([entry?.label, category, entry?.source, ...aliases].join(' '));
+        const source = String(entry?.source || '');
+        const bookKey = source.split('/')[0];
+        const bookTitle = window.BOOKS?.[bookKey]?.title || bookKey;
+        const haystack = normalizeSearchQuery([entry?.label, category, humanizeIndexType(category), bookTitle, source, ...aliases].join(' '));
         const idx = haystack.indexOf(q);
         if (idx < 0) return;
+        const matchingAlias = aliases.find((alias) => normalizeSearchQuery(alias).includes(q));
+        let snippet = `Type: ${humanizeIndexType(category)}`;
+        if (matchingAlias) snippet = `Alias: ${matchingAlias}`;
+        else if (normalizeSearchQuery(entry?.label).includes(q)) snippet = `Name: ${entry?.label || key}`;
+        else if (normalizeSearchQuery(bookTitle).includes(q)) snippet = `Book: ${bookTitle}`;
         results.push({
           type: 'reference',
           category,
@@ -237,7 +271,7 @@
           label: String(entry?.label || key),
           source: String(entry?.source || ''),
           aliases,
-          snippet: aliases.length ? `Aliases: ${aliases.join(', ')}` : '',
+          snippet,
           score: idx,
           entry: { category, key, ...entry },
         });
@@ -544,14 +578,74 @@
       const body = document.createElement('div');
       body.className = 'search-group-body';
 
-      referenceHits.forEach((hit) => {
+      const categories = [...new Set(referenceHits.map((hit) => hit.category))].sort();
+      const books = [...new Set(referenceHits.map((hit) => String(hit.source || '').split('/')[0]).filter(Boolean))]
+        .sort((a, b) => (getBookOrder(a) - getBookOrder(b)) || a.localeCompare(b));
+      if (searchState.referenceTypeFilter && !categories.includes(searchState.referenceTypeFilter)) searchState.referenceTypeFilter = '';
+      if (searchState.referenceBookFilter && !books.includes(searchState.referenceBookFilter)) searchState.referenceBookFilter = '';
+      const filters = document.createElement('div');
+      filters.className = 'search-reference-filters';
+      const typeFilter = document.createElement('select');
+      typeFilter.setAttribute('aria-label', 'Filter index results by type');
+      typeFilter.innerHTML = '<option value="">All types</option>';
+      categories.forEach((category) => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = humanizeIndexType(category);
+        typeFilter.appendChild(option);
+      });
+      typeFilter.value = searchState.referenceTypeFilter;
+      const bookFilter = document.createElement('select');
+      bookFilter.setAttribute('aria-label', 'Filter index results by book');
+      bookFilter.innerHTML = '<option value="">All books</option>';
+      books.forEach((bookKey) => {
+        const option = document.createElement('option');
+        option.value = bookKey;
+        option.textContent = window.BOOKS?.[bookKey]?.title || bookKey;
+        bookFilter.appendChild(option);
+      });
+      bookFilter.value = searchState.referenceBookFilter;
+      const clearFilters = document.createElement('button');
+      clearFilters.type = 'button';
+      clearFilters.className = 'btn search-reference-clear';
+      clearFilters.textContent = 'Clear filters';
+      clearFilters.hidden = !searchState.referenceTypeFilter && !searchState.referenceBookFilter;
+      filters.append(typeFilter, bookFilter, clearFilters);
+      body.appendChild(filters);
+
+      const filteredReferenceHits = referenceHits.filter((hit) => {
+        const bookKey = String(hit.source || '').split('/')[0];
+        return (!searchState.referenceTypeFilter || hit.category === searchState.referenceTypeFilter)
+          && (!searchState.referenceBookFilter || bookKey === searchState.referenceBookFilter);
+      });
+      const resultCount = document.createElement('div');
+      resultCount.className = 'search-reference-count';
+      resultCount.textContent = searchState.referenceTypeFilter || searchState.referenceBookFilter
+        ? `${filteredReferenceHits.length} of ${referenceHits.length} index matches`
+        : `${referenceHits.length} index matches`;
+      body.appendChild(resultCount);
+      typeFilter.addEventListener('change', () => {
+        searchState.referenceTypeFilter = typeFilter.value;
+        renderResults(query, referenceHits, sidebarHits, pdfHits, statusText);
+      });
+      bookFilter.addEventListener('change', () => {
+        searchState.referenceBookFilter = bookFilter.value;
+        renderResults(query, referenceHits, sidebarHits, pdfHits, statusText);
+      });
+      clearFilters.addEventListener('click', () => {
+        searchState.referenceTypeFilter = '';
+        searchState.referenceBookFilter = '';
+        renderResults(query, referenceHits, sidebarHits, pdfHits, statusText);
+      });
+
+      filteredReferenceHits.forEach((hit) => {
         const item = document.createElement('div');
         item.className = 'search-result-item search-reference-result';
         item.innerHTML = `
           <button type="button" class="btn search-result-main" data-search-hit="reference">
             <div class="search-result-title">${window.GM.utils.escapeHtml(hit.label)}</div>
-            <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.category)} · ${window.GM.utils.escapeHtml((window.BOOKS?.[String(hit.source || '').split('/')[0]]?.title) || String(hit.source || '').split('/')[0] || 'Book')} · p. ${window.GM.utils.escapeHtml(String((String(hit.source || '').split('/')[1] || '').split('?')[0] || '—'))}</div>
-            <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
+            <div class="search-result-meta">${window.GM.utils.escapeHtml(humanizeIndexType(hit.category))} · ${window.GM.utils.escapeHtml((window.BOOKS?.[String(hit.source || '').split('/')[0]]?.title) || String(hit.source || '').split('/')[0] || 'Book')} · p. ${window.GM.utils.escapeHtml(String((String(hit.source || '').split('/')[1] || '').split('?')[0] || '—'))}</div>
+            <div class="search-result-snippet">${highlightedSnippet(hit.snippet || '', query)}</div>
           </button>
           <div class="search-result-actions">
             <button type="button" class="btn" data-reference-action="edit">Edit</button>
@@ -564,6 +658,12 @@
         item.querySelector('[data-reference-action="pdf"]')?.addEventListener('click', () => window.GM.referenceIndex?.jumpToEntry?.(hit.entry));
         body.appendChild(item);
       });
+      if (!filteredReferenceHits.length) {
+        const empty = document.createElement('div');
+        empty.className = 'search-empty';
+        empty.textContent = 'No index entries match these filters.';
+        body.appendChild(empty);
+      }
 
       group.addEventListener('toggle', syncSearchCollapseButtonState);
       group.appendChild(body);
@@ -595,7 +695,7 @@
         item.innerHTML = `
           <div class="search-result-title">${window.GM.utils.escapeHtml(hit.title)}</div>
           <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.sectionTitle || '')}</div>
-          <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
+          <div class="search-result-snippet">${highlightedSnippet(hit.snippet || '', query)}</div>
         `;
 
         body.appendChild(item);
@@ -641,7 +741,7 @@
           item.innerHTML = `
             <div class="search-result-title">${window.GM.utils.escapeHtml(book.title)} · p. ${window.GM.utils.escapeHtml(hit.displayPage)}</div>
             <div class="search-result-meta">${window.GM.utils.escapeHtml(hit.pageLabel || '')}</div>
-            <div class="search-result-snippet">${window.GM.utils.escapeHtml(hit.snippet || '')}</div>
+            <div class="search-result-snippet">${highlightedSnippet(hit.snippet || '', query)}</div>
           `;
 
           body.appendChild(item);

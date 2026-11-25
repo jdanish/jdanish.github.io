@@ -969,6 +969,7 @@
         <button type="button" data-index-reset-view>Reset View</button>
         <button type="button" data-index-add class="primary">Add Entry</button><button type="button" data-index-save ${window.GM.data?.getStatus?.().connected && !window.GM.data?.getStatus?.().readOnly ? '' : 'disabled'}>Save to Data Folder</button><button type="button" data-index-reload ${window.GM.data?.getStatus?.().connected ? '' : 'disabled'}>Reload from Data Folder</button><button type="button" data-index-import>Import Index</button><button type="button" data-index-export>Export Index</button>
       </div>
+      <div class="reference-index-letter-nav" data-index-letter-nav role="group" aria-label="Jump to letter"></div>
       <div class="reference-index-summary" data-index-summary></div>
       <div class="reference-index-table-head" data-index-table-head></div>
       <div class="reference-index-browser-list" data-index-list></div>
@@ -1000,9 +1001,11 @@
     const list = wrap.querySelector('[data-index-list]');
     const summary = wrap.querySelector('[data-index-summary]');
     const tableHead = wrap.querySelector('[data-index-table-head]');
+    const letterNav = wrap.querySelector('[data-index-letter-nav]');
     const savedView = restoreState || getIndexViewState() || {};
     let sortKey = savedView.sortKey || 'label';
     let sortDir = savedView.sortDir === 'desc' ? 'desc' : 'asc';
+    let letterFilter = savedView.letter || '';
 
     function getSelectedBookKeys() {
       if (bookSelect.dataset.mobileSingle === 'true') {
@@ -1018,6 +1021,7 @@
         books: getSelectedBookKeys(),
         sortKey,
         sortDir,
+        letter: letterFilter,
         scrollTop: list.scrollTop,
       };
     }
@@ -1054,6 +1058,50 @@
           entries.push({ category, key, ...entry });
         });
       });
+      const getInitial = (label) => {
+        const first = String(label || '').trim().charAt(0).toLocaleUpperCase();
+        return /^[A-Z]$/.test(first) ? first : '#';
+      };
+      const availableLetters = [...new Set(entries.map((entry) => getInitial(entry.label)))].sort((a, b) => {
+        if (a === '#') return 1;
+        if (b === '#') return -1;
+        return a.localeCompare(b);
+      });
+      letterNav.replaceChildren();
+      const letterChoices = [''].concat(availableLetters);
+      letterChoices.forEach((letter) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `reference-index-letter${letterFilter === letter ? ' active' : ''}`;
+        button.textContent = letter || 'All';
+        button.setAttribute('aria-pressed', letterFilter === letter ? 'true' : 'false');
+        button.addEventListener('click', () => {
+          letterFilter = letter;
+          sortKey = 'label';
+          sortDir = 'asc';
+          list.scrollTop = 0;
+          persistViewState();
+          render();
+        });
+        letterNav.appendChild(button);
+      });
+      if (letterFilter) {
+        const clearLetter = document.createElement('button');
+        clearLetter.type = 'button';
+        clearLetter.className = 'reference-index-letter-clear';
+        clearLetter.textContent = `Clear “${letterFilter}”`;
+        clearLetter.addEventListener('click', () => {
+          letterFilter = '';
+          sortKey = 'label';
+          sortDir = 'asc';
+          list.scrollTop = 0;
+          persistViewState();
+          render();
+        });
+        letterNav.appendChild(clearLetter);
+      }
+      const unfilteredLetterCount = entries.length;
+      if (letterFilter) entries.splice(0, entries.length, ...entries.filter((entry) => getInitial(entry.label) === letterFilter));
       entries.sort((a, b) => {
         const sa = parseSource(a.source || '');
         const sb = parseSource(b.source || '');
@@ -1112,7 +1160,7 @@
       copyHead.title = 'Copy link to note';
       tableHead.append(editHead, showHead, copyHead, deleteHead);
 
-      summary.textContent = `${entries.length} result${entries.length === 1 ? '' : 's'} · ${getPendingHint()}`;
+      summary.textContent = `${entries.length}${letterFilter ? ` of ${unfilteredLetterCount}` : ''} result${entries.length === 1 ? '' : 's'}${letterFilter ? ` beginning with ${letterFilter}` : ''} · ${getPendingHint()}`;
 
       list.replaceChildren();
       if (!entries.length) { list.textContent = 'No matching references.'; return; }
@@ -1135,7 +1183,7 @@
             search: search.value,
             type: typeSelect.value,
             books: getSelectedBookKeys(),
-            sortKey, sortDir,
+            sortKey, sortDir, letter: letterFilter,
             scrollTop: list.scrollTop,
           };
           openEntryEditor(entry);
@@ -1243,6 +1291,7 @@
       allBooksOption.selected = true;
       sortKey = 'label';
       sortDir = 'asc';
+      letterFilter = '';
       list.scrollTop = 0;
       render();
     });
