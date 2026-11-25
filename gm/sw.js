@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-rulebook-add-book-row-fix';
+const CACHE_NAME = 'gm-reference-shell-v20261125-reference-index-types';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

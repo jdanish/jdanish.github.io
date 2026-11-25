@@ -163,7 +163,7 @@
       try {
         const moduleUrl = new URL('./reference-index.js', appScriptUrl || new URL('./', window.location.href));
         // Cache-bust the reference-index module when the index editor changes.
-        moduleUrl.searchParams.set('v', 'rules-setting-index-sections-20261125');
+        moduleUrl.searchParams.set('v', 'reference-index-type-detection-20261125');
         await import(moduleUrl.href);
       } catch (err) {
         console.error('Reference Index Builder failed to load', err);

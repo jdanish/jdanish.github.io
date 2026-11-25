@@ -1543,12 +1543,7 @@
       </div>
       <div class="reference-index-controls">
         <label>Book<select class="reference-index-book"></select></label>
-        <label>List type<select class="reference-index-kind">
-          <option value="edges">Edges</option>
-          <option value="hindrances">Hindrances</option>
-          <option value="ancestries">Ancestries</option>
-          <option value="powers">Powers</option>
-        </select></label>
+        <label>List type<select class="reference-index-kind"></select></label>
         <label>Printed page ranges<input class="reference-index-ranges" placeholder="37-53, 60-61" /></label>
         <button type="button" class="reference-index-scan">Scan pages</button>
       </div>
@@ -1573,6 +1568,21 @@
     const resultsEl = form.querySelector('.reference-index-results');
     const statusEl = form.querySelector('.reference-index-status');
     const countsEl = form.querySelector('.reference-index-counts');
+
+    const indexTypes = window.GM.referenceIndex?.INDEX_TYPES || ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'vehicles', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'characters', 'npcs', 'status_conditions', 'setting_rules', 'rules', 'modifiers', 'situational_rules', 'tables', 'setting_references', 'factions', 'locations', 'organizations', 'other'];
+    const readableType = (type) => ({
+      setting_rules: 'setting rules',
+      status_conditions: 'status conditions',
+      situational_rules: 'situational rules',
+      setting_references: 'setting references',
+    }[type] || type);
+    indexTypes.forEach((type) => {
+      const option = document.createElement('option');
+      option.value = type;
+      option.textContent = readableType(type);
+      kindSelect.appendChild(option);
+    });
+    kindSelect.value = 'edges';
 
     getBookEntries().forEach(([key, book]) => {
       const option = document.createElement('option');

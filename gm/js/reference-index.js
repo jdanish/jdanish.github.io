@@ -453,7 +453,7 @@
     return deduped;
   }
 
-  const INDEX_TYPES = ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'vehicles', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'npcs', 'status_conditions', 'setting_rules', 'rules', 'modifiers', 'situational_rules', 'tables', 'setting_references', 'factions', 'locations', 'organizations', 'other'];
+  const INDEX_TYPES = ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'vehicles', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'characters', 'npcs', 'status_conditions', 'setting_rules', 'rules', 'modifiers', 'situational_rules', 'tables', 'setting_references', 'factions', 'locations', 'organizations', 'other'];
 
   function indexTypeLabel(type) {
     if (type === 'status_conditions') return 'status conditions';
@@ -586,9 +586,23 @@
   function guessCategory(name, selectedText = '', bookKey = '') {
     const label = normalizeKey(name);
     const block = normalizeLine(selectedText);
-    const existing = findEntry(name);
-    if (existing) return existing.category;
     const hay = `${label} ${block}`.toLowerCase();
+    // A selected character/framework heading is a stronger signal than a
+    // same-named organization in another book.
+    if (/iconic framework|iconic path|character framework|character option|player character/.test(hay)) return 'characters';
+    if (/\b(npc|non-player character|named character)\b/.test(hay)) return 'npcs';
+    const existing = findEntry(name);
+    if (existing && !existing.ambiguous) return existing.category;
+    if (existing?.ambiguous) {
+      const characterMatch = existing.matches?.find((entry) => entry.category === 'characters');
+      if (characterMatch) return 'characters';
+      return existing.category;
+    }
+    if (/\b(faction|corporation|organization|guild|company|order)\b/.test(hay)) {
+      if (/\b(faction|corporation)\b/.test(hay)) return 'factions';
+      return 'organizations';
+    }
+    if (/\b(location|city|town|region|planet|world|kingdom|nation)\b/.test(hay)) return 'locations';
     if (/requirements?\s*[:]/.test(hay) || /edge/.test(hay)) return 'edges';
     if (/hindrance|major hindrance|minor hindrance/.test(hay)) return 'hindrances';
     if (/power points?|trappings?|range:|duration:/.test(hay)) return 'powers';
@@ -786,9 +800,12 @@
     const detectedType = !isExisting
       ? normalizeType(guessCategory(displayLabel || '', source.highlight || '', source.book || ''))
       : '';
+    // Do not reuse a previous entry's type for a new selected reference. A
+    // stale value (for example, Organizations) can silently misclassify a
+    // character when its selected text provides no strong type clues.
     const initialType = isExisting
       ? seededType || 'other'
-      : (detectedType && detectedType !== 'other' ? detectedType : (editorState.lastType || 'other'));
+      : (detectedType && detectedType !== 'other' ? detectedType : 'other');
 
     typeInput.value = initialType;
     if (source.book) bookSelect.value = source.book;
