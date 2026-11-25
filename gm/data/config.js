@@ -224,5 +224,140 @@ window.BOOKS = {
     preload: false,
     pages: [
     ]
+  },
+  "rifts_tomorrow_legion": {
+    order: 17,
+    title: "Rifts: The Tomorrow Legion Player’s Guide",
+    file: "pdfs/RIFTS_TomorrowLegion.pdf",
+    pageOffset: -1,
+    defaultPage: 3,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 3 },
+      { label: "Index", page: 144 }
+    ]
+  },
+  "rifts_gm_handbook": {
+    order: 18,
+    title: "Rifts: Game Master’s Handbook",
+    file: "pdfs/RIFTS_GM_Handbook.pdf",
+    pageOffset: -1,
+    defaultPage: 2,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 2 },
+      { label: "Index", page: 96 }
+    ]
+  },
+  "rifts_na_foes": {
+    order: 19,
+    title: "Rifts: Savage Foes of North America",
+    file: "pdfs/RIFTS_NA_Foes.pdf",
+    pageOffset: -1,
+    defaultPage: 2,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 2 },
+      { label: "Index", page: 96 }
+    ]
+  },
+  "rifts_atlantis": {
+    order: 20,
+    title: "Rifts: Atlantis and the Demon Seas",
+    file: "pdfs/RIFTS_Atlantis.pdf",
+    pageOffset: -1,
+    defaultPage: 2,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 2 },
+      { label: "Index", page: 192 }
+    ]
+  },
+  "rifts_phase_world": {
+    order: 21,
+    title: "Rifts: Phase World",
+    file: "pdfs/RIFTS_PhaseWorld.pdf",
+    pageOffset: 1,
+    defaultPage: 2,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: []
+  },
+  "swpf_core": {
+    order: 22,
+    title: "Savage Pathfinder Core Rules",
+    file: "pdfs/SWPF_Core.pdf",
+    pageOffset: -1,
+    defaultPage: 3,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 3 },
+      { label: "Index", page: 254 }
+    ]
+  },
+  "swpf_advanced_players_guide": {
+    order: 23,
+    title: "Savage Pathfinder Advanced Player’s Guide",
+    file: "pdfs/SWPF_AdvancedPlayersGuide.pdf",
+    pageOffset: -1,
+    defaultPage: 3,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 3 },
+      { label: "Index", page: 131 }
+    ]
+  },
+  "swpf_advanced_players_guide_2": {
+    order: 24,
+    title: "Savage Pathfinder Advanced Player’s Guide 2",
+    file: "pdfs/SWPF_AdvancedPlayersGuide2.pdf",
+    pageOffset: -1,
+    defaultPage: 3,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 3 },
+      { label: "Index", page: 127 }
+    ]
+  },
+  "swpf_bestiary": {
+    order: 25,
+    title: "Savage Pathfinder Bestiary",
+    file: "pdfs/SWPF_Bestiary.pdf",
+    pageOffset: -1,
+    defaultPage: 3,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 3 }
+    ]
+  },
+  "swpf_bestiary_2": {
+    order: 26,
+    title: "Savage Pathfinder Bestiary 2",
+    file: "pdfs/SWPF_Bestiary2.pdf",
+    pageOffset: -1,
+    defaultPage: 3,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+      { label: "TOC", page: 3 }
+    ]
   }
 };
