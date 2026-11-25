@@ -621,6 +621,7 @@
         const bookmark = getBookmark(tab, bookmarkId);
         const highlightText = bookmark?.highlight || target.dataset.highlight || '';
 
+        window.GM.ui?.setWorkspaceMode?.('rulebooks', { skipViewerRestore: true });
         await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
         return;
       }

@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=last-working-base-20261125">
+  <link rel="stylesheet" href="css/styles.css?v=index-copy-link-help-20261125">
 </head>
 <body>
   <div class="app">
@@ -87,7 +87,7 @@
           <div class="pages" id="pageLinks"></div>
         </div>
         <div class="frame" id="viewerFrame">
-          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=initiative-portrait-style-isolated-20261125" title="Savage Worlds table tools" loading="lazy"></iframe>
+          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=wild-card-extra-icons-20261125" title="Savage Worlds table tools" loading="lazy"></iframe>
         </div>
       </section>
     </main>
@@ -102,6 +102,7 @@
       <div class="gm-help-layout">
         <nav class="gm-help-nav" aria-label="Help topics">
           <a href="#help-start">Getting started</a>
+          <a href="#help-about">Why this app</a>
           <a href="#help-search">Search</a>
           <a href="#help-books">Rulebooks and reading</a>
           <a href="#help-data">Local data folder</a>
@@ -116,6 +117,12 @@
             <h2>Getting started</h2>
             <p>The app has two workspaces: <strong>Rulebooks</strong> for PDFs and your sidebar, and <strong>Tools</strong> for initiative and table aids. The sidebar has <strong>Rules</strong>, <strong>Current</strong>, and <strong>Search</strong> tabs. Your view, theme, open documents, and table tool state are saved in this browser.</p>
             <div class="gm-help-actions"><button type="button" data-help-action="search">Try Search</button><button type="button" data-help-action="data">Open data management</button></div>
+          </section>
+
+          <section id="help-about" class="gm-help-section">
+            <h2>Why this app exists</h2>
+            <p>This app is meant to support me as both a player and Game Master of Savage Worlds. I enjoy reading the books and want to keep them central. The challenge is keeping the books and useful details easy to find, so the app brings PDFs, rules notes, campaign notes, and character files together and links them back to the relevant book pages.</p>
+            <p>I want it to work with character builders such as savaged.us and dicey.cc by importing their data, while leaving validation to those tools. I prefer rolling physical dice, so the dice roller is here for times when I do not have my dice handy. Other tools already handle maps, initiative, and shared online tracking; I may connect more of that later, but for now I focus on the book reference and player-level tracking I enjoy and on features that are not already well served elsewhere.</p>
           </section>
 
           <section id="help-search" class="gm-help-section">
@@ -133,8 +140,8 @@
             <h2>Rulebooks and reading</h2>
             <ul>
               <li>Choose <strong>Rulebooks</strong>, then select a book tab. Page shortcuts and bookmarks are in the navigation strip below the workspace tabs.</li>
-              <li>Use the book-list button to choose which books appear as tabs. Hidden books can still be opened by links and included in search.</li>
-              <li>Use the navigation-strip toggle to collapse or expand book shortcuts and bookmarks. PDF.js controls provide page navigation, zoom, and presentation options.</li>
+              <li>Use the book-list button (<strong>☰</strong>) to choose which books appear as tabs. Hidden books can still be opened by links and included in search.</li>
+              <li>Use the navigation-strip toggle (<strong>▣</strong> to collapse, <strong>▢</strong> to expand) to show or hide book shortcuts and bookmarks. PDF.js controls provide page navigation, zoom, and presentation options.</li>
               <li>Select PDF text and right-click (or long-press on a touch screen) for actions such as bookmarking, copying text or a link, and creating a monster from a stat block.</li>
               <li>Add a bookmark with the <strong>＋</strong> control in the navigation strip. Give it a useful name; bookmarks are saved in this browser. Links can include a highlighted phrase.</li>
             </ul>
@@ -145,7 +152,7 @@
             <h2>Set up an editable local data folder</h2>
             <p>Server data is read-only. To edit and keep your own character, monster, and note files, download a copy and connect the extracted folder.</p>
             <ol>
-              <li>Open the sidebar’s <strong>Search</strong> tab and choose its data/Markdown tools button (the pencil icon), or use <strong>Open data management</strong> below.</li>
+              <li>Open the sidebar’s <strong>Search</strong> tab and choose its data/Markdown tools button (<strong>✎</strong>), or use <strong>Open data management</strong> below.</li>
               <li>Select <strong>Download Data Folder</strong>. The app downloads a ZIP containing the current data files. Unzip it to a folder you can keep and back up.</li>
               <li>In the same data panel, choose <strong>Connect Data Folder</strong> and select the unzipped folder containing <code>rules.md</code>, <code>workspace.json</code>, and the <code>characters</code>, <code>monsters</code>, and <code>notes</code> folders.</li>
               <li>Grant the browser access when prompted. The connected folder is editable from this browser. Keep the folder in place; if the browser loses access, use <strong>Reconnect Folder</strong>.</li>
@@ -169,7 +176,7 @@
           <section id="help-current-rules" class="gm-help-section">
             <h2>Rules and Current</h2>
             <p><strong>Rules</strong> is your persistent rules reference. <strong>Current</strong> holds the active character, monster, note, or campaign file. Open documents appear as tabs; drag tabs to reorder them and use × to close a tab. Closing a tab does not delete its file.</p>
-            <p>The sidebar’s data/Markdown panel can edit or download Rules, load Markdown, browse documents, manage the data folder, and open the Reference Index. Markdown headings, lists, tables, checkboxes, and PDF links render in the sidebar. In a connected writable folder, edits can be saved to the active file.</p>
+            <p>The sidebar’s data/Markdown panel (✎) can edit or download Rules, load Markdown, browse documents, manage the data folder, and open the Reference Index. Markdown headings, lists, tables, checkboxes, and PDF links render in the sidebar. In a connected writable folder, edits can be saved to the active file.</p>
           </section>
 
           <section id="help-tools" class="gm-help-section">
@@ -182,18 +189,19 @@
               <li><strong>Chase:</strong> manage chase participants and deal action cards.</li>
               <li><strong>Dramatic Task:</strong> set the task’s target and rounds, then record progress tokens.</li>
             </ul>
-            <p>Use the reset icon beside the Tools tab to clear table tool state. The reset control inside the Initiative panel clears saved table data.</p>
+            <p>Use the reset button (<strong>↻</strong>) beside the Tools tab to clear table tool state. The Initiative panel’s reset button (<strong>↻</strong>) clears saved table data; similar reset buttons in Chase and Dramatic Task reset those tools.</p>
             <button type="button" data-help-action="tools">Open Table Tools</button>
           </section>
 
           <section id="help-index" class="gm-help-section">
             <h2>Reference Index</h2>
-            <p>The index stores searchable rules, names, aliases, and source pages. Open it from the <strong>Index</strong> button beside the sidebar tabs. You can build or edit entries, import/export an index, and save it to a writable data folder. Some search results come from this curated index in addition to PDF text search.</p>
+            <p>The index stores searchable rules, names, aliases, and source pages. Open it from the <strong>Index</strong> button beside the sidebar tabs. Search by name or alias, filter by type or book, and sort by name, type, book, or page. Use <strong>🔍</strong> to open the entry in its book, <strong>✎</strong> to edit it, and <strong>🗑</strong> to remove it.</p>
+            <p>Select <strong>📋</strong> on an entry to copy a link to the clipboard. Paste it into a Rules, Current, or note Markdown file; it uses the app’s <code>[[book/page?highlight=phrase|label]]</code> link format and opens the matching PDF page with the phrase highlighted. You can add entries, import or export an index, and save changes to a writable data folder. Curated index results are also included in sidebar search.</p>
           </section>
 
           <section id="help-mobile" class="gm-help-section">
             <h2>Mobile and display</h2>
-            <p>On a narrow screen, use the sidebar button to open or close the sidebar. Pinch to zoom PDFs; the book/page navigation can be collapsed to leave more room for the document. The theme button cycles through the available display modes.</p>
+            <p>On a narrow screen, use the sidebar button (<strong>☰</strong> to open, <strong>×</strong> to close) to show or hide the sidebar. Pinch to zoom PDFs; the book/page navigation can be collapsed to leave more room for the document. The theme button cycles through dark, light, and system modes, shown by <strong>☾</strong>, <strong>☀</strong>, and <strong>◐</strong>.</p>
           </section>
         </main>
       </div>
@@ -208,13 +216,13 @@
   <script src="data/sidebar.js?v=sidebar-default-path-fix-20261124"></script>
   <script src="js/storage.js?v=workspace-tab-persistence-20261123"></script>
   <script src="js/popup.js"></script>
-  <script src="js/bookmarks.js"></script>
+  <script src="js/bookmarks.js?v=index-copy-link-help-20261125"></script>
   <script src="js/notes.js"></script>
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
-  <script src="js/search.js"></script>
-  <script src="js/help.js?v=help-center-20261125"></script>
-  <script src="js/pdfviewer.js?v=pdfjs-6.5.438-20261124"></script>
-  <script src="js/ui.js?v=mobile-rulebook-link-close-20261125"></script>
-  <script src="js/app.js?v=sidebar-default-path-fix-20261124"></script>
+  <script src="js/search.js?v=index-copy-link-help-20261125"></script>
+  <script src="js/help.js?v=index-copy-link-help-20261125"></script>
+  <script src="js/pdfviewer.js?v=index-copy-link-help-20261125"></script>
+  <script src="js/ui.js?v=index-copy-link-help-20261125"></script>
+  <script src="js/app.js?v=index-copy-link-help-20261125"></script>
 </body>
 </html>

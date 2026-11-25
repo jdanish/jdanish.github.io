@@ -83,7 +83,7 @@
     });
   }
 
-  function setWorkspaceMode(mode) {
+  function setWorkspaceMode(mode, options = {}) {
     const toolsActive = mode === 'tools';
     const main = document.querySelector('.main');
     const rulebooksTab = document.getElementById('rulebooksWorkspaceTab');
@@ -110,9 +110,11 @@
       return;
     }
 
-    const tab = getCurrentTab();
-    const activeViewer = document.querySelector('#viewerFrame > .viewer.active');
-    if (tab && !activeViewer) window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
+    if (!options.skipViewerRestore) {
+      const tab = getCurrentTab();
+      const activeViewer = document.querySelector('#viewerFrame > .viewer.active');
+      if (tab && !activeViewer) window.GM.pdfviewer?.setTabAndPage?.(tab, getDisplayPage(tab));
+    }
     updateTabButtonLabels();
   }
 
@@ -427,6 +429,7 @@
       const displayPage = Number(target.dataset.page) || 1;
       const highlightText = target.dataset.highlight || '';
       if (!tab) return;
+      setWorkspaceMode('rulebooks', { skipViewerRestore: true });
       await window.GM.pdfviewer?.setTabAndPage?.(tab, displayPage, { highlightText });
     };
 

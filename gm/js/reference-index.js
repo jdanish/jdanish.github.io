@@ -667,9 +667,44 @@
     return { book: book || '', page: Number(page) || 1, highlight: params.get('highlight') || '' };
   }
 
+  function makeIndexEntryLink(entry) {
+    const source = parseSource(entry?.source || '');
+    if (!source.book || !source.page) return '';
+    const label = String(entry?.label || '').trim() || `${source.book}/${source.page}`;
+    return window.GM.bookmarks?.bookmarkToAnchor?.({
+      tab: source.book,
+      page: source.page,
+      highlight: source.highlight || label,
+    }, label) || `[[${source.book}/${source.page}?highlight=${encodeURIComponent(source.highlight || label)}|${label}]]`;
+  }
+
+  async function copyTextToClipboard(value) {
+    const text = String(value || '');
+    if (!text) throw new Error('This entry has no book link to copy.');
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+    } catch {
+      // Try the selection-based clipboard fallback below.
+    }
+    const input = document.createElement('textarea');
+    input.value = text;
+    input.setAttribute('readonly', '');
+    input.style.position = 'fixed';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    const copied = document.execCommand('copy');
+    input.remove();
+    if (!copied) throw new Error('The browser could not copy the link.');
+  }
+
   async function jumpToEntry(entry) {
     const target = parseSource(entry?.source);
     if (!target.book) return;
+    window.GM.ui?.setWorkspaceMode?.('rulebooks', { skipViewerRestore: true });
     await window.GM.pdfviewer?.setTabAndPage?.(target.book, target.page, { highlightText: target.highlight || entry?.label || '' });
   }
 
@@ -1052,7 +1087,11 @@
       deleteHead.textContent = '🗑';
       deleteHead.className = 'reference-index-table-action-head';
       deleteHead.title = 'Delete';
-      tableHead.append(editHead, showHead, deleteHead);
+      const copyHead = document.createElement('span');
+      copyHead.textContent = '📋';
+      copyHead.className = 'reference-index-table-action-head';
+      copyHead.title = 'Copy link to note';
+      tableHead.append(editHead, showHead, copyHead, deleteHead);
 
       summary.textContent = `${entries.length} result${entries.length === 1 ? '' : 's'} · ${getPendingHint()}`;
 
@@ -1105,6 +1144,28 @@
         jump.setAttribute('aria-label', `Preview ${entry.label} in book`);
         jump.addEventListener('click', () => jumpToEntry(entry));
 
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.textContent = '📋';
+        copy.className = 'reference-index-row-copy';
+        copy.title = `Copy link to ${entry.label}`;
+        copy.setAttribute('aria-label', `Copy link to ${entry.label}`);
+        copy.addEventListener('click', async () => {
+          try {
+            await copyTextToClipboard(makeIndexEntryLink(entry));
+            copy.textContent = '✓';
+            copy.title = 'Link copied';
+            copy.setAttribute('aria-label', `Link to ${entry.label} copied`);
+            window.setTimeout(() => {
+              copy.textContent = '📋';
+              copy.title = `Copy link to ${entry.label}`;
+              copy.setAttribute('aria-label', `Copy link to ${entry.label}`);
+            }, 1400);
+          } catch (err) {
+            window.alert(err?.message || 'Could not copy this link.');
+          }
+        });
+
         const remove = document.createElement('button');
         remove.type = 'button';
         remove.className = 'reference-index-row-delete';
@@ -1119,7 +1180,7 @@
           }
         });
 
-        row.append(main, type, book, page, edit, jump, remove);
+        row.append(main, type, book, page, edit, jump, copy, remove);
         list.appendChild(row);
       });
     }

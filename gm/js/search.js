@@ -773,6 +773,7 @@
 
         // On mobile, close the search/sidebar only after the PDF navigation has
         // completed. Closing it first can interrupt the viewer transition.
+        window.GM.ui?.setWorkspaceMode?.('rulebooks', { skipViewerRestore: true });
         await window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText });
 
         if (window.GM.ui?.isMobileSidebarViewport?.()

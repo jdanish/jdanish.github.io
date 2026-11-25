@@ -58,6 +58,25 @@
     return getBooks()[tab] || null;
   }
 
+  function showRulebooksWorkspace() {
+    window.GM.ui?.setWorkspaceMode?.('rulebooks', { skipViewerRestore: true });
+
+    // Keep the workspace switch immediate even if the UI controller is not
+    // ready yet or another embed has left its tools-mode class applied.
+    const main = document.querySelector('.main');
+    if (!main?.classList.contains('tools-mode')) return;
+    main.classList.remove('tools-mode');
+    document.getElementById('rulebooksWorkspaceTab')?.classList.add('active');
+    document.getElementById('toolsWorkspaceTab')?.classList.remove('active');
+    document.getElementById('toolsTabGroup')?.classList.remove('active');
+    document.getElementById('rulebooksWorkspaceTab')?.setAttribute('aria-selected', 'true');
+    document.getElementById('toolsWorkspaceTab')?.setAttribute('aria-selected', 'false');
+    if (getState().workspaceMode !== 'rulebooks') {
+      getState().workspaceMode = 'rulebooks';
+      saveState();
+    }
+  }
+
   function isMobileViewerMode() {
     return window.matchMedia
       ? window.matchMedia('(max-width: 760px)').matches
@@ -857,6 +876,10 @@
     const book = getBook(tab);
     if (!book) return null;
 
+    // A rulebook navigation should bring its workspace to the front even when
+    // the user currently has the table tools panel open.
+    showRulebooksWorkspace();
+
     if (viewerState.activeTab && viewerState.activeTab !== tab) {
       captureRuntimeScale(viewerState.activeTab);
       if (isMobileViewerMode()) {
@@ -883,6 +906,7 @@
     showViewer(tab);
 
     const app = await ensureViewerLoaded(tab);
+    showRulebooksWorkspace();
     if (!app) return null;
 
     window.GM.ui?.setViewerTitle?.(tab, resolvedDisplayPage);
