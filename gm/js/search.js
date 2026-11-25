@@ -129,9 +129,9 @@
     if (searchState.pdfjsLib) return searchState.pdfjsLib;
     if (searchState.pdfjsPromise) return searchState.pdfjsPromise;
 
-    searchState.pdfjsPromise = import(resolvePath('../libs/pdfjs/build/pdf.mjs')).then((mod) => {
+    searchState.pdfjsPromise = import(resolvePath('../libs/pdfjs/build/pdf.mjs?v=6.5.438-0a4153349')).then((mod) => {
       if (mod?.GlobalWorkerOptions) {
-        mod.GlobalWorkerOptions.workerSrc = resolvePath('../libs/pdfjs/build/pdf.worker.mjs');
+        mod.GlobalWorkerOptions.workerSrc = resolvePath('../libs/pdfjs/build/pdf.worker.6.5.438-0a4153349.mjs');
       }
 
       searchState.pdfjsLib = mod;

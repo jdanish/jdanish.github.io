@@ -771,6 +771,12 @@ window.SIDEBAR_SECTIONS = [];
     if (!root || root.dataset.trackerEventsBound === 'true') return;
     root.dataset.trackerEventsBound = 'true';
 
+    root.querySelectorAll('.sidebar-task-checkbox').forEach((input) => {
+      if (input.dataset.taskChangeBound === 'true') return;
+      input.dataset.taskChangeBound = 'true';
+      input.addEventListener('change', () => handleMarkdownTaskChange(input));
+    });
+
     const persist = (tracker, nextValue) => {
       const key = tracker?.dataset?.trackerKey || '';
       const input = tracker?.querySelector?.('.sidebar-tracker-input');
@@ -807,23 +813,6 @@ window.SIDEBAR_SECTIONS = [];
       const input = event.target.closest?.('.sidebar-tracker-input');
       if (!input || !root.contains(input)) return;
       persist(input.closest('.sidebar-tracker'), input.value);
-    });
-
-    root.addEventListener('change', (event) => {
-      const input = event.target.closest?.('.sidebar-task-checkbox');
-      if (!input || !root.contains(input)) return;
-      const section = root.closest('.nested-block');
-      if (section?.dataset.sectionTab !== 'current') return;
-      const taskText = input.dataset.taskText || '';
-      const lines = String(currentMarkdown || '').split('\n');
-      const lineIndex = lines.findIndex((line) => {
-        const match = line.match(/^\s*([-*+])\s+\[([ xX])\]\s+([\s\S]+)$/);
-        return match && match[3] === taskText;
-      });
-      if (lineIndex < 0) return;
-      lines[lineIndex] = lines[lineIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${input.checked ? 'x' : ' '}]`);
-      importMarkdownFromText('current', lines.join('\n'), getWorkspaceSectionKind(activeDocumentMeta, activeDocumentPath));
-      saveActiveDocument().then(notifyInitiativeDocumentRefresh).catch(() => {});
     });
 
     root.addEventListener('keydown', (event) => {
@@ -1124,6 +1113,37 @@ window.SIDEBAR_SECTIONS = [];
     document.getElementById('toolsFrame')?.contentWindow?.postMessage(
       { type: 'gm-refresh-initiative-documents' }, '*'
     );
+  }
+
+  function handleMarkdownTaskChange(input) {
+    if (!input || !activeDocumentPath) return;
+    const taskText = input?.dataset?.taskText || '';
+    const checked = Boolean(input?.checked);
+    const lines = String(currentMarkdown || '').split('\n');
+    const lineIndex = lines.findIndex((line) => {
+      const match = line.match(/^\s*([-*+])\s+\[([ xX])\]\s+([\s\S]+)$/);
+      return match && match[3] === taskText;
+    });
+    if (lineIndex < 0) return;
+
+    lines[lineIndex] = lines[lineIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${checked ? 'x' : ' '}]`);
+    importMarkdownFromText('current', lines.join('\n'), getWorkspaceSectionKind(activeDocumentMeta, activeDocumentPath));
+
+    const normalizedPath = normalizeWorkspaceDocumentPath(activeDocumentPath);
+    const statusTask = taskText.replace(/[*_`]/g, '').trim().match(/^(Shaken|Wild\s+Card)\b/i);
+    if (statusTask && /^(?:characters|monsters)\//i.test(normalizedPath)) {
+      document.getElementById('toolsFrame')?.contentWindow?.postMessage({
+        type: 'gm-initiative-task-changed',
+        path: normalizedPath,
+        name: activeDocumentMeta.name,
+        task: statusTask[1],
+        checked,
+      }, '*');
+    }
+
+    saveActiveDocument().then(notifyInitiativeDocumentRefresh).catch((error) => {
+      console.warn('Could not save the status change from the note', error);
+    });
   }
 
   async function updateInitiativeTask(path, taskName, checked) {

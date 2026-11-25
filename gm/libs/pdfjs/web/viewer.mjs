@@ -808,7 +808,7 @@ const defaultOptions = new Map([["allowedGlobalEvents", {
   value: null,
   kind: OptionKind.WORKER
 }], ["workerSrc", {
-  value: "../build/pdf.worker.mjs",
+  value: "../build/pdf.worker.6.5.438-0a4153349.mjs",
   kind: OptionKind.WORKER
 }]]);
 class AppOptions {

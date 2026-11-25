@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-read-mode-status-checks-global';
+const CACHE_NAME = 'gm-reference-shell-v20261125-pdfjs-6-5-438-worker-path';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

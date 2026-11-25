@@ -50,14 +50,14 @@
     if (state.pdfjsPromise) return state.pdfjsPromise;
 
     state.pdfjsPromise = (async () => {
-      const localUrl = resolvePath('../libs/pdfjs/build/pdf.mjs');
+      const localUrl = resolvePath('../libs/pdfjs/build/pdf.mjs?v=6.5.438-0a4153349');
       const cdnUrl = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/build/pdf.mjs';
       let mod;
 
       try {
         mod = await import(localUrl);
         if (mod?.GlobalWorkerOptions) {
-          mod.GlobalWorkerOptions.workerSrc = resolvePath('../libs/pdfjs/build/pdf.worker.mjs');
+          mod.GlobalWorkerOptions.workerSrc = resolvePath('../libs/pdfjs/build/pdf.worker.6.5.438-0a4153349.mjs');
         }
       } catch (localError) {
         console.warn('Local PDF.js module unavailable; using the pinned CDN build.', localError);
