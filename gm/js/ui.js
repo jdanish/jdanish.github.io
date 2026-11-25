@@ -416,6 +416,12 @@
   function installSidebarDelegation() {
     if (!dom.sidebarContentEl || dom.sidebarContentEl.dataset.sidebarDelegationBound === 'true') return;
 
+    const closeMobileSidebarForNavigation = () => {
+      if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
+        setMobileSidebarOpen(false);
+      }
+    };
+
     const activate = async (target) => {
       const tab = target.dataset.tab;
       const displayPage = Number(target.dataset.page) || 1;
@@ -429,10 +435,8 @@
       if (!target || !dom.sidebarContentEl.contains(target)) return;
 
       event.preventDefault();
+      closeMobileSidebarForNavigation();
       await activate(target);
-      if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
-        setMobileSidebarOpen(false);
-      }
     });
 
     dom.sidebarContentEl.addEventListener('keydown', async (event) => {
@@ -441,10 +445,8 @@
       if (event.key !== 'Enter' && event.key !== ' ') return;
 
       event.preventDefault();
+      closeMobileSidebarForNavigation();
       await activate(target);
-      if (isMobileSidebarViewport() && document.querySelector('.app')?.classList.contains('mobile-sidebar-open')) {
-        setMobileSidebarOpen(false);
-      }
     });
 
     dom.sidebarContentEl.dataset.sidebarDelegationBound = 'true';
@@ -2367,8 +2369,8 @@
         const editButton = document.createElement('button');
         editButton.type = 'button';
         editButton.className = 'sidebar-tab-button sidebar-data-button icon-button';
-        editButton.setAttribute('aria-label', 'Edit sidebar Markdown');
-        editButton.title = 'Edit sidebar Markdown';
+        editButton.setAttribute('aria-label', 'Open data and Markdown tools');
+        editButton.title = 'Open data and Markdown tools';
         editButton.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4 20h4l10.5-10.5a2.25 2.25 0 0 0-3.18-3.18L4 16.82V20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.2 6.8l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
         editButton.addEventListener('click', () => toggleSidebarDataPopup());
         dom.sidebarTabsEl.appendChild(editButton);

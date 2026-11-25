@@ -5222,11 +5222,12 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
 }
 .workspace-header-actions .workspace-theme-button { margin: 0; align-self: center; }
 .workspace-help-button {
+  width: 36px;
+  height: 36px;
   min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 11px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--panel-2);
@@ -5238,13 +5239,13 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
 }
 .workspace-help-button:hover { border-color: var(--accent-strong); background: var(--accent); }
 .workspace-help-button span {
-  width: 19px;
-  height: 19px;
+  width: 22px;
+  height: 22px;
   display: inline-grid;
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 50%;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1;
 }
 .gm-help-dialog {
@@ -5333,7 +5334,7 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
   .workspace-switcher { padding-top: max(0px, env(safe-area-inset-top)); }
   .workspace-header-actions { gap: 6px; padding: 5px 8px 5px 4px; }
   .workspace-header-actions .workspace-theme-button { margin-right: 0; }
-  .workspace-help-button { min-height: 36px; padding: 6px 9px; }
+  .workspace-help-button { width: 36px; min-height: 36px; padding: 0; }
   .gm-help-dialog { width: calc(100vw - 16px); height: calc(100dvh - 16px); border-radius: 14px; }
   .gm-help-header { padding: 14px 16px; }
   .gm-help-layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
