@@ -5033,6 +5033,10 @@
         "label": "Born a Hero",
         "source": "ne_invasion/16?highlight=BORN%20A%20HERO"
       },
+      "bound@@swade": {
+        "label": "Bound",
+        "source": "swade/97?highlight=BOUND"
+      },
       "comic book combat@@doom_guard": {
         "label": "Comic Book Combat",
         "source": "doom_guard/37?highlight=COMIC%20BOOK%20COMBAT"
@@ -5064,6 +5068,10 @@
       "downtime@@doom_guard": {
         "label": "Downtime",
         "source": "doom_guard/38?highlight=DOWNTIME"
+      },
+      "entangled@@swade": {
+        "label": "entangled",
+        "source": "swade/97?highlight=entangled"
       },
       "fear checks@@doom_guard": {
         "label": "Fear Checks",
