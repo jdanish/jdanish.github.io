@@ -259,11 +259,6 @@
         const haystack = normalizeSearchQuery([entry?.label, category, humanizeIndexType(category), bookTitle, source, ...aliases].join(' '));
         const idx = haystack.indexOf(q);
         if (idx < 0) return;
-        const matchingAlias = aliases.find((alias) => normalizeSearchQuery(alias).includes(q));
-        let snippet = `Type: ${humanizeIndexType(category)}`;
-        if (matchingAlias) snippet = `Alias: ${matchingAlias}`;
-        else if (normalizeSearchQuery(entry?.label).includes(q)) snippet = `Name: ${entry?.label || key}`;
-        else if (normalizeSearchQuery(bookTitle).includes(q)) snippet = `Book: ${bookTitle}`;
         results.push({
           type: 'reference',
           category,
@@ -271,7 +266,7 @@
           label: String(entry?.label || key),
           source: String(entry?.source || ''),
           aliases,
-          snippet,
+          snippet: '',
           score: idx,
           entry: { category, key, ...entry },
         });
@@ -279,6 +274,32 @@
     });
     results.sort((a, b) => a.score - b.score || a.category.localeCompare(b.category) || a.label.localeCompare(b.label));
     return results;
+  }
+
+  function addReferencePageContext(referenceHits, query) {
+    referenceHits.forEach((hit) => {
+      const source = String(hit.source || '');
+      const match = source.match(/^([^/]+)\/(\d+)(?:\?(.*))?$/);
+      if (!match) return;
+      const bookKey = match[1];
+      const displayPage = Number(match[2]);
+      const index = searchState.indexes.get(bookKey);
+      const page = index?.pages?.find((item) => Number(item.displayPage) === displayPage);
+      if (!page?.text) return;
+
+      let sourceHighlight = '';
+      try {
+        sourceHighlight = new URLSearchParams(match[3] || '').get('highlight') || '';
+      } catch { /* malformed source query */ }
+      const candidates = [sourceHighlight, hit.label, ...(hit.aliases || []), query]
+        .map((value) => String(value || '').trim())
+        .filter((value) => value && page.text.toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+      const contextTerm = candidates[0];
+      if (contextTerm) {
+        hit.snippet = extractSnippet(page.text, contextTerm);
+        hit.snippetMatch = contextTerm;
+      }
+    });
   }
 
   function searchSidebar(query) {
@@ -645,7 +666,7 @@
           <button type="button" class="btn search-result-main" data-search-hit="reference">
             <div class="search-result-title">${window.GM.utils.escapeHtml(hit.label)}</div>
             <div class="search-result-meta">${window.GM.utils.escapeHtml(humanizeIndexType(hit.category))} · ${window.GM.utils.escapeHtml((window.BOOKS?.[String(hit.source || '').split('/')[0]]?.title) || String(hit.source || '').split('/')[0] || 'Book')} · p. ${window.GM.utils.escapeHtml(String((String(hit.source || '').split('/')[1] || '').split('?')[0] || '—'))}</div>
-            <div class="search-result-snippet">${highlightedSnippet(hit.snippet || '', query)}</div>
+            ${hit.snippet ? `<div class="search-result-snippet">${highlightedSnippet(hit.snippet, hit.snippetMatch || query)}</div>` : ''}
           </button>
           <div class="search-result-actions">
             <button type="button" class="btn" data-reference-action="edit">Edit</button>
@@ -781,6 +802,8 @@
       console.error(err);
       pdfHits = [];
     }
+
+    addReferencePageContext(referenceHits, q);
 
     renderResults(q, referenceHits, sidebarHits, pdfHits);
   }
