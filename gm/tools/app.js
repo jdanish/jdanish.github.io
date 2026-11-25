@@ -511,21 +511,17 @@
         state.combatants=state.combatants.filter(x=>x.id!==combatant.id);save();render();
       });
       row.append(portrait,card,name,marker,turnArrows,status,redraw,wildCardToggle,trackerToggle,remove);
-      {
+      if(combatant.trackResources){
         const resources=document.createElement('div');resources.className='resource-trackers';
-        resources.classList.add(!combatant.trackResources?'is-status-only':combatant.entityType==='monster'?'is-monster':'is-character');
-        if(combatant.trackResources){
-          const trackerKeys=trackerKeysFor(combatant);
-          trackerKeys.forEach(key=>{
-            const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
-            const max=key==='wounds'?3:key==='count'?99:99;
-            if(combatant.entityType==='monster'&&resources.childElementCount===0)resources.append(makeShakenToggle(combatant));
-            if(combatant.entityType!=='monster'&&key==='wounds')resources.append(makeShakenToggle(combatant));
-            resources.append(makeResourceCounter(combatant,key,label,0,max));
-          });
-        }else{
-          resources.append(makeShakenToggle(combatant));
-        }
+        resources.classList.add(combatant.entityType==='monster'?'is-monster':'is-character');
+        const trackerKeys=trackerKeysFor(combatant);
+        trackerKeys.forEach(key=>{
+          const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
+          const max=key==='wounds'?3:key==='count'?99:99;
+          if(combatant.entityType==='monster'&&resources.childElementCount===0)resources.append(makeShakenToggle(combatant));
+          if(combatant.entityType!=='monster'&&key==='wounds')resources.append(makeShakenToggle(combatant));
+          resources.append(makeResourceCounter(combatant,key,label,0,max));
+        });
         row.append(resources);
       }
       ui.list.append(row);

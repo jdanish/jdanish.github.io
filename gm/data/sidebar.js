@@ -1146,7 +1146,8 @@ window.SIDEBAR_SECTIONS = [];
     if (taskIndex >= 0) {
       lines[taskIndex] = lines[taskIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${check}]`);
     } else {
-      const taskLabel = task === 'wild card' ? '- [ ] **Wild Card** (unchecked = Extra)' : '- [ ] **Shaken**';
+      if (task === 'shaken') return false;
+      const taskLabel = '- [ ] **Wild Card** (unchecked = Extra)';
       const newLine = taskLabel.replace('[ ]', `[${check}]`);
       const frontMatter = lines[0] === '---' ? lines.findIndex((line, index) => index > 0 && line === '---') : -1;
       const heading = lines.findIndex((line, index) => index > frontMatter && /^#\s+/.test(line));
