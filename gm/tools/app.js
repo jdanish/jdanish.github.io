@@ -396,9 +396,12 @@
       portrait.className='combatant-portrait';
       const isMonster=combatant.entityType==='monster';
       const hasPortrait=Boolean(String(combatant.portraitPath||'').trim());
-      const isWildCardMonster=isMonster&&Boolean(combatant.wildcard)&&!hasPortrait;
+      const isMonsterSilhouette=isMonster&&!hasPortrait;
+      const isWildCardMonster=isMonsterSilhouette&&Boolean(combatant.wildcard);
+      const isExtraMonster=isMonsterSilhouette&&!Boolean(combatant.wildcard);
       if(isMonster)portrait.classList.add('is-monster');
       if(isWildCardMonster)portrait.classList.add('is-wild-card');
+      if(isExtraMonster)portrait.classList.add('is-extra');
       portrait.setAttribute('role','img');
       portrait.setAttribute('aria-label',hasPortrait?`${combatant.name} portrait`:`${combatant.name} ${isMonster?(combatant.wildcard?'Wild Card monster':'Extra monster'):'character'} silhouette`);
       const silhouette=document.createElementNS('http://www.w3.org/2000/svg','svg');

@@ -1,5 +1,29 @@
 /* Initiative-only visual marker for Wild Card monster silhouettes. */
-.combatant-portrait.is-wild-card { overflow: visible; }
+.combatant-portrait.is-wild-card,
+.combatant-portrait.is-extra { overflow: visible; }
+.combatant-portrait.is-extra::after {
+  content: 'E';
+  position: absolute;
+  z-index: 2;
+  top: -4px;
+  right: -5px;
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #735c8c;
+  border-radius: 50%;
+  background: #2b2433;
+  color: #e0c5f6;
+  font: 800 9px/1 system-ui, sans-serif;
+  box-shadow: 0 1px 3px #0008;
+  pointer-events: none;
+}
+html[data-theme="light"] .combatant-portrait.is-extra::after {
+  border-color: #c4a9d8;
+  background: #fff;
+  color: #795294;
+}
 .combatant-portrait .wild-card-crown {
   position: absolute;
   z-index: 2;
