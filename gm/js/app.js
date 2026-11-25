@@ -34,8 +34,9 @@
   async function checkForUpdates() {
     const registration = pwaRegistration || await registerPwa();
     if (!registration) {
-      window.location.reload();
-      return { updated: false, reloaded: true };
+      // Local development deliberately does not register a service worker.
+      // A visibility-triggered update check must not reload the app in that case.
+      return { updated: false, reloaded: false };
     }
 
     try {
@@ -234,6 +235,8 @@
       if (document.visibilityState === 'visible') {
         window.GM.pdfviewer?.refreshActiveViewer?.().catch?.(console.error);
         window.GM.app?.checkForUpdates?.().catch?.(() => {});
+      } else {
+        window.GM.storage?.saveState?.();
       }
     });
 
@@ -245,6 +248,9 @@
     }, 5 * 60 * 1000);
 
     window.addEventListener('beforeunload', () => {
+      window.GM.storage?.saveState?.();
+    });
+    window.addEventListener('pagehide', () => {
       window.GM.storage?.saveState?.();
     });
   }

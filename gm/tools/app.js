@@ -35,13 +35,16 @@
         combatants: saved.combatants.filter(item => item && typeof item === 'object').map(item => {
           const entityType = item.entityType === 'monster' ? 'monster' : 'character';
           const count = Number(item.count);
+          const normalizedCount = Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 1;
           return {
             ...item,
             entityType,
             wildcard: entityType === 'monster' ? Boolean(item.wildcard) : true,
             shaken: Boolean(item.shaken),
+            noteShaken: typeof item.noteShaken==='boolean' ? item.noteShaken : null,
             bennies: entityType === 'monster' ? 0 : (Number(item.bennies) || 0),
-            count: Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 1,
+            count: normalizedCount,
+            extraShaken: Array.isArray(item.extraShaken) ? item.extraShaken.map(Boolean) : Array.from({length:normalizedCount},()=>Boolean(item.shaken)),
             documentPath: String(item.documentPath || ''),
           };
         }),
@@ -226,6 +229,15 @@
     if (combatant.entityType !== 'monster') return 'Bennies and Wounds';
     return combatant.wildcard ? 'Wounds' : 'Monster count';
   }
+  function resizeExtraStates(combatant,fillShaken=Boolean(combatant.shaken)){
+    if(combatant.entityType!=='monster'||combatant.wildcard)return [];
+    const count=Math.max(0,Math.min(99,Math.trunc(Number(combatant.count)||0)));
+    combatant.extraShaken=Array.isArray(combatant.extraShaken)?combatant.extraShaken.map(Boolean):[];
+    combatant.extraShaken.length=Math.min(combatant.extraShaken.length,count);
+    while(combatant.extraShaken.length<count)combatant.extraShaken.push(Boolean(fillShaken));
+    combatant.shaken=combatant.extraShaken.length>0&&combatant.extraShaken.every(Boolean);
+    return combatant.extraShaken;
+  }
   async function syncOpenDocuments(){
     const gm=parentGM();
     const sidebar=gm?.sidebarData;
@@ -256,7 +268,21 @@
         for(const [key,tracker] of Object.entries(entry.trackers||{})){
           if(combatant[key]!==tracker.value){combatant[key]=tracker.value;changed=true;}
         }
-        if(entry.hasShaken&&Boolean(combatant.shaken)!==entry.shaken){combatant.shaken=entry.shaken;changed=true;}
+        if(entry.type==='monster'&&!entry.wildcard)resizeExtraStates(combatant);
+        if(entry.hasShaken){
+          if(entry.type==='monster'&&!entry.wildcard){
+            if(combatant.noteShaken!==entry.shaken){
+              const nextStates=resizeExtraStates(combatant).map(()=>entry.shaken);
+              if(JSON.stringify(combatant.extraShaken)!==JSON.stringify(nextStates)){combatant.extraShaken=nextStates;changed=true;}
+              combatant.shaken=entry.shaken&&nextStates.length>0;
+              combatant.noteShaken=entry.shaken;
+              changed=true;
+            }
+          }else{
+            if(Boolean(combatant.shaken)!==entry.shaken){combatant.shaken=entry.shaken;changed=true;}
+            if(combatant.noteShaken!==entry.shaken){combatant.noteShaken=entry.shaken;changed=true;}
+          }
+        }
         const nextTrackers=entry.trackers||{};
         if(JSON.stringify(combatant.gmTrackers||{})!==JSON.stringify(nextTrackers)){combatant.gmTrackers=nextTrackers;changed=true;}
         if(entry.hasPortrait&&combatant.portraitPath!==entry.portraitPath){combatant.portraitPath=entry.portraitPath;changed=true;}
@@ -305,7 +331,8 @@
           const hasTrackers=activeTrackerKeys.some(key=>Boolean(item.trackers[key]));
           const needsType=current.entityType!==item.type;
           const needsWildcard=item.type==='monster'&&Boolean(current.wildcard)!==item.wildcard;
-          const needsShaken=item.hasShaken&&Boolean(current.shaken)!==item.shaken;
+          const expectedExtraCount=Math.max(0,Math.trunc(Number(item.trackers.count?.value??current.count)||0));
+          const needsShaken=item.hasShaken&&current.noteShaken!==item.shaken;
           const needsPath=item.path&&current.documentPath!==item.path;
           if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsWildcard&&!needsShaken&&!needsPath)return;
           if(hasTrackers){
@@ -313,7 +340,14 @@
             current.trackResources = true;
             current.gmTrackers = item.trackers;
           }
-          if(item.hasShaken){current.shaken=item.shaken;current.trackResources=true;}
+          if(item.hasShaken){
+            if(current.noteShaken!==item.shaken){
+              current.shaken=item.shaken;
+              if(item.type==='monster'&&!item.wildcard)current.extraShaken=Array.from({length:expectedExtraCount},()=>item.shaken);
+            }
+            current.noteShaken=item.shaken;
+            if(needsShaken)current.trackResources=true;
+          }
           if(item.path)current.documentPath=item.path;
           if(item.hasPortrait)current.portraitPath=item.portraitPath;
           if(item.type==='monster'){
@@ -336,6 +370,10 @@
           wounds: item.trackers.wounds?.value ?? 0,
           count: item.trackers.count?.value ?? 1,
           shaken: item.hasShaken ? item.shaken : false,
+          noteShaken: item.hasShaken ? item.shaken : null,
+          extraShaken: item.type==='monster'&&!item.wildcard
+            ? Array.from({length:Math.max(0,Math.trunc(Number(item.trackers.count?.value)||0))},()=>Boolean(item.hasShaken&&item.shaken))
+            : [],
           documentPath: item.path,
           trackResources: item.type==='monster' || Boolean(item.trackers.bennies || item.trackers.wounds || item.hasShaken),
           gmTrackers: item.trackers,
@@ -488,20 +526,11 @@
       trackerToggle.title=`${combatant.trackResources?'Hide':'Show'} ${trackerName} tracker${combatant.entityType==='monster'&&!combatant.wildcard?'':'s'} for ${combatant.name}`;
       trackerToggle.setAttribute('aria-label',trackerToggle.title);
       trackerToggle.addEventListener('click',()=>{combatant.trackResources=!combatant.trackResources;save();render();});
-      const wildCardToggle=document.createElement('button');wildCardToggle.type='button';
-      wildCardToggle.className=`wildcard-status-toggle${combatant.wildcard?' selected':''}`;
-      wildCardToggle.textContent=combatant.wildcard?'Wild Card':'Extra';
-      wildCardToggle.title=`${combatant.wildcard?'Wild Card':'Extra'}: click to switch ${combatant.name}`;
-      wildCardToggle.setAttribute('aria-label',wildCardToggle.title);
-      wildCardToggle.setAttribute('aria-pressed',String(Boolean(combatant.wildcard)));
-      wildCardToggle.hidden=!isMonster;
-      wildCardToggle.addEventListener('click',()=>{
-        combatant.wildcard=!combatant.wildcard;
-        combatant.bennies=0;
-        combatant.trackResources=true;
-        save();render();
-        syncStatusToOpenDocument(combatant,'Wild Card',combatant.wildcard);
-      });
+      const wildCardBadge=document.createElement('span');
+      wildCardBadge.className=`wildcard-status${combatant.wildcard?' is-wild-card':' is-extra'}`;
+      wildCardBadge.textContent=combatant.wildcard?'Wild Card':'Extra';
+      wildCardBadge.title=`${combatant.name}: ${combatant.wildcard?'Wild Card':'Extra'}`;
+      wildCardBadge.hidden=!isMonster;
       const remove = document.createElement('button'); remove.type='button'; remove.className='row-menu'; remove.textContent='×'; remove.title=`Remove ${combatant.name}`; remove.setAttribute('aria-label',remove.title);
       remove.addEventListener('click',()=>{
         if(state.initiativeDeck){
@@ -510,18 +539,31 @@
         }
         state.combatants=state.combatants.filter(x=>x.id!==combatant.id);save();render();
       });
-      row.append(portrait,card,name,marker,turnArrows,status,redraw,wildCardToggle,trackerToggle,remove);
+      row.append(portrait,card,name,marker,turnArrows,status,redraw,wildCardBadge,trackerToggle,remove);
       if(combatant.trackResources){
         const resources=document.createElement('div');resources.className='resource-trackers';
-        resources.classList.add(combatant.entityType==='monster'?'is-monster':'is-character');
-        const trackerKeys=trackerKeysFor(combatant);
-        trackerKeys.forEach(key=>{
-          const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
-          const max=key==='wounds'?3:key==='count'?99:99;
-          if(combatant.entityType==='monster'&&resources.childElementCount===0)resources.append(makeShakenToggle(combatant));
-          if(combatant.entityType!=='monster'&&key==='wounds')resources.append(makeShakenToggle(combatant));
-          resources.append(makeResourceCounter(combatant,key,label,0,max));
-        });
+        resources.classList.add(combatant.entityType==='monster'?(combatant.wildcard?'is-wild-card':'is-extra'):'is-character');
+        if(combatant.entityType==='monster'&&!combatant.wildcard){
+          resources.append(makeResourceCounter(combatant,'count','Count',0,99));
+          const extras=document.createElement('div');extras.className='extra-status-list';
+          resizeExtraStates(combatant);
+          combatant.extraShaken.forEach((shaken,index)=>{
+            const extraRow=document.createElement('div');extraRow.className='extra-status-row';
+            const number=document.createElement('span');number.className='extra-status-number';number.textContent=`Extra ${index+1}`;
+            extraRow.append(number,makeShakenToggle(combatant,index));
+            extras.append(extraRow);
+          });
+          resources.append(extras);
+        }else{
+          const trackerKeys=trackerKeysFor(combatant);
+          trackerKeys.forEach(key=>{
+            const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
+            const max=key==='wounds'?3:key==='count'?99:99;
+            if(combatant.entityType==='monster'&&resources.childElementCount===0)resources.append(makeShakenToggle(combatant));
+            if(combatant.entityType!=='monster'&&key==='wounds')resources.append(makeShakenToggle(combatant));
+            resources.append(makeResourceCounter(combatant,key,label,0,max));
+          });
+        }
         row.append(resources);
       }
       ui.list.append(row);
@@ -694,8 +736,15 @@
   }
   function changeResource(id,key,delta,min,max){
     const combatant=state.combatants.find(c=>c.id===id);if(!combatant)return;
+    const wasShaken=Boolean(combatant.shaken);
     combatant[key]=Math.max(min,Math.min(max,(Number(combatant[key])||0)+delta));
+    if(key==='count'&&combatant.entityType==='monster'&&!combatant.wildcard)resizeExtraStates(combatant);
     syncGmTracker(combatant,key);save();render();
+    if(wasShaken!==Boolean(combatant.shaken)){
+      combatant.noteShaken=Boolean(combatant.shaken);
+      save();
+      syncStatusToOpenDocument(combatant,'Shaken',combatant.shaken);
+    }
   }
   function syncStatusToOpenDocument(combatant,label,checked){
     const sidebar=parentGM()?.sidebarData;
@@ -704,16 +753,24 @@
       console.warn(`Could not update ${label} in ${combatant.name}'s note`,error);
     });
   }
-  function makeShakenToggle(combatant){
+  function makeShakenToggle(combatant,extraIndex=null){
+    const isExtra=Number.isInteger(extraIndex);
+    const isShaken=isExtra?Boolean(combatant.extraShaken?.[extraIndex]):Boolean(combatant.shaken);
     const button=document.createElement('button');
     button.type='button';
-    button.className=`resource-status-toggle${combatant.shaken?' is-active':''}`;
-    button.textContent=combatant.shaken?'Shaken ✓':'Shaken';
-    button.title=`${combatant.name} is ${combatant.shaken?'Shaken':'not Shaken'}; click to change`;
+    button.className=`resource-status-toggle${isShaken?' is-active':''}`;
+    button.textContent=isShaken?'Shaken ✓':'Shaken';
+    button.title=`${combatant.name}${isExtra?` Extra ${extraIndex+1}`:''} is ${isShaken?'Shaken':'not Shaken'}; click to change`;
     button.setAttribute('aria-label',button.title);
-    button.setAttribute('aria-pressed',String(Boolean(combatant.shaken)));
+    button.setAttribute('aria-pressed',String(isShaken));
     button.addEventListener('click',()=>{
-      combatant.shaken=!combatant.shaken;
+      if(isExtra){
+        combatant.extraShaken[extraIndex]=!combatant.extraShaken[extraIndex];
+        combatant.shaken=combatant.extraShaken.length>0&&combatant.extraShaken.every(Boolean);
+      }else{
+        combatant.shaken=!combatant.shaken;
+      }
+      combatant.noteShaken=Boolean(combatant.shaken);
       save();render();
       syncStatusToOpenDocument(combatant,'Shaken',combatant.shaken);
     });
@@ -743,7 +800,11 @@
       Object.entries(combatant.gmTrackers||{}).forEach(([resource,tracker])=>{
         if(String(tracker?.key||'').toLowerCase()!==key)return;
         const value=readLinkedTrackerValue(tracker,event.newValue);
-        if(combatant[resource]!==value){combatant[resource]=value;changed=true;}
+        if(combatant[resource]!==value){
+          combatant[resource]=value;
+          if(resource==='count'&&combatant.entityType==='monster'&&!combatant.wildcard)resizeExtraStates(combatant);
+          changed=true;
+        }
       });
     });
     if(changed){save();render();}

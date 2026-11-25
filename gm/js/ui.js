@@ -3734,6 +3734,7 @@
       btn.dataset.page = String(entry.page);
 
       btn.addEventListener('click', () => {
+        setWorkspaceMode('rulebooks', { skipViewerRestore: true });
         window.GM.pdfviewer?.setTabAndPage?.(tab, Number(entry.page));
       });
 
