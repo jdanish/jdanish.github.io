@@ -5693,10 +5693,6 @@
         "label": "Villainous Conviction",
         "source": "spc/36?highlight=VILLAINOUS%20CONVICTION"
       },
-      "vulnerable@@swade": {
-        "label": "Vulnerable",
-        "source": "swade/99?highlight=VULNERABLE"
-      },
       "wards and binds@@horror": {
         "label": "Wards and Binds",
         "source": "horror/48?highlight=WARDS%20AND%20BINDS"
@@ -5752,6 +5748,10 @@
       "stunned@@swade": {
         "label": "Stunned",
         "source": "swade/105?highlight=Stunned"
+      },
+      "vulnerable@@swade": {
+        "label": "Vulnerable",
+        "source": "swade/99?highlight=VULNERABLE"
       }
     },
     "vehicles": {},
