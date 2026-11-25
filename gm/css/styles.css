@@ -5245,8 +5245,11 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 50%;
+  font-family: Arial, sans-serif;
   font-size: 14px;
+  font-weight: 700;
   line-height: 1;
+  transform: translateY(-.5px);
 }
 .gm-help-dialog {
   width: min(1000px, calc(100vw - 28px));
@@ -5334,7 +5337,7 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
   .workspace-switcher { padding-top: max(0px, env(safe-area-inset-top)); }
   .workspace-header-actions { gap: 6px; padding: 5px 8px 5px 4px; }
   .workspace-header-actions .workspace-theme-button { margin-right: 0; }
-  .workspace-help-button { width: 36px; min-height: 36px; padding: 0; }
+  .workspace-help-button { min-height: 36px; padding: 6px 9px; }
   .gm-help-dialog { width: calc(100vw - 16px); height: calc(100dvh - 16px); border-radius: 14px; }
   .gm-help-header { padding: 14px 16px; }
   .gm-help-layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }

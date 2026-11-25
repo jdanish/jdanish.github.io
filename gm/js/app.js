@@ -151,7 +151,7 @@
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'sidebar-default-path-fix-20261124');
+      moduleUrl.searchParams.set('v', 'help-center-20261125');
       await import(moduleUrl.href);
       await window.GM.data?.init?.();
     } catch (err) {
@@ -172,7 +172,7 @@
 
     try {
       const moduleUrl = new URL('./monster-importer.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'sidebar-default-path-fix-20261124');
+      moduleUrl.searchParams.set('v', 'help-center-20261125');
       await import(moduleUrl.href);
     } catch (err) {
       console.error('Monster importer failed to load', err);

@@ -395,9 +395,12 @@
       const portrait=document.createElement('span');
       portrait.className='combatant-portrait';
       const isMonster=combatant.entityType==='monster';
+      const hasPortrait=Boolean(String(combatant.portraitPath||'').trim());
+      const isWildCardMonster=isMonster&&Boolean(combatant.wildcard)&&!hasPortrait;
       if(isMonster)portrait.classList.add('is-monster');
+      if(isWildCardMonster)portrait.classList.add('is-wild-card');
       portrait.setAttribute('role','img');
-      portrait.setAttribute('aria-label',combatant.portraitPath?`${combatant.name} portrait`:`${combatant.name} ${isMonster?'monster':'character'} silhouette`);
+      portrait.setAttribute('aria-label',hasPortrait?`${combatant.name} portrait`:`${combatant.name} ${isMonster?(combatant.wildcard?'Wild Card monster':'Extra monster'):'character'} silhouette`);
       const silhouette=document.createElementNS('http://www.w3.org/2000/svg','svg');
       silhouette.setAttribute('viewBox','0 0 40 40');
       silhouette.setAttribute('aria-hidden','true');
@@ -422,6 +425,17 @@
       const portraitImage=document.createElement('img');
       portraitImage.alt='';portraitImage.loading='eager';portraitImage.draggable=false;
       portrait.append(silhouette,portraitImage);
+      if(isWildCardMonster){
+        const crown=document.createElementNS('http://www.w3.org/2000/svg','svg');
+        crown.classList.add('wild-card-crown');
+        crown.setAttribute('viewBox','0 0 24 24');
+        crown.setAttribute('aria-hidden','true');
+        crown.setAttribute('focusable','false');
+        const crownShape=document.createElementNS('http://www.w3.org/2000/svg','path');
+        crownShape.setAttribute('d','M3 7.5 8 11 12 4l4 7 5-3.5L19 20H5L3 7.5Z');
+        crown.appendChild(crownShape);
+        portrait.appendChild(crown);
+      }
       attachPortraitSource(portrait,portraitImage,combatant.portraitPath);
       const name = document.createElement('span'); name.className='combatant-name'; name.textContent=combatant.name;
       const status = document.createElement('span'); status.className='row-status';
