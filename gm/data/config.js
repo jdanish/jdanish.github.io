@@ -285,13 +285,12 @@ window.BOOKS = {
     order: 21,
     title: "Rifts: Phase World",
     file: "pdfs/RIFTS_PhaseWorld.pdf",
-    pageOffset: -2,
+    pageOffset: 0,
     defaultPage: 2,
     defaultScale: 1.25,
     defaultVisible: false,
     preload: false,
-    pages: [
-    ]
+    pages: []
   },
   "swpf_core": {
     order: 22,
