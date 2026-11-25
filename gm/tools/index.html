@@ -33,7 +33,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=tracker-layout-workspace-20261125">
+  <link rel="stylesheet" href="styles.css?v=initiative-note-status-manual-monsters-20261125">
   <link rel="stylesheet" href="initiative-portraits.css?v=wild-card-extra-icons-20261125">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
@@ -63,7 +63,7 @@
       </div>
       <div class="joker-reveal" id="jokerReveal" role="status" aria-live="polite" hidden><span class="joker-reveal-star" aria-hidden="true">★</span><div><strong>JOKER!</strong><p id="jokerRevealText"></p></div></div>
       <div class="combatants-head"><span>COMBATANTS <span class="muted" id="combatantCount">0</span></span><span class="list-tools"><span class="tracker-hint">Characters: Bennies · Shaken · Wounds · Monsters: Shaken · Wounds or Count</span><button class="text-button" id="clearCombatants">Clear list</button></span></div>
-      <form class="add-form" id="addForm"><label class="sr-only" for="combatantName">Combatant name</label><input id="combatantName" maxlength="32" placeholder="Add a hero, foe, or group…" autocomplete="off" required><button class="button button-add" type="submit">＋ <span>Add</span></button><button class="button button-secondary import-open-button" id="importOpenDocuments" type="button" hidden>Import open</button></form>
+      <form class="add-form" id="addForm"><label class="sr-only" for="combatantName">Combatant name</label><input id="combatantName" maxlength="32" placeholder="Add a hero, foe, or group…" autocomplete="off" required><label class="sr-only" for="newCombatantType">Combatant type</label><select id="newCombatantType" aria-label="Combatant type"><option value="character">Character</option><option value="wildcard">Wild Card</option><option value="extra">Extras</option></select><label class="extra-count-control" id="extraCountControl" hidden><span>Count</span><input id="newExtraCount" type="number" min="1" max="99" value="3" aria-label="Number of Extras"></label><button class="button button-add" type="submit">＋ <span>Add</span></button><button class="button button-secondary import-open-button" id="importOpenDocuments" type="button" hidden>Import open</button></form>
       <div class="import-open-status" id="importOpenStatus" role="status" aria-live="polite" hidden></div>
       <div class="combatant-list" id="combatantList"></div>
       <div class="empty-state" id="emptyState"><div class="empty-icon">♧</div><strong>No combatants yet</strong><span>Add everyone who needs a card this round.</span></div>
@@ -159,6 +159,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=tracker-layout-workspace-20261125"></script>
+  <script src="app.js?v=initiative-note-status-manual-monsters-20261125"></script>
 </body>
 </html>

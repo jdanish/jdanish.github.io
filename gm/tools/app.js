@@ -12,7 +12,8 @@
     list: $('#combatantList'), empty: $('#emptyState'), name: $('#combatantName'),
     form: $('#addForm'), count: $('#combatantCount'), round: $('#roundNumber'),
     deckStatus: $('#deckStatus'), deal: $('#dealBtn'), result: $('#rollResult'),
-    drawList: $('#drawnCards')
+    drawList: $('#drawnCards'), type: $('#newCombatantType'), extraCount: $('#newExtraCount'),
+    extraCountControl: $('#extraCountControl')
   };
   let state = loadState();
   let traitDice = [{id:'initial-d6',sides:6}];
@@ -219,6 +220,26 @@
   }
   function normalizedCombatantName(name){
     return String(name||'').toLocaleLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function applyNoteShaken(path,name,checked){
+    const normalizedPath=String(path||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase();
+    const normalizedName=normalizedCombatantName(name);
+    const combatant=state.combatants.find(item=>
+      (normalizedPath&&String(item.documentPath||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase()===normalizedPath)
+      ||(normalizedName&&normalizedCombatantName(item.name)===normalizedName)
+    );
+    if(!combatant)return;
+    const shaken=Boolean(checked);
+    if(combatant.entityType==='monster'&&!combatant.wildcard){
+      combatant.extraShaken=Array.from({length:Math.max(0,Math.min(99,Math.trunc(Number(combatant.count)||0)))},()=>shaken);
+      combatant.shaken=shaken&&combatant.extraShaken.length>0;
+    }else{
+      combatant.shaken=shaken;
+    }
+    combatant.noteShaken=shaken;
+    combatant.trackResources=true;
+    save();
+    render();
   }
   function trackerKeysFor(combatant) {
     return combatant.entityType === 'monster'
@@ -894,9 +915,15 @@
     state.cardDraws.unshift({id:drawId,card,reason});state.cardDraws=state.cardDraws.slice(0,12);
     $('#drawReason').value='';save();render();
   }
+  ui.type.addEventListener('change',()=>{ui.extraCountControl.hidden=ui.type.value!=='extra';});
   ui.form.addEventListener('submit',event=>{
     event.preventDefault();const name=ui.name.value.trim();if(!name)return;
-    state.combatants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,entityType:'character',wildcard:true,card:null,bennies:0,wounds:0,trackResources:false});
+    const selection=ui.type.value;
+    const isMonster=selection==='wildcard'||selection==='extra';
+    const wildcard=selection==='wildcard';
+    const count=selection==='extra'?Math.max(1,Math.min(99,Math.trunc(Number(ui.extraCount.value)||1))):1;
+    state.combatants.push({id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`,name,entityType:isMonster?'monster':'character',wildcard,card:null,bennies:0,wounds:0,count,shaken:false,noteShaken:null,extraShaken:Array.from({length:wildcard?0:count},()=>false),trackResources:isMonster});
+    ui.type.value='character';ui.extraCountControl.hidden=true;ui.extraCount.value='3';
     ui.name.value='';save();render();ui.name.focus();
   });
   ui.deal.addEventListener('click',deal);
@@ -912,7 +939,12 @@
     importOpenButton.addEventListener('click', importOpenDocuments);
   }
   window.addEventListener('message',event=>{
-    if(event.source!==window.parent||!['gm-refresh-initiative-documents','gm-refresh-initiative-portraits'].includes(event.data?.type))return;
+    if(event.source!==window.parent)return;
+    if(event.data?.type==='gm-initiative-task-changed'&&String(event.data.task||'').toLowerCase()==='shaken'){
+      applyNoteShaken(event.data.path,event.data.name,event.data.checked);
+      return;
+    }
+    if(!['gm-refresh-initiative-documents','gm-refresh-initiative-portraits'].includes(event.data?.type))return;
     syncOpenDocuments().catch(()=>{});
   });
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
