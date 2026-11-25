@@ -453,7 +453,13 @@
     return deduped;
   }
 
-  const INDEX_TYPES = ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'npcs', 'rules', 'other'];
+  const INDEX_TYPES = ['edges', 'hindrances', 'skills', 'powers', 'weapons', 'vehicles', 'items', 'armor', 'abilities', 'ancestries', 'monsters', 'npcs', 'status_conditions', 'rules', 'other'];
+
+  function indexTypeLabel(type) {
+    if (type === 'status_conditions') return 'status conditions';
+    if (type === 'vehicles') return 'vehicles';
+    return String(type || '');
+  }
 
   function ensureIndex() {
     window.REFERENCE_INDEX = window.REFERENCE_INDEX || {};
@@ -702,7 +708,7 @@
     root.className = 'reference-entry-editor';
     root.innerHTML = `
       <label>Name<input data-ref="name" value=""></label>
-      <label>Type<select data-ref="type">${types.map((type) => `<option value="${type}">${type}</option>`).join('')}</select></label>
+      <label>Type<select data-ref="type">${types.map((type) => `<option value="${type}">${indexTypeLabel(type)}</option>`).join('')}</select></label>
       <label>Book<select data-ref="book"></select></label>
       <label>Page<input data-ref="page" type="number" min="1" step="1"></label>
       <label>Highlight<textarea data-ref="highlight" rows="3"></textarea></label>
@@ -913,7 +919,7 @@
       <div class="reference-index-browser-list" data-index-list></div>
     `;
     const typeSelect = wrap.querySelector('[data-index-type]');
-    typesForBrowser(types => { types.forEach((type) => { const o=document.createElement('option'); o.value=type; o.textContent=type; typeSelect.appendChild(o); }); });
+    typesForBrowser(types => { types.forEach((type) => { const o=document.createElement('option'); o.value=type; o.textContent=indexTypeLabel(type); typeSelect.appendChild(o); }); });
     const bookSelect = wrap.querySelector('[data-index-book]');
     const isMobileBookPicker = window.matchMedia?.('(max-width: 760px)')?.matches || window.innerWidth <= 760 || /iPad|iPhone|iPod/.test(navigator.userAgent || '');
     if (isMobileBookPicker) {
@@ -1078,7 +1084,7 @@
 
         const type = document.createElement('span');
         type.className = 'reference-index-row-type';
-        type.textContent = entry.category;
+        type.textContent = indexTypeLabel(entry.category);
 
         const source = parseSource(entry.source || '');
         const book = document.createElement('span');
