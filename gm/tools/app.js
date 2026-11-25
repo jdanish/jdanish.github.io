@@ -39,8 +39,10 @@
             ...item,
             entityType,
             wildcard: entityType === 'monster' ? Boolean(item.wildcard) : true,
+            shaken: Boolean(item.shaken),
             bennies: entityType === 'monster' ? 0 : (Number(item.bennies) || 0),
             count: Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 1,
+            documentPath: String(item.documentPath || ''),
           };
         }),
         activeId: saved.activeId || null,
@@ -195,17 +197,21 @@
     const filename = String(path || '').split('/').pop()?.replace(/\.md$/i, '') || '';
     const name = fields.name || heading || filename;
     const wildCardTask = text.match(/^\s*[-*+]\s+\[([ xX])\]\s+(?:\*\*)?Wild Card\b/im);
+    const shakenTask = text.match(/^\s*[-*+]\s+\[([ xX])\]\s+(?:\*\*)?Shaken\b/im);
     const wildcard = type === 'monster'
       ? (wildCardTask ? /x/i.test(wildCardTask[1]) : /^(?:true|yes|1|on)$/i.test(fields.wildcard || ''))
       : true;
     return name ? {
       name,
+      path: String(path || ''),
       aliases: [...new Set([name, heading, filename].filter(Boolean))],
       type,
       trackers: countersFromOpenDocument(text, type),
       portraitPath: fields.portrait || '',
       hasPortrait: Object.prototype.hasOwnProperty.call(fields, 'portrait'),
-      wildcard
+      wildcard,
+      hasShaken: Boolean(shakenTask),
+      shaken: Boolean(shakenTask && /x/i.test(shakenTask[1]))
     } : null;
   }
   function normalizedCombatantName(name){
@@ -226,9 +232,12 @@
     const readFile=gm?.data?.readFile;
     if(!sidebar||typeof readFile!=='function')return;
     await sidebar.readyPromise;
+    const activeDocument=sidebar.getActiveDocument?.()||{};
     let changed=false;
     for(const path of sidebar.getWorkspaceDocuments?.()||[]){
-      const markdown=await readFile.call(gm.data,path);
+      const markdown=path===activeDocument.path&&typeof activeDocument.markdown==='string'
+        ? activeDocument.markdown
+        : await readFile.call(gm.data,path);
       if(markdown==null)continue;
       const entry=nameFromOpenDocument(path,markdown);
       if(!entry)continue;
@@ -236,6 +245,7 @@
       state.combatants.forEach(combatant=>{
         if(!aliases.has(normalizedCombatantName(combatant.name)))return;
         const modeChanged=combatant.entityType!==entry.type||(entry.type==='monster'&&Boolean(combatant.wildcard)!==entry.wildcard);
+        if(entry.path&&combatant.documentPath!==entry.path){combatant.documentPath=entry.path;changed=true;}
         if(combatant.entityType!==entry.type){combatant.entityType=entry.type;changed=true;}
         if(entry.type==='monster'){
           if(Boolean(combatant.wildcard)!==entry.wildcard){combatant.wildcard=entry.wildcard;changed=true;}
@@ -246,6 +256,7 @@
         for(const [key,tracker] of Object.entries(entry.trackers||{})){
           if(combatant[key]!==tracker.value){combatant[key]=tracker.value;changed=true;}
         }
+        if(entry.hasShaken&&Boolean(combatant.shaken)!==entry.shaken){combatant.shaken=entry.shaken;changed=true;}
         const nextTrackers=entry.trackers||{};
         if(JSON.stringify(combatant.gmTrackers||{})!==JSON.stringify(nextTrackers)){combatant.gmTrackers=nextTrackers;changed=true;}
         if(entry.hasPortrait&&combatant.portraitPath!==entry.portraitPath){combatant.portraitPath=entry.portraitPath;changed=true;}
@@ -266,9 +277,12 @@
     try {
       await sidebar.readyPromise;
       const paths = sidebar.getWorkspaceDocuments?.() || [];
+      const activeDocument = sidebar.getActiveDocument?.() || {};
       const names = [];
       for (const path of paths) {
-        const markdown = await readFile.call(gm.data, path);
+        const markdown = path === activeDocument.path && typeof activeDocument.markdown === 'string'
+          ? activeDocument.markdown
+          : await readFile.call(gm.data, path);
         if (markdown === null || markdown === undefined) continue;
         const entry = nameFromOpenDocument(path, markdown);
         if (entry) names.push(entry);
@@ -291,12 +305,16 @@
           const hasTrackers=activeTrackerKeys.some(key=>Boolean(item.trackers[key]));
           const needsType=current.entityType!==item.type;
           const needsWildcard=item.type==='monster'&&Boolean(current.wildcard)!==item.wildcard;
-          if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsWildcard)return;
+          const needsShaken=item.hasShaken&&Boolean(current.shaken)!==item.shaken;
+          const needsPath=item.path&&current.documentPath!==item.path;
+          if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsWildcard&&!needsShaken&&!needsPath)return;
           if(hasTrackers){
             Object.entries(item.trackers).forEach(([key,tracker])=>{current[key]=tracker.value;});
             current.trackResources = true;
             current.gmTrackers = item.trackers;
           }
+          if(item.hasShaken){current.shaken=item.shaken;current.trackResources=true;}
+          if(item.path)current.documentPath=item.path;
           if(item.hasPortrait)current.portraitPath=item.portraitPath;
           if(item.type==='monster'){
             current.bennies=0;
@@ -317,7 +335,9 @@
           bennies: item.type==='monster' ? 0 : (item.trackers.bennies?.value ?? 0),
           wounds: item.trackers.wounds?.value ?? 0,
           count: item.trackers.count?.value ?? 1,
-          trackResources: item.type==='monster' || Boolean(item.trackers.bennies || item.trackers.wounds),
+          shaken: item.hasShaken ? item.shaken : false,
+          documentPath: item.path,
+          trackResources: item.type==='monster' || Boolean(item.trackers.bennies || item.trackers.wounds || item.hasShaken),
           gmTrackers: item.trackers,
           portraitPath: item.portraitPath
         };
@@ -468,6 +488,20 @@
       trackerToggle.title=`${combatant.trackResources?'Hide':'Show'} ${trackerName} tracker${combatant.entityType==='monster'&&!combatant.wildcard?'':'s'} for ${combatant.name}`;
       trackerToggle.setAttribute('aria-label',trackerToggle.title);
       trackerToggle.addEventListener('click',()=>{combatant.trackResources=!combatant.trackResources;save();render();});
+      const wildCardToggle=document.createElement('button');wildCardToggle.type='button';
+      wildCardToggle.className=`wildcard-status-toggle${combatant.wildcard?' selected':''}`;
+      wildCardToggle.textContent=combatant.wildcard?'Wild Card':'Extra';
+      wildCardToggle.title=`${combatant.wildcard?'Wild Card':'Extra'}: click to switch ${combatant.name}`;
+      wildCardToggle.setAttribute('aria-label',wildCardToggle.title);
+      wildCardToggle.setAttribute('aria-pressed',String(Boolean(combatant.wildcard)));
+      wildCardToggle.hidden=!isMonster;
+      wildCardToggle.addEventListener('click',()=>{
+        combatant.wildcard=!combatant.wildcard;
+        combatant.bennies=0;
+        combatant.trackResources=true;
+        save();render();
+        syncStatusToOpenDocument(combatant,'Wild Card',combatant.wildcard);
+      });
       const remove = document.createElement('button'); remove.type='button'; remove.className='row-menu'; remove.textContent='×'; remove.title=`Remove ${combatant.name}`; remove.setAttribute('aria-label',remove.title);
       remove.addEventListener('click',()=>{
         if(state.initiativeDeck){
@@ -476,16 +510,22 @@
         }
         state.combatants=state.combatants.filter(x=>x.id!==combatant.id);save();render();
       });
-      row.append(portrait,card,name,marker,turnArrows,status,redraw,trackerToggle,remove);
-      if(combatant.trackResources){
+      row.append(portrait,card,name,marker,turnArrows,status,redraw,wildCardToggle,trackerToggle,remove);
+      {
         const resources=document.createElement('div');resources.className='resource-trackers';
-        const trackerKeys=trackerKeysFor(combatant);
-        if(trackerKeys.length===1)resources.classList.add('is-single');
-        trackerKeys.forEach(key=>{
-          const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
-          const max=key==='wounds'?3:key==='count'?99:99;
-          resources.append(makeResourceCounter(combatant,key,label,0,max));
-        });
+        resources.classList.add(!combatant.trackResources?'is-status-only':combatant.entityType==='monster'?'is-monster':'is-character');
+        if(combatant.trackResources){
+          const trackerKeys=trackerKeysFor(combatant);
+          trackerKeys.forEach(key=>{
+            const label=key==='bennies'?'Bennies':key==='wounds'?'Wounds':'Count';
+            const max=key==='wounds'?3:key==='count'?99:99;
+            if(combatant.entityType==='monster'&&resources.childElementCount===0)resources.append(makeShakenToggle(combatant));
+            if(combatant.entityType!=='monster'&&key==='wounds')resources.append(makeShakenToggle(combatant));
+            resources.append(makeResourceCounter(combatant,key,label,0,max));
+          });
+        }else{
+          resources.append(makeShakenToggle(combatant));
+        }
         row.append(resources);
       }
       ui.list.append(row);
@@ -660,6 +700,28 @@
     const combatant=state.combatants.find(c=>c.id===id);if(!combatant)return;
     combatant[key]=Math.max(min,Math.min(max,(Number(combatant[key])||0)+delta));
     syncGmTracker(combatant,key);save();render();
+  }
+  function syncStatusToOpenDocument(combatant,label,checked){
+    const sidebar=parentGM()?.sidebarData;
+    if(!combatant.documentPath||typeof sidebar?.updateInitiativeTask!=='function')return;
+    Promise.resolve(sidebar.updateInitiativeTask(combatant.documentPath,label,checked)).catch(error=>{
+      console.warn(`Could not update ${label} in ${combatant.name}'s note`,error);
+    });
+  }
+  function makeShakenToggle(combatant){
+    const button=document.createElement('button');
+    button.type='button';
+    button.className=`resource-status-toggle${combatant.shaken?' is-active':''}`;
+    button.textContent=combatant.shaken?'Shaken ✓':'Shaken';
+    button.title=`${combatant.name} is ${combatant.shaken?'Shaken':'not Shaken'}; click to change`;
+    button.setAttribute('aria-label',button.title);
+    button.setAttribute('aria-pressed',String(Boolean(combatant.shaken)));
+    button.addEventListener('click',()=>{
+      combatant.shaken=!combatant.shaken;
+      save();render();
+      syncStatusToOpenDocument(combatant,'Shaken',combatant.shaken);
+    });
+    return button;
   }
   function syncGmTracker(combatant,resource){
     const tracker=combatant.gmTrackers?.[resource];

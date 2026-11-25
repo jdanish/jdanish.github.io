@@ -1126,6 +1126,48 @@ window.SIDEBAR_SECTIONS = [];
     );
   }
 
+  async function updateInitiativeTask(path, taskName, checked) {
+    const normalizedPath = normalizeWorkspaceDocumentPath(path);
+    const task = String(taskName || '').trim().toLowerCase();
+    if (!/^(?:characters|monsters)\//i.test(normalizedPath) || !['shaken', 'wild card'].includes(task)) return false;
+    const isActive = normalizedPath === activeDocumentPath;
+    const raw = isActive ? currentMarkdown : await window.GM.data?.readFile?.(normalizedPath);
+    if (raw == null) return false;
+
+    const lines = String(raw).replace(/\r\n/g, '\n').split('\n');
+    const linePattern = /^\s*([-*+])\s+\[([ xX])\]\s+([\s\S]+)$/;
+    const taskIndex = lines.findIndex((line) => {
+      const match = line.match(linePattern);
+      if (!match) return false;
+      const label = match[3].replace(/[*_`]/g, '').trim().toLowerCase();
+      return task === 'wild card' ? /^wild\s+card\b/.test(label) : /^shaken\b/.test(label);
+    });
+    const check = checked ? 'x' : ' ';
+    if (taskIndex >= 0) {
+      lines[taskIndex] = lines[taskIndex].replace(/^(\s*[-*+]\s+)\[([ xX])\]/, `$1[${check}]`);
+    } else {
+      const taskLabel = task === 'wild card' ? '- [ ] **Wild Card** (unchecked = Extra)' : '- [ ] **Shaken**';
+      const newLine = taskLabel.replace('[ ]', `[${check}]`);
+      const frontMatter = lines[0] === '---' ? lines.findIndex((line, index) => index > 0 && line === '---') : -1;
+      const heading = lines.findIndex((line, index) => index > frontMatter && /^#\s+/.test(line));
+      const insertAt = heading >= 0 ? heading + 1 : frontMatter >= 0 ? frontMatter + 1 : 0;
+      lines.splice(insertAt, 0, '', newLine);
+    }
+    const updated = lines.join('\n').replace(/\n*$/, '\n');
+    if (isActive) {
+      importMarkdownFromText('current', updated, getWorkspaceSectionKind(activeDocumentMeta, activeDocumentPath));
+      const saved = await saveActiveDocument();
+      notifyInitiativeDocumentRefresh();
+      if (!saved) return false;
+    } else {
+      const status = window.GM.data?.getStatus?.() || {};
+      if (!status.connected || status.readOnly) return false;
+      await window.GM.data.writeFile(normalizedPath, updated);
+    }
+    if (!isActive) notifyInitiativeDocumentRefresh();
+    return true;
+  }
+
   function getWorkspaceDocuments() {
     return openDocumentPaths.slice();
   }
@@ -1391,6 +1433,7 @@ window.SIDEBAR_SECTIONS = [];
     getActiveSections,
     getWorkspaceDocuments,
     getWorkspaceDocumentName,
+    updateInitiativeTask,
     reorderWorkspaceDocuments,
     setWorkspaceDocumentOrder,
     getDocumentDisplayName,

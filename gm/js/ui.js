@@ -3990,6 +3990,7 @@
           event.source.postMessage(toolsDiceRollPending, '*');
           toolsDiceRollPending = null;
         }
+        event.source.postMessage({ type: 'gm-refresh-initiative-documents' }, '*');
         if (!toolsResetPending) return;
         toolsResetPending = false;
         event.source.postMessage({ type: 'gm-tools-reset' }, '*');

@@ -1,14 +1,13 @@
 ---
 type: monster
-name: Bozrak (Air Demon)
-portrait:
+name: BOZRAK (AIR DEMON)
 ---
+# BOZRAK (AIR DEMON)
 
-# Bozrak (Air Demon)
+- [ ] **Wild Card** (unchecked = Extra)
+- [ ] **Shaken**
 
 The [[starbreaker_core/208?highlight=BOZRAK|BOZRAK]], aerial predators of Sismistra, are held in superstitious terror by the nahkyra even in these enlightened times.
-
-- [ ] **Wild Card**
 
 ## Attributes
 
