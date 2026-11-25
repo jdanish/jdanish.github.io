@@ -532,7 +532,11 @@
     const now = dosDateTime();
     files.forEach(({ path, text }) => {
       const name = encoder.encode(path);
-      const data = encoder.encode(text);
+      const data = text instanceof Uint8Array
+        ? text
+        : text instanceof ArrayBuffer
+          ? new Uint8Array(text)
+          : encoder.encode(String(text ?? ''));
       const crc = crc32(data);
       const localHeader = concatBytes([
         u32(0x04034b50), u16(20), u16(0x800), u16(0), u16(now.time), u16(now.date), u32(crc), u32(data.length), u32(data.length), u16(name.length), u16(0), name,
@@ -555,17 +559,49 @@
   async function downloadFolder() {
     let files = [];
     if (state.directoryHandle) {
-      const all = await readAllFiles();
-      files = all.map(({ path, text }) => ({ path, text }));
-    } else {
-      const fallbacks = [];
-      for (const path of DEFAULT_FILES) {
+      const all = await walkDirectory(state.directoryHandle);
+      files = await Promise.all(all.map(async ({ path, handle }) => {
+        const file = await handle.getFile();
+        return { path, text: new Uint8Array(await file.arrayBuffer()) };
+      }));
+    } else if (state.readOnly) {
+      const data = await loadServerDataJson();
+      files = Object.entries(data).map(([path, text]) => ({ path, text: String(text ?? '') }));
+      const manifestText = data['manifest.json'];
+      let paths = [];
+      try {
+        const manifest = JSON.parse(manifestText || '{}');
+        paths = Array.isArray(manifest) ? manifest : Array.isArray(manifest.files) ? manifest.files : [];
+      } catch { /* server-data may omit a usable manifest */ }
+      const included = new Set(files.map((file) => file.path));
+      await Promise.all(paths.map(async (entry) => {
+        const path = normalizePath(typeof entry === 'string' ? entry : entry?.path);
+        if (!path || included.has(path)) return;
         try {
-          const response = await fetch(`data/${path}`, { cache: 'no-store' });
-          if (response.ok) fallbacks.push({ path, text: await response.text() });
-        } catch { /* ignore unavailable files */ }
-      }
-      files = fallbacks;
+          const response = await fetch(buildServerFileUrl(path), { cache: 'no-store', credentials: 'same-origin' });
+          if (response.ok) files.push({ path, text: new Uint8Array(await response.arrayBuffer()) });
+        } catch { /* omit unavailable optional assets */ }
+      }));
+    } else {
+      const baseUrl = DEFAULT_SERVER_URL;
+      let paths = [];
+      try {
+        const manifestResponse = await fetch(new URL('manifest.json', baseUrl), { cache: 'no-store' });
+        if (manifestResponse.ok) {
+          const manifest = await manifestResponse.json();
+          paths = Array.isArray(manifest) ? manifest : Array.isArray(manifest?.files) ? manifest.files : [];
+        }
+      } catch { /* fall back to the core files below */ }
+      if (!paths.length) paths = DEFAULT_FILES;
+      files = (await Promise.all(paths.map(async (entry) => {
+        const path = normalizePath(typeof entry === 'string' ? entry : entry?.path);
+        if (!path) return null;
+        try {
+          const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+          const response = await fetch(new URL(encodedPath, baseUrl), { cache: 'no-store' });
+          return response.ok ? { path, text: new Uint8Array(await response.arrayBuffer()) } : null;
+        } catch { return null; }
+      }))).filter(Boolean);
     }
     const zip = createZip(files);
     triggerDownload(zip, 'savage-worlds-gm-data.zip');

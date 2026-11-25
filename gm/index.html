@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=pdfjs-6.5.438-20261124">
+  <link rel="stylesheet" href="css/styles.css?v=help-center-20261125">
 </head>
 <body>
   <div class="app">
@@ -70,7 +70,10 @@
             </div>
           </div>
         </div>
-        <button id="themeButton" type="button" class="icon-button workspace-theme-button" aria-label="Theme: Dark. Click to switch." title="Theme: Dark. Click to switch.">☾</button>
+        <div class="workspace-header-actions">
+          <button id="helpButton" type="button" class="workspace-help-button" aria-haspopup="dialog" aria-controls="helpDialog"><span aria-hidden="true">?</span> Help</button>
+          <button id="themeButton" type="button" class="icon-button workspace-theme-button" aria-label="Theme: Dark. Click to switch." title="Theme: Dark. Click to switch.">☾</button>
+        </div>
       </div>
 
       <div class="rulebooks-controls" aria-label="Rulebook controls">
@@ -90,6 +93,113 @@
     </main>
   </div>
 
+  <dialog class="gm-help-dialog" id="helpDialog" aria-labelledby="helpTitle">
+    <div class="gm-help-shell">
+      <header class="gm-help-header">
+        <div><span class="gm-help-eyebrow">WILD CARD · QUICK REFERENCE</span><h1 id="helpTitle">How to use the GM app</h1></div>
+        <button type="button" class="gm-help-close" id="helpClose" aria-label="Close help">×</button>
+      </header>
+      <div class="gm-help-layout">
+        <nav class="gm-help-nav" aria-label="Help topics">
+          <a href="#help-start">Getting started</a>
+          <a href="#help-search">Search</a>
+          <a href="#help-books">Rulebooks and reading</a>
+          <a href="#help-data">Local data folder</a>
+          <a href="#help-characters">Characters and links</a>
+          <a href="#help-current-rules">Rules and Current</a>
+          <a href="#help-tools">Table tools</a>
+          <a href="#help-index">Reference Index</a>
+          <a href="#help-mobile">Mobile and display</a>
+        </nav>
+        <main class="gm-help-content">
+          <section id="help-start" class="gm-help-section">
+            <h2>Getting started</h2>
+            <p>The app has two workspaces: <strong>Rulebooks</strong> for PDFs and your sidebar, and <strong>Tools</strong> for initiative and table aids. The sidebar has <strong>Rules</strong>, <strong>Current</strong>, and <strong>Search</strong> tabs. Your view, theme, open documents, and table tool state are saved in this browser.</p>
+            <div class="gm-help-actions"><button type="button" data-help-action="search">Try Search</button><button type="button" data-help-action="data">Open data management</button></div>
+          </section>
+
+          <section id="help-search" class="gm-help-section">
+            <h2>Search</h2>
+            <p>Use the search box above the sidebar. Results update as you type; searches need at least two characters. Search covers the sidebar’s Rules and Current text, the Reference Index, and searchable text extracted from PDFs.</p>
+            <ul>
+              <li>PDF search checks books that are visible in the book tabs by default. Turn on <strong>Include hidden books</strong> below the search box to include the rest.</li>
+              <li>The first search in a book may take longer while its PDF text is indexed. Results are grouped by source; select a result to open its page or reveal the matching sidebar text.</li>
+              <li>Use <strong>Collapse all</strong> in the results header to fold result groups. Clear the query or press Escape to return to the previous sidebar tab.</li>
+            </ul>
+            <button type="button" data-help-action="search">Focus the search box</button>
+          </section>
+
+          <section id="help-books" class="gm-help-section">
+            <h2>Rulebooks and reading</h2>
+            <ul>
+              <li>Choose <strong>Rulebooks</strong>, then select a book tab. Page shortcuts and bookmarks are in the navigation strip below the workspace tabs.</li>
+              <li>Use the book-list button to choose which books appear as tabs. Hidden books can still be opened by links and included in search.</li>
+              <li>Use the navigation-strip toggle to collapse or expand book shortcuts and bookmarks. PDF.js controls provide page navigation, zoom, and presentation options.</li>
+              <li>Select PDF text and right-click (or long-press on a touch screen) for actions such as bookmarking, copying text or a link, and creating a monster from a stat block.</li>
+              <li>Add a bookmark with the <strong>＋</strong> control in the navigation strip. Give it a useful name; bookmarks are saved in this browser. Links can include a highlighted phrase.</li>
+            </ul>
+            <button type="button" data-help-action="books">Choose visible books</button>
+          </section>
+
+          <section id="help-data" class="gm-help-section">
+            <h2>Set up an editable local data folder</h2>
+            <p>Server data is read-only. To edit and keep your own character, monster, and note files, download a copy and connect the extracted folder.</p>
+            <ol>
+              <li>Open the sidebar’s <strong>Search</strong> tab and choose its data/Markdown tools button (the pencil icon), or use <strong>Open data management</strong> below.</li>
+              <li>Select <strong>Download Data Folder</strong>. The app downloads a ZIP containing the current data files. Unzip it to a folder you can keep and back up.</li>
+              <li>In the same data panel, choose <strong>Connect Data Folder</strong> and select the unzipped folder containing <code>rules.md</code>, <code>workspace.json</code>, and the <code>characters</code>, <code>monsters</code>, and <code>notes</code> folders.</li>
+              <li>Grant the browser access when prompted. The connected folder is editable from this browser. Keep the folder in place; if the browser loses access, use <strong>Reconnect Folder</strong>.</li>
+            </ol>
+            <p><strong>Back up the folder</strong> periodically. Changes are written to its Markdown and JSON files. A browser’s local storage also keeps display preferences and table tool state.</p>
+            <button type="button" data-help-action="data">Open data management</button>
+          </section>
+
+          <section id="help-characters" class="gm-help-section">
+            <h2>Make characters and link them to rules</h2>
+            <ol>
+              <li>Connect a writable local data folder, open <strong>Current</strong>, and choose <strong>＋ Character</strong>. The app creates a Markdown file from the character template in <code>characters/</code> and opens it for editing.</li>
+              <li>Fill in the character’s details in the editor and save. Use <strong>＋ Open</strong> to reopen existing characters, monsters, or notes. <strong>Import Character (XML)</strong> supports the app’s supported Fantasy Grounds character export.</li>
+              <li>Link a character file to a PDF rule by adding a wiki link in its Markdown, for example <code>[[swade/58?highlight=Fleet-Footed|Fleet-Footed]]</code>. Replace <code>swade</code> and the page with the book key and displayed page; the label is the text shown in the file.</li>
+              <li>To put a character into Initiative, open the character file, switch to <strong>Tools</strong> → <strong>Initiative</strong>, and choose <strong>Import open</strong>. A character portrait can be set with the <strong>Initiative portrait image path</strong> field in the Markdown editor.</li>
+            </ol>
+            <p>Monster files use a <strong>Wild Card</strong> checkbox: unchecked means an Extra tracked by Count; checked means a Wild Card tracked by Wounds. Monster portraits can also appear in Initiative.</p>
+            <button type="button" data-help-action="character">Go to Current documents</button>
+          </section>
+
+          <section id="help-current-rules" class="gm-help-section">
+            <h2>Rules and Current</h2>
+            <p><strong>Rules</strong> is your persistent rules reference. <strong>Current</strong> holds the active character, monster, note, or campaign file. Open documents appear as tabs; drag tabs to reorder them and use × to close a tab. Closing a tab does not delete its file.</p>
+            <p>The sidebar’s data/Markdown panel can edit or download Rules, load Markdown, browse documents, manage the data folder, and open the Reference Index. Markdown headings, lists, tables, checkboxes, and PDF links render in the sidebar. In a connected writable folder, edits can be saved to the active file.</p>
+          </section>
+
+          <section id="help-tools" class="gm-help-section">
+            <h2>Table tools</h2>
+            <p>Open <strong>Tools</strong> for the initiative tracker and other table aids:</p>
+            <ul>
+              <li><strong>Initiative:</strong> deal cards, track the round and turn order, handle Jokers, and optionally show character Bennies/Wounds or monster Wounds/Count. Import open documents to use their names, trackers, and portraits.</li>
+              <li><strong>Dice:</strong> build a pool of Trait dice, choose whether to use the Wild Die, and roll with acing. For multiple dice, choose sum, keep-highest, or display-only mode.</li>
+              <li><strong>Deck:</strong> draw cards for other table moments, optionally record a reason, and reshuffle this separate deck.</li>
+              <li><strong>Chase:</strong> manage chase participants and deal action cards.</li>
+              <li><strong>Dramatic Task:</strong> set the task’s target and rounds, then record progress tokens.</li>
+            </ul>
+            <p>Use the reset icon beside the Tools tab to clear table tool state. The reset control inside the Initiative panel clears saved table data.</p>
+            <button type="button" data-help-action="tools">Open Table Tools</button>
+          </section>
+
+          <section id="help-index" class="gm-help-section">
+            <h2>Reference Index</h2>
+            <p>The index stores searchable rules, names, aliases, and source pages. Open it from the <strong>Index</strong> button beside the sidebar tabs. You can build or edit entries, import/export an index, and save it to a writable data folder. Some search results come from this curated index in addition to PDF text search.</p>
+          </section>
+
+          <section id="help-mobile" class="gm-help-section">
+            <h2>Mobile and display</h2>
+            <p>On a narrow screen, use the sidebar button to open or close the sidebar. Pinch to zoom PDFs; the book/page navigation can be collapsed to leave more room for the document. The theme button cycles through the available display modes.</p>
+          </section>
+        </main>
+      </div>
+    </div>
+  </dialog>
+
   <script src="js/utils.js"></script>
   <script src="data/config.js"></script>
   <script src="libs/codemirror/lib/codemirror.js"></script>
@@ -102,8 +212,9 @@
   <script src="js/notes.js"></script>
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js"></script>
+  <script src="js/help.js?v=help-center-20261125"></script>
   <script src="js/pdfviewer.js?v=pdfjs-6.5.438-20261124"></script>
-  <script src="js/ui.js?v=monster-wildcard-trackers-20261124"></script>
+  <script src="js/ui.js?v=help-center-20261125"></script>
   <script src="js/app.js?v=sidebar-default-path-fix-20261124"></script>
 </body>
 </html>
