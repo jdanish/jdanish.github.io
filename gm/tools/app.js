@@ -241,6 +241,22 @@
     save();
     render();
   }
+  function applyNoteWildCard(path,name,checked){
+    const normalizedPath=String(path||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase();
+    const normalizedName=normalizedCombatantName(name);
+    const combatant=state.combatants.find(item=>
+      (normalizedPath&&String(item.documentPath||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').toLocaleLowerCase()===normalizedPath)
+      ||(normalizedName&&normalizedCombatantName(item.name)===normalizedName)
+    );
+    if(!combatant)return;
+    combatant.entityType='monster';
+    combatant.wildcard=Boolean(checked);
+    combatant.bennies=0;
+    if(!Number.isFinite(Number(combatant.count)))combatant.count=1;
+    combatant.trackResources=true;
+    save();
+    render();
+  }
   function trackerKeysFor(combatant) {
     return combatant.entityType === 'monster'
       ? [combatant.wildcard ? 'wounds' : 'count']
@@ -940,8 +956,10 @@
   }
   window.addEventListener('message',event=>{
     if(event.source!==window.parent)return;
-    if(event.data?.type==='gm-initiative-task-changed'&&String(event.data.task||'').toLowerCase()==='shaken'){
-      applyNoteShaken(event.data.path,event.data.name,event.data.checked);
+    if(event.data?.type==='gm-initiative-task-changed'){
+      const task=String(event.data.task||'').toLowerCase();
+      if(task==='shaken')applyNoteShaken(event.data.path,event.data.name,event.data.checked);
+      else if(task==='wild card')applyNoteWildCard(event.data.path,event.data.name,event.data.checked);
       return;
     }
     if(!['gm-refresh-initiative-documents','gm-refresh-initiative-portraits'].includes(event.data?.type))return;
