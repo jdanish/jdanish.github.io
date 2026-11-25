@@ -31,7 +31,7 @@
     }
   }
 
-  async function checkForUpdates() {
+  async function checkForUpdates({ activateWaiting = true } = {}) {
     const registration = pwaRegistration || await registerPwa();
     if (!registration) {
       // Local development deliberately does not register a service worker.
@@ -46,6 +46,9 @@
     }
 
     if (registration.waiting) {
+      if (!activateWaiting) {
+        return { updated: true, available: true, reloading: false };
+      }
       pwaReloadPending = true;
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       return { updated: true, reloading: true };
@@ -234,7 +237,7 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         window.GM.pdfviewer?.refreshActiveViewer?.().catch?.(console.error);
-        window.GM.app?.checkForUpdates?.().catch?.(() => {});
+        window.GM.app?.checkForUpdates?.({ activateWaiting: false }).catch?.(() => {});
       } else {
         window.GM.storage?.saveState?.();
       }
@@ -243,7 +246,7 @@
     // Periodically check for a newer service worker while the app is open.
     window.setInterval(() => {
       if (document.visibilityState === 'visible') {
-        window.GM.app?.checkForUpdates?.().catch?.(() => {});
+        window.GM.app?.checkForUpdates?.({ activateWaiting: false }).catch?.(() => {});
       }
     }, 5 * 60 * 1000);
 

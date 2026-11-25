@@ -632,7 +632,15 @@
 
     const status = document.createElement('span');
     status.className = 'search-results-status';
-    status.textContent = statusText || `${referenceHits.length + sidebarHits.length + pdfHits.length} matches`;
+    status.setAttribute('aria-live', 'polite');
+    const isSearching = Boolean(statusText);
+    status.classList.toggle('is-searching', isSearching);
+    status.setAttribute('aria-busy', isSearching ? 'true' : 'false');
+    if (isSearching) {
+      status.innerHTML = '<span class="search-progress-spinner" aria-hidden="true"></span><span>Searching…</span>';
+    } else {
+      status.textContent = `${referenceHits.length + sidebarHits.length + pdfHits.length} matches`;
+    }
 
     const orderSelect = document.createElement('select');
     orderSelect.className = 'search-result-order';

@@ -375,6 +375,24 @@ a.btn:hover {
 .search-results-status {
   white-space: nowrap;
 }
+.search-results-status.is-searching {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.search-progress-spinner {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  border: 2px solid color-mix(in srgb, var(--muted) 38%, transparent);
+  border-top-color: var(--accent, #60a5fa);
+  border-radius: 50%;
+  animation: gm-search-spin .8s linear infinite;
+}
+@keyframes gm-search-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .search-progress-spinner { animation-duration: 2.4s; }
+}
 .search-result-order {
   min-width: 112px;
   max-width: 145px;
