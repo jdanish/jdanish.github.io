@@ -1113,9 +1113,7 @@ window.SIDEBAR_SECTIONS = [];
   }
 
   function notifyInitiativeDocumentRefresh() {
-    document.getElementById('toolsFrame')?.contentWindow?.postMessage(
-      { type: 'gm-refresh-initiative-documents' }, '*'
-    );
+    window.GM.tools?.sendMessage?.({ type: 'gm-refresh-initiative-documents' });
   }
 
   function handleMarkdownTaskChange(input, event) {
@@ -1157,15 +1155,15 @@ window.SIDEBAR_SECTIONS = [];
         task: statusTask[1],
         checked,
       };
-      const toolsWindow = document.getElementById('toolsFrame')?.contentWindow;
+      const toolsWindow = window.GM.tools?.getWindow?.() || document.getElementById('toolsFrame')?.contentWindow;
       try {
         if (typeof toolsWindow?.WildCardTools?.applyInitiativeNoteTask === 'function') {
           toolsWindow.WildCardTools.applyInitiativeNoteTask(payload.path, payload.name, payload.task, payload.checked);
         } else {
-          toolsWindow?.postMessage(payload, '*');
+          window.GM.tools?.sendMessage?.(payload);
         }
       } catch {
-        toolsWindow?.postMessage(payload, '*');
+        window.GM.tools?.sendMessage?.(payload);
       }
     }
 

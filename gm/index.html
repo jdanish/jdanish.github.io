@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=search-progress-indicator-20261125">
+  <link rel="stylesheet" href="css/styles.css?v=tools-tab-refresh-location-20261125">
 </head>
 <body>
   <div class="app">
@@ -66,7 +66,7 @@
             <button type="button" class="btn active" id="rulebooksWorkspaceTab" role="tab" aria-selected="true" aria-controls="viewerFrame">Rulebooks</button>
             <div class="tools-tab-group" id="toolsTabGroup" role="presentation">
               <button type="button" class="btn" id="toolsWorkspaceTab" role="tab" aria-selected="false" aria-controls="toolsFrame">Tools</button>
-              <button type="button" class="tools-tab-reset-button" id="toolsResetButton" title="Reset table tools" aria-label="Reset table tools">↻</button>
+              <button id="toolsPopoutButton" class="workspace-popout-button" type="button" aria-label="Open tools in a separate window" title="Open tools in a separate window">↗</button>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@
           <div class="pages" id="pageLinks"></div>
         </div>
         <div class="frame" id="viewerFrame">
-          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=status-checkbox-logging-removed-20261125" title="Savage Worlds table tools" loading="lazy"></iframe>
+          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=tools-tab-refresh-location-20261125" title="Savage Worlds table tools" loading="lazy"></iframe>
         </div>
       </section>
     </main>
@@ -191,7 +191,8 @@
               <li><strong>Chase:</strong> manage chase participants and deal action cards.</li>
               <li><strong>Dramatic Task:</strong> set the task’s target and rounds, then record progress tokens.</li>
             </ul>
-            <p>Use the reset button (<strong>↻</strong>) beside the Tools tab to clear table tool state. The Initiative panel’s reset button (<strong>↻</strong>) clears saved table data; similar reset buttons in Chase and Dramatic Task reset those tools.</p>
+            <p>Use the reset button (<strong>↻</strong>) at the end of the tools tab bar, after Dramatic Task, to clear table tool state. The Initiative panel’s reset button (<strong>↻</strong>) clears saved table data; similar reset buttons in Chase and Dramatic Task reset those tools.</p>
+            <p>Use <strong>↗</strong> beside the Tools tab to open Tools in a separate browser window, suitable for another monitor. The pop-out stays connected to initiative notes and shared table state. Use <strong>↙ Return to main window</strong> in the pop-out or click <strong>↙</strong> beside the Tools tab to return Tools to its tab.</p>
             <button type="button" data-help-action="tools">Open Table Tools</button>
           </section>
 
@@ -215,7 +216,7 @@
   <script src="libs/codemirror/lib/codemirror.js"></script>
   <script src="libs/codemirror/mode/markdown/markdown.js"></script>
   <script src="libs/easymde/easymde.min.js"></script>
-  <script src="js/sidebar.js?v=status-checkbox-logging-removed-20261125"></script>
+  <script src="js/sidebar.js?v=tools-tab-refresh-location-20261125"></script>
   <script src="js/storage.js?v=workspace-tab-persistence-20261123"></script>
   <script src="js/popup.js?v=data-documents-top-20261125"></script>
   <script src="js/bookmarks.js?v=index-copy-link-help-20261125"></script>
@@ -223,8 +224,8 @@
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js?v=search-progress-indicator-20261125"></script>
   <script src="js/help.js?v=initiative-status-sync-20261125"></script>
-  <script src="js/pdfviewer.js?v=pdfjs-6.5.438-worker-path-20261125"></script>
-  <script src="js/ui.js?v=reference-index-all-types-20261125"></script>
-  <script src="js/app.js?v=mobile-background-update-no-reload-20261125"></script>
+  <script src="js/pdfviewer.js?v=tools-tab-refresh-location-20261125"></script>
+  <script src="js/ui.js?v=tools-tab-refresh-location-20261125"></script>
+  <script src="js/app.js?v=tools-tab-refresh-location-20261125"></script>
 </body>
 </html>

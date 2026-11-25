@@ -194,9 +194,7 @@
           window.GM.sidebarData.importMarkdownFromText('current', folder.current);
         }
       }
-      document.getElementById('toolsFrame')?.contentWindow?.postMessage(
-        { type: 'gm-refresh-initiative-documents' }, '*'
-      );
+      window.GM.tools?.sendMessage?.({ type: 'gm-refresh-initiative-documents' });
       await window.GM.referenceIndex?.loadIndexFile?.();
       if (window.GM.referenceIndex && window.GM.data?.getStatus?.().connected && !window.GM.data?.getStatus?.().readOnly) {
         try { await window.GM.data.ensureStructure?.(); } catch { /* folder can remain read-only */ }

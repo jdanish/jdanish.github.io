@@ -16,6 +16,7 @@
     extraCountControl: $('#extraCountControl')
   };
   let state = loadState();
+  let importingOpenDocuments = false;
   let traitDice = [{id:'initial-d6',sides:6}];
   let keepCountTouched = false;
   let cardDealAnimationIds = new Set();
@@ -27,6 +28,18 @@
   let drawAnimationTimer = null;
   let rollAnimationSequence = 0;
   let rollAnimationTimer = null;
+
+  const IS_POPOUT = new URLSearchParams(window.location.search).get('popout') === '1';
+  function hostWindow() {
+    if (document.documentElement.classList.contains('embedded') && window.parent !== window) return window.parent;
+    if (IS_POPOUT && window.opener && !window.opener.closed) return window.opener;
+    return null;
+  }
+  function isHostMessage(event) { return event.source === hostWindow(); }
+  function postToHost(payload) {
+    const host = hostWindow();
+    if (host) host.postMessage(payload, '*');
+  }
 
   function loadState() {
     try {
@@ -116,8 +129,7 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* app remains usable if storage is unavailable */ }
   }
   function parentGM() {
-    if (!document.documentElement.classList.contains('embedded') || window.parent === window) return null;
-    try { return window.parent.GM || null; } catch (_) { return null; }
+    try { return hostWindow()?.GM || null; } catch (_) { return null; }
   }
   function normalizePortraitReference(value){
     const source=String(value||'').trim();
@@ -220,6 +232,9 @@
   }
   function normalizedCombatantName(name){
     return String(name||'').toLocaleLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function normalizedCombatantIdentity(name){
+    return normalizedCombatantName(name).replace(/\s*\([^)]*\)\s*$/,'').trim();
   }
   function normalizedDocumentPath(path){
     return String(path||'').replace(/\\/g,'/').replace(/^\/+|\/+$/g,'').replace(/^data\//i,'').toLocaleLowerCase();
@@ -336,6 +351,10 @@
     if(changed){save();render();}
   }
   async function importOpenDocuments() {
+    if (importingOpenDocuments) return;
+    importingOpenDocuments = true;
+    const importButton = $('#importOpenDocuments');
+    if (importButton) importButton.disabled = true;
     const status = $('#importOpenStatus');
     const gm = parentGM();
     const sidebar = gm?.sidebarData;
@@ -343,6 +362,8 @@
     if (!sidebar || typeof readFile !== 'function') {
       status.hidden = false;
       status.textContent = 'The GM document workspace is not ready. Try again in a moment.';
+      importingOpenDocuments = false;
+      if (importButton) importButton.disabled = false;
       return;
     }
     try {
@@ -358,28 +379,67 @@
         const entry = nameFromOpenDocument(path, markdown);
         if (entry) names.push(entry);
       }
-      const existing = new Map(state.combatants.map(item => [String(item.name || '').trim().toLocaleLowerCase(), item]));
-      const seen = new Set();
+      const seenPaths = new Set();
+      const seenAliases = new Set();
       const uniqueNames = names.filter(item => {
-        const key = item.name.trim().toLocaleLowerCase();
-        if (!key || seen.has(key)) return false;
-        seen.add(key);
+        const pathKey = normalizedDocumentPath(item.path);
+        const aliases = [...new Set([item.name, ...(item.aliases || [])].map(normalizedCombatantIdentity).filter(Boolean))];
+        if (!aliases.length || (pathKey && seenPaths.has(pathKey)) || aliases.some(alias => seenAliases.has(alias))) return false;
+        if (pathKey) seenPaths.add(pathKey);
+        aliases.forEach(alias => seenAliases.add(alias));
         return true;
       });
       const additions = [];
       let synced = 0;
+      let mergedDuplicates = 0;
       uniqueNames.forEach(item => {
-        const key = item.name.trim().toLocaleLowerCase();
-        const current = existing.get(key);
+        const itemPath = normalizedDocumentPath(item.path);
+        const aliases = new Set([item.name, ...(item.aliases || [])].map(normalizedCombatantIdentity).filter(Boolean));
+        const candidates = [...state.combatants, ...additions].filter(combatant => {
+          const combatantPath = normalizedDocumentPath(combatant.documentPath);
+          return Boolean(itemPath && combatantPath && itemPath === combatantPath)
+            || aliases.has(normalizedCombatantIdentity(combatant.name));
+        });
+        const current = candidates.sort((a,b) => {
+          const aPath = normalizedDocumentPath(a.documentPath) === itemPath ? 1 : 0;
+          const bPath = normalizedDocumentPath(b.documentPath) === itemPath ? 1 : 0;
+          const aActive = a.id === state.activeId ? 1 : 0;
+          const bActive = b.id === state.activeId ? 1 : 0;
+          const aCard = a.card || a.cardOptions?.length ? 1 : 0;
+          const bCard = b.card || b.cardOptions?.length ? 1 : 0;
+          return bPath-aPath || bActive-aActive || bCard-aCard;
+        })[0];
         if (current) {
+          const duplicateEntries = candidates.filter(candidate => candidate !== current && state.combatants.includes(candidate));
+          duplicateEntries.forEach(duplicate => {
+            if (!current.card && duplicate.card) current.card = duplicate.card;
+            if (!current.cardOptions?.length && duplicate.cardOptions?.length) current.cardOptions = duplicate.cardOptions;
+            if (!current.trackResources && duplicate.trackResources) current.trackResources = true;
+            if (!current.documentPath && duplicate.documentPath) current.documentPath = duplicate.documentPath;
+            if (!current.portraitPath && duplicate.portraitPath) current.portraitPath = duplicate.portraitPath;
+            if (current.noteShaken === null && typeof duplicate.noteShaken === 'boolean') {
+              current.noteShaken = duplicate.noteShaken;
+              current.shaken = duplicate.shaken;
+            }
+            if (state.activeId === duplicate.id) state.activeId = current.id;
+            if (duplicate.card && duplicate.card !== current.card && state.initiativeDeck) {
+              state.initiativeDeck.discard.push(duplicate.card);
+            }
+          });
+          if (duplicateEntries.length) {
+            const duplicateIds = new Set(duplicateEntries.map(duplicate => duplicate.id));
+            state.combatants = state.combatants.filter(combatant => !duplicateIds.has(combatant.id));
+            mergedDuplicates += duplicateEntries.length;
+          }
           const activeTrackerKeys=item.type==='monster'?(item.wildcard?['wounds']:['count']):['bennies','wounds'];
           const hasTrackers=activeTrackerKeys.some(key=>Boolean(item.trackers[key]));
           const needsType=current.entityType!==item.type;
           const needsWildcard=item.type==='monster'&&Boolean(current.wildcard)!==item.wildcard;
+          const needsName=current.name!==item.name;
           const expectedExtraCount=Math.max(0,Math.trunc(Number(item.trackers.count?.value??current.count)||0));
           const needsShaken=item.hasShaken&&current.noteShaken!==item.shaken;
           const needsPath=item.path&&current.documentPath!==item.path;
-          if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsWildcard&&!needsShaken&&!needsPath)return;
+          if(!hasTrackers&&!item.hasPortrait&&!needsType&&!needsWildcard&&!needsShaken&&!needsPath&&!needsName)return;
           if(hasTrackers){
             Object.entries(item.trackers).forEach(([key,tracker])=>{current[key]=tracker.value;});
             current.trackResources = true;
@@ -394,6 +454,7 @@
             if(needsShaken)current.trackResources=true;
           }
           if(item.path)current.documentPath=item.path;
+          current.name=item.name;
           if(item.hasPortrait)current.portraitPath=item.portraitPath;
           if(item.type==='monster'){
             current.bennies=0;
@@ -425,21 +486,28 @@
           portraitPath: item.portraitPath
         };
         additions.push(combatant);
-        existing.set(key, combatant);
       });
       additions.forEach(combatant => state.combatants.push(combatant));
       const duplicates = names.length - uniqueNames.length;
-      if (additions.length || synced) { save(); render(); }
+      if (additions.length || synced || mergedDuplicates) { save(); render(); }
       status.hidden = false;
-      status.textContent = additions.length || synced
-        ? `Imported ${additions.length} ${additions.length === 1 ? 'name' : 'names'}${synced ? `; synced ${synced} existing ${synced === 1 ? 'entry' : 'entries'}` : ''}${duplicates ? `; skipped ${duplicates} duplicate${duplicates === 1 ? '' : 's'}` : ''}.`
+      const summary = [];
+      if (additions.length) summary.push(`Imported ${additions.length} ${additions.length === 1 ? 'name' : 'names'}`);
+      if (synced) summary.push(`synced ${synced} existing ${synced === 1 ? 'entry' : 'entries'}`);
+      if (mergedDuplicates) summary.push(`merged ${mergedDuplicates} duplicate ${mergedDuplicates === 1 ? 'entry' : 'entries'}`);
+      if (duplicates) summary.push(`skipped ${duplicates} duplicate${duplicates === 1 ? '' : 's'}`);
+      status.textContent = summary.length
+        ? `${summary.join('; ')}.`
         : names.length ? 'All open character and monster names are already in the list.' : 'No open character or monster documents found in the GM workspace.';
     } catch (error) {
       status.hidden = false;
       status.textContent = `Could not import open document names: ${error?.message || error}`;
+    } finally {
+      importingOpenDocuments = false;
+      if (importButton) importButton.disabled = false;
     }
   }
-  function setToolPanel(panel) {
+  function setToolPanel(panel, persist = true) {
     const activePanel = ['initiative', 'dice', 'deck', 'chase', 'dramatic'].includes(panel) ? panel : 'initiative';
     document.body.dataset.activeToolPanel = activePanel;
     ['initiative', 'dice', 'deck', 'chase', 'dramatic'].forEach(name => {
@@ -451,7 +519,7 @@
       button.classList.toggle('active', selected);
       button.setAttribute('aria-selected', String(selected));
     });
-    save();
+    if (persist) save();
   }
   function shuffledDeck() {
     const deck=[];
@@ -827,7 +895,7 @@
     const key=String(tracker.key).trim().toLowerCase();
     const value=Number(combatant[resource])||0;
     try{localStorage.setItem(`gm_tracker_${key}`,String(value));}catch(_){/* table state still persists separately */}
-    if(window.parent!==window)window.parent.postMessage({type:'gm-tracker-updated',key,value},'*');
+    postToHost({type:'gm-tracker-updated',key,value});
   }
   function readLinkedTrackerValue(tracker,newValue){
     const raw=newValue===null||newValue===undefined?tracker.fallback:newValue;
@@ -838,6 +906,13 @@
     return value;
   }
   window.addEventListener('storage',event=>{
+    if(event.key===STORAGE_KEY&&event.newValue){
+      state=loadState();
+      setToolPanel(state.activeToolPanel, false);
+      render();
+      updateDiceControls();
+      return;
+    }
     if(!event.key?.startsWith('gm_tracker_'))return;
     const key=event.key.slice('gm_tracker_'.length).toLowerCase();
     let changed=false;
@@ -958,12 +1033,12 @@
     state.extraDeck=shuffledDeck();state.extraDiscard=[];state.cardDraws=[];save();render();
   });
   const importOpenButton = $('#importOpenDocuments');
-  if (document.documentElement.classList.contains('embedded')) {
+  if (document.documentElement.classList.contains('embedded') || IS_POPOUT) {
     importOpenButton.hidden = false;
     importOpenButton.addEventListener('click', importOpenDocuments);
   }
   window.addEventListener('message',event=>{
-    if(event.source!==window.parent)return;
+    if(!isHostMessage(event))return;
     if(event.data?.type==='gm-initiative-task-changed'){
       const task=String(event.data.task||'').toLowerCase();
       if(task==='shaken')applyNoteShaken(event.data.path,event.data.name,event.data.checked);
@@ -983,6 +1058,7 @@
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
   });
+  $('#resetToolsTabButton').addEventListener('click',()=>$('#resetAll').click());
   setToolPanel(state.activeToolPanel);
   $('#dramaticSetup').addEventListener('submit',event=>{
     event.preventDefault();
@@ -1059,7 +1135,7 @@
     save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
   });
   window.addEventListener('message',event=>{
-    if(event.source!==window.parent)return;
+    if(!isHostMessage(event))return;
     if(event.data?.type==='gm-tools-reset')$('#resetAll').click();
     if(event.data?.type==='gm-dice-reference'){
       const sides=[4,6,8,10,12,20].includes(Number(event.data.sides))?Number(event.data.sides):6;
@@ -1266,9 +1342,9 @@
   });
   updateDiceControls();
   render();
-  if(document.documentElement.classList.contains('embedded')&&window.parent!==window){
+  if(hostWindow()){
     window.WildCardToolsReady=true;
-    window.parent.postMessage({type:'gm-tools-ready'},'*');
+    postToHost({type:'gm-tools-ready'});
     syncOpenDocuments().catch(()=>{});
   }
 })();

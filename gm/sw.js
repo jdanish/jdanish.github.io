@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-search-progress-indicator';
+const CACHE_NAME = 'gm-reference-shell-v20261125-tools-tab-refresh-location';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

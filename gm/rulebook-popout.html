@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Rulebook — GM Reference</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #0b0d12; color: #eef2f8; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+    .popout-bar { min-height: 42px; flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 5px 12px; background: #171b22; border-bottom: 1px solid #323949; }
+    .popout-controls { min-width: 0; display: flex; align-items: center; gap: 12px; }
+    #bookSelect { max-width: min(36vw, 360px); border: 1px solid #4b5563; border-radius: 6px; background: #202635; color: inherit; padding: 6px 8px; font: inherit; font-size: 12px; }
+    #bookTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 650; }
+    #returnButton { flex: 0 0 auto; border: 1px solid #4b5563; border-radius: 6px; background: #202635; color: inherit; padding: 6px 10px; font: inherit; font-size: 12px; cursor: pointer; }
+    #returnButton:hover { background: #2b3547; }
+    #reader { display: block; width: 100%; flex: 1 1 auto; min-height: 0; border: 0; background: #0b0d12; }
+  </style>
+</head>
+<body>
+  <header class="popout-bar"><div class="popout-controls"><select id="bookSelect" aria-label="Choose rulebook"></select><div id="bookTitle">Rulebook</div></div><button id="returnButton" type="button">↙ Return to main window</button></header>
+  <iframe id="reader" title="Rulebook PDF"></iframe>
+  <script src="js/rulebook-popout.js?v=browser-window-popouts-20261125"></script>
+</body>
+</html>

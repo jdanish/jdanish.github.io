@@ -5283,8 +5283,17 @@ html[data-theme="light"] .gm-standalone-preview-body a[href^="jump:"] {
   overflow: hidden;
 }
 .tools-tab-group #toolsWorkspaceTab { border: 0; border-radius: 0; background: transparent !important; color: var(--text); }
+.tools-tab-group .workspace-popout-button {
+  width: 34px;
+  height: 34px;
+  align-self: stretch;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+}
 .tools-tab-group.active { background: var(--accent); border-color: var(--accent-strong); }
 .tools-tab-group.active #toolsWorkspaceTab { background: transparent !important; border-color: transparent !important; }
+.tools-tab-group.active .workspace-popout-button { border-left-color: var(--accent-strong); color: var(--text); }
 .rulebooks-controls {
   display: flex;
   flex: 0 0 auto;
@@ -5313,25 +5322,6 @@ html[data-theme="light"] .product-tabs,
 html[data-theme="light"] .rulebooks-controls,
 html[data-theme="light"] .workspace-switcher { background: var(--panel); border-color: var(--line); }
 .workspace-switcher .product-tabs { flex: 0 0 auto; }
-.tools-tab-reset-button {
-  flex: 0 0 34px;
-  width: 34px;
-  min-height: 34px;
-  height: 34px;
-  align-self: stretch;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-left: 1px solid var(--line);
-  border-radius: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-}
-.tools-tab-reset-button:hover { color: var(--text); background: var(--accent); }
-.tools-tab-group.active .tools-tab-reset-button { border-left-color: var(--accent-strong); color: var(--text); }
 .workspace-theme-button { align-self: flex-start; margin: 10px 12px 0 auto; }
 .workspace-header-actions {
   display: flex;
@@ -5339,6 +5329,40 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
   gap: 8px;
   margin-left: auto;
   padding: 6px 12px 6px 8px;
+}
+.workspace-popout-button {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.workspace-popout-button:hover,
+.workspace-popout-button[aria-pressed="true"] {
+  color: var(--text);
+  border-color: var(--accent-strong);
+  background: var(--panel-2);
+}
+.main.tools-mode #viewerFrame.tools-popout-open .tools-frame { display: none !important; }
+.main.tools-mode #viewerFrame.tools-popout-open::after {
+  content: "Tools are open in a separate window. Use ↙ beside the Tools tab to return them here.";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+}
+@media (max-width: 760px) {
+  .workspace-popout-button { display: none !important; }
 }
 .workspace-header-actions .workspace-theme-button { margin: 0; align-self: center; }
 .workspace-help-button {

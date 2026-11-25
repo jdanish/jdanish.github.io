@@ -6,21 +6,28 @@
   <meta name="theme-color" content="#0f1115">
   <script>
     (function () {
+      const params = new URLSearchParams(window.location.search);
+      const isPopout = params.get("popout") === "1";
+      const isEmbedded = params.get("embedded") === "1";
+      function hostWindow() {
+        if (isEmbedded && window.parent !== window) return window.parent;
+        if (isPopout && window.opener && !window.opener.closed) return window.opener;
+        return null;
+      }
       function applyTheme(theme) {
         const resolved = theme === "light" ? "light" : "dark";
         document.documentElement.dataset.theme = resolved;
         document.documentElement.style.colorScheme = resolved;
       }
-      if (new URLSearchParams(window.location.search).get("embedded") === "1") {
-        document.documentElement.classList.add("embedded");
-      }
+      if (isEmbedded) document.documentElement.classList.add("embedded");
+      if (isPopout) document.documentElement.classList.add("popout");
       try {
         const state = JSON.parse(localStorage.getItem("gm_screen_state_v5") || "{}");
         const mode = state.themeMode || "dark";
         applyTheme(mode === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : mode);
       } catch (_) { applyTheme("dark"); }
       window.addEventListener("message", event => {
-        if (event.source === window.parent && event.data?.type === "gm-theme-change") applyTheme(event.data.theme);
+        if (event.source === hostWindow() && event.data?.type === "gm-theme-change") applyTheme(event.data.theme);
       });
       window.addEventListener("storage", event => {
         if (event.key !== "gm_screen_state_v5") return;
@@ -30,10 +37,26 @@
           applyTheme(mode === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : mode);
         } catch (_) { applyTheme("dark"); }
       });
+      if (isPopout) {
+        document.addEventListener("DOMContentLoaded", () => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "popout-return-button";
+          button.textContent = "↙ Return to main window";
+          button.addEventListener("click", () => {
+            hostWindow()?.postMessage({ type: "gm-popout-return" }, "*");
+            window.close();
+          });
+          document.querySelector(".topbar")?.appendChild(button);
+        }, { once: true });
+        window.addEventListener("beforeunload", () => {
+          hostWindow()?.postMessage({ type: "gm-popout-return" }, "*");
+        });
+      }
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=read-mode-status-checkbox-direct-20261125">
+  <link rel="stylesheet" href="styles.css?v=tools-tab-refresh-location-20261125">
   <link rel="stylesheet" href="initiative-portraits.css?v=wild-card-extra-icons-20261125">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
@@ -48,6 +71,7 @@
     <button type="button" class="tool-tab" id="deckTab" role="tab" aria-selected="false" aria-controls="deckPanel" data-tool-panel="deck">Deck</button>
     <button type="button" class="tool-tab" id="chaseTab" role="tab" aria-selected="false" aria-controls="chasePanel" data-tool-panel="chase">Chase</button>
     <button type="button" class="tool-tab" id="dramaticTab" role="tab" aria-selected="false" aria-controls="dramaticPanel" data-tool-panel="dramatic">Dramatic Task</button>
+    <button type="button" class="tool-tab-refresh-button" id="resetToolsTabButton" title="Reset table tools" aria-label="Reset table tools">↻</button>
   </nav>
 
   <main class="layout">
@@ -159,6 +183,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=status-checkbox-logging-removed-20261125"></script>
+  <script src="app.js?v=tools-tab-refresh-location-20261125"></script>
 </body>
 </html>

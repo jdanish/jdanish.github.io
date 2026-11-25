@@ -10,8 +10,81 @@
   let toolsDiceRollPending = null;
   let toolsReadyMessageBound = false;
   let trackerStorageListenerBound = false;
+  let toolsPopoutWindow = null;
+  let popoutMonitorTimer = null;
+  let toolsDocumentsRefreshPending = false;
+  const toolsPendingMessages = [];
 
   let dom = {};
+
+  function isOpenWindow(target) {
+    try { return Boolean(target && !target.closed); } catch { return false; }
+  }
+
+  function getToolsTarget() {
+    if (isOpenWindow(toolsPopoutWindow)) return toolsPopoutWindow;
+    return document.getElementById('toolsFrame')?.contentWindow || null;
+  }
+
+  function isToolsPopoutOpen() { return isOpenWindow(toolsPopoutWindow); }
+
+  function sendToolsMessage(payload) {
+    const target = getToolsTarget();
+    if (!target) return false;
+    if (target === toolsPopoutWindow && !target.WildCardToolsReady) {
+      if (payload?.type === 'gm-dice-reference') toolsDiceRollPending = payload;
+      else if (payload?.type === 'gm-tools-reset') toolsResetPending = true;
+      else if (payload?.type === 'gm-refresh-initiative-documents' || payload?.type === 'gm-refresh-initiative-portraits') toolsDocumentsRefreshPending = true;
+      else toolsPendingMessages.push(payload);
+      return false;
+    }
+    try { target.postMessage(payload, '*'); return true; } catch { return false; }
+  }
+
+  function syncPopoutControls() {
+    const toolsButton = document.getElementById('toolsPopoutButton');
+    const toolsOpen = isToolsPopoutOpen();
+    const viewer = document.getElementById('viewerFrame');
+    viewer?.classList.toggle('tools-popout-open', toolsOpen);
+    if (toolsButton) {
+      toolsButton.textContent = toolsOpen ? '↙' : '↗';
+      toolsButton.title = toolsOpen ? 'Return tools to this tab' : 'Open tools in a separate window';
+      toolsButton.setAttribute('aria-label', toolsButton.title);
+      toolsButton.setAttribute('aria-pressed', String(toolsOpen));
+    }
+  }
+
+  function startPopoutMonitor() {
+    if (popoutMonitorTimer) return;
+    popoutMonitorTimer = window.setInterval(() => {
+      if (!isOpenWindow(toolsPopoutWindow)) toolsPopoutWindow = null;
+      syncPopoutControls();
+      if (!toolsPopoutWindow) {
+        window.clearInterval(popoutMonitorTimer);
+        popoutMonitorTimer = null;
+      }
+    }, 500);
+  }
+
+  function openToolsPopout() {
+    if (isOpenWindow(toolsPopoutWindow)) {
+      toolsPopoutWindow.focus();
+      return;
+    }
+    const target = new URL('tools/index.html?popout=1&v=tools-tab-refresh-location-20261125', document.baseURI);
+    toolsPopoutWindow = window.open(target.href, 'gm-tools-window', 'popup=yes,width=1180,height=900');
+    if (!toolsPopoutWindow) {
+      window.GM.ui?.showToast?.('Allow pop-up windows to open Table Tools separately.');
+      return;
+    }
+    startPopoutMonitor();
+    syncPopoutControls();
+  }
+
+  function closePopout(target) {
+    if (!isOpenWindow(target)) return;
+    try { target.close(); } catch { /* the popup can still be closed from its own toolbar */ }
+  }
 
   function getBooks() {
     return window.BOOKS || {};
@@ -67,8 +140,7 @@
     document.documentElement.style.colorScheme = resolved;
     if (document.body) document.body.dataset.theme = resolved;
     updateThemeButton();
-    const toolsFrame = document.getElementById('toolsFrame');
-    toolsFrame?.contentWindow?.postMessage({ type: 'gm-theme-change', theme: resolved }, '*');
+    sendToolsMessage({ type: 'gm-theme-change', theme: resolved });
     return resolved;
   }
 
@@ -85,6 +157,10 @@
 
   function setWorkspaceMode(mode, options = {}) {
     const toolsActive = mode === 'tools';
+    if (toolsActive && isToolsPopoutOpen()) {
+      toolsPopoutWindow.focus();
+      return;
+    }
     const main = document.querySelector('.main');
     const rulebooksTab = document.getElementById('rulebooksWorkspaceTab');
     const toolsTab = document.getElementById('toolsWorkspaceTab');
@@ -104,8 +180,7 @@
     toolsTab.setAttribute('aria-selected', String(toolsActive));
 
     if (toolsActive) {
-      const toolsFrame = document.getElementById('toolsFrame');
-      toolsFrame?.contentWindow?.postMessage({ type: 'gm-theme-change', theme: document.documentElement.dataset.theme || 'dark' }, '*');
+      sendToolsMessage({ type: 'gm-theme-change', theme: document.documentElement.dataset.theme || 'dark' });
       updateTabButtonLabels();
       return;
     }
@@ -2228,10 +2303,15 @@
     const count = Math.max(1, Math.min(20, Number(match[1]) || 1));
     const modifier = (match[4] ? Number(match[4]) * (match[3] === '-' ? -1 : 1) : 0);
     toolsDiceRollPending = { type: 'gm-dice-reference', count, sides: Number(match[2] || match[3]), modifier, wild: count === 1 };
+    if (isToolsPopoutOpen()) {
+      sendToolsMessage(toolsDiceRollPending);
+      if (toolsPopoutWindow?.WildCardToolsReady) toolsDiceRollPending = null;
+      return;
+    }
     setWorkspaceMode('tools');
-    const toolsFrame = document.getElementById('toolsFrame');
-    if (toolsFrame?.contentWindow?.WildCardToolsReady) {
-      toolsFrame.contentWindow.postMessage(toolsDiceRollPending, '*');
+    const toolsWindow = getToolsTarget();
+    if (toolsWindow?.WildCardToolsReady) {
+      sendToolsMessage(toolsDiceRollPending);
       toolsDiceRollPending = null;
     }
   }
@@ -2770,9 +2850,7 @@
           );
           if (saved === false) throw new Error('The document save function reported failure.');
           if (portraitInput) {
-            document.getElementById('toolsFrame')?.contentWindow?.postMessage(
-              { type: 'gm-refresh-initiative-documents' }, '*'
-            );
+            sendToolsMessage({ type: 'gm-refresh-initiative-documents' });
           }
         } else {
           window.GM.sidebarData?.importMarkdownFromText?.(kind, markdown);
@@ -3997,11 +4075,21 @@
       toolsWorkspaceTab.dataset.bound = 'true';
     }
 
+    const toolsPopoutButton = document.getElementById('toolsPopoutButton');
+    if (toolsPopoutButton && toolsPopoutButton.dataset.bound !== 'true') {
+      toolsPopoutButton.addEventListener('click', () => {
+        if (isToolsPopoutOpen()) closePopout(toolsPopoutWindow);
+        else openToolsPopout();
+      });
+      toolsPopoutButton.dataset.bound = 'true';
+    }
     const toolsFrame = document.getElementById('toolsFrame');
-    const toolsResetButton = document.getElementById('toolsResetButton');
     if (!toolsReadyMessageBound) {
       window.addEventListener('message', (event) => {
-        if (event.source !== toolsFrame?.contentWindow) return;
+        const isFrame = event.source === toolsFrame?.contentWindow;
+        const isPopout = event.source === toolsPopoutWindow;
+        if (!isFrame && !isPopout) return;
+        if (isFrame && isToolsPopoutOpen()) return;
         if (event.data?.type === 'gm-tracker-updated') {
           updateTrackerInputs(event.data.key, event.data.value);
           return;
@@ -4011,13 +4099,23 @@
           event.source.postMessage(toolsDiceRollPending, '*');
           toolsDiceRollPending = null;
         }
-        event.source.postMessage({ type: 'gm-refresh-initiative-documents' }, '*');
-        if (!toolsResetPending) return;
-        toolsResetPending = false;
-        event.source.postMessage({ type: 'gm-tools-reset' }, '*');
+        if (toolsDocumentsRefreshPending || isPopout || isFrame) {
+          toolsDocumentsRefreshPending = false;
+          event.source.postMessage({ type: 'gm-refresh-initiative-documents' }, '*');
+        }
+        if (toolsResetPending) {
+          toolsResetPending = false;
+          event.source.postMessage({ type: 'gm-tools-reset' }, '*');
+        }
+        while (toolsPendingMessages.length) event.source.postMessage(toolsPendingMessages.shift(), '*');
       });
       toolsReadyMessageBound = true;
     }
+    window.addEventListener('message', (event) => {
+      if (event.source === toolsPopoutWindow && event.data?.type === 'gm-popout-return') {
+        closePopout(toolsPopoutWindow);
+      }
+    });
     if (!trackerStorageListenerBound) {
       window.addEventListener('storage', (event) => {
         if (!event.key?.startsWith('gm_tracker_') || event.newValue === null) return;
@@ -4025,18 +4123,6 @@
       });
       trackerStorageListenerBound = true;
     }
-    if (toolsResetButton && toolsResetButton.dataset.bound !== 'true') {
-      toolsResetButton.addEventListener('click', () => {
-        toolsResetPending = true;
-        setWorkspaceMode('tools');
-        if (toolsFrame?.contentWindow?.WildCardToolsReady) {
-          toolsResetPending = false;
-          toolsFrame.contentWindow.postMessage({ type: 'gm-tools-reset' }, '*');
-        }
-      });
-      toolsResetButton.dataset.bound = 'true';
-    }
-
     if (dom.bookVisibilityButtonEl && dom.bookVisibilityButtonEl.dataset.bound !== 'true') {
       dom.bookVisibilityButtonEl.addEventListener('click', toggleBookVisibilityPopup);
       dom.bookVisibilityButtonEl.dataset.bound = 'true';
@@ -4079,9 +4165,16 @@
       buildPageButtons(initialTab);
       setViewerTitle(initialTab, getDisplayPage(initialTab));
     }
+    syncPopoutControls();
     setWorkspaceMode(getState().workspaceMode === 'tools' ? 'tools' : 'rulebooks');
   }
 
+  window.GM.tools = {
+    sendMessage: sendToolsMessage,
+    getWindow: getToolsTarget,
+    isPopoutOpen: isToolsPopoutOpen,
+    openPopout: openToolsPopout,
+  };
   window.GM.ui = {
     init,
     setWorkspaceMode,
