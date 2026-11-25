@@ -3935,6 +3935,14 @@
         "label": "Mystic",
         "source": "secret_world_na/65?highlight=MYSTIC"
       },
+      "planetary romance@@sfc": {
+        "label": "Planetary Romance",
+        "source": "sfc/89?highlight=PLANETARY%20ROMANCE"
+      },
+      "playing to the tropes@@horror": {
+        "label": "Playing to the Tropes",
+        "source": "horror/45?highlight=PLAYING%20TO%20THE%20TROPES"
+      },
       "recon bike@@starbreaker_star_marines": {
         "label": "Recon Bike",
         "source": "starbreaker_star_marines/52?highlight=Recon%20Bike"
@@ -3942,6 +3950,10 @@
       "recon fav@@starbreaker_star_marines": {
         "label": "Recon FAV",
         "source": "starbreaker_star_marines/55?highlight=Recon%20FAV"
+      },
+      "roleplaying breakdowns@@doom_guard": {
+        "label": "Roleplaying Breakdowns",
+        "source": "doom_guard/41?highlight=ROLEPLAYING%20BREAKDOWNS"
       },
       "ssa navy cruiser@@starbreaker_star_marines": {
         "label": "SSA Navy Cruiser",
@@ -3959,6 +3971,14 @@
         "label": "Star Marshal Robo-Horse",
         "source": "starbreaker_star_marshals/12?highlight=STAR%20MARSHAL%20ROBO-HORSE"
       },
+      "sword & planet@@sfc": {
+        "label": "Sword & Planet",
+        "source": "sfc/88?highlight=SWORD%20%26%20PLANET"
+      },
+      "transhumanism@@sfc": {
+        "label": "Transhumanism",
+        "source": "sfc/90?highlight=TRANSHUMANISM"
+      },
       "vz apc@@starbreaker_star_marines": {
         "label": "Vz Apc",
         "source": "starbreaker_star_marines/55?highlight=VZ%20APC"
@@ -3974,6 +3994,10 @@
       "vz ltv@@starbreaker_star_marines": {
         "label": "Vz Ltv",
         "source": "starbreaker_star_marines/57?highlight=VZ%20LTV"
+      },
+      "rage@@horror": {
+        "label": "Rage",
+        "source": "horror/10?highlight=RAGE"
       }
     },
     "powers": {
@@ -5014,21 +5038,9 @@
       }
     },
     "rules": {
-      "distracted@@swade": {
-        "label": "Distracted",
-        "source": "swade/99?highlight=DISTRACTED"
-      },
-      "rage@@horror": {
-        "label": "Rage",
-        "source": "horror/10?highlight=RAGE"
-      },
       "rank die@@starbreaker_star_marines": {
         "label": "Rank Die",
         "source": "starbreaker_star_marines/16?highlight=RANK%20DIE"
-      },
-      "vulnerable@@swade": {
-        "label": "Vulnerable",
-        "source": "swade/99?highlight=VULNERABLE"
       }
     },
     "setting_rules": {
@@ -5080,33 +5092,9 @@
         "label": "Born a Hero",
         "source": "swade/135?highlight=BORN%20A%20HERO"
       },
-      "bound & entangled@@fantasy": {
-        "label": "Bound & Entangled",
-        "source": "fantasy/75?highlight=BOUND%20%26%20ENTANGLED"
-      },
-      "bound & entangled@@sfc": {
-        "label": "Bound & Entangled",
-        "source": "sfc/77?highlight=BOUND%20%26%20ENTANGLED"
-      },
-      "bound and entangled@@horror": {
-        "label": "Bound and Entangled",
-        "source": "horror/37?highlight=BOUND%20AND%20ENTANGLED"
-      },
       "buckets of blood@@horror": {
         "label": "Buckets of Blood",
         "source": "horror/38?highlight=BUCKETS%20OF%20BLOOD"
-      },
-      "carouse@@doom_guard": {
-        "label": "Carouse",
-        "source": "doom_guard/38?highlight=CAROUSE"
-      },
-      "center@@doom_guard": {
-        "label": "Center",
-        "source": "doom_guard/38?highlight=CENTER"
-      },
-      "chronological phenomena@@horror": {
-        "label": "Chronological Phenomena",
-        "source": "horror/41?highlight=CHRONOLOGICAL%20PHENOMENA"
       },
       "clashes@@sfc": {
         "label": "Clashes",
@@ -5163,10 +5151,6 @@
       "creative combat@@swade": {
         "label": "Creative Combat",
         "source": "swade/136?highlight=CREATIVE%20COMBAT"
-      },
-      "deal cards@@starbreaker_core": {
-        "label": "Deal Cards",
-        "source": "starbreaker_core/108?highlight=DEAL%20CARDS"
       },
       "death & defeat@@ne_invasion": {
         "label": "Death & Defeat",
@@ -5236,21 +5220,9 @@
         "label": "Dynamic Backlash",
         "source": "swade/137?highlight=DYNAMIC%20BACKLASH"
       },
-      "earn@@doom_guard": {
-        "label": "Earn",
-        "source": "doom_guard/38?highlight=EARN"
-      },
       "energy management@@sfc": {
         "label": "Energy Management",
         "source": "sfc/81?highlight=ENERGY%20MANAGEMENT"
-      },
-      "environmental phenomena@@horror": {
-        "label": "Environmental Phenomena",
-        "source": "horror/41?highlight=ENVIRONMENTAL%20PHENOMENA"
-      },
-      "existing setting rules@@starbreaker_core": {
-        "label": "Existing Setting Rules",
-        "source": "starbreaker_core/105?highlight=EXISTING%20SETTING%20RULES"
       },
       "expanded fear effects@@horror": {
         "label": "Expanded Fear Effects",
@@ -5380,10 +5352,6 @@
         "label": "Limited Actions",
         "source": "sfc/78?highlight=LIMITED%20ACTIONS"
       },
-      "logistics@@sfc": {
-        "label": "Logistics",
-        "source": "sfc/86?highlight=LOGISTICS"
-      },
       "mega destruction@@doom_guard": {
         "label": "Mega Destruction",
         "source": "doom_guard/37?highlight=MEGA%20DESTRUCTION"
@@ -5424,10 +5392,6 @@
         "label": "Multiple Languages",
         "source": "swade/139?highlight=MULTIPLE%20LANGUAGES"
       },
-      "narrate and roll@@starbreaker_core": {
-        "label": "Narrate and Roll",
-        "source": "starbreaker_core/108?highlight=NARRATE%20AND%20ROLL"
-      },
       "netrunning@@sfc": {
         "label": "Netrunning",
         "source": "sfc/84?highlight=NETRUNNING"
@@ -5443,22 +5407,6 @@
       "never surrender@@spc": {
         "label": "Never Surrender",
         "source": "spc/35?highlight=NEVER%20SURRENDER"
-      },
-      "new hazard@@fantasy": {
-        "label": "New Hazard",
-        "source": "fantasy/76?highlight=NEW%20HAZARD"
-      },
-      "new hazard@@horror": {
-        "label": "New Hazard",
-        "source": "horror/38?highlight=NEW%20HAZARD"
-      },
-      "new hazards@@starbreaker_core": {
-        "label": "New Hazards",
-        "source": "starbreaker_core/106?highlight=NEW%20HAZARDS"
-      },
-      "new setting rules@@starbreaker_core": {
-        "label": "New Setting Rules",
-        "source": "starbreaker_core/105?highlight=NEW%20SETTING%20RULES"
       },
       "no finishing moves@@spc": {
         "label": "No Finishing Moves",
@@ -5476,18 +5424,6 @@
         "label": "Perils of Destiny",
         "source": "secret_world/79?highlight=PERILS%20OF%20DESTINY"
       },
-      "plan the operation@@starbreaker_core": {
-        "label": "Plan the Operation",
-        "source": "starbreaker_core/108?highlight=PLAN%20THE%20OPERATION"
-      },
-      "planetary romance@@sfc": {
-        "label": "Planetary Romance",
-        "source": "sfc/89?highlight=PLANETARY%20ROMANCE"
-      },
-      "playing to the tropes@@horror": {
-        "label": "Playing to the Tropes",
-        "source": "horror/45?highlight=PLAYING%20TO%20THE%20TROPES"
-      },
       "power of destiny@@secret_world": {
         "label": "Power of Destiny",
         "source": "secret_world/78?highlight=POWER%20OF%20DESTINY"
@@ -5500,25 +5436,9 @@
         "label": "Pressure",
         "source": "sfc/83?highlight=PRESSURE"
       },
-      "reap the rewards@@starbreaker_core": {
-        "label": "Reap the Rewards",
-        "source": "starbreaker_core/108?highlight=REAP%20THE%20REWARDS"
-      },
-      "research@@doom_guard": {
-        "label": "Research",
-        "source": "doom_guard/38?highlight=RESEARCH"
-      },
-      "rest@@doom_guard": {
-        "label": "Rest",
-        "source": "doom_guard/38?highlight=REST"
-      },
       "resurrection@@secret_world": {
         "label": "Resurrection",
         "source": "secret_world/79?highlight=RESURRECTION"
-      },
-      "roleplaying breakdowns@@doom_guard": {
-        "label": "Roleplaying Breakdowns",
-        "source": "doom_guard/41?highlight=ROLEPLAYING%20BREAKDOWNS"
       },
       "salvage & trade@@sfc": {
         "label": "Salvage & Trade",
@@ -5527,42 +5447,6 @@
       "schemes@@starbreaker_core": {
         "label": "Schemes",
         "source": "starbreaker_core/107?highlight=SCHEMES"
-      },
-      "setting rules@@doom_guard": {
-        "label": "Setting Rules",
-        "source": "doom_guard/37?highlight=SETTING%20RULES"
-      },
-      "setting rules@@fantasy": {
-        "label": "Setting Rules",
-        "source": "fantasy/75?highlight=SETTING%20RULES"
-      },
-      "setting rules@@horror": {
-        "label": "Setting Rules",
-        "source": "horror/37?highlight=SETTING%20RULES"
-      },
-      "setting rules@@ne_invasion": {
-        "label": "Setting Rules",
-        "source": "ne_invasion/15?highlight=SETTING%20RULES"
-      },
-      "setting rules@@secret_world": {
-        "label": "Setting Rules",
-        "source": "secret_world/78?highlight=SETTING%20RULES"
-      },
-      "setting rules@@sfc": {
-        "label": "Setting Rules",
-        "source": "sfc/77?highlight=SETTING%20RULES"
-      },
-      "setting rules@@spc": {
-        "label": "Setting Rules",
-        "source": "spc/29?highlight=SETTING%20RULES"
-      },
-      "setting rules@@starbreaker_core": {
-        "label": "Setting Rules",
-        "source": "starbreaker_core/105?highlight=SETTING%20RULES"
-      },
-      "setting rules@@swade": {
-        "label": "Setting Rules",
-        "source": "swade/135?highlight=SETTING%20RULES"
       },
       "signs and portents@@horror": {
         "label": "Signs and Portents",
@@ -5596,10 +5480,6 @@
         "label": "Supply Levels",
         "source": "sfc/86?highlight=SUPPLY%20LEVELS"
       },
-      "sword & planet@@sfc": {
-        "label": "Sword & Planet",
-        "source": "sfc/88?highlight=SWORD%20%26%20PLANET"
-      },
       "syndicate favor@@starbreaker_core": {
         "label": "Syndicate Favor",
         "source": "starbreaker_core/110?highlight=SYNDICATE%20FAVOR"
@@ -5611,10 +5491,6 @@
       "tactical vehicular combat@@sfc": {
         "label": "Tactical Vehicular Combat",
         "source": "sfc/94?highlight=TACTICAL%20VEHICULAR%20COMBAT"
-      },
-      "terrain@@horror": {
-        "label": "Terrain",
-        "source": "horror/41?highlight=TERRAIN"
       },
       "the buzzing@@secret_world": {
         "label": "The Buzzing",
@@ -5632,17 +5508,9 @@
         "label": "Throwdown",
         "source": "spc/35?highlight=THROWDOWN"
       },
-      "train@@doom_guard": {
-        "label": "Train",
-        "source": "doom_guard/39?highlight=TRAIN"
-      },
       "training montage@@spc": {
         "label": "Training Montage",
         "source": "spc/35?highlight=TRAINING%20MONTAGE"
-      },
-      "transhumanism@@sfc": {
-        "label": "Transhumanism",
-        "source": "sfc/90?highlight=TRANSHUMANISM"
       },
       "unarmored hero@@doom_guard": {
         "label": "Unarmored Hero",
@@ -5659,10 +5527,6 @@
       "using favor@@secret_world": {
         "label": "Using Favor",
         "source": "secret_world/79?highlight=USING%20FAVOR"
-      },
-      "vehicle rules@@sfc": {
-        "label": "Vehicle Rules",
-        "source": "sfc/92?highlight=VEHICLE%20RULES"
       },
       "villainous conviction@@doom_guard": {
         "label": "Villainous Conviction",
@@ -5688,17 +5552,9 @@
         "label": "Villainous Conviction",
         "source": "spc/36?highlight=VILLAINOUS%20CONVICTION"
       },
-      "wards and binds@@horror": {
-        "label": "Wards and Binds",
-        "source": "horror/48?highlight=WARDS%20AND%20BINDS"
-      },
       "wards@@horror": {
         "label": "Wards",
         "source": "horror/48?highlight=WARDS"
-      },
-      "weather@@horror": {
-        "label": "Weather",
-        "source": "horror/42?highlight=WEATHER"
       },
       "wild cards@@horror": {
         "label": "Wild Cards",
@@ -5719,6 +5575,30 @@
       "wound cap@@swade": {
         "label": "Wound Cap",
         "source": "swade/140?highlight=WOUND%20CAP"
+      },
+      "carouse@@doom_guard": {
+        "label": "Carouse",
+        "source": "doom_guard/38?highlight=CAROUSE"
+      },
+      "center@@doom_guard": {
+        "label": "Center",
+        "source": "doom_guard/38?highlight=CENTER"
+      },
+      "earn@@doom_guard": {
+        "label": "Earn",
+        "source": "doom_guard/38?highlight=EARN"
+      },
+      "research@@doom_guard": {
+        "label": "Research",
+        "source": "doom_guard/38?highlight=RESEARCH"
+      },
+      "rest@@doom_guard": {
+        "label": "Rest",
+        "source": "doom_guard/38?highlight=REST"
+      },
+      "train@@doom_guard": {
+        "label": "Train",
+        "source": "doom_guard/39?highlight=TRAIN"
       }
     },
     "skills": {
@@ -5742,35 +5622,59 @@
     "status_conditions": {
       "bleeding out@@swade": {
         "label": "Bleeding Out",
-        "source": "swade/95?highlight=BLEEDING%20OUT"
+        "source": "swade/94?highlight=BLEEDING%20OUT"
+      },
+      "bound@@fantasy": {
+        "label": "Bound",
+        "source": "fantasy/75?highlight=BOUND"
+      },
+      "bound@@horror": {
+        "label": "Bound",
+        "source": "horror/37?highlight=BOUND"
+      },
+      "bound@@sfc": {
+        "label": "Bound",
+        "source": "sfc/77?highlight=BOUND"
       },
       "bound@@swade": {
         "label": "Bound",
-        "source": "swade/202?highlight=BOUND"
+        "source": "swade/97?highlight=BOUND"
       },
       "breakdown@@doom_guard": {
         "label": "Breakdown",
-        "source": "doom_guard/40?highlight=BREAKDOWN"
+        "source": "doom_guard/39?highlight=BREAKDOWN"
       },
       "distracted@@swade": {
         "label": "Distracted",
         "source": "swade/99?highlight=DISTRACTED"
       },
+      "entangled@@fantasy": {
+        "label": "Entangled",
+        "source": "fantasy/75?highlight=ENTANGLED"
+      },
+      "entangled@@horror": {
+        "label": "Entangled",
+        "source": "horror/37?highlight=ENTANGLED"
+      },
+      "entangled@@sfc": {
+        "label": "Entangled",
+        "source": "sfc/77?highlight=ENTANGLED"
+      },
       "entangled@@swade": {
         "label": "Entangled",
-        "source": "swade/202?highlight=ENTANGLED"
+        "source": "swade/97?highlight=ENTANGLED"
       },
       "exhausted@@swade": {
         "label": "Exhausted",
-        "source": "swade/202?highlight=EXHAUSTED"
+        "source": "swade/99?highlight=EXHAUSTED"
       },
       "fatigued@@swade": {
         "label": "Fatigued",
-        "source": "swade/202?highlight=FATIGUED"
+        "source": "swade/99?highlight=FATIGUED"
       },
       "incapacitation@@swade": {
         "label": "Incapacitation",
-        "source": "swade/202?highlight=INCAPACITATION"
+        "source": "swade/94?highlight=INCAPACITATION"
       },
       "panicked@@swade": {
         "label": "Panicked",
@@ -5782,7 +5686,7 @@
       },
       "shaken@@swade": {
         "label": "Shaken",
-        "source": "swade/202?highlight=SHAKEN"
+        "source": "swade/93?highlight=SHAKEN"
       },
       "stunned@@swade": {
         "label": "Stunned",
@@ -5794,7 +5698,7 @@
       },
       "wounds@@swade": {
         "label": "Wounds",
-        "source": "swade/202?highlight=WOUNDS"
+        "source": "swade/94?highlight=WOUNDS"
       }
     },
     "vehicles": {
