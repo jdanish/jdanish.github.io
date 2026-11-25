@@ -3255,10 +3255,10 @@
     const status = document.createElement('div');
     status.className = 'rulebook-manager-status';
 
-    const addRow = (key, book, original = true) => {
+    const addRow = (key, book) => {
       const row = document.createElement('div');
       row.className = 'rulebook-manager-row';
-      row._originalBook = original ? JSON.parse(JSON.stringify(book || {})) : {};
+      row._originalBook = JSON.parse(JSON.stringify(book || {}));
 
       const keyInput = document.createElement('input');
       keyInput.value = key;
@@ -3286,20 +3286,30 @@
 
       row.append(keyInput, titleInput, fileInput, offsetInput, visibleLabel, remove);
       list.appendChild(row);
+      return row;
     };
 
     Object.entries(books)
       .sort((a,b) => (Number(a[1]?.order)||9999) - (Number(b[1]?.order)||9999))
-      .forEach(([key, book]) => addRow(key, book, true));
+      .forEach(([key, book]) => addRow(key, book));
 
     const add = document.createElement('button');
     add.type = 'button';
     add.textContent = 'Add book';
-    add.addEventListener('click', () => addRow(`book_${list.children.length + 1}`, {
-      title: 'New Book', file: 'pdfs/newbook.pdf', pageOffset: 0,
-      defaultPage: 1, defaultScale: 1.25, defaultVisible: false,
-      preload: false, pages: [{ label: 'TOC', page: 1 }]
-    }, false));
+    add.addEventListener('click', () => {
+      const usedKeys = new Set(Array.from(list.children, (row) => String(row.querySelector('input')?.value || '').trim()));
+      let number = 1;
+      while (usedKeys.has(`book_${number}`)) number += 1;
+      const row = addRow(`book_${number}`, {
+        title: 'New Book', file: 'pdfs/newbook.pdf', pageOffset: 0,
+        defaultPage: 1, defaultScale: 1.25, defaultVisible: false,
+        preload: false, pages: [{ label: 'TOC', page: 1 }]
+      });
+      row.classList.add('is-new');
+      list.scrollTop = list.scrollHeight;
+      row.scrollIntoView?.({ block: 'nearest' });
+      row.querySelector('input')?.focus({ preventScroll: true });
+    });
 
     const save = async (downloadOnly = false) => {
       const result = {};
