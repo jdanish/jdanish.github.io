@@ -8,6 +8,8 @@
   const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
   const CHASE_TOKEN_COLORS = ['#2563eb','#dc2626','#15803d','#7e22ce','#c2410c','#0f766e','#be185d','#4338ca','#a16207','#0369a1','#4d7c0f','#9333ea'];
   const STORAGE_KEY = 'wildcard-table-v1';
+  const DICE_STYLE_KEY = 'wildcard-dice-style-v1';
+  const DEFAULT_DICE_STYLE = { trait: '#7cc4ff', wild: '#f1c876', exploding: '#eb766d' };
   const $ = (selector) => document.querySelector(selector);
   const ui = {
     list: $('#combatantList'), empty: $('#emptyState'), name: $('#combatantName'),
@@ -17,6 +19,7 @@
     extraCountControl: $('#extraCountControl')
   };
   let state = loadState();
+  let diceStyle = loadDiceStyle();
   let importingOpenDocuments = false;
   let traitDice = [{id:'initial-d6',sides:6}];
   let keepCountTouched = false;
@@ -29,7 +32,8 @@
   let drawAnimationTimer = null;
   let chaseTokenDrag = null;
   let rollAnimationSequence = 0;
-  let rollAnimationTimer = null;
+  let dicePhysicsBox = null;
+  let dicePhysicsReady = null;
 
   const IS_POPOUT = new URLSearchParams(window.location.search).get('popout') === '1';
   function hostWindow() {
@@ -589,6 +593,7 @@
       button.setAttribute('aria-selected', String(selected));
     });
     if (persist) save();
+    if (activePanel === 'dice') ensureDicePhysics().catch(showDicePhysicsError);
   }
   function shuffledDeck() {
     const deck=[];
@@ -1461,24 +1466,121 @@
     }
   });
 
-  function explodingDie(sides) {
-    let subtotal=0,rolls=[],count=0,face;
-    do{face=1+Math.floor(Math.random()*sides);rolls.push(face);subtotal+=face;count++;}while(face===sides&&count<100);
-    return{subtotal,rolls};
+  function loadDiceStyle() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DICE_STYLE_KEY) || '{}');
+      return Object.fromEntries(Object.entries(DEFAULT_DICE_STYLE).map(([key, fallback]) => {
+        const value = saved[key];
+        return [key, typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value) ? value : fallback];
+      }));
+    } catch {
+      return { ...DEFAULT_DICE_STYLE };
+    }
+  }
+  function setupDiceColorControls() {
+    document.querySelectorAll('[data-dice-color]').forEach(input => {
+      const key = input.dataset.diceColor;
+      if (!Object.prototype.hasOwnProperty.call(DEFAULT_DICE_STYLE, key)) return;
+      input.value = diceStyle[key];
+      input.addEventListener('input', () => {
+        diceStyle[key] = input.value;
+        try { localStorage.setItem(DICE_STYLE_KEY, JSON.stringify(diceStyle)); } catch {}
+        renderDicePool();
+      });
+    });
+  }
+  function contrastingDiceInk(color) {
+    const hex = color.slice(1);
+    const red = parseInt(hex.slice(0, 2), 16);
+    const green = parseInt(hex.slice(2, 4), 16);
+    const blue = parseInt(hex.slice(4, 6), 16);
+    return (red * 299 + green * 587 + blue * 114) / 1000 > 150 ? '#17202b' : '#ffffff';
+  }
+
+  async function ensureDicePhysics() {
+    if (dicePhysicsBox) return dicePhysicsBox;
+    if (dicePhysicsReady) return dicePhysicsReady;
+    const status = $('#dicePhysicsStatus');
+    status.textContent = 'Loading local 3D dice…';
+    status.hidden = false;
+    dicePhysicsReady = (async () => {
+      const moduleUrl = new URL('../libs/dice-box/dice-box.es.min.js', document.baseURI);
+      const { default: DiceBox } = await import(moduleUrl.href);
+      const assetsUrl = new URL('../libs/dice-box/assets/', document.baseURI);
+      const box = new DiceBox({
+        container: '#dicePhysicsBox',
+        assetPath: assetsUrl.pathname,
+        origin: assetsUrl.origin,
+        theme: 'default',
+        offscreen: true,
+        scale: 6 // Dice-Box defaults to 5; this makes the physical dice 20% larger.
+      });
+      await box.init();
+      dicePhysicsBox = box;
+      status.hidden = true;
+      $('#dicePhysicsStage').classList.add('is-ready');
+      return box;
+    })().catch(error => {
+      dicePhysicsReady = null;
+      throw error;
+    });
+    return dicePhysicsReady;
+  }
+  function showDicePhysicsError(error) {
+    const status = $('#dicePhysicsStatus');
+    status.textContent = `Could not start the local 3D dice engine: ${error?.message || error}`;
+    status.hidden = false;
+    $('#dicePhysicsStage').classList.remove('is-ready');
+  }
+  async function rollAcingDice(logicalDice, colors) {
+    const box = await ensureDicePhysics();
+    box.clear();
+    const dice = logicalDice.map(item => ({
+      ...item,
+      rolls: [],
+      rollColors: [],
+      subtotal: 0
+    }));
+    let pending = dice;
+    while (pending.length) {
+      const notation = pending.map(item => ({
+        sides: item.sides,
+        qty: 1,
+        themeColor: item.rolls.length ? colors.exploding : item.baseColor
+      }));
+      const results = dice.every(item => item.rolls.length === 0)
+        ? await box.roll(notation)
+        : await box.add(notation);
+      const orderedResults = [...results].sort((a, b) => Number(a.groupId) - Number(b.groupId));
+      if (orderedResults.length !== pending.length) throw new Error('The 3D dice engine returned an unexpected number of results.');
+      pending.forEach((item, index) => {
+        const value = Number(orderedResults[index].value);
+        if (!Number.isInteger(value) || value < 1 || value > item.sides) {
+          throw new Error(`The 3D dice engine returned an invalid d${item.sides} result.`);
+        }
+        item.rolls.push(value);
+        item.rollColors.push(notation[index].themeColor);
+        item.subtotal += value;
+      });
+      pending = pending.filter(item => item.rolls.at(-1) === item.sides && item.rolls.length < 100);
+    }
+    return dice.map(({ rolls, rollColors, subtotal, ...item }) => ({ ...item, rollColors, die: { rolls, subtotal } }));
   }
   function makeDieId(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`;}
   function formatDie(die){return die.rolls.join(' + ');}
   function clearDiceResults(){
     rollAnimationSequence++;
-    if(rollAnimationTimer)window.clearTimeout(rollAnimationTimer);
-    rollAnimationTimer=null;
+    dicePhysicsBox?.clear();
     ui.result.classList.remove('is-rolling');
     ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
+    const status=$('#dicePhysicsStatus');
+    if(dicePhysicsBox){status.hidden=true;}else if(!dicePhysicsReady){status.textContent='Local physics dice are ready to load.';status.hidden=false;}
     updateDiceControls();
   }
-  function makePoolDieButton(die,label,rolling,onRemove){
+  function makePoolDieButton(die,label,rolling,onRemove,color=diceStyle.trait){
     const item=document.createElement('button');item.type='button';item.className='pool-die-item pool-die-removable';item.title=`Remove ${label}`;item.setAttribute('aria-label',item.title);item.disabled=rolling;
     const shape=document.createElement('span');shape.className=`pool-die-shape d${die.sides}`;
+    shape.style.setProperty('--pool-die-color',color);shape.style.setProperty('--pool-die-ink',contrastingDiceInk(color));
     const number=document.createElement('strong');number.textContent=String(die.sides);shape.append(number);
     const caption=document.createElement('small');caption.className='pool-die-label';caption.textContent=label;
     item.append(shape,caption);item.addEventListener('click',onRemove);return item;
@@ -1486,54 +1588,57 @@
   function renderDiceVisuals(dice,kept){
     return `<div class="dice-visual-results" aria-label="Rolled dice">${dice.map(item=>{
       const sides=item.sides;
-      const faces=item.die.rolls.map(value=>{
-        const face=sides===6?`<span class="die-pips pips-${value}">${Array.from({length:value},()=>'<i></i>').join('')}</span>`:`<strong>${value}</strong>`;
-        return `<span class="die-visual-face d${sides}${value===sides?' is-ace':''}" role="img" aria-label="d${sides} shows ${value}${value===sides?' and aces':''}"><small>d${sides}</small>${face}</span>`;
+      const faces=item.die.rolls.map((value,index)=>{
+        const color=item.rollColors?.[index]||diceStyle.trait;
+        const face=`<strong>${value}</strong>`;
+        return `<span class="die-visual-face d${sides}${value===sides?' is-ace':''}" style="--die-color:${color};--die-ink:${contrastingDiceInk(color)}" role="img" aria-label="d${sides} shows ${value}${value===sides?' and aces':''}"><small>d${sides}</small>${face}</span>`;
       }).join('<span class="die-visual-plus" aria-hidden="true">+</span>');
-      return `<div class="die-visual-group${kept.has(item)?'':' not-kept'}"><span class="die-visual-title">${escapeHTML(item.name)}</span><div class="die-visual-faces">${faces}</div><span class="die-visual-total">${item.die.subtotal}${valueLabel(item.die.rolls.length)}</span></div>`;
+      return `<div class="die-visual-group${kept.has(item)?'':' not-kept'}"><span class="die-visual-title">${escapeHTML(item.name)}</span><div class="die-visual-faces">${faces}</div></div>`;
     }).join('')}</div>`;
   }
-  function valueLabel(rollCount){return rollCount>1?' total':'';}
   function renderDicePool(rolling=false){
     const mode=$('#diceMode').value;
     const traitCount=traitDice.length;
     const wild=Boolean($('#wildDie').checked&&(traitCount===1||mode==='keep'||mode==='display'));
     const pool=$('#dicePoolImages');
     pool.replaceChildren();
-    pool.classList.toggle('rolling',rolling);
+    pool.classList.remove('rolling');
     $('#dicePoolSummary').textContent=traitCount?`${traitDice.map(die=>`d${die.sides}`).join(' + ')}${wild?' + Wild d6':''}`:'Choose dice above';
     traitDice.forEach((die,index)=>{
       const item=makePoolDieButton(die,`d${die.sides}`,rolling,()=>{
         clearDiceResults();traitDice=traitDice.filter(candidate=>candidate.id!==die.id);updateDiceControls();
       });
-      item.style.setProperty('--roll-delay',`${index*8}ms`);pool.append(item);
+      pool.append(item);
     });
     if(wild){
       const wildDie={sides:6};
-      pool.append(makePoolDieButton(wildDie,'WILD',rolling,()=>{clearDiceResults();$('#wildDie').checked=false;updateDiceControls();}));
+      const item=makePoolDieButton(wildDie,'WILD',rolling,()=>{clearDiceResults();$('#wildDie').checked=false;updateDiceControls();},diceStyle.wild);
+      pool.append(item);
     }
   }
   function updatePaletteButtons(rolling=false){
     $('#diePalette').querySelectorAll('[data-add-die]').forEach(button=>{button.disabled=rolling||traitDice.length>=20;});
   }
-  function animateRollResult(resultHtml){
+  function startPhysicalRoll(){
     const sequence=++rollAnimationSequence;
     const button=$('#rollBtn');
-    if(rollAnimationTimer)window.clearTimeout(rollAnimationTimer);
     button.disabled=true;
     renderDicePool(true);
     ui.result.classList.add('is-rolling');
     $('#diceMode').disabled=true;$('#keepCount').disabled=true;$('#wildDie').disabled=true;$('.wild-toggle').classList.add('is-disabled');
+    document.querySelectorAll('[data-dice-color]').forEach(input=>{input.disabled=true;});
     updatePaletteButtons(true);
-    ui.result.innerHTML='<span class="result-hint">Rolling dice…</span>';
-    const duration=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?140:850;
-    rollAnimationTimer=window.setTimeout(()=>{
-      if(sequence!==rollAnimationSequence)return;
-      rollAnimationTimer=null;
-      ui.result.classList.remove('is-rolling');
-      updateDiceControls();
-      ui.result.innerHTML=resultHtml;
-    },duration);
+    ui.result.innerHTML='<span class="result-hint">Rolling physical dice…</span>';
+    $('#dicePhysicsStatus').textContent='Rolling…';
+    $('#dicePhysicsStatus').hidden=true;
+    return sequence;
+  }
+  function animateRollResult(resultHtml,sequence){
+    if(sequence!==rollAnimationSequence)return;
+    ui.result.classList.remove('is-rolling');
+    updateDiceControls();
+    ui.result.innerHTML=resultHtml;
+    $('#dicePhysicsStatus').hidden=true;
   }
   function renderOutcomeMarks(score,target){
     if(score<target)return '<span class="roll-outcome-marks" role="img" aria-label="Failure"><span class="roll-outcome-mark failure" aria-hidden="true">×</span></span>';
@@ -1561,6 +1666,7 @@
     const wildUnavailable=(multiple&&!keepMode&&!displayMode)||rolling;
     $('#wildDie').disabled=wildUnavailable;toggle.classList.toggle('is-disabled',wildUnavailable);
     $('#diceMode').disabled=rolling;keepCount.disabled=rolling;
+    document.querySelectorAll('[data-dice-color]').forEach(input=>{input.disabled=rolling;});
     $('#rollBtn').disabled=traitCount===0||rolling;
     updatePaletteButtons(rolling);
     $('#diceNote').textContent=displayMode
@@ -1581,27 +1687,31 @@
   $('#diceMode').addEventListener('change',()=>{clearDiceResults();updateDiceControls();});
   $('#keepCount').addEventListener('change',()=>{keepCountTouched=true;clearDiceResults();updateDiceControls();});
   $('#wildDie').addEventListener('change',()=>{clearDiceResults();updateDiceControls();});
-  $('#rollBtn').addEventListener('click',()=>{
+  setupDiceColorControls();
+  $('#rollBtn').addEventListener('click',async()=>{
     const traitCount=traitDice.length;
     if(!traitCount)return;
+    const sequence=startPhysicalRoll();
+    try {
     const modifier=Math.max(-99,Math.min(99,Number($('#modifier').value)||0));
     const target=Math.max(1,Math.min(99,Number($('#targetNumber').value)||4));
     $('#targetNumber').value=target;
     const mode=$('#diceMode').value;
     const keepCount=Math.max(1,Math.min(traitCount,Number($('#keepCount').value)||1));
-    const traits=traitDice.map((die,index)=>({name:`Trait ${index+1} d${die.sides}`,die:explodingDie(die.sides),sides:die.sides}));
+    const traits=traitDice.map((die,index)=>({name:`Trait ${index+1} d${die.sides}`,sides:die.sides,baseColor:diceStyle.trait}));
     const displayOnly=mode==='display';
     const useWild=$('#wildDie').checked&&(traitCount===1||mode==='keep'||displayOnly);
-    const wild=useWild?explodingDie(6):null;
-    const dice=[...traits];
-    if(wild)dice.push({name:'Wild',die:wild,sides:6});
+    const rollInputs=[...traits,...(useWild?[{name:'Wild',sides:6,baseColor:diceStyle.wild}]:[])];
+    const dice=await rollAcingDice(rollInputs,{...diceStyle});
+    if(sequence!==rollAnimationSequence)return;
+    const rolledTraits=dice.slice(0,traitCount);
     const keepHighest=traitCount===1||mode==='keep';
     const kept=new Set(displayOnly?dice:keepHighest
       ?[...dice].sort((a,b)=>b.die.subtotal-a.die.subtotal).slice(0,traitCount===1?1:keepCount)
-      :traits);
+      :rolledTraits);
     if(displayOnly){
       const rows=dice.map(item=>`<div class="roll-only-row"><strong>${escapeHTML(item.name)}</strong><span>${escapeHTML(formatDie(item.die))} = ${item.die.subtotal}</span></div>`).join('');
-      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>ROLLS ONLY</strong><span>No success check</span></div><div class="roll-only-list">${rows}</div>`);
+      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>ROLLS ONLY</strong><span>No success check</span></div><div class="roll-only-list">${rows}</div>`,sequence);
       return;
     }
     if(traitCount===1){
@@ -1612,7 +1722,7 @@
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':'−'} ${Math.abs(modifier)} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
         return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${label}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-list">${rows}</div>`);
+      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-list">${rows}</div>`,sequence);
       return;
     }
     if(traitCount>1&&mode==='keep'){
@@ -1624,12 +1734,12 @@
         const scoreText=isKept&&modifier?`${formatDie(item.die)} ${modifier>0?'+':''}${modifier} = ${score}`:`${formatDie(item.die)} = ${item.die.subtotal}`;
         return `<div class="multi-result-row ${isKept?'kept':'dropped'}"><span class="multi-die-name">${escapeHTML(item.name)}:</span><span class="multi-die-total">${escapeHTML(scoreText)}</span><strong>${isKept?outcome:'NOT KEPT'}${isKept?renderOutcomeMarks(score,target):''}</strong></div>`;
       }).join('');
-      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>KEEP HIGHEST ${keepCount} OF ${dice.length}</strong><span>TN ${target}${modifierText}</span></div><div class="multi-result-list">${rows}</div>`);
+      animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="multi-result-heading"><strong>KEEP HIGHEST ${keepCount} OF ${dice.length}</strong><span>TN ${target}${modifierText}</span></div><div class="multi-result-list">${rows}</div>`,sequence);
       return;
     }
     const rolledTotal=keepHighest
       ?[...kept].reduce((sum,item)=>sum+item.die.subtotal,0)
-      :traits.reduce((sum,item)=>sum+item.die.subtotal,0);
+      :rolledTraits.reduce((sum,item)=>sum+item.die.subtotal,0);
     const total=rolledTotal+modifier;
     const raises=total>=target?Math.floor((total-target)/4):0;
     const outcome=total<target?'FAIL':raises?`${raises} ${raises===1?'RAISE':'RAISES'}`:'SUCCESS';
@@ -1643,7 +1753,15 @@
     const methodLabel=traitCount>1&&mode==='keep'?`Keep ${keepCount} of ${dice.length}  ·  `:'';
     const detail=`${methodLabel}${dieDetails}${traitCount>1&&mode==='sum'&&modifier?`  ·  Modifier ${modifier>0?'+':''}${modifier} to total`:''}`;
     const label=`${outcome}<small class="target-caption">TN ${target}</small>`;
-    animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="result-line"><span class="result-label">${label}</span><strong class="result-total">${total}</strong>${renderOutcomeMarks(total,target)}</div><span class="die-breakdown">${escapeHTML(detail)}</span>`);
+    animateRollResult(`${renderDiceVisuals(dice,kept)}<div class="result-line"><span class="result-label">${label}</span><strong class="result-total">${total}</strong>${renderOutcomeMarks(total,target)}</div><span class="die-breakdown">${escapeHTML(detail)}</span>`,sequence);
+    } catch (error) {
+      if(sequence!==rollAnimationSequence)return;
+      dicePhysicsBox?.clear();
+      ui.result.classList.remove('is-rolling');
+      ui.result.innerHTML=`<span class="result-hint">${escapeHTML(error?.message||'The physical dice could not finish rolling.')}</span>`;
+      showDicePhysicsError(error);
+      updateDiceControls();
+    }
   });
   updateDiceControls();
   render();

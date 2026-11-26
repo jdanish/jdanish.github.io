@@ -56,7 +56,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=rules-reference-links-20261125">
+  <link rel="stylesheet" href="styles.css?v=dice-physics-clean-results-20261126">
   <link rel="stylesheet" href="initiative-portraits.css?v=wild-card-extra-icons-20261125">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
@@ -109,6 +109,17 @@
         <div class="roll-controls"><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
         <div class="roll-mode-row" id="rollModeRow" hidden><label class="field-label" for="diceMode">MULTI-DIE METHOD</label><div class="roll-method-controls"><select id="diceMode"><option value="sum">Sum all Trait dice</option><option value="keep">Keep highest dice · check separately</option><option value="display">Show rolls only</option></select><label id="keepCountWrap" class="keep-count-control" hidden><span>KEEP</span><select id="keepCount" aria-label="Number of dice to keep"><option value="1">1</option></select></label></div></div>
         <div class="dice-pool-preview"><div class="dice-pool-heading"><span>DICE POOL <small>Click a die to remove it</small></span><span id="dicePoolSummary" aria-live="polite"></span></div><div class="dice-pool-images" id="dicePoolImages"></div></div>
+        <div class="dice-physics-stage" id="dicePhysicsStage" aria-label="3D physics dice tray">
+          <div id="dicePhysicsBox"></div>
+          <span class="dice-physics-status" id="dicePhysicsStatus" role="status" aria-live="polite">Ready to load local 3D dice.</span>
+        </div>
+        <fieldset class="dice-color-controls">
+          <legend>DICE COLORS</legend>
+          <label><span>Trait dice:</span><input id="traitDieColor" data-dice-color="trait" type="color" value="#7cc4ff" aria-label="Default color for Trait dice"></label>
+          <label><span>Wild Die:</span><input id="wildDieColor" data-dice-color="wild" type="color" value="#f1c876" aria-label="Default color for the Wild Die"></label>
+          <label><span>Aces:</span><input id="explodingDieColor" data-dice-color="exploding" type="color" value="#eb766d" aria-label="Color for extra dice rolled after an ace"></label>
+        </fieldset>
+        <p class="dice-color-note">Colors apply to your next roll. Aces use the Aces color for each extra roll.</p>
         <div class="roll-extra-fields"><div><label class="field-label modifier-label" for="modifier">MODIFIER</label><div class="modifier-wrap"><span>±</span><input id="modifier" type="number" value="0" min="-99" max="99" aria-label="Roll modifier"></div></div><div><label class="field-label modifier-label" for="targetNumber">TARGET</label><div class="modifier-wrap"><span>TN</span><input id="targetNumber" type="number" value="4" min="1" max="99" aria-label="Target number"></div></div></div>
         <button class="button button-roll" id="rollBtn">ROLL <span>↗</span></button>
         <div class="roll-result" id="rollResult" aria-live="polite"><span class="result-hint">Your roll will appear here.</span></div>
@@ -230,6 +241,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=rules-reference-links-20261125"></script>
+  <script src="app.js?v=dice-physics-clean-results-20261126"></script>
 </body>
 </html>

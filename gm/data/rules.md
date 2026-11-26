@@ -21,10 +21,10 @@
       - Vigor check; ignore one wound per success or raise.
     - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace)
     - [[swade/99?highlight=Fatigue|Fatigue]]
-		- [[swade/101?highlight=Hold|Holding action]]
 
 # Other Rules
 
+- [Dice Roller App](https://immaterialplane.com/apps/swdr/)
 - [[swade/89|Bennies]]
 		1. 		Reroll trait
 		2. 		Recover from shaken
