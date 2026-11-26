@@ -10,3 +10,6 @@ Source: https://github.com/3d-dice/dice-box
 Themes
 The 3D theme selector reads assets/themes/themes.json. Theme folders go directly under assets/themes. Add each folder name and display label to that JSON file; each folder must contain a Dice-Box-compatible theme.config.json and the asset files it references. The selected theme is saved in this browser. Theme assets stay local and are not loaded from a CDN.
 Theme source: https://github.com/3d-dice/dice-themes contains theme assets intended for Dice-Box. Copy a compatible theme's complete folder into assets/themes, add its folder ID and display name to assets/themes/themes.json, then reload the tools. Theme format and availability depend on that community repository.
+
+Per-die 3D sizing
+To keep d6 at the current size while enlarging other standard dice, the bundled theme meshes scale d4, d8, d10, d12, d20, and d100 models and their colliders by 1.2. The global Dice-Box scale remains 6. Newly added theme meshes need the same per-mesh scaling if they should match.
