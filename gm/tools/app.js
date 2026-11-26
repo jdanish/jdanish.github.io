@@ -86,6 +86,15 @@
       .map(action => ({tokens:Number(action.tokens),round:Math.max(1,Math.min(maxRounds,Math.trunc(Number(action.round)||1)))})) : [];
     const tokens = actions.reduce((sum, action) => sum + action.tokens, 0);
     const status = ['setup','active','complete','expired'].includes(source.status) ? source.status : 'setup';
+    const participants = Array.isArray(source.participants) ? source.participants
+      .filter(item => item && typeof item.name === 'string' && item.name.trim())
+      .map(item => ({
+        id: String(item.id || `${Date.now()}-${Math.random()}`),
+        name: item.name.trim().slice(0, 32),
+        card: item.card && typeof item.card === 'object' ? item.card : null
+      })) : [];
+    const cardDeck = source.cardDeck && Array.isArray(source.cardDeck.draw) && Array.isArray(source.cardDeck.discard)
+      ? source.cardDeck : {draw:shuffledDeck(),discard:[]};
     return {
       title:String(source.title || '').slice(0,80),
       targetTokens,
@@ -93,6 +102,8 @@
       currentRound:Math.max(0,Math.min(maxRounds,Math.trunc(Number(source.currentRound)||0))),
       actions,
       tokens,
+      participants,
+      cardDeck,
       status:tokens >= targetTokens && status === 'active' ? 'complete' : status
     };
   }
@@ -514,6 +525,57 @@
       if (importButton) importButton.disabled = false;
     }
   }
+  async function importOpenDramaticParticipants() {
+    const button = $('#importOpenDramaticParticipants');
+    const status = $('#dramaticImportOpenStatus');
+    button.disabled = true;
+    const gm = parentGM();
+    const sidebar = gm?.sidebarData;
+    const readFile = gm?.data?.readFile;
+    if (!sidebar || typeof readFile !== 'function') {
+      status.hidden = false;
+      status.textContent = 'The GM document workspace is not ready. Try again in a moment.';
+      button.disabled = false;
+      return;
+    }
+    try {
+      await sidebar.readyPromise;
+      const paths = sidebar.getWorkspaceDocuments?.() || [];
+      const activeDocument = sidebar.getActiveDocument?.() || {};
+      const entries = [];
+      for (const path of paths) {
+        const markdown = path === activeDocument.path && typeof activeDocument.markdown === 'string'
+          ? activeDocument.markdown : await readFile.call(gm.data, path);
+        const entry = markdown == null ? null : nameFromOpenDocument(path, markdown);
+        if (entry?.type === 'character') entries.push(entry);
+      }
+      const seen = new Set(state.dramaticTask.participants.map(item => normalizedCombatantIdentity(item.name)).filter(Boolean));
+      let added = 0;
+      entries.forEach(entry => {
+        const identity = normalizedCombatantIdentity(entry.name);
+        if (!identity || seen.has(identity)) return;
+        seen.add(identity);
+        const participant = {
+          id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+          name: entry.name,
+          card: null
+        };
+        if (state.dramaticTask.status === 'active') drawDramaticCardForParticipant(participant);
+        state.dramaticTask.participants.push(participant);
+        added += 1;
+      });
+      status.hidden = false;
+      status.textContent = added
+        ? `Added ${added} open ${added === 1 ? 'character' : 'characters'}.`
+        : entries.length ? 'All open character documents are already participants.' : 'No open character documents found.';
+      if (added) { save(); render(); }
+    } catch (error) {
+      status.hidden = false;
+      status.textContent = `Could not load open document names: ${error?.message || error}`;
+    } finally {
+      button.disabled = false;
+    }
+  }
   function setToolPanel(panel, persist = true) {
     const activePanel = ['initiative', 'dice', 'deck', 'chase', 'dramatic'].includes(panel) ? panel : 'initiative';
     document.body.dataset.activeToolPanel = activePanel;
@@ -534,6 +596,43 @@
     deck.push({joker:true,color:'red'},{joker:true,color:'black'});
     for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
     return deck;
+  }
+  function dealDramaticCards() {
+    const task = state.dramaticTask;
+    if (!task.participants.length) return false;
+    task.cardDeck = task.cardDeck && Array.isArray(task.cardDeck.draw) && Array.isArray(task.cardDeck.discard)
+      ? task.cardDeck : {draw:shuffledDeck(),discard:[]};
+    task.participants.forEach(participant => {
+      if (participant.card) task.cardDeck.discard.push(participant.card);
+      participant.card = null;
+    });
+    if (task.cardDeck.draw.length < task.participants.length) {
+      task.cardDeck.draw = shuffleInPlace([...task.cardDeck.draw, ...task.cardDeck.discard]);
+      task.cardDeck.discard = [];
+    }
+    if (task.cardDeck.draw.length < task.participants.length) {
+      task.cardDeck.draw = shuffledDeck();
+      task.cardDeck.discard = [];
+    }
+    task.participants.forEach(participant => { participant.card = task.cardDeck.draw.shift() || null; });
+    if (task.participants.some(participant => participant.card?.joker)) {
+      task.cardDeck.draw = shuffleInPlace([...task.cardDeck.draw, ...task.cardDeck.discard]);
+      task.cardDeck.discard = [];
+    }
+    return true;
+  }
+  function drawDramaticCardForParticipant(participant) {
+    const task = state.dramaticTask;
+    if (!task.cardDeck.draw.length) {
+      task.cardDeck.draw = shuffleInPlace([...task.cardDeck.discard]);
+      task.cardDeck.discard = [];
+    }
+    if (!task.cardDeck.draw.length) task.cardDeck.draw = shuffledDeck();
+    participant.card = task.cardDeck.draw.shift() || null;
+    if (participant.card?.joker) {
+      task.cardDeck.draw = shuffleInPlace([...task.cardDeck.draw, ...task.cardDeck.discard]);
+      task.cardDeck.discard = [];
+    }
   }
   function cardKey(card) {
     if (!card) return '';
@@ -868,6 +967,67 @@
     const running = task.status !== 'setup';
     setup.hidden = running;
     live.hidden = !running;
+    $('#dramaticAddForm').hidden = running;
+    if (running) $('#dramaticImportOpenStatus').hidden = true;
+    const participantList = $('#dramaticParticipantList');
+    participantList.replaceChildren();
+    const orderedParticipants = [...task.participants].sort((a, b) => {
+      if (!a.card && !b.card) return a.name.localeCompare(b.name);
+      if (!a.card) return 1;
+      if (!b.card) return -1;
+      if (a.card.joker || b.card.joker) return Number(b.card.joker) - Number(a.card.joker);
+      return (Number(b.card.rank) || 0) - (Number(a.card.rank) || 0)
+        || (Number(b.card.suit?.rank) || 0) - (Number(a.card.suit?.rank) || 0)
+        || a.name.localeCompare(b.name);
+    });
+    orderedParticipants.forEach(participant => {
+      const row = document.createElement('div');
+      const complication = Boolean(participant.card && !participant.card.joker && participant.card.suit?.name === 'Clubs');
+      row.className = `dramatic-participant-row${participant.card?.joker ? ' is-joker' : ''}${complication ? ' has-complication' : ''}`;
+      const name = document.createElement('span');
+      name.className = 'dramatic-participant-name';
+      name.textContent = participant.name;
+      row.append(name);
+      if (complication) {
+        const badge = document.createElement('span');
+        badge.className = 'dramatic-complication-badge';
+        badge.textContent = '♣ COMPLICATION · −2';
+        badge.title = 'Task and Support rolls take −2; failure during this complication fails the task.';
+        row.append(badge);
+      } else if (participant.card?.joker) {
+        const badge = document.createElement('span');
+        badge.className = 'dramatic-joker-badge';
+        badge.textContent = 'JOKER · +2';
+        badge.title = 'Jokers grant +2 to Trait and damage rolls.';
+        row.append(badge);
+      }
+      const card = participant.card ? cardFace(participant.card) : document.createElement('div');
+      if (!participant.card) card.className = 'card-face pending';
+      card.title = participant.card ? cardDescription(participant.card) : 'No Action Card dealt';
+      row.append(card);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'row-menu dramatic-participant-remove';
+      remove.textContent = '×';
+      remove.title = `Remove ${participant.name}`;
+      remove.setAttribute('aria-label', remove.title);
+      remove.addEventListener('click', () => {
+        if (participant.card) task.cardDeck.discard.push(participant.card);
+        task.participants = task.participants.filter(item => item.id !== participant.id);
+        save(); render();
+      });
+      row.append(remove);
+      participantList.append(row);
+    });
+    $('#dramaticParticipantCount').textContent = task.participants.length;
+    $('#dramaticEmptyParticipants').hidden = task.participants.length > 0;
+    $('#dramaticDeckStatus').textContent = `${task.cardDeck.draw.length} cards left`;
+    $('#dramaticCardHint').textContent = task.status === 'active'
+      ? 'Next round deals a fresh Action Card to each participant.'
+      : task.status === 'setup' ? 'Cards are dealt when you start the task.' : 'Task ended; reset to run it again.';
+    $('#dramaticActiveComplication').hidden = !task.participants.some(participant =>
+      participant.card && !participant.card.joker && participant.card.suit?.name === 'Clubs'
+    );
     if (!running) {
       $('#dramaticTaskName').value = task.title;
       $('#dramaticTargetTokens').value = task.targetTokens;
@@ -905,7 +1065,7 @@
     $('#addTaskRaise').disabled = !active;
     $('#endTaskRound').disabled = !active;
     $('#undoTaskAction').disabled = task.actions.length === 0;
-    $('#endTaskRound').textContent = task.currentRound >= task.maxRounds ? 'Finish final round' : 'End round';
+    $('#endTaskRound').textContent = task.currentRound >= task.maxRounds ? 'Finish task' : 'Next round';
   }
   function dealChaseRound() {
     const chase = state.chase;
@@ -1138,6 +1298,9 @@
   if (document.documentElement.classList.contains('embedded') || IS_POPOUT) {
     importOpenButton.hidden = false;
     importOpenButton.addEventListener('click', importOpenDocuments);
+    const dramaticImportButton = $('#importOpenDramaticParticipants');
+    dramaticImportButton.hidden = false;
+    dramaticImportButton.addEventListener('click', importOpenDramaticParticipants);
   }
   window.addEventListener('message',event=>{
     if(!isHostMessage(event))return;
@@ -1162,8 +1325,32 @@
   });
   $('#resetToolsTabButton').addEventListener('click',()=>$('#resetAll').click());
   setToolPanel(state.activeToolPanel);
+  $('#dramaticAddForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const input = $('#dramaticParticipantName');
+    const name = input.value.trim();
+    if (!name) return;
+    const identity = normalizedCombatantIdentity(name);
+    if (state.dramaticTask.participants.some(item => normalizedCombatantIdentity(item.name) === identity)) {
+      $('#dramaticImportOpenStatus').hidden = false;
+      $('#dramaticImportOpenStatus').textContent = `${name} is already on the participant list.`;
+      input.select();
+      return;
+    }
+    const participant = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+      name: name.slice(0,32),
+      card: null
+    };
+    if (state.dramaticTask.status === 'active') drawDramaticCardForParticipant(participant);
+    state.dramaticTask.participants.push(participant);
+    input.value = '';
+    $('#dramaticImportOpenStatus').hidden = true;
+    save(); render(); input.focus();
+  });
   $('#dramaticSetup').addEventListener('submit',event=>{
     event.preventDefault();
+    const task = state.dramaticTask;
     state.dramaticTask={
       title:$('#dramaticTaskName').value.trim().slice(0,80),
       targetTokens:Math.max(1,Math.min(100,Math.trunc(Number($('#dramaticTargetTokens').value)||4))),
@@ -1171,8 +1358,11 @@
       currentRound:1,
       actions:[],
       tokens:0,
+      participants:task.participants,
+      cardDeck:task.cardDeck,
       status:'active'
     };
+    dealDramaticCards();
     save();render();
   });
   const addDramaticTokens = amount => {
@@ -1198,13 +1388,19 @@
     const task=state.dramaticTask;
     if(task.status!=='active')return;
     if(task.currentRound>=task.maxRounds)task.status='expired';
-    else task.currentRound+=1;
+    else { task.currentRound+=1; dealDramaticCards(); }
     save();render();
   });
   $('#resetDramaticTask').addEventListener('click',()=>{
     const task=state.dramaticTask;
     if(task.status==='active'&&task.actions.length&&!confirm('Start a new task and discard this task’s progress?'))return;
-    state.dramaticTask={...normalizeDramaticTask(null),title:task.title,targetTokens:task.targetTokens,maxRounds:task.maxRounds};
+    state.dramaticTask={
+      ...normalizeDramaticTask(null),
+      title:task.title,
+      targetTokens:task.targetTokens,
+      maxRounds:task.maxRounds,
+      participants:task.participants.map(participant=>({...participant,card:null}))
+    };
     save();render();
   });
   $('#chaseAddForm').addEventListener('submit',event=>{

@@ -56,7 +56,7 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=chase-maneuvers-20261125">
+  <link rel="stylesheet" href="styles.css?v=dramatic-hide-add-controls-20261125">
   <link rel="stylesheet" href="initiative-portraits.css?v=wild-card-extra-icons-20261125">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
@@ -182,7 +182,20 @@
         <div><div class="eyebrow">BEAT THE CLOCK</div><h1 id="dramaticTitle">Dramatic Task</h1></div>
         <button type="button" class="icon-button" id="resetDramaticTask" title="Set up a new dramatic task" aria-label="Set up a new dramatic task">↻</button>
       </div>
-      <p class="dramatic-intro">Track task tokens against a round limit. Add one token for each success and one more for each raise.</p>
+      <p class="dramatic-intro">Deal each participant an Action Card every round, then track Task Tokens as the group works against the clock.</p>
+      <section class="dramatic-participants" aria-labelledby="dramaticParticipantsTitle">
+        <div class="chase-section-heading"><span id="dramaticParticipantsTitle">PARTICIPANTS <span class="muted" id="dramaticParticipantCount">0</span></span><span class="chase-deck-count" id="dramaticDeckStatus">54 cards left</span></div>
+        <form class="dramatic-add-form" id="dramaticAddForm">
+          <label class="sr-only" for="dramaticParticipantName">Participant name</label>
+          <input id="dramaticParticipantName" maxlength="32" placeholder="Add a participant…" autocomplete="off" required>
+          <button class="button button-add" type="submit">＋ <span>Add</span></button>
+          <button class="button button-secondary import-open-button" id="importOpenDramaticParticipants" type="button" hidden>Import open</button>
+        </form>
+        <div class="import-open-status" id="dramaticImportOpenStatus" role="status" aria-live="polite" hidden></div>
+        <div class="dramatic-participant-list" id="dramaticParticipantList"></div>
+        <div class="dramatic-empty-participants" id="dramaticEmptyParticipants">Add everyone taking part. Each participant gets one Action Card per round.</div>
+        <p class="dramatic-card-hint" id="dramaticCardHint">Cards are dealt when you start the task.</p>
+      </section>
       <form class="dramatic-setup" id="dramaticSetup">
         <label class="field-label" for="dramaticTaskName">WHAT ARE THE HEROES TRYING TO DO?</label>
         <input id="dramaticTaskName" maxlength="80" placeholder="Defuse the bomb, escape the collapsing mine…" autocomplete="off">
@@ -190,8 +203,11 @@
           <label><span class="field-label">TOKENS TO SUCCEED</span><input id="dramaticTargetTokens" type="number" min="1" max="100" value="4"></label>
           <label><span class="field-label">ROUNDS</span><input id="dramaticRoundLimit" type="number" min="1" max="20" value="3"></label>
         </div>
-        <p class="dramatic-rule-note">Starts at 4 tokens in 3 rounds, a challenging task for one character. Adjust for your scene and group.</p>
-        <button class="button button-primary dramatic-start" type="submit">Start task <span>↗</span></button>
+        <p class="dramatic-rule-note">Each success and raise earns 1 token. A critical failure loses 1 token if any have been earned.</p>
+        <div class="dramatic-start-row">
+          <button class="button button-primary dramatic-start" type="submit">Start task <span>↗</span></button>
+          <div class="dramatic-guideline-card"><strong>DIFFICULTY GUIDELINES</strong><span><b>Single character:</b> Challenging 4 tokens / 3 rounds · Difficult 6 / 4 · Complex 8 / 5.</span><span><b>Multiple participants:</b> budget about 1 token per participant per round; adjust for difficulty.</span><span><b>Rolls:</b> standard target number is 4.</span></div>
+        </div>
       </form>
       <div class="dramatic-live" id="dramaticLive" hidden>
         <div class="dramatic-task-title" id="dramaticLiveName"></div>
@@ -201,6 +217,7 @@
         </div>
         <div class="dramatic-progress" role="progressbar" aria-label="Task token progress" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="dramaticProgressFill"></span></div>
         <div class="dramatic-token-track" id="dramaticTokenTrack" aria-hidden="true"></div>
+        <div class="dramatic-active-complication" id="dramaticActiveComplication" role="status" hidden><strong>♣ CLUB COMPLICATION</strong><span>Task and Support rolls take −2. A failed roll during this complication fails the task.</span></div>
         <div class="dramatic-outcome" id="dramaticOutcome" role="status" aria-live="polite"></div>
         <div class="dramatic-actions">
           <button type="button" class="button button-primary" id="addTaskSuccess">＋ Success <small>1 token</small></button>
@@ -208,11 +225,11 @@
         </div>
         <div class="dramatic-round-actions">
           <button type="button" class="text-button" id="undoTaskAction">Undo last</button>
-          <button type="button" class="button button-secondary" id="endTaskRound">End round</button>
+          <button type="button" class="button button-secondary" id="endTaskRound">Next round</button>
         </div>
       </div>
     </section>
   </main>
-  <script src="app.js?v=chase-maneuvers-20261125"></script>
+  <script src="app.js?v=dramatic-hide-add-controls-20261125"></script>
 </body>
 </html>
