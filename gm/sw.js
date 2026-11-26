@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261126-dice-poly-size-controls';
+const CACHE_NAME = 'gm-reference-shell-v20261126-dice-card-sounds';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

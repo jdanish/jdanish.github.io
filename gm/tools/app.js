@@ -141,7 +141,7 @@
     };
   }
   function beginCardDealAnimation(ids, jokerIds = []) {
-    playSound('card-fan');
+    playSound('card-place');
     const sequence = ++cardDealSequence;
     const orderedIds = [...new Set(ids || [])];
     cardDealAnimationIds = new Set(orderedIds);
@@ -635,7 +635,7 @@
   function dealDramaticCards() {
     const task = state.dramaticTask;
     if (!task.participants.length) return false;
-    playSound('card-fan');
+    playSound('card-place');
     task.cardDeck = task.cardDeck && Array.isArray(task.cardDeck.draw) && Array.isArray(task.cardDeck.discard)
       ? task.cardDeck : {draw:shuffledDeck(),discard:[]};
     task.participants.forEach(participant => {
@@ -643,10 +643,12 @@
       participant.card = null;
     });
     if (task.cardDeck.draw.length < task.participants.length) {
+      playSound('card-fan');
       task.cardDeck.draw = shuffleInPlace([...task.cardDeck.draw, ...task.cardDeck.discard]);
       task.cardDeck.discard = [];
     }
     if (task.cardDeck.draw.length < task.participants.length) {
+      playSound('card-fan');
       task.cardDeck.draw = shuffledDeck();
       task.cardDeck.discard = [];
     }
@@ -1112,6 +1114,7 @@
       participant.card = null;
     });
     if (!chase.deck.draw.length) {
+      playSound('card-fan');
       chase.deck.draw = shuffleInPlace([...chase.deck.discard]);
       chase.deck.discard = [];
     }
@@ -1234,10 +1237,12 @@
   }
   function shuffleInitiativeUndealt(){
     if(!state.initiativeDeck)return;
+    playSound('card-fan');
     state.initiativeDeck.draw=shuffleInPlace([...state.initiativeDeck.draw,...state.initiativeDeck.discard]);
     state.initiativeDeck.discard=[];
   }
   function shuffleExtraUndealt(){
+    playSound('card-fan');
     state.extraDeck=shuffleInPlace([...state.extraDeck,...state.extraDiscard]);
     state.extraDiscard=[];
   }
@@ -1253,6 +1258,7 @@
     save();render();
   }
   function reshuffleInitiative() {
+    playSound('card-fan');
     state.initiativeDeck={draw:shuffledDeck(),discard:[]};
     state.combatants.forEach(combatant=>{combatant.card=null;combatant.cardOptions=null;});
     state.activeId=null;
@@ -1297,10 +1303,10 @@
     state.activeId=inRound[nextIndex].id;save();render();
   }
   function drawExtraCard() {
-    if(!state.extraDeck.length){state.extraDeck=state.extraDiscard;state.extraDiscard=[];for(let i=state.extraDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.extraDeck[i],state.extraDeck[j]]=[state.extraDeck[j],state.extraDeck[i]];}}
+    if(!state.extraDeck.length){playSound('card-fan');state.extraDeck=state.extraDiscard;state.extraDiscard=[];for(let i=state.extraDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.extraDeck[i],state.extraDeck[j]]=[state.extraDeck[j],state.extraDeck[i]];}}
     if(!state.extraDeck.length)state.extraDeck=shuffledDeck();
     const card=state.extraDeck.shift();state.extraDiscard.push(card);
-    playSound('card-fan');
+    playSound('card-place');
     activeJokerRevealIds=[];
     if(card.joker)shuffleExtraUndealt();
     const reason=$('#drawReason').value.trim();
@@ -1330,6 +1336,7 @@
   $('#drawCardBtn').addEventListener('click',drawExtraCard);
   $('#drawReason').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();drawExtraCard();}});
   $('#reshuffleDrawDeck').addEventListener('click',()=>{
+    playSound('card-fan');
     state.extraDeck=shuffledDeck();state.extraDiscard=[];state.cardDraws=[];save();render();
   });
   const importOpenButton = $('#importOpenDocuments');
