@@ -1,0 +1,54 @@
+[
+  {
+    "id": "default",
+    "name": "Default Colors"
+  },
+  {
+    "id": "blueGreenMetal",
+    "name": "Blue Green Weathered Metal"
+  },
+  {
+    "id": "default-extras",
+    "name": "Default Extras"
+  },
+  {
+    "id": "diceOfRolling",
+    "name": "Dice of Rolling"
+  },
+  {
+    "id": "diceOfRolling-fate",
+    "name": "Dice of Rolling Fate"
+  },
+  {
+    "id": "gemstone",
+    "name": "Gemstone"
+  },
+  {
+    "id": "gemstoneMarble",
+    "name": "Gemstone Rainbow Marble"
+  },
+  {
+    "id": "genesys",
+    "name": "Genesys"
+  },
+  {
+    "id": "rock",
+    "name": "Rock"
+  },
+  {
+    "id": "rust",
+    "name": "Rust"
+  },
+  {
+    "id": "smooth",
+    "name": "Smooth Dice"
+  },
+  {
+    "id": "smooth-pip",
+    "name": "Smooth Pips"
+  },
+  {
+    "id": "wooden",
+    "name": "Wooden"
+  }
+]

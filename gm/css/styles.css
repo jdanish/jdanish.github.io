@@ -5330,6 +5330,7 @@ html[data-theme="light"] .workspace-switcher { background: var(--panel); border-
   margin-left: auto;
   padding: 6px 12px 6px 8px;
 }
+.site-sound-toggle{font-size:16px;line-height:1}
 .workspace-popout-button {
   flex: 0 0 32px;
   width: 32px;

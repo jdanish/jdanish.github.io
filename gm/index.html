@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=dice-physics-clean-results-20261126">
+  <link rel="stylesheet" href="css/styles.css?v=dice-poly-size-controls-20261126">
 </head>
 <body>
   <div class="app">
@@ -72,6 +72,7 @@
         </div>
         <div class="workspace-header-actions">
           <button id="helpButton" type="button" class="workspace-help-button" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help"><span aria-hidden="true">?</span></button>
+          <button id="siteSoundToggle" type="button" class="icon-button site-sound-toggle" aria-label="Sound on. Click to turn off." aria-pressed="true" title="Sound on">🔊</button>
           <button id="themeButton" type="button" class="icon-button workspace-theme-button" aria-label="Theme: Dark. Click to switch." title="Theme: Dark. Click to switch.">☾</button>
         </div>
       </div>
@@ -87,7 +88,7 @@
           <div class="pages" id="pageLinks"></div>
         </div>
         <div class="frame" id="viewerFrame">
-          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=dice-physics-clean-results-20261126" title="Savage Worlds table tools" loading="lazy"></iframe>
+          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=dice-poly-size-controls-20261126" title="Savage Worlds table tools" loading="lazy"></iframe>
         </div>
       </section>
     </main>
@@ -186,7 +187,7 @@
             <p>Open <strong>Tools</strong> for the initiative tracker and other table aids:</p>
             <ul>
               <li><strong>Initiative:</strong> deal cards, track the round and turn order, handle Jokers, and show character Bennies, Shaken, and Wounds or monster Shaken and Wounds/Count. Extras appear as numbered individuals with separate Shaken controls. Their note checkbox applies Shaken to all Extras and stays checked only when all are Shaken. Wild Card/Extra is display-only here; change the checkbox in the monster note. Note checkboxes save automatically when clicked.</li>
-              <li><strong>Dice:</strong> build a pool of Trait dice, choose whether to use the Wild Die, and roll with acing. For multiple dice, choose sum, keep-highest, or display-only mode.</li>
+              <li><strong>Dice:</strong> build a pool of Trait dice, choose whether to use the Wild Die and acing, then roll with the 3D tray or select <strong>Quick roll</strong> to show the result without the animation. For multiple dice, choose sum, keep-highest, or display-only mode. Choose a local 3D theme from the theme selector; added themes go in <code>libs/dice-box/assets/themes/</code> and must be listed in its <code>themes.json</code>. Use the 🔊 / 🔇 button to turn dice and card sounds on or off.</li>
               <li><strong>Deck:</strong> draw cards for other table moments, optionally record a reason, and reshuffle this separate deck.</li>
               <li><strong>Chase:</strong> deal action cards, distinguish participants by their automatic token colors, and drag tokens or use the arrows to move them along the Chase Card track. Club Action Cards highlight the matching complication row.</li>
               <li><strong>Dramatic Task:</strong> set the task’s target and rounds, then record progress tokens.</li>
@@ -216,7 +217,7 @@
   <script src="libs/codemirror/lib/codemirror.js"></script>
   <script src="libs/codemirror/mode/markdown/markdown.js"></script>
   <script src="libs/easymde/easymde.min.js"></script>
-  <script src="js/sidebar.js?v=dice-physics-clean-results-20261126"></script>
+  <script src="js/sidebar.js?v=dice-poly-size-controls-20261126"></script>
   <script src="js/storage.js?v=workspace-tab-persistence-20261123"></script>
   <script src="js/popup.js?v=data-documents-top-20261125"></script>
   <script src="js/bookmarks.js?v=index-copy-link-help-20261125"></script>
@@ -224,8 +225,8 @@
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js?v=search-progress-indicator-20261125"></script>
   <script src="js/help.js?v=initiative-status-sync-20261125"></script>
-  <script src="js/pdfviewer.js?v=dice-physics-clean-results-20261126"></script>
-  <script src="js/ui.js?v=dice-physics-clean-results-20261126"></script>
-  <script src="js/app.js?v=dice-physics-clean-results-20261126"></script>
+  <script src="js/pdfviewer.js?v=dice-poly-size-controls-20261126"></script>
+  <script src="js/ui.js?v=dice-poly-size-controls-20261126"></script>
+  <script src="js/app.js?v=dice-poly-size-controls-20261126"></script>
 </body>
 </html>

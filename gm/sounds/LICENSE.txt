@@ -1,0 +1,8 @@
+Dice and card sound effects
+
+The bundled dice-throw-1.wav and card-fan.wav are from Kenney's Casino Audio 1.1 sound pack, as distributed in the receptron/jinglescript samples/sfx folder.
+
+License: Creative Commons Zero (CC0 1.0). The assets may be used in personal and commercial projects; attribution is appreciated but not required.
+Original creator: Kenney Vleugels (Kenney.nl)
+Source project: https://github.com/receptron/jinglescript/tree/main/samples/sfx
+License text is included in this folder.

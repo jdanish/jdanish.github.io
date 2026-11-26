@@ -10,6 +10,7 @@
   let toolsDiceRollPending = null;
   let toolsReadyMessageBound = false;
   let trackerStorageListenerBound = false;
+  const SITE_SOUND_KEY = 'wildcard-sound-enabled-v1';
   let toolsPopoutWindow = null;
   let popoutMonitorTimer = null;
   let toolsDocumentsRefreshPending = false;
@@ -71,7 +72,7 @@
       toolsPopoutWindow.focus();
       return;
     }
-    const target = new URL('tools/index.html?popout=1&v=dice-physics-clean-results-20261126', document.baseURI);
+    const target = new URL('tools/index.html?popout=1&v=dice-poly-size-controls-20261126', document.baseURI);
     toolsPopoutWindow = window.open(target.href, 'gm-tools-window', 'popup=yes,width=1180,height=900');
     if (!toolsPopoutWindow) {
       window.GM.ui?.showToast?.('Allow pop-up windows to open Table Tools separately.');
@@ -113,6 +114,30 @@
 
   function isSystemLightTheme() {
     return Boolean(themeMediaQuery?.matches);
+  }
+
+  function bindSiteSoundToggle(button) {
+    if (!button) return;
+    const read = () => {
+      try { return localStorage.getItem(SITE_SOUND_KEY) !== 'false'; } catch { return true; }
+    };
+    const update = (enabled) => {
+      button.textContent = enabled ? '🔊' : '🔇';
+      button.title = enabled ? 'Sound on' : 'Sound off';
+      button.setAttribute('aria-label', `${button.title}. Click to turn ${enabled ? 'off' : 'on'}.`);
+      button.setAttribute('aria-pressed', String(enabled));
+    };
+    update(read());
+    if (button.dataset.bound === 'true') return;
+    button.addEventListener('click', () => {
+      const enabled = !read();
+      try { localStorage.setItem(SITE_SOUND_KEY, String(enabled)); } catch {}
+      update(enabled);
+    });
+    window.addEventListener('storage', event => {
+      if (event.key === SITE_SOUND_KEY) update(event.newValue !== 'false');
+    });
+    button.dataset.bound = 'true';
   }
 
   function resolveThemeMode(mode = getThemeMode()) {
@@ -4047,11 +4072,13 @@
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
       themeButtonEl: document.getElementById('themeButton'),
+      siteSoundToggleEl: document.getElementById('siteSoundToggle'),
       bookVisibilityButtonEl: document.getElementById('bookVisibilityButton'),
     };
 
     applyThemeMode();
     bindThemeMediaListener();
+    bindSiteSoundToggle(dom.siteSoundToggleEl);
 
     buildTabs();
     renderSidebar();

@@ -56,13 +56,14 @@
     })();
   </script>
   <title>Table Tools — GM Reference</title>
-  <link rel="stylesheet" href="styles.css?v=dice-physics-clean-results-20261126">
+  <link rel="stylesheet" href="styles.css?v=dice-poly-size-controls-20261126">
   <link rel="stylesheet" href="initiative-portraits.css?v=wild-card-extra-icons-20261125">
 </head>
 <body class="tool-tab-initiative" data-active-tool-panel="initiative">
   <header class="topbar">
     <a class="brand" href="#" aria-label="Wild Card home"><span class="brand-mark">W</span><span>WILD<span class="brand-light">CARD</span></span></a>
     <div class="edition-tag"><span class="live-dot"></span> TABLE TOOLS <span class="divider">/</span> ADVENTURE EDITION</div>
+    <button type="button" class="sound-toggle" id="soundToggle" aria-pressed="true" title="Turn sounds off">🔊 <span>Sound on</span></button>
   </header>
 
   <nav class="tool-tabs" role="tablist" aria-label="Choose a table tool">
@@ -96,7 +97,7 @@
 
     <aside class="right-column">
       <section class="panel dice-panel" id="dicePanel" role="tabpanel" aria-labelledby="diceTab diceTitle">
-        <div class="panel-heading compact"><div><div class="eyebrow">LET THE DICE FLY</div><h2 id="diceTitle">Quick Roll</h2></div><div class="die-glyph">⚄</div></div>
+        <div class="panel-heading compact"><div><div class="eyebrow">LET THE DICE FLY</div><h2 id="diceTitle">Quick Roll</h2></div><div class="panel-heading-actions"><button class="icon-button" id="resetDiceTray" type="button" title="Clear dice tray and result" aria-label="Clear dice tray and result">↻</button><div class="die-glyph">⚄</div></div></div>
         <div class="field-label">ADD DICE</div>
         <div class="die-palette" id="diePalette" aria-label="Add a die to the pool">
           <button type="button" class="die-palette-button" data-add-die="4" aria-label="Add a d4"><span class="pool-die-shape d4"><strong>4</strong></span><small>d4</small></button>
@@ -106,7 +107,7 @@
           <button type="button" class="die-palette-button" data-add-die="12" aria-label="Add a d12"><span class="pool-die-shape d12"><strong>12</strong></span><small>d12</small></button>
           <button type="button" class="die-palette-button" data-add-die="20" aria-label="Add a d20"><span class="pool-die-shape d20"><strong>20</strong></span><small>d20</small></button>
         </div>
-        <div class="roll-controls"><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label></div>
+        <div class="roll-controls"><label class="wild-toggle"><input id="wildDie" type="checkbox" checked><span class="toggle-track"></span><span>Wild Die <small>d6</small></span></label><label class="wild-toggle aces-toggle"><input id="acesEnabled" type="checkbox" checked><span class="toggle-track"></span><span>Acing / exploding</span></label></div>
         <div class="roll-mode-row" id="rollModeRow" hidden><label class="field-label" for="diceMode">MULTI-DIE METHOD</label><div class="roll-method-controls"><select id="diceMode"><option value="sum">Sum all Trait dice</option><option value="keep">Keep highest dice · check separately</option><option value="display">Show rolls only</option></select><label id="keepCountWrap" class="keep-count-control" hidden><span>KEEP</span><select id="keepCount" aria-label="Number of dice to keep"><option value="1">1</option></select></label></div></div>
         <div class="dice-pool-preview"><div class="dice-pool-heading"><span>DICE POOL <small>Click a die to remove it</small></span><span id="dicePoolSummary" aria-live="polite"></span></div><div class="dice-pool-images" id="dicePoolImages"></div></div>
         <div class="dice-physics-stage" id="dicePhysicsStage" aria-label="3D physics dice tray">
@@ -114,14 +115,15 @@
           <span class="dice-physics-status" id="dicePhysicsStatus" role="status" aria-live="polite">Ready to load local 3D dice.</span>
         </div>
         <fieldset class="dice-color-controls">
-          <legend>DICE COLORS</legend>
+          <legend>DICE VISUALS</legend>
+          <label class="dice-theme-control" for="diceTheme"><span>Theme:</span><select id="diceTheme" aria-label="Dice theme"><option value="default">Default Colors</option></select></label>
           <label><span>Trait dice:</span><input id="traitDieColor" data-dice-color="trait" type="color" value="#7cc4ff" aria-label="Default color for Trait dice"></label>
           <label><span>Wild Die:</span><input id="wildDieColor" data-dice-color="wild" type="color" value="#f1c876" aria-label="Default color for the Wild Die"></label>
           <label><span>Aces:</span><input id="explodingDieColor" data-dice-color="exploding" type="color" value="#eb766d" aria-label="Color for extra dice rolled after an ace"></label>
         </fieldset>
-        <p class="dice-color-note">Colors apply to your next roll. Aces use the Aces color for each extra roll.</p>
+        <p class="dice-color-note">Colors apply to your next roll; extra rolls use the Aces color. Add themes under libs/dice-box/assets/themes and list them in themes.json.</p>
         <div class="roll-extra-fields"><div><label class="field-label modifier-label" for="modifier">MODIFIER</label><div class="modifier-wrap"><span>±</span><input id="modifier" type="number" value="0" min="-99" max="99" aria-label="Roll modifier"></div></div><div><label class="field-label modifier-label" for="targetNumber">TARGET</label><div class="modifier-wrap"><span>TN</span><input id="targetNumber" type="number" value="4" min="1" max="99" aria-label="Target number"></div></div></div>
-        <button class="button button-roll" id="rollBtn">ROLL <span>↗</span></button>
+        <div class="roll-submit-row"><label class="quick-roll-toggle"><input id="quickRoll" type="checkbox"><span>Quick roll</span><small>No 3D animation</small></label><button class="button button-roll" id="rollBtn">ROLL <span>↗</span></button></div>
         <div class="roll-result" id="rollResult" aria-live="polite"><span class="result-hint">Your roll will appear here.</span></div>
         <p class="dice-note" id="diceNote">Each die aces (maximum rolls) and explodes. With one Trait Die, the Wild Die keeps the higher result. Multiple dice are summed.</p>
       </section>
@@ -241,6 +243,6 @@
       </div>
     </section>
   </main>
-  <script src="app.js?v=dice-physics-clean-results-20261126"></script>
+  <script src="app.js?v=dice-poly-size-controls-20261126"></script>
 </body>
 </html>

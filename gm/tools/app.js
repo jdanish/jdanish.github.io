@@ -9,6 +9,9 @@
   const CHASE_TOKEN_COLORS = ['#2563eb','#dc2626','#15803d','#7e22ce','#c2410c','#0f766e','#be185d','#4338ca','#a16207','#0369a1','#4d7c0f','#9333ea'];
   const STORAGE_KEY = 'wildcard-table-v1';
   const DICE_STYLE_KEY = 'wildcard-dice-style-v1';
+  const DICE_ACING_KEY = 'wildcard-dice-acing-v1';
+  const DICE_THEME_KEY = 'wildcard-dice-theme-v1';
+  const SOUND_KEY = 'wildcard-sound-enabled-v1';
   const DEFAULT_DICE_STYLE = { trait: '#7cc4ff', wild: '#f1c876', exploding: '#eb766d' };
   const $ = (selector) => document.querySelector(selector);
   const ui = {
@@ -20,6 +23,10 @@
   };
   let state = loadState();
   let diceStyle = loadDiceStyle();
+  let acingEnabled = loadAcingPreference();
+  let activeDiceTheme = loadDiceThemePreference();
+  let soundEnabled = loadSoundPreference();
+  const soundPlayers = new Map();
   let importingOpenDocuments = false;
   let traitDice = [{id:'initial-d6',sides:6}];
   let keepCountTouched = false;
@@ -134,6 +141,7 @@
     };
   }
   function beginCardDealAnimation(ids, jokerIds = []) {
+    playSound('card-fan');
     const sequence = ++cardDealSequence;
     const orderedIds = [...new Set(ids || [])];
     cardDealAnimationIds = new Set(orderedIds);
@@ -146,6 +154,28 @@
     }, 1700);
 
     activeJokerRevealIds = [...jokerIds];
+  }
+  function loadSoundPreference() {
+    try { return localStorage.getItem(SOUND_KEY) !== 'false'; } catch { return true; }
+  }
+  function syncSoundToggle() {
+    const button = $('#soundToggle');
+    if (!button) return;
+    button.innerHTML = `${soundEnabled ? '🔊' : '🔇'} <span>Sound ${soundEnabled ? 'on' : 'off'}</span>`;
+    button.title = `Turn sounds ${soundEnabled ? 'off' : 'on'}`;
+    button.setAttribute('aria-pressed', String(soundEnabled));
+    button.setAttribute('aria-label', button.title);
+  }
+  function playSound(name) {
+    if (!soundEnabled) return;
+    const source = `../sounds/${name}.wav`;
+    let player = soundPlayers.get(name);
+    try {
+      if (!player) { player = new Audio(source); player.volume = 0.45; soundPlayers.set(name, player); }
+      else player = player.cloneNode();
+      const playback = player.play();
+      playback?.catch?.(() => {});
+    } catch { /* optional sound failure must not affect gameplay */ }
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* app remains usable if storage is unavailable */ }
@@ -593,7 +623,7 @@
       button.setAttribute('aria-selected', String(selected));
     });
     if (persist) save();
-    if (activePanel === 'dice') ensureDicePhysics().catch(showDicePhysicsError);
+    if (activePanel === 'dice' && !$('#quickRoll')?.checked) ensureDicePhysics().catch(showDicePhysicsError);
   }
   function shuffledDeck() {
     const deck=[];
@@ -605,6 +635,7 @@
   function dealDramaticCards() {
     const task = state.dramaticTask;
     if (!task.participants.length) return false;
+    playSound('card-fan');
     task.cardDeck = task.cardDeck && Array.isArray(task.cardDeck.draw) && Array.isArray(task.cardDeck.discard)
       ? task.cardDeck : {draw:shuffledDeck(),discard:[]};
     task.participants.forEach(participant => {
@@ -1253,6 +1284,7 @@
     const returned=optionIndex===0?replacement:current;
     if(returned?.card&&state.initiativeDeck)state.initiativeDeck.discard.push(returned.card);
     combatant.card=chosen.card;combatant.cardOptions=null;
+    state.activeId=initiativeOrder().find(item=>item.card)?.id||null;
     beginCardDealAnimation([id],[chosen.card?.joker?id:null].filter(Boolean));
     save();render();
   }
@@ -1268,6 +1300,7 @@
     if(!state.extraDeck.length){state.extraDeck=state.extraDiscard;state.extraDiscard=[];for(let i=state.extraDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.extraDeck[i],state.extraDeck[j]]=[state.extraDeck[j],state.extraDeck[i]];}}
     if(!state.extraDeck.length)state.extraDeck=shuffledDeck();
     const card=state.extraDeck.shift();state.extraDiscard.push(card);
+    playSound('card-fan');
     activeJokerRevealIds=[];
     if(card.joker)shuffleExtraUndealt();
     const reason=$('#drawReason').value.trim();
@@ -1441,8 +1474,9 @@
   $('#resetAll').addEventListener('click',()=>{
     if(!confirm('Clear all combatants and reset the round?'))return;
     activeJokerRevealIds=[];
+    clearDiceResults();
     state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:state.activeToolPanel,chase:normalizeChase(null),dramaticTask:normalizeDramaticTask(null)};
-    save();render();ui.result.innerHTML='<span class="result-hint">Your roll will appear here.</span>';
+    save();render();
   });
   window.addEventListener('message',event=>{
     if(!isHostMessage(event))return;
@@ -1477,6 +1511,49 @@
       return { ...DEFAULT_DICE_STYLE };
     }
   }
+  function loadAcingPreference() {
+    try {
+      const saved = localStorage.getItem(DICE_ACING_KEY);
+      return saved === null ? true : saved === 'true';
+    } catch {
+      return true;
+    }
+  }
+  function loadDiceThemePreference() {
+    try {
+      const theme = localStorage.getItem(DICE_THEME_KEY) || 'default';
+      return /^[a-z0-9_-]+$/i.test(theme) ? theme : 'default';
+    } catch { return 'default'; }
+  }
+  async function setupDiceThemeControl() {
+    const select = $('#diceTheme');
+    try {
+      const response = await fetch('../libs/dice-box/assets/themes/themes.json');
+      if (response.ok) {
+        const themes = await response.json();
+        if (Array.isArray(themes)) {
+          select.replaceChildren();
+          themes.filter(theme => theme && /^[a-z0-9_-]+$/i.test(theme.id) && typeof theme.name === 'string')
+            .forEach(theme => { const option=document.createElement('option');option.value=theme.id;option.textContent=theme.name;select.append(option); });
+        }
+      }
+    } catch { /* Default Colors remains available if the theme list cannot be read. */ }
+    if (![...select.options].some(option => option.value === activeDiceTheme)) activeDiceTheme = 'default';
+    select.value = activeDiceTheme;
+    select.addEventListener('change', async () => {
+      activeDiceTheme = select.value;
+      try { localStorage.setItem(DICE_THEME_KEY, activeDiceTheme); } catch {}
+      dicePhysicsBox?.clear();
+      const status = $('#dicePhysicsStatus');
+      if (dicePhysicsBox) {
+        status.textContent = `Loading ${select.selectedOptions[0]?.textContent || 'dice'} theme…`;
+        status.hidden = false;
+        try { await dicePhysicsBox.updateConfig({ theme: activeDiceTheme }); status.hidden = true; }
+        catch (error) { showDicePhysicsError(error); }
+      }
+      clearDiceResults();
+    });
+  }
   function setupDiceColorControls() {
     document.querySelectorAll('[data-dice-color]').forEach(input => {
       const key = input.dataset.diceColor;
@@ -1487,6 +1564,13 @@
         try { localStorage.setItem(DICE_STYLE_KEY, JSON.stringify(diceStyle)); } catch {}
         renderDicePool();
       });
+    });
+    const acesToggle = $('#acesEnabled');
+    acesToggle.checked = acingEnabled;
+    acesToggle.addEventListener('change', () => {
+      acingEnabled = acesToggle.checked;
+      try { localStorage.setItem(DICE_ACING_KEY, String(acingEnabled)); } catch {}
+      clearDiceResults();
     });
   }
   function contrastingDiceInk(color) {
@@ -1511,7 +1595,7 @@
         container: '#dicePhysicsBox',
         assetPath: assetsUrl.pathname,
         origin: assetsUrl.origin,
-        theme: 'default',
+        theme: activeDiceTheme,
         offscreen: true,
         scale: 6 // Dice-Box defaults to 5; this makes the physical dice 20% larger.
       });
@@ -1532,9 +1616,9 @@
     status.hidden = false;
     $('#dicePhysicsStage').classList.remove('is-ready');
   }
-  async function rollAcingDice(logicalDice, colors) {
-    const box = await ensureDicePhysics();
-    box.clear();
+  async function rollAcingDice(logicalDice, colors, explodeAces, quickRoll = false) {
+    const box = quickRoll ? null : await ensureDicePhysics();
+    box?.clear();
     const dice = logicalDice.map(item => ({
       ...item,
       rolls: [],
@@ -1548,11 +1632,13 @@
         qty: 1,
         themeColor: item.rolls.length ? colors.exploding : item.baseColor
       }));
-      const results = dice.every(item => item.rolls.length === 0)
-        ? await box.roll(notation)
-        : await box.add(notation);
-      const orderedResults = [...results].sort((a, b) => Number(a.groupId) - Number(b.groupId));
-      if (orderedResults.length !== pending.length) throw new Error('The 3D dice engine returned an unexpected number of results.');
+      const results = quickRoll
+        ? pending.map(item => ({ value: 1 + Math.floor(Math.random() * item.sides) }))
+        : dice.every(item => item.rolls.length === 0)
+          ? await box.roll(notation)
+          : await box.add(notation);
+      const orderedResults = quickRoll ? results : [...results].sort((a, b) => Number(a.groupId) - Number(b.groupId));
+      if (orderedResults.length !== pending.length) throw new Error('The dice engine returned an unexpected number of results.');
       pending.forEach((item, index) => {
         const value = Number(orderedResults[index].value);
         if (!Number.isInteger(value) || value < 1 || value > item.sides) {
@@ -1562,7 +1648,9 @@
         item.rollColors.push(notation[index].themeColor);
         item.subtotal += value;
       });
-      pending = pending.filter(item => item.rolls.at(-1) === item.sides && item.rolls.length < 100);
+      pending = explodeAces
+        ? pending.filter(item => item.rolls.at(-1) === item.sides && item.rolls.length < 100)
+        : [];
     }
     return dice.map(({ rolls, rollColors, subtotal, ...item }) => ({ ...item, rollColors, die: { rolls, subtotal } }));
   }
@@ -1591,7 +1679,8 @@
       const faces=item.die.rolls.map((value,index)=>{
         const color=item.rollColors?.[index]||diceStyle.trait;
         const face=`<strong>${value}</strong>`;
-        return `<span class="die-visual-face d${sides}${value===sides?' is-ace':''}" style="--die-color:${color};--die-ink:${contrastingDiceInk(color)}" role="img" aria-label="d${sides} shows ${value}${value===sides?' and aces':''}"><small>d${sides}</small>${face}</span>`;
+        const isAce=acingEnabled&&value===sides;
+        return `<span class="die-visual-face d${sides}${isAce?' is-ace':''}" style="--die-color:${color};--die-ink:${contrastingDiceInk(color)}" role="img" aria-label="d${sides} shows ${value}${isAce?' and aces':''}"><small>d${sides}</small>${face}</span>`;
       }).join('<span class="die-visual-plus" aria-hidden="true">+</span>');
       return `<div class="die-visual-group${kept.has(item)?'':' not-kept'}"><span class="die-visual-title">${escapeHTML(item.name)}</span><div class="die-visual-faces">${faces}</div></div>`;
     }).join('')}</div>`;
@@ -1619,18 +1708,17 @@
   function updatePaletteButtons(rolling=false){
     $('#diePalette').querySelectorAll('[data-add-die]').forEach(button=>{button.disabled=rolling||traitDice.length>=20;});
   }
-  function startPhysicalRoll(){
+  function startPhysicalRoll(quickRoll=false){
     const sequence=++rollAnimationSequence;
     const button=$('#rollBtn');
     button.disabled=true;
     renderDicePool(true);
     ui.result.classList.add('is-rolling');
-    $('#diceMode').disabled=true;$('#keepCount').disabled=true;$('#wildDie').disabled=true;$('.wild-toggle').classList.add('is-disabled');
+    $('#diceMode').disabled=true;$('#keepCount').disabled=true;$('#wildDie').disabled=true;$('#acesEnabled').disabled=true;document.querySelectorAll('.wild-toggle').forEach(toggle=>toggle.classList.add('is-disabled'));
     document.querySelectorAll('[data-dice-color]').forEach(input=>{input.disabled=true;});
     updatePaletteButtons(true);
-    ui.result.innerHTML='<span class="result-hint">Rolling physical dice…</span>';
-    $('#dicePhysicsStatus').textContent='Rolling…';
-    $('#dicePhysicsStatus').hidden=true;
+    ui.result.innerHTML=`<span class="result-hint">${quickRoll?'Calculating result…':'Rolling physical dice…'}</span>`;
+    if(!quickRoll){$('#dicePhysicsStatus').textContent='Rolling…';$('#dicePhysicsStatus').hidden=true;}
     return sequence;
   }
   function animateRollResult(resultHtml,sequence){
@@ -1652,7 +1740,8 @@
     const multiple=traitCount>1;
     const keepMode=$('#diceMode').value==='keep';
     const displayMode=$('#diceMode').value==='display';
-    const toggle=$('.wild-toggle');
+    const wildToggle=$('.wild-toggle:not(.aces-toggle)');
+    const acesToggle=$('.aces-toggle');
     const rolling=ui.result.classList.contains('is-rolling');
     $('#rollModeRow').hidden=!multiple;
     const keepCount=$('#keepCount');
@@ -1664,16 +1753,22 @@
     keepCount.value=String(Math.min(oldKeep,Math.max(1,traitCount)));
     $('#keepCountWrap').hidden=!multiple||!keepMode;
     const wildUnavailable=(multiple&&!keepMode&&!displayMode)||rolling;
-    $('#wildDie').disabled=wildUnavailable;toggle.classList.toggle('is-disabled',wildUnavailable);
+    $('#wildDie').disabled=wildUnavailable;wildToggle.classList.toggle('is-disabled',wildUnavailable);
+    $('#acesEnabled').disabled=rolling;acesToggle.classList.toggle('is-disabled',rolling);
     $('#diceMode').disabled=rolling;keepCount.disabled=rolling;
+    $('#quickRoll').disabled=rolling;$('#diceTheme').disabled=rolling;
     document.querySelectorAll('[data-dice-color]').forEach(input=>{input.disabled=rolling;});
     $('#rollBtn').disabled=traitCount===0||rolling;
+    const quickRoll=$('#quickRoll').checked;
+    $('#dicePhysicsStage').hidden=quickRoll;
     updatePaletteButtons(rolling);
-    $('#diceNote').textContent=displayMode
-      ?'Show each die roll without applying the modifier, totaling the pool, or checking success. Aces explode.'
+    const aceHint=acingEnabled?'Aces explode.':'Aces do not explode.';
+    const rollNote=displayMode
+      ?`Show each die roll without applying the modifier, totaling the pool, or checking success. ${aceHint}`
       :multiple
-      ?(keepMode?'Roll all Trait dice plus an optional Wild Die. Keep the selected count highest, then check each kept die separately against the target. Aces explode.':'Trait dice are summed. To use a Wild Die with multiple dice, choose “Keep highest dice” or “Show rolls only.” Aces explode.')
-      :traitCount===1?'Each die aces (maximum rolls) and explodes. With one Trait Die, the Wild Die keeps the higher result.':'Add at least one Trait die to roll.';
+      ?(keepMode?`Roll all Trait dice plus an optional Wild Die. Keep the selected count highest, then check each kept die separately against the target. ${aceHint}`:`Trait dice are summed. To use a Wild Die with multiple dice, choose “Keep highest dice” or “Show rolls only.” ${aceHint}`)
+      :traitCount===1?`Each die aces (maximum rolls). With one Trait Die, the Wild Die keeps the higher result. ${aceHint}`:'Add at least one Trait die to roll.';
+    $('#diceNote').textContent=`${rollNote}${quickRoll?' Quick roll skips the 3D tray.':''}`;
     renderDicePool();
   }
   $('#diePalette').addEventListener('click',event=>{
@@ -1687,11 +1782,29 @@
   $('#diceMode').addEventListener('change',()=>{clearDiceResults();updateDiceControls();});
   $('#keepCount').addEventListener('change',()=>{keepCountTouched=true;clearDiceResults();updateDiceControls();});
   $('#wildDie').addEventListener('change',()=>{clearDiceResults();updateDiceControls();});
+  $('#quickRoll').addEventListener('change',()=>{
+    clearDiceResults();
+    updateDiceControls();
+    if(!$('#quickRoll').checked&&document.body.dataset.activeToolPanel==='dice')ensureDicePhysics().catch(showDicePhysicsError);
+  });
+  $('#resetDiceTray').addEventListener('click',clearDiceResults);
   setupDiceColorControls();
+  setupDiceThemeControl();
+  syncSoundToggle();
+  $('#soundToggle')?.addEventListener('click',()=>{
+    soundEnabled=!soundEnabled;
+    try { localStorage.setItem(SOUND_KEY,String(soundEnabled)); } catch {}
+    syncSoundToggle();
+  });
+  window.addEventListener('storage',event=>{
+    if(event.key===SOUND_KEY){soundEnabled=event.newValue!=='false';syncSoundToggle();}
+  });
   $('#rollBtn').addEventListener('click',async()=>{
     const traitCount=traitDice.length;
     if(!traitCount)return;
-    const sequence=startPhysicalRoll();
+    const quickRoll=$('#quickRoll').checked;
+    const sequence=startPhysicalRoll(quickRoll);
+    playSound('dice-throw-1');
     try {
     const modifier=Math.max(-99,Math.min(99,Number($('#modifier').value)||0));
     const target=Math.max(1,Math.min(99,Number($('#targetNumber').value)||4));
@@ -1702,7 +1815,7 @@
     const displayOnly=mode==='display';
     const useWild=$('#wildDie').checked&&(traitCount===1||mode==='keep'||displayOnly);
     const rollInputs=[...traits,...(useWild?[{name:'Wild',sides:6,baseColor:diceStyle.wild}]:[])];
-    const dice=await rollAcingDice(rollInputs,{...diceStyle});
+    const dice=await rollAcingDice(rollInputs,{...diceStyle},acingEnabled,quickRoll);
     if(sequence!==rollAnimationSequence)return;
     const rolledTraits=dice.slice(0,traitCount);
     const keepHighest=traitCount===1||mode==='keep';
@@ -1758,8 +1871,8 @@
       if(sequence!==rollAnimationSequence)return;
       dicePhysicsBox?.clear();
       ui.result.classList.remove('is-rolling');
-      ui.result.innerHTML=`<span class="result-hint">${escapeHTML(error?.message||'The physical dice could not finish rolling.')}</span>`;
-      showDicePhysicsError(error);
+      ui.result.innerHTML=`<span class="result-hint">${escapeHTML(error?.message||'The dice could not finish rolling.')}</span>`;
+      if(!quickRoll)showDicePhysicsError(error);
       updateDiceControls();
     }
   });
