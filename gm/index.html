@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=note-links-image-import-20261126">
+  <link rel="stylesheet" href="css/styles.css?v=help-notes-tools-20261126">
 </head>
 <body>
   <div class="app">
@@ -88,7 +88,7 @@
           <div class="pages" id="pageLinks"></div>
         </div>
         <div class="frame" id="viewerFrame">
-          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=note-links-image-import-20261126" title="Savage Worlds table tools" loading="lazy"></iframe>
+          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=help-notes-tools-20261126" title="Savage Worlds table tools" loading="lazy"></iframe>
         </div>
       </section>
     </main>
@@ -170,7 +170,6 @@
               <li>Connect a writable local data folder, open <strong>Current</strong>, and choose <strong>＋ Character</strong>. The app creates a Markdown file from the character template in <code>characters/</code> and opens it for editing.</li>
               <li>Fill in the character’s details in the editor and save. Use <strong>＋ Open</strong> to reopen existing characters, monsters, or notes. <strong>Import Character (XML)</strong> supports the app’s supported Fantasy Grounds character export.</li>
               <li>Link a character file to a PDF rule by adding a wiki link in its Markdown, for example <code>[[swade/58?highlight=Fleet-Footed|Fleet-Footed]]</code>. Replace <code>swade</code> and the page with the book key and displayed page; the label is the text shown in the file.</li>
-              <li>In the Markdown editor, choose <strong>Link note</strong> to select a character, monster, or note and insert a link that opens that document. <strong>Insert image</strong> copies a selected image into the data folder’s <code>images/</code> directory and inserts it into the note; identical image files already in that folder are reused.</li>
               <li>To put a character into Initiative, open the character file, switch to <strong>Tools</strong> → <strong>Initiative</strong>, and choose <strong>Import open</strong>. A character portrait can be set with the <strong>Initiative portrait image path</strong> field in the Markdown editor.</li>
             </ol>
             <p>Monster files use a <strong>Wild Card</strong> checkbox: unchecked means an Extra tracked by Count; checked means a Wild Card tracked by Wounds. Monster portraits can also appear in Initiative.</p>
@@ -181,17 +180,18 @@
             <h2>Rules and Current</h2>
             <p><strong>Rules</strong> is your persistent rules reference. <strong>Current</strong> holds the active character, monster, note, or campaign file. Open documents appear as tabs; drag tabs to reorder them and use × to close a tab. Closing a tab does not delete its file.</p>
             <p>The sidebar’s data/Markdown panel (✎) can edit or download Rules, load Markdown, browse documents, manage the data folder, and open the Reference Index. Markdown headings, lists, tables, checkboxes, and PDF links render in the sidebar. In a connected writable folder, edits can be saved to the active file.</p>
+            <p>In the editor, <strong>Link note</strong> opens a picker for characters, monsters, and notes, then inserts a link that opens the chosen document in Current. Its Markdown format is <code>[[note:characters/hero.md|Hero]]</code>. <strong>Insert image</strong> copies a selected image into <code>images/</code> in your connected data folder and inserts the Markdown at the cursor. Identical image content is reused; a same-name image with different content gets a numbered filename. These actions require a writable local data folder.</p>
           </section>
 
           <section id="help-tools" class="gm-help-section">
             <h2>Table tools</h2>
             <p>Open <strong>Tools</strong> for the initiative tracker and other table aids:</p>
             <ul>
-              <li><strong>Initiative:</strong> deal cards, track the round and turn order, handle Jokers, and show character Bennies, Shaken, and Wounds or monster Shaken and Wounds/Count. Extras appear as numbered individuals with separate Shaken controls. Their note checkbox applies Shaken to all Extras and stays checked only when all are Shaken. Wild Card/Extra is display-only here; change the checkbox in the monster note. Note checkboxes save automatically when clicked.</li>
-              <li><strong>Dice:</strong> build a pool of Trait dice, choose whether to use the Wild Die and acing, then roll with the 3D tray or select <strong>Quick roll</strong> to show the result without the animation. For multiple dice, choose sum, keep-highest, or display-only mode. Choose a local 3D theme from the theme selector; added themes go in <code>libs/dice-box/assets/themes/</code> and must be listed in its <code>themes.json</code>. Use the 🔊 / 🔇 button to turn dice and card sounds on or off.</li>
-              <li><strong>Deck:</strong> draw cards for other table moments, optionally record a reason, and reshuffle this separate deck.</li>
-              <li><strong>Chase:</strong> deal action cards, distinguish participants by their automatic token colors, and drag tokens or use the arrows to move them along the Chase Card track. Club Action Cards highlight the matching complication row.</li>
-              <li><strong>Dramatic Task:</strong> set the task’s target and rounds, then record progress tokens.</li>
+              <li><strong>Initiative:</strong> deal and order Action Cards, track rounds and Jokers, and manage combatant status. Character and monster Shaken, Wounds, and Extra counts connect to their notes.</li>
+              <li><strong>Dice:</strong> roll Trait pools with optional Wild Die and acing. Use the 3D tray or <strong>Quick roll</strong>; choose how multiple dice are evaluated. Themes and sound controls are local to the app.</li>
+              <li><strong>Deck:</strong> draw cards separately from Initiative, optionally recording why each card was drawn.</li>
+              <li><strong>Chase:</strong> deal cards, move participant tokens with arrows or drag and drop, and refer to maneuver choices and complications. Club cards highlight the relevant complication.</li>
+              <li><strong>Dramatic Task:</strong> add participants, deal a card each round, and track task tokens and rounds. The tool shows a complication when a participant draws a Club.</li>
             </ul>
             <p>Use the reset button (<strong>↻</strong>) at the end of the tools tab bar, after Dramatic Task, to clear table tool state. The Initiative panel’s reset button (<strong>↻</strong>) clears saved table data; similar reset buttons in Chase and Dramatic Task reset those tools.</p>
             <p>Use <strong>↗</strong> beside the Tools tab to open Tools in a separate browser window, suitable for another monitor. The pop-out stays connected to initiative notes and shared table state. Use <strong>↙ Return to main window</strong> in the pop-out or click <strong>↙</strong> beside the Tools tab to return Tools to its tab.</p>
@@ -218,7 +218,7 @@
   <script src="libs/codemirror/lib/codemirror.js"></script>
   <script src="libs/codemirror/mode/markdown/markdown.js"></script>
   <script src="libs/easymde/easymde.min.js"></script>
-  <script src="js/sidebar.js?v=note-links-image-import-20261126"></script>
+  <script src="js/sidebar.js?v=help-notes-tools-20261126"></script>
   <script src="js/storage.js?v=workspace-tab-persistence-20261123"></script>
   <script src="js/popup.js?v=data-documents-top-20261125"></script>
   <script src="js/bookmarks.js?v=index-copy-link-help-20261125"></script>
@@ -226,8 +226,8 @@
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js?v=search-progress-indicator-20261125"></script>
   <script src="js/help.js?v=initiative-status-sync-20261125"></script>
-  <script src="js/pdfviewer.js?v=note-links-image-import-20261126"></script>
-  <script src="js/ui.js?v=note-links-image-import-20261126"></script>
-  <script src="js/app.js?v=note-links-image-import-20261126"></script>
+  <script src="js/pdfviewer.js?v=help-notes-tools-20261126"></script>
+  <script src="js/ui.js?v=help-notes-tools-20261126"></script>
+  <script src="js/app.js?v=help-notes-tools-20261126"></script>
 </body>
 </html>
