@@ -42,5 +42,6 @@ Frenzy (Imp), [[swade/42?highlight=Level%20Headed|Level Headed]]
 - **Size 8** (Huge): Dragons are massive crea- tures, over 40′ long from nose to tail and weighing over 30,000 pounds. 
 - **Swat**: Dragons ignore up to 4 points of Scale penalties when attacking with their [[swade/17?highlight=Claws|claws]]. 
 - **Tail Lash**: Str+d4. The creature may make a free attack against up to two foes to its side or rear at no penalty.
+\
 
 **Source:** [[swade/180?highlight=Dragon|SWADE p. 180]]
