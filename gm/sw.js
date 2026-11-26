@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261126-dice-reset-pool';
+const CACHE_NAME = 'gm-reference-shell-v20261126-note-links-image-import';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

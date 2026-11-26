@@ -222,6 +222,62 @@
     }
   }
 
+  async function importImageFile(file) {
+    if (state.readOnly) throw new Error('The connected server data folder is read-only.');
+    if (!state.directoryHandle) throw new Error('Connect a writable data folder before importing images.');
+    if (!file || !String(file.type || '').toLowerCase().startsWith('image/')) {
+      throw new Error('Choose an image file to import.');
+    }
+    await verifyPermission(state.directoryHandle, true);
+    const imagesDir = await getDirectoryHandle('images', { create: true });
+    const originalName = String(file.name || 'image').split(/[\\/]/).pop();
+    const safeName = originalName
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'image';
+    const dot = safeName.lastIndexOf('.');
+    const base = dot > 0 ? safeName.slice(0, dot) : safeName;
+    const ext = dot > 0 ? safeName.slice(dot) : '';
+    const bytes = new Uint8Array(await file.arrayBuffer());
+
+    for await (const [existingName, existingHandle] of imagesDir.entries()) {
+      if (existingHandle.kind !== 'file') continue;
+      const existingFile = await existingHandle.getFile();
+      if (existingFile.size !== bytes.byteLength) continue;
+      const existingBytes = new Uint8Array(await existingFile.arrayBuffer());
+      let identical = true;
+      for (let offset = 0; offset < bytes.length; offset += 1) {
+        if (existingBytes[offset] !== bytes[offset]) { identical = false; break; }
+      }
+      if (identical) return `images/${existingName}`;
+    }
+
+    for (let index = 1; index <= 999; index += 1) {
+      const name = index === 1 ? `${base}${ext}` : `${base}-${index}${ext}`;
+      try {
+        const existingHandle = await imagesDir.getFileHandle(name);
+        const existingFile = await existingHandle.getFile();
+        if (existingFile.size === bytes.byteLength) {
+          const existingBytes = new Uint8Array(await existingFile.arrayBuffer());
+          let identical = true;
+          for (let offset = 0; offset < bytes.length; offset += 1) {
+            if (existingBytes[offset] !== bytes[offset]) { identical = false; break; }
+          }
+          if (identical) return `images/${name}`;
+        }
+      } catch (error) {
+        if (error?.name !== 'NotFoundError') throw error;
+        const handle = await imagesDir.getFileHandle(name, { create: true });
+        const writable = await handle.createWritable();
+        await writable.write(file);
+        await writable.close();
+        return `images/${name}`;
+      }
+    }
+    throw new Error('Could not find an available image filename.');
+  }
+
   async function removeFile(path) {
     if (state.readOnly) throw new Error('The connected server data folder is read-only.');
     if (!state.directoryHandle) throw new Error('No data folder is connected.');
@@ -652,6 +708,7 @@
     readFile,
     resolveAssetUrl,
     writeFile,
+    importImageFile,
     removeFile,
     renameFile,
     listFiles,

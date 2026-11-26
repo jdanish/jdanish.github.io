@@ -121,6 +121,16 @@ window.SIDEBAR_SECTIONS = [];
       }
     }
 
+    const noteMatch = String(target || '').trim().match(/^note:(.+)$/i);
+    if (noteMatch) {
+      const notePath = noteMatch[1].trim().replace(/\\/g, '/').replace(/^\/+/, '');
+      if (/\.md$/i.test(notePath) && !notePath.split('/').includes('..')) {
+        const safePath = escapeHtml(notePath);
+        const safeLabel = renderLabel(label || notePath);
+        return `<a class="sidebar-note-link" href="#" data-note-path="${safePath}">${safeLabel}</a>`;
+      }
+    }
+
     const normalizedTarget = normalizeWikiTarget(target);
     const safeLabel = renderLabel(label || target || raw);
     return `<a href="${String(normalizedTarget || target || '').replace(/"/g, '&quot;')}">${safeLabel}</a>`;
@@ -343,6 +353,10 @@ window.SIDEBAR_SECTIONS = [];
     value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
     value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
       const safeHref = String(href || '').trim().replace(/"/g, '&quot;');
+      const notePath = safeHref.match(/^note:(.+)$/i)?.[1]?.trim();
+      if (notePath && /\.md$/i.test(notePath) && !notePath.split(/[\\/]/).includes('..')) {
+        return `<a class="sidebar-note-link" href="#" data-note-path="${escapeHtml(notePath)}">${label}</a>`;
+      }
       return `<a href="${safeHref}">${label}</a>`;
     });
     value = value.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -503,6 +517,10 @@ window.SIDEBAR_SECTIONS = [];
       value = value.replace(/\[\[([^\]]+)\]\]/g, (_, raw) => renderWikiLink(raw, (label) => label));
       value = value.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
         const safeHref = String(href || '').trim().replace(/"/g, '&quot;');
+        const notePath = safeHref.match(/^note:(.+)$/i)?.[1]?.trim();
+        if (notePath && /\.md$/i.test(notePath) && !notePath.split(/[\\/]/).includes('..')) {
+          return `<a class="sidebar-note-link" href="#" data-note-path="${escapeHtml(notePath)}">${label}</a>`;
+        }
         return `<a href="${safeHref}">${label}</a>`;
       });
       value = value.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -833,6 +851,19 @@ window.SIDEBAR_SECTIONS = [];
   function renderMarkdownToHtml(markdown) {
     const source = sanitizeMarkdownSource(markdown);
     return postProcessRenderedMarkdownHtml(renderMarkdownLocally(source));
+  }
+
+  async function resolveSidebarImages(root) {
+    if (!root?.querySelectorAll || typeof window.GM.data?.resolveAssetUrl !== 'function') return;
+    const images = Array.from(root.querySelectorAll('img[src], img[data-gm-image-source]'));
+    await Promise.all(images.map(async (image) => {
+      const source = String(image.dataset.gmImageSource || image.getAttribute('src') || '').trim();
+      if (!source || /^(?:[a-z]+:|\/\/|\/)/i.test(source)) return;
+      const path = source.replace(/^\.\//, '').replace(/^data\//i, '');
+      if (!/^images\//i.test(path)) return;
+      const resolved = await window.GM.data.resolveAssetUrl(path);
+      if (resolved) image.src = resolved;
+    }));
   }
 
   function parseMarkdownSections(markdown, kind) {
@@ -1183,6 +1214,16 @@ window.SIDEBAR_SECTIONS = [];
     }
   }, true);
   document.addEventListener('click', (event) => {
+    const noteLink = event.target?.closest?.('.sidebar-note-link[data-note-path]');
+    if (noteLink) {
+      event.preventDefault();
+      event.stopPropagation();
+      const path = String(noteLink.dataset.notePath || '');
+      window.GM.sidebarData?.openDocument?.(path).catch?.((error) => {
+        window.GM.ui?.showToast?.(`Could not open note: ${error?.message || error}`);
+      });
+      return;
+    }
     const input = event.target?.closest?.('.sidebar-task-checkbox')
       || event.target?.closest?.('.note-task-label')?.querySelector?.('.sidebar-task-checkbox');
     if (!input) return;
@@ -1506,6 +1547,7 @@ window.SIDEBAR_SECTIONS = [];
     loadActiveFromFolder,
     saveActiveDocument,
     renameActiveDocument,
+    resolveSidebarImages,
     saveCurrentToDataFolder,
     applySections,
     bindTrackerEvents,

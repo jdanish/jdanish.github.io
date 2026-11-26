@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=dice-reset-pool-20261126">
+  <link rel="stylesheet" href="css/styles.css?v=note-links-image-import-20261126">
 </head>
 <body>
   <div class="app">
@@ -88,7 +88,7 @@
           <div class="pages" id="pageLinks"></div>
         </div>
         <div class="frame" id="viewerFrame">
-          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=dice-reset-pool-20261126" title="Savage Worlds table tools" loading="lazy"></iframe>
+          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=note-links-image-import-20261126" title="Savage Worlds table tools" loading="lazy"></iframe>
         </div>
       </section>
     </main>
@@ -170,6 +170,7 @@
               <li>Connect a writable local data folder, open <strong>Current</strong>, and choose <strong>＋ Character</strong>. The app creates a Markdown file from the character template in <code>characters/</code> and opens it for editing.</li>
               <li>Fill in the character’s details in the editor and save. Use <strong>＋ Open</strong> to reopen existing characters, monsters, or notes. <strong>Import Character (XML)</strong> supports the app’s supported Fantasy Grounds character export.</li>
               <li>Link a character file to a PDF rule by adding a wiki link in its Markdown, for example <code>[[swade/58?highlight=Fleet-Footed|Fleet-Footed]]</code>. Replace <code>swade</code> and the page with the book key and displayed page; the label is the text shown in the file.</li>
+              <li>In the Markdown editor, choose <strong>Link note</strong> to select a character, monster, or note and insert a link that opens that document. <strong>Insert image</strong> copies a selected image into the data folder’s <code>images/</code> directory and inserts it into the note; identical image files already in that folder are reused.</li>
               <li>To put a character into Initiative, open the character file, switch to <strong>Tools</strong> → <strong>Initiative</strong>, and choose <strong>Import open</strong>. A character portrait can be set with the <strong>Initiative portrait image path</strong> field in the Markdown editor.</li>
             </ol>
             <p>Monster files use a <strong>Wild Card</strong> checkbox: unchecked means an Extra tracked by Count; checked means a Wild Card tracked by Wounds. Monster portraits can also appear in Initiative.</p>
@@ -217,7 +218,7 @@
   <script src="libs/codemirror/lib/codemirror.js"></script>
   <script src="libs/codemirror/mode/markdown/markdown.js"></script>
   <script src="libs/easymde/easymde.min.js"></script>
-  <script src="js/sidebar.js?v=dice-reset-pool-20261126"></script>
+  <script src="js/sidebar.js?v=note-links-image-import-20261126"></script>
   <script src="js/storage.js?v=workspace-tab-persistence-20261123"></script>
   <script src="js/popup.js?v=data-documents-top-20261125"></script>
   <script src="js/bookmarks.js?v=index-copy-link-help-20261125"></script>
@@ -225,8 +226,8 @@
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js?v=search-progress-indicator-20261125"></script>
   <script src="js/help.js?v=initiative-status-sync-20261125"></script>
-  <script src="js/pdfviewer.js?v=dice-reset-pool-20261126"></script>
-  <script src="js/ui.js?v=dice-reset-pool-20261126"></script>
-  <script src="js/app.js?v=dice-reset-pool-20261126"></script>
+  <script src="js/pdfviewer.js?v=note-links-image-import-20261126"></script>
+  <script src="js/ui.js?v=note-links-image-import-20261126"></script>
+  <script src="js/app.js?v=note-links-image-import-20261126"></script>
 </body>
 </html>
