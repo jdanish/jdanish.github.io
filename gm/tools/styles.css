@@ -63,6 +63,8 @@ html[data-theme="light"] .mobile-tool-tab{background:#fff;color:#475569;border-c
 html[data-theme="light"] .mobile-tool-tab.active{background:#eff6ff;color:#1f2937;border-color:#93c5fd}
 
 .panel-heading-actions{display:flex;align-items:center;gap:8px}.tool-reset-button{width:38px;height:38px;border-radius:8px;color:var(--muted);font-size:19px}.tool-reset-button:hover{color:var(--acid);border-color:var(--accent-strong,var(--acid))}
+.tool-rules-reference{border:1px solid #3a3f48;border-radius:7px;padding:8px 10px;background:transparent;color:#aeb6c3;font:10px var(--sans);white-space:nowrap;cursor:pointer}
+.tool-rules-reference:hover{border-color:#6980a9;color:var(--acid)}
 html.embedded .layout{margin-top:16px}
 @media(max-width:760px){html.embedded .layout{margin-top:10px}}
 html.embedded .tool-reset-button{display:none!important}
@@ -149,6 +151,7 @@ body.chase-token-dragging{user-select:none}
 html[data-theme="light"] .tool-tabs{background:var(--bg);border-color:var(--line)}
 html[data-theme="light"] .tool-tab{background:#fff;color:#475569;border-color:#cbd5e1}
 html[data-theme="light"] .tool-tab.active{background:#eff6ff;color:#1f2937;border-color:#93c5fd}
+html[data-theme="light"] .tool-rules-reference{background:#fff;border-color:#cbd5e1;color:#475569}
 @media(max-width:760px){.tool-tabs{padding:8px 10px;gap:5px}.tool-tab{min-height:38px;padding:7px 5px;font-size:11px}.layout{margin:12px auto 24px;padding:0 12px}.initiative-panel{padding:20px 18px 0;min-height:0}.dice-panel,.card-draw-panel,.chase-panel{padding:20px}}
 @media(max-width:680px){.chase-reference-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.tool-tabs{gap:4px;padding:7px 8px}.tool-tab{font-size:10px;letter-spacing:-.1px}.layout{margin-top:10px;padding:0 10px}.initiative-panel{padding:18px 14px 0}.chase-add-form{flex-wrap:wrap}.chase-add-form input{flex-basis:100%}.chase-add-form .button{flex:1;min-height:38px}.chase-participant-row{gap:8px;padding:7px}.dice-panel,.card-draw-panel,.chase-panel{padding:18px 14px}}

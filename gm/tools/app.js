@@ -1323,6 +1323,16 @@
   document.querySelectorAll('[data-tool-panel]').forEach(button => {
     button.addEventListener('click', () => setToolPanel(button.dataset.toolPanel));
   });
+  document.querySelectorAll('[data-rules-reference-tab][data-rules-reference-page]').forEach(button => {
+    button.addEventListener('click', () => {
+      postToHost({
+        type: 'gm-open-rules-reference',
+        tab: button.dataset.rulesReferenceTab,
+        page: Number(button.dataset.rulesReferencePage),
+        highlightText: button.dataset.rulesReferenceHighlight || ''
+      });
+    });
+  });
   $('#resetToolsTabButton').addEventListener('click',()=>$('#resetAll').click());
   setToolPanel(state.activeToolPanel);
   $('#dramaticAddForm').addEventListener('submit', event => {

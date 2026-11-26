@@ -71,7 +71,7 @@
       toolsPopoutWindow.focus();
       return;
     }
-    const target = new URL('tools/index.html?popout=1&v=dramatic-hide-add-controls-20261125', document.baseURI);
+    const target = new URL('tools/index.html?popout=1&v=rules-reference-links-20261125', document.baseURI);
     toolsPopoutWindow = window.open(target.href, 'gm-tools-window', 'popup=yes,width=1180,height=900');
     if (!toolsPopoutWindow) {
       window.GM.ui?.showToast?.('Allow pop-up windows to open Table Tools separately.');
@@ -4092,6 +4092,15 @@
         if (isFrame && isToolsPopoutOpen()) return;
         if (event.data?.type === 'gm-tracker-updated') {
           updateTrackerInputs(event.data.key, event.data.value);
+          return;
+        }
+        if (event.data?.type === 'gm-open-rules-reference') {
+          const tab = String(event.data.tab || '');
+          const page = Number(event.data.page);
+          const highlightText = String(event.data.highlightText || '');
+          if (!getBooks()[tab] || !Number.isFinite(page) || page < 1) return;
+          setWorkspaceMode('rulebooks', { skipViewerRestore: true });
+          Promise.resolve(window.GM.pdfviewer?.setTabAndPage?.(tab, page, { highlightText })).catch(() => {});
           return;
         }
         if (event.data?.type !== 'gm-tools-ready') return;

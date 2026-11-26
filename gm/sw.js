@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261125-dramatic-hide-add-controls';
+const CACHE_NAME = 'gm-reference-shell-v20261125-rules-reference-links';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 
