@@ -72,7 +72,7 @@
       toolsPopoutWindow.focus();
       return;
     }
-    const target = new URL('tools/index.html?popout=1&v=dice-per-die-size-20261126', document.baseURI);
+    const target = new URL('tools/index.html?popout=1&v=dice-reset-pool-20261126', document.baseURI);
     toolsPopoutWindow = window.open(target.href, 'gm-tools-window', 'popup=yes,width=1180,height=900');
     if (!toolsPopoutWindow) {
       window.GM.ui?.showToast?.('Allow pop-up windows to open Table Tools separately.');

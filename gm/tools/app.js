@@ -1481,7 +1481,7 @@
   $('#resetAll').addEventListener('click',()=>{
     if(!confirm('Clear all combatants and reset the round?'))return;
     activeJokerRevealIds=[];
-    clearDiceResults();
+    resetDicePool();
     state={round:0,combatants:[],activeId:null,initiativeDeck:null,extraDeck:shuffledDeck(),extraDiscard:[],cardDraws:[],activeToolPanel:state.activeToolPanel,chase:normalizeChase(null),dramaticTask:normalizeDramaticTask(null)};
     save();render();
   });
@@ -1672,6 +1672,13 @@
     if(dicePhysicsBox){status.hidden=true;}else if(!dicePhysicsReady){status.textContent='Local physics dice are ready to load.';status.hidden=false;}
     updateDiceControls();
   }
+  function resetDicePool(){
+    traitDice=[{id:'initial-d6',sides:6}];
+    keepCountTouched=false;
+    $('#diceMode').value='sum';
+    $('#wildDie').checked=true;
+    clearDiceResults();
+  }
   function makePoolDieButton(die,label,rolling,onRemove,color=diceStyle.trait){
     const item=document.createElement('button');item.type='button';item.className='pool-die-item pool-die-removable';item.title=`Remove ${label}`;item.setAttribute('aria-label',item.title);item.disabled=rolling;
     const shape=document.createElement('span');shape.className=`pool-die-shape d${die.sides}`;
@@ -1794,7 +1801,7 @@
     updateDiceControls();
     if(!$('#quickRoll').checked&&document.body.dataset.activeToolPanel==='dice')ensureDicePhysics().catch(showDicePhysicsError);
   });
-  $('#resetDiceTray').addEventListener('click',clearDiceResults);
+  $('#resetDiceTray').addEventListener('click',resetDicePool);
   setupDiceColorControls();
   setupDiceThemeControl();
   syncSoundToggle();
