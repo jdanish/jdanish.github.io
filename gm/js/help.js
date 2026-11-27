@@ -50,6 +50,13 @@
       case 'tools':
         window.GM.ui?.setWorkspaceMode?.('tools');
         break;
+      case 'pdf-diagnostics': {
+        const task = window.GM.pdfviewer?.downloadDiagnostics?.();
+        task?.catch((error) => {
+          window.alert(`Could not create PDF diagnostics: ${error?.message || error}`);
+        });
+        break;
+      }
       default:
         return;
     }

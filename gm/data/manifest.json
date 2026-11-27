@@ -1,16 +1,21 @@
 {
   "version": 1,
   "files": [
+    "characters/Jean-Grayson.md",
     "config.js",
+    "images/dragon.png",
+    "images/psycommando.jpeg",
+    "images/sb_logo.png",
     "index.json",
     "manifest.json",
-    "rules.md",
-    "workspace.json",
-    "characters/Jean-Grayson.md",
-    "images/psycommando.jpeg",
     "monsters/bozrak-air-demon.md",
+    "monsters/dragon.md",
+    "notes/placeholder-note.md",
     "notes/sierra-kilo-fin.md",
+    "notes/starbreaker-setting.md",
+    "rules.md",
     "templates/character.md",
-    "templates/monster.md"
+    "templates/monster.md",
+    "workspace.json"
   ]
 }

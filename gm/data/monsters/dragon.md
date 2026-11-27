@@ -1,7 +1,7 @@
 ---
 type: monster
 name: Dragon
-portrait: images/Screenshot-2026-11-26-at-10.35.29-AM.png
+portrait: images/dragon.png
 ---
 
 # Dragon

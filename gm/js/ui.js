@@ -182,7 +182,6 @@
 
   function setWorkspaceMode(mode, options = {}) {
     const toolsActive = mode === 'tools';
-    if (toolsActive) window.GM.pdfviewer?.suspendForMobile?.();
     if (toolsActive && isToolsPopoutOpen()) {
       toolsPopoutWindow.focus();
       return;

@@ -14620,7 +14620,7 @@ class PDFPageView extends BasePDFPageView {
 
 
 
-const DEFAULT_CACHE_SIZE = compatParams.has("maxCanvasPixels") ? 3 : 10;
+const DEFAULT_CACHE_SIZE = compatParams.has("maxCanvasPixels") ? 4 : 10;
 const PagesCountLimit = {
   FORCE_SCROLL_MODE_PAGE: 10000,
   FORCE_LAZY_PAGE_INIT: 5000,
