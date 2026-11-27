@@ -6,7 +6,7 @@ portrait: images/Screenshot-2026-11-26-at-10.35.29-AM.png
 
 # Dragon
 
-![Screenshot 2026-11-26 at 10.35.29 AM](images/Screenshot-2026-11-26-at-10.35.29-AM.png){width=200}
+![dragon](images/dragon.png){width=200}
 
 Dragons are fire-breathing monsters that bring doom and despair to the villages they ravage. Such creatures should not be fought lightly as they are more than a match for even a party of experienced adventurers. These beasts are quite intelligent as well, and use all of their advantages when confronted by would-be dragon-slayers.
 
