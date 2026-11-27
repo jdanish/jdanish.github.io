@@ -236,7 +236,7 @@
     // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
     const filePath = `../../../${book.file}`;
 
-    return `libs/pdfjs/web/viewer.html?v=6.5.438-0a4153349&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
+    return `libs/pdfjs/web/viewer.html?v=6.5.438-mobile-memory-404-csp-20261127&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
       zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
     }`;
   }
@@ -913,6 +913,17 @@
     return setPageInActiveViewer(tab, displayPage, { scale: resolveScaleValue(tab) });
   }
 
+  function suspendForMobile() {
+    if (!isMobileViewerMode()) return false;
+    const tab = viewerState.activeTab || getState().activeTab;
+    if (!tab || !viewerState.viewers.has(tab)) return false;
+    captureRuntimeScale(tab);
+    const page = getCurrentDisplayPage(tab);
+    if (Number.isFinite(Number(page))) setStoredPage(tab, Number(page));
+    disposeViewer(tab);
+    return true;
+  }
+
   async function preloadAllViewers() {
     if (isMobileViewerMode()) {
       const tabs = Object.keys(getBooks());
@@ -965,6 +976,7 @@
     isTabLoading,
     refreshActiveTitle,
     refreshActiveViewer,
+    suspendForMobile,
     getCurrentDisplayPage,
     highlightText: (query) => {
       const tab = viewerState.activeTab;

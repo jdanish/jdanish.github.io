@@ -72,7 +72,7 @@
       toolsPopoutWindow.focus();
       return;
     }
-    const target = new URL('tools/index.html?popout=1&v=dice-reset-pool-20261126', document.baseURI);
+    const target = new URL('tools/index.html?popout=1&v=dice-box-sound-mobile-20261127', document.baseURI);
     toolsPopoutWindow = window.open(target.href, 'gm-tools-window', 'popup=yes,width=1180,height=900');
     if (!toolsPopoutWindow) {
       window.GM.ui?.showToast?.('Allow pop-up windows to open Table Tools separately.');
@@ -182,6 +182,7 @@
 
   function setWorkspaceMode(mode, options = {}) {
     const toolsActive = mode === 'tools';
+    if (toolsActive) window.GM.pdfviewer?.suspendForMobile?.();
     if (toolsActive && isToolsPopoutOpen()) {
       toolsPopoutWindow.focus();
       return;
@@ -724,10 +725,13 @@
 
         const img = document.createElement('img');
         img.className = 'sidebar-markdown-image';
-        img.src = href;
         img.alt = String(link.textContent || '').trim();
         img.loading = 'lazy';
         img.setAttribute('data-gm-image-source', href);
+        // Local data images are resolved through the connected data folder or
+        // its manifest. Do not request the markdown's relative URL first: it
+        // may 404 before resolveSidebarImages replaces it with the real URL.
+        if (/^(?:https?:)?\/\//i.test(href) || href.startsWith('/')) img.src = href;
 
         const next = link.nextSibling;
         if (next && next.nodeType === Node.TEXT_NODE) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261126-note-links-image-import';
+const CACHE_NAME = 'gm-reference-shell-v20261127-mobile-memory-404-csp';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const pdfWarmPromises = new Map();
 

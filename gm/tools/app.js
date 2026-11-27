@@ -201,18 +201,7 @@
     if(!path)return;
     const data=parentGM()?.data;
     if(typeof data?.resolveAssetUrl!=='function')return;
-    const candidates=[...new Set([path,`data/${path}`])];
-    let nextCandidate=0;
-    const tryNext=async()=>{
-      while(nextCandidate<candidates.length){
-        const candidate=candidates[nextCandidate++];
-        let url='';
-        try{url=await data.resolveAssetUrl(candidate);}catch{}
-        if(url){image.src=url;return;}
-      }
-    };
-    image.addEventListener('error',()=>{tryNext().catch(()=>{});});
-    tryNext().catch(()=>{});
+    data.resolveAssetUrl(path).then(url=>{if(url)image.src=url;}).catch(()=>{});
   }
   function readCounterDefinition(key, fallback, max, enforceMax) {
     const definition = {

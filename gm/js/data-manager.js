@@ -163,6 +163,17 @@
 
     // Remote/server data has a real HTTP base URL.
     if (state.readOnly && state.serverBaseUrl) {
+      const data = await loadServerDataJson();
+      if (!data) return '';
+      let available = Object.prototype.hasOwnProperty.call(data, normalized);
+      if (!available) {
+        try {
+          const manifest = JSON.parse(data['manifest.json'] || '{}');
+          const paths = Array.isArray(manifest) ? manifest : Array.isArray(manifest.files) ? manifest.files : [];
+          available = paths.some((entry) => normalizePath(typeof entry === 'string' ? entry : entry?.path) === normalized);
+        } catch { /* An absent or invalid manifest leaves only indexed data paths available. */ }
+      }
+      if (!available) return '';
       const result = buildServerFileUrl(normalized) || '';
       return result;
     }
@@ -183,7 +194,7 @@
       }
     }
 
-    const result = new URL(normalized, window.location.href).href;
+    const result = new URL(normalized, DEFAULT_SERVER_URL).href;
     return result;
   }
 

@@ -155,7 +155,7 @@
 
     try {
       const moduleUrl = new URL('./data-manager.js', appScriptUrl || new URL('./', window.location.href));
-      moduleUrl.searchParams.set('v', 'help-center-20261125');
+      moduleUrl.searchParams.set('v', 'mobile-memory-404-csp-20261127');
       await import(moduleUrl.href);
       await window.GM.data?.init?.();
     } catch (err) {

@@ -4,6 +4,8 @@ name: Starbreaker setting
 ---
 # Starbreaker setting
 
+![sb_logo](images/sb_logo.png)
+
 Characters:
 [[note:characters/Jean-Grayson.md|Jean Grayson]]
 \

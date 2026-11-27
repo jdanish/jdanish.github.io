@@ -504,7 +504,8 @@ const calcRound = function () {
   const isAndroid = /Android/.test(userAgent);
   const isIOS = /\b(?:iPad|iPhone|iPod)(?=;)/.test(userAgent) || platform === "MacIntel" && maxTouchPoints > 1;
   if (isIOS || isAndroid) {
-    compatParams.set("maxCanvasPixels", 5242880);
+    compatParams.set("maxCanvasPixels", 2097152);
+    compatParams.set("enableDetailCanvas", false);
   }
   if (isAndroid) {
     compatParams.set("useSystemFonts", false);
@@ -14619,7 +14620,7 @@ class PDFPageView extends BasePDFPageView {
 
 
 
-const DEFAULT_CACHE_SIZE = 10;
+const DEFAULT_CACHE_SIZE = compatParams.has("maxCanvasPixels") ? 3 : 10;
 const PagesCountLimit = {
   FORCE_SCROLL_MODE_PAGE: 10000,
   FORCE_LAZY_PAGE_INIT: 5000,
@@ -15196,7 +15197,12 @@ class PDFViewer {
       if (textLayerMode !== TextLayerMode.DISABLE) {
         const element = this.#hiddenCopyElement = document.createElement("div");
         element.id = "hiddenCopyElement";
-        element.style.cssText = "position:absolute;top:0;left:0;width:0;height:0;display:none";
+        element.style.position = "absolute";
+        element.style.top = "0";
+        element.style.left = "0";
+        element.style.width = "0";
+        element.style.height = "0";
+        element.style.display = "none";
         viewer.before(element);
       }
       if (annotationEditorMode !== AnnotationEditorType.DISABLE) {
