@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gm-reference-shell-v20261127-mobile-image-cache-fix';
+const CACHE_NAME = 'gm-reference-shell-v20261127-mobile-no-pdf-prefetch';
 const PDF_CACHE_NAME = 'gm-reference-pdfs-v1';
 const IMAGE_CACHE_NAME = 'gm-reference-images-v1';
 const pdfWarmPromises = new Map();

@@ -385,7 +385,7 @@
     // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
     const filePath = `../../../${book.file}`;
 
-    return `libs/pdfjs/web/viewer.html?v=6.5.438-mobile-cache-diagnostics-20261127&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
+    return `libs/pdfjs/web/viewer.html?v=6.5.438-mobile-no-pdf-prefetch-20261127&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
       zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
     }`;
   }
@@ -495,8 +495,6 @@
       viewer._diagnosticHandlers?.forEach(([name, handler]) => viewer.app?.eventBus?.off?.(name, handler));
     } catch {}
     try { viewer._diagnosticCleanup?.(); } catch {}
-    if (viewer.cacheWarmTimeout) window.clearTimeout(viewer.cacheWarmTimeout);
-    if (viewer.cacheWarmFallback) window.clearTimeout(viewer.cacheWarmFallback);
     viewer.disposing = true;
     try {
       if (viewer.iframe) viewer.iframe.src = 'about:blank';
@@ -631,102 +629,6 @@
     viewerState.pageSyncTimers.set(tab, timer);
   }
 
-  function requestOfflinePdfCache(tab, app) {
-    const book = getBook(tab);
-    const viewer = viewerState.viewers.get(tab);
-    if (!book || !viewer || viewer.cacheWarmRequested || viewer.cacheWarmListener) return;
-
-    const scheduleWarm = () => {
-      if (viewer.cacheWarmRequested) return;
-      viewer.cacheWarmRequested = true;
-      recordPdfDiagnostic('pdf-cache-warm-scheduled', { tab, file: book.file });
-      viewer.cacheWarmTimeout = window.setTimeout(async () => {
-        viewer.cacheWarmTimeout = null;
-        let pdfUrl = '';
-        try { pdfUrl = new URL(book.file, document.baseURI).href; } catch {}
-        if (!pdfUrl) return;
-
-        try {
-          const cache = await caches.open('gm-reference-pdfs-v1');
-          if (await cache.match(new Request(pdfUrl))) {
-            recordPdfDiagnostic('pdf-cache-hit', { tab, file: book.file });
-            return;
-          }
-        } catch (error) {
-          recordPdfDiagnostic('pdf-cache-inspect-error', { tab, file: book.file, error: diagnosticError(error) });
-        }
-
-        const serviceWorker = navigator.serviceWorker;
-        if (!serviceWorker) {
-          recordPdfDiagnostic('pdf-cache-unavailable', { tab, reason: 'service workers unsupported' });
-          return;
-        }
-        let worker = serviceWorker.controller;
-        if (!worker) {
-          try {
-            const registration = await Promise.race([
-              serviceWorker.ready,
-              new Promise((resolve) => window.setTimeout(() => resolve(null), 5000)),
-            ]);
-            worker = registration?.active || null;
-          } catch {}
-        }
-        if (!worker) {
-          recordPdfDiagnostic('pdf-cache-unavailable', { tab, reason: 'no active service worker' });
-          return;
-        }
-        const channel = new MessageChannel();
-        const responseTimeout = window.setTimeout(() => {
-          recordPdfDiagnostic('pdf-cache-timeout', { tab, file: book.file });
-          channel.port1.close();
-        }, 60000);
-        channel.port1.onmessage = (event) => {
-          window.clearTimeout(responseTimeout);
-          const result = event.data || {};
-          recordPdfDiagnostic(result.ok ? 'pdf-cache-ready' : 'pdf-cache-error', {
-            tab,
-            file: book.file,
-            bytes: Number(result.bytes) || 0,
-            alreadyCached: Boolean(result.alreadyCached),
-            error: result.error ? String(result.error).slice(0, 500) : undefined,
-          });
-          channel.port1.close();
-        };
-        try {
-          worker.postMessage({ type: 'CACHE_PDF', url: pdfUrl }, [channel.port2]);
-          recordPdfDiagnostic('pdf-cache-warm-started', { tab, file: book.file });
-        } catch (error) {
-          window.clearTimeout(responseTimeout);
-          recordPdfDiagnostic('pdf-cache-error', { tab, file: book.file, error: diagnosticError(error) });
-          channel.port1.close();
-        }
-      }, 6000);
-    };
-
-    const pageNumber = Number(app?.pdfViewer?.currentPageNumber) || 1;
-    const pageView = app?.pdfViewer?.getPageView?.(pageNumber - 1);
-    if (pageView?.renderingState === 3) {
-      scheduleWarm();
-      return;
-    }
-    const onRendered = (event) => {
-      if (Number(event?.pageNumber) !== pageNumber) return;
-      app.eventBus?.off?.('pagerendered', onRendered);
-      viewer.cacheWarmListener = null;
-      if (viewer.cacheWarmFallback) window.clearTimeout(viewer.cacheWarmFallback);
-      viewer.cacheWarmFallback = null;
-      scheduleWarm();
-    };
-    viewer.cacheWarmListener = onRendered;
-    app?.eventBus?.on?.('pagerendered', onRendered);
-    viewer.cacheWarmFallback = window.setTimeout(() => {
-      viewer.cacheWarmFallback = null;
-      app?.eventBus?.off?.('pagerendered', onRendered);
-      viewer.cacheWarmListener = null;
-      scheduleWarm();
-    }, 30000);
-  }
-
   async function waitForViewerApp(iframe, timeoutMs = 20000) {
     const start = performance.now();
 
@@ -833,9 +735,6 @@
       });
       if (viewer) viewer.lastRenderedAt = renderedAt;
       if (event?.error) recordPdfDiagnostic('page-render-error', { tab, file: book.file, page: event.pageNumber, error: diagnosticError(event.error) });
-      if (Number(event?.pageNumber) === Number(app?.pdfViewer?.currentPageNumber || 1)) {
-        requestOfflinePdfCache(tab, app);
-      }
     };
     const onDocumentError = (event) => recordPdfDiagnostic('pdf-document-error', {
       tab,
