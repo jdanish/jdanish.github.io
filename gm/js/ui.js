@@ -10,7 +10,6 @@
   let toolsDiceRollPending = null;
   let toolsReadyMessageBound = false;
   let trackerStorageListenerBound = false;
-  const SITE_SOUND_KEY = 'wildcard-sound-enabled-v1';
   let toolsPopoutWindow = null;
   let popoutMonitorTimer = null;
   let toolsDocumentsRefreshPending = false;
@@ -72,7 +71,7 @@
       toolsPopoutWindow.focus();
       return;
     }
-    const target = new URL('tools/index.html?popout=1&v=dice-box-sound-mobile-20261127', document.baseURI);
+    const target = new URL('tools/index.html?popout=1&v=rules-reference-links-20261125', document.baseURI);
     toolsPopoutWindow = window.open(target.href, 'gm-tools-window', 'popup=yes,width=1180,height=900');
     if (!toolsPopoutWindow) {
       window.GM.ui?.showToast?.('Allow pop-up windows to open Table Tools separately.');
@@ -114,30 +113,6 @@
 
   function isSystemLightTheme() {
     return Boolean(themeMediaQuery?.matches);
-  }
-
-  function bindSiteSoundToggle(button) {
-    if (!button) return;
-    const read = () => {
-      try { return localStorage.getItem(SITE_SOUND_KEY) !== 'false'; } catch { return true; }
-    };
-    const update = (enabled) => {
-      button.textContent = enabled ? '🔊' : '🔇';
-      button.title = enabled ? 'Sound on' : 'Sound off';
-      button.setAttribute('aria-label', `${button.title}. Click to turn ${enabled ? 'off' : 'on'}.`);
-      button.setAttribute('aria-pressed', String(enabled));
-    };
-    update(read());
-    if (button.dataset.bound === 'true') return;
-    button.addEventListener('click', () => {
-      const enabled = !read();
-      try { localStorage.setItem(SITE_SOUND_KEY, String(enabled)); } catch {}
-      update(enabled);
-    });
-    window.addEventListener('storage', event => {
-      if (event.key === SITE_SOUND_KEY) update(event.newValue !== 'false');
-    });
-    button.dataset.bound = 'true';
   }
 
   function resolveThemeMode(mode = getThemeMode()) {
@@ -724,13 +699,10 @@
 
         const img = document.createElement('img');
         img.className = 'sidebar-markdown-image';
+        img.src = href;
         img.alt = String(link.textContent || '').trim();
         img.loading = 'lazy';
         img.setAttribute('data-gm-image-source', href);
-        // Local data images are resolved through the connected data folder or
-        // its manifest. Do not request the markdown's relative URL first: it
-        // may 404 before resolveSidebarImages replaces it with the real URL.
-        if (/^(?:https?:)?\/\//i.test(href) || href.startsWith('/')) img.src = href;
 
         const next = link.nextSibling;
         if (next && next.nodeType === Node.TEXT_NODE) {
@@ -2780,29 +2752,12 @@
     cancelBtn.type = 'button';
     cancelBtn.textContent = 'Cancel';
 
-    const linkNoteBtn = document.createElement('button');
-    linkNoteBtn.type = 'button';
-    linkNoteBtn.textContent = 'Link note';
-    linkNoteBtn.title = 'Choose a note and insert a link that opens it';
-
-    const importImageBtn = document.createElement('button');
-    importImageBtn.type = 'button';
-    importImageBtn.textContent = 'Insert image';
-    importImageBtn.title = 'Copy an image into the data folder and insert it here';
-    const imageFileInput = document.createElement('input');
-    imageFileInput.type = 'file';
-    imageFileInput.accept = 'image/*';
-    imageFileInput.hidden = true;
-
     const statusEl = document.createElement('div');
     statusEl.className = 'sidebar-md-editor-status';
     statusEl.textContent = 'Saved';
 
     actions.appendChild(saveBtn);
-    actions.appendChild(linkNoteBtn);
-    actions.appendChild(importImageBtn);
     actions.appendChild(cancelBtn);
-    actions.appendChild(imageFileInput);
 
     actions.appendChild(statusEl);
 
@@ -2851,22 +2806,7 @@
     const frame = document.createElement('div');
     frame.className = 'sidebar-md-editor-frame';
 
-    const notePicker = document.createElement('div');
-    notePicker.className = 'sidebar-note-picker';
-    notePicker.hidden = true;
-    const notePickerLabel = document.createElement('label');
-    notePickerLabel.textContent = 'Choose a note';
-    const notePickerSelect = document.createElement('select');
-    notePickerSelect.setAttribute('aria-label', 'Choose a note to link');
-    const notePickerInsert = document.createElement('button');
-    notePickerInsert.type = 'button';
-    notePickerInsert.className = 'primary';
-    notePickerInsert.textContent = 'Insert link';
-    notePickerLabel.appendChild(notePickerSelect);
-    notePicker.append(notePickerLabel, notePickerInsert);
-
     wrap.appendChild(actions);
-    wrap.appendChild(notePicker);
     wrap.appendChild(hint);
     if (portraitInput) wrap.appendChild(portraitInput.parentElement);
     wrap.appendChild(frame);
@@ -2884,25 +2824,6 @@
       if (typeof editor.getValue === 'function') return editor.getValue();
       if (editor.codemirror && typeof editor.codemirror.getValue === 'function') return editor.codemirror.getValue();
       return sidebarMarkdownEditorState.fallbackTextarea?.value ?? '';
-    };
-
-    const insertEditorText = (text) => {
-      const editor = sidebarMarkdownEditorState.editor;
-      const cm = editor?.codemirror || editor;
-      if (typeof cm?.replaceSelection === 'function') {
-        cm.replaceSelection(text, 'end');
-        cm.focus?.();
-      } else {
-        const textarea = sidebarMarkdownEditorState.fallbackTextarea;
-        if (!textarea) return false;
-        const start = Number.isFinite(textarea.selectionStart) ? textarea.selectionStart : textarea.value.length;
-        const end = Number.isFinite(textarea.selectionEnd) ? textarea.selectionEnd : start;
-        textarea.setRangeText(text, start, end, 'end');
-        textarea.focus();
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-      setDirty(true);
-      return true;
     };
 
     const saveMarkdown = async () => {
@@ -3200,10 +3121,6 @@
     const updateSaveButtonState = () => {
       const status = window.GM.data?.getStatus?.() || {};
       saveBtn.disabled = !status.connected || !!status.readOnly;
-      importImageBtn.disabled = !status.connected || !!status.readOnly;
-      importImageBtn.title = !status.connected
-        ? 'Connect a writable data folder before importing images'
-        : (status.readOnly ? 'The connected server data folder is read-only' : 'Copy an image into the data folder and insert it here');
       saveBtn.title = !status.connected
         ? 'Connect a data folder before saving'
         : (status.readOnly ? 'Server data is read-only' : 'Save changes');
@@ -3221,60 +3138,6 @@
     saveBtn.addEventListener('click', saveMarkdown);
     cancelBtn.addEventListener('click', () => {
       window.GM.popup?.hide?.();
-    });
-    linkNoteBtn.addEventListener('click', async () => {
-      notePicker.hidden = !notePicker.hidden;
-      if (notePicker.hidden) return;
-      notePickerSelect.replaceChildren();
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Loading notes…';
-      notePickerSelect.appendChild(placeholder);
-      try {
-        const documents = await window.GM.sidebarData?.listDocuments?.() || [];
-        notePickerSelect.replaceChildren();
-        documents.forEach((doc) => {
-          const option = document.createElement('option');
-          option.value = doc.path;
-          option.textContent = `${doc.name || doc.path} (${doc.path})`;
-          option.dataset.noteName = doc.name || doc.path.replace(/\.md$/i, '').split('/').pop();
-          notePickerSelect.appendChild(option);
-        });
-        if (!documents.length) {
-          const empty = document.createElement('option');
-          empty.value = '';
-          empty.textContent = 'No notes found in the connected data folder';
-          notePickerSelect.appendChild(empty);
-        }
-      } catch (error) {
-        notePickerSelect.replaceChildren();
-        const failed = document.createElement('option');
-        failed.value = '';
-        failed.textContent = `Could not load notes: ${error?.message || error}`;
-        notePickerSelect.appendChild(failed);
-      }
-    });
-    notePickerInsert.addEventListener('click', () => {
-      const option = notePickerSelect.selectedOptions?.[0];
-      const path = String(option?.value || '');
-      if (!path) return;
-      const labelText = String(option.dataset.noteName || path).replace(/[\[\]\r\n]/g, ' ').replace(/\|/g, '—').trim();
-      if (insertEditorText(`[[note:${path}|${labelText}]]`)) notePicker.hidden = true;
-    });
-    importImageBtn.addEventListener('click', () => imageFileInput.click());
-    imageFileInput.addEventListener('change', async () => {
-      const file = imageFileInput.files?.[0];
-      if (!file) return;
-      try {
-        const imagePath = await window.GM.data.importImageFile(file);
-        const alt = String(file.name || 'image').replace(/\.[^.]+$/, '').replace(/[\]\r\n]/g, ' ').trim() || 'image';
-        insertEditorText(`![${alt}](${imagePath})`);
-        window.GM.ui?.showToast?.(`Added ${imagePath}`);
-      } catch (error) {
-        window.GM.ui?.showToast?.(`Image import failed: ${error?.message || error}`);
-      } finally {
-        imageFileInput.value = '';
-      }
     });
   }
   async function refreshFromConnectedFolder() {
@@ -4184,13 +4047,11 @@
       clearSidebarSearchEl: document.getElementById('clearSidebarSearch'),
       sidebarResizerEl: document.getElementById('sidebarResizer'),
       themeButtonEl: document.getElementById('themeButton'),
-      siteSoundToggleEl: document.getElementById('siteSoundToggle'),
       bookVisibilityButtonEl: document.getElementById('bookVisibilityButton'),
     };
 
     applyThemeMode();
     bindThemeMediaListener();
-    bindSiteSoundToggle(dom.siteSoundToggleEl);
 
     buildTabs();
     renderSidebar();
@@ -4274,6 +4135,14 @@
     if (dom.bookVisibilityButtonEl && dom.bookVisibilityButtonEl.dataset.bound !== 'true') {
       dom.bookVisibilityButtonEl.addEventListener('click', toggleBookVisibilityPopup);
       dom.bookVisibilityButtonEl.dataset.bound = 'true';
+    }
+
+    const openPdfNativeButton = document.getElementById('openPdfNativeButton');
+    if (openPdfNativeButton && openPdfNativeButton.dataset.bound !== 'true') {
+      openPdfNativeButton.addEventListener('click', () => {
+        window.GM.pdfviewer?.openActivePdfInBrowser?.();
+      });
+      openPdfNativeButton.dataset.bound = 'true';
     }
 
     // Separate control for expanding/collapsing the Books / Pages / Bookmarks strip.

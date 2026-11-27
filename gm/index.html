@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="libs/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="libs/easymde/easymde.min.css">
   <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css?v=mobile-no-pdf-prefetch-20261127">
+  <link rel="stylesheet" href="css/styles.css?v=open-native-pdf-20261127">
 </head>
 <body>
   <div class="app">
@@ -72,13 +72,13 @@
         </div>
         <div class="workspace-header-actions">
           <button id="helpButton" type="button" class="workspace-help-button" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help"><span aria-hidden="true">?</span></button>
-          <button id="siteSoundToggle" type="button" class="icon-button site-sound-toggle" aria-label="Sound on. Click to turn off." aria-pressed="true" title="Sound on">🔊</button>
           <button id="themeButton" type="button" class="icon-button workspace-theme-button" aria-label="Theme: Dark. Click to switch." title="Theme: Dark. Click to switch.">☾</button>
         </div>
       </div>
 
       <div class="rulebooks-controls" aria-label="Rulebook controls">
         <button id="bookVisibilityButton" type="button" class="icon-button" aria-label="Choose visible books" title="Choose visible books">☰</button>
+        <button id="openPdfNativeButton" type="button" class="icon-button" aria-label="Open current PDF in the browser PDF viewer" title="Open current PDF in the browser PDF viewer">↗</button>
       </div>
 
       <div class="tabs" id="tabs"></div>
@@ -88,7 +88,7 @@
           <div class="pages" id="pageLinks"></div>
         </div>
         <div class="frame" id="viewerFrame">
-          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=mobile-no-pdf-prefetch-20261127" title="Savage Worlds table tools" loading="lazy"></iframe>
+          <iframe class="tools-frame" id="toolsFrame" src="tools/index.html?embedded=1&amp;v=open-native-pdf-20261127" title="Savage Worlds table tools" loading="lazy"></iframe>
         </div>
       </section>
     </main>
@@ -145,6 +145,7 @@
               <li>Choose <strong>Rulebooks</strong>, then select a book tab. Page shortcuts and bookmarks are in the navigation strip below the workspace tabs.</li>
               <li>Use the book-list button (<strong>☰</strong>) to choose which books appear as tabs. Hidden books can still be opened by links and included in search.</li>
               <li>Use the navigation-strip toggle (<strong>▣</strong> to collapse, <strong>▢</strong> to expand) to show or hide book shortcuts and bookmarks. PDF.js controls provide page navigation, zoom, and presentation options.</li>
+              <li>Select <strong>↗</strong> beside the book-list control to open the current PDF at the current page in your browser’s built-in PDF viewer.</li>
               <li>Select PDF text and right-click (or long-press on a touch screen) for actions such as bookmarking, copying text or a link, and creating a monster from a stat block.</li>
               <li>Add a bookmark with the <strong>＋</strong> control in the navigation strip. Give it a useful name; bookmarks are saved in this browser. Links can include a highlighted phrase.</li>
             </ul>
@@ -180,18 +181,17 @@
             <h2>Rules and Current</h2>
             <p><strong>Rules</strong> is your persistent rules reference. <strong>Current</strong> holds the active character, monster, note, or campaign file. Open documents appear as tabs; drag tabs to reorder them and use × to close a tab. Closing a tab does not delete its file.</p>
             <p>The sidebar’s data/Markdown panel (✎) can edit or download Rules, load Markdown, browse documents, manage the data folder, and open the Reference Index. Markdown headings, lists, tables, checkboxes, and PDF links render in the sidebar. In a connected writable folder, edits can be saved to the active file.</p>
-            <p>In the editor, <strong>Link note</strong> opens a picker for characters, monsters, and notes, then inserts a link that opens the chosen document in Current. Its Markdown format is <code>[[note:characters/hero.md|Hero]]</code>. <strong>Insert image</strong> copies a selected image into <code>images/</code> in your connected data folder and inserts the Markdown at the cursor. Identical image content is reused; a same-name image with different content gets a numbered filename. These actions require a writable local data folder.</p>
           </section>
 
           <section id="help-tools" class="gm-help-section">
             <h2>Table tools</h2>
             <p>Open <strong>Tools</strong> for the initiative tracker and other table aids:</p>
             <ul>
-              <li><strong>Initiative:</strong> deal and order Action Cards, track rounds and Jokers, and manage combatant status. Character and monster Shaken, Wounds, and Extra counts connect to their notes.</li>
-              <li><strong>Dice:</strong> roll Trait pools with optional Wild Die and acing. Use the 3D tray or <strong>Quick roll</strong>; choose how multiple dice are evaluated. Themes and sound controls are local to the app.</li>
-              <li><strong>Deck:</strong> draw cards separately from Initiative, optionally recording why each card was drawn.</li>
-              <li><strong>Chase:</strong> deal cards, move participant tokens with arrows or drag and drop, and refer to maneuver choices and complications. Club cards highlight the relevant complication.</li>
-              <li><strong>Dramatic Task:</strong> add participants, deal a card each round, and track task tokens and rounds. The tool shows a complication when a participant draws a Club.</li>
+              <li><strong>Initiative:</strong> deal cards, track the round and turn order, handle Jokers, and show character Bennies, Shaken, and Wounds or monster Shaken and Wounds/Count. Extras appear as numbered individuals with separate Shaken controls. Their note checkbox applies Shaken to all Extras and stays checked only when all are Shaken. Wild Card/Extra is display-only here; change the checkbox in the monster note. Note checkboxes save automatically when clicked.</li>
+              <li><strong>Dice:</strong> build a pool of Trait dice, choose whether to use the Wild Die, and roll with acing. For multiple dice, choose sum, keep-highest, or display-only mode.</li>
+              <li><strong>Deck:</strong> draw cards for other table moments, optionally record a reason, and reshuffle this separate deck.</li>
+              <li><strong>Chase:</strong> deal action cards, distinguish participants by their automatic token colors, and drag tokens or use the arrows to move them along the Chase Card track. Club Action Cards highlight the matching complication row.</li>
+              <li><strong>Dramatic Task:</strong> set the task’s target and rounds, then record progress tokens.</li>
             </ul>
             <p>Use the reset button (<strong>↻</strong>) at the end of the tools tab bar, after Dramatic Task, to clear table tool state. The Initiative panel’s reset button (<strong>↻</strong>) clears saved table data; similar reset buttons in Chase and Dramatic Task reset those tools.</p>
             <p>Use <strong>↗</strong> beside the Tools tab to open Tools in a separate browser window, suitable for another monitor. The pop-out stays connected to initiative notes and shared table state. Use <strong>↙ Return to main window</strong> in the pop-out or click <strong>↙</strong> beside the Tools tab to return Tools to its tab.</p>
@@ -207,8 +207,6 @@
           <section id="help-mobile" class="gm-help-section">
             <h2>Mobile and display</h2>
             <p>On a narrow screen, use the sidebar button (<strong>☰</strong> to open, <strong>×</strong> to close) to show or hide the sidebar. Pinch to zoom PDFs; the book/page navigation can be collapsed to leave more room for the document. The theme button cycles through dark, light, and system modes, shown by <strong>☾</strong>, <strong>☀</strong>, and <strong>◐</strong>.</p>
-            <p>If a PDF crashes or loads slowly, download diagnostics soon after reopening the app. The report includes recent PDF errors and render timings, browser details, and whether each book is cached. It does not include note contents.</p>
-            <button type="button" data-help-action="pdf-diagnostics">Download PDF diagnostics</button>
           </section>
         </main>
       </div>
@@ -220,16 +218,16 @@
   <script src="libs/codemirror/lib/codemirror.js"></script>
   <script src="libs/codemirror/mode/markdown/markdown.js"></script>
   <script src="libs/easymde/easymde.min.js"></script>
-  <script src="js/sidebar.js?v=mobile-no-pdf-prefetch-20261127"></script>
+  <script src="js/sidebar.js?v=rules-reference-links-20261125"></script>
   <script src="js/storage.js?v=workspace-tab-persistence-20261123"></script>
   <script src="js/popup.js?v=data-documents-top-20261125"></script>
   <script src="js/bookmarks.js?v=index-copy-link-help-20261125"></script>
   <script src="js/notes.js"></script>
   <script src="js/capture.js?v=monster-preserve-selection-lines-20261123h"></script>
   <script src="js/search.js?v=search-progress-indicator-20261125"></script>
-  <script src="js/help.js?v=mobile-no-pdf-prefetch-20261127"></script>
-  <script src="js/pdfviewer.js?v=mobile-no-pdf-prefetch-20261127"></script>
-  <script src="js/ui.js?v=mobile-no-pdf-prefetch-20261127"></script>
-  <script src="js/app.js?v=mobile-no-pdf-prefetch-20261127"></script>
+  <script src="js/help.js?v=initiative-status-sync-20261125"></script>
+  <script src="js/pdfviewer.js?v=open-native-pdf-20261127"></script>
+  <script src="js/ui.js?v=open-native-pdf-20261127"></script>
+  <script src="js/app.js?v=open-native-pdf-20261127"></script>
 </body>
 </html>
