@@ -176,19 +176,6 @@ window.BOOKS = {
       { label: "TOC", page: 2 }
     ]
   },
-  "occult_city": {
-    order: 13,
-    title: "Occult City",
-    file: "pdfs/occult_city.pdf",
-    pageOffset: -1,
-    defaultPage: 1,
-    defaultScale: 1.25,
-    defaultVisible: false,
-    preload: false,
-    pages: [
-      { label: "TOC", page: 2 }
-    ]
-  },
   "chase_ref": {
     order: 14,
     title: "Chase Reference",
