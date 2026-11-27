@@ -19,7 +19,156 @@
     pagePersistTimers: new Map(),
     expectedPdfPages: new Map(),
     pageAuthorityUntil: new Map(),
+    viewerUseSequence: 0,
   };
+  const PDF_DIAGNOSTICS_KEY = 'gm_pdf_diagnostics_v1';
+  const PDF_DIAGNOSTICS_LIMIT = 120;
+
+  function readPdfDiagnostics() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(PDF_DIAGNOSTICS_KEY) || '[]');
+      return Array.isArray(stored) ? stored : [];
+    } catch { return []; }
+  }
+
+  function recordPdfDiagnostic(type, details = {}) {
+    const events = readPdfDiagnostics();
+    events.push({ at: new Date().toISOString(), type, ...details });
+    try { localStorage.setItem(PDF_DIAGNOSTICS_KEY, JSON.stringify(events.slice(-PDF_DIAGNOSTICS_LIMIT))); } catch {}
+  }
+
+  function diagnosticError(error) {
+    return {
+      name: String(error?.name || 'Error').slice(0, 80),
+      message: String(error?.message || error || '').slice(0, 500),
+      stack: String(error?.stack || '').slice(0, 1200),
+    };
+  }
+
+  async function createPdfDiagnosticsReport() {
+    const viewerCache = [];
+    const resourceTimings = [];
+    const collectResourceTimings = (sourceWindow, tab) => {
+      try {
+        const entries = sourceWindow?.performance?.getEntriesByType?.('resource') || [];
+        entries.slice(-100).forEach((entry) => {
+          const status = Number(entry.responseStatus) || 0;
+          if (!(/\.pdf(?:$|[?#])|pdf\.mjs|pdf\.worker|\.(?:png|jpe?g|webp|svg)(?:$|[?#])/i.test(entry.name) || status >= 400)) return;
+          let resource = String(entry.name || '');
+          try { resource = new URL(resource).pathname.split('/').pop() || resource; } catch {}
+          resourceTimings.push({
+            tab,
+            resource,
+            status: status || null,
+            durationMs: Math.round(Number(entry.duration) || 0),
+            transferBytes: Number(entry.transferSize) || 0,
+            encodedBytes: Number(entry.encodedBodySize) || 0,
+          });
+        });
+      } catch {}
+    };
+    let cacheNames = [];
+    let cache = null;
+    try {
+      cacheNames = await caches.keys();
+      cache = await caches.open('gm-reference-pdfs-v1');
+    } catch {}
+    for (const [tab, book] of Object.entries(getBooks())) {
+      const url = new URL(book.file, document.baseURI).href;
+      let cached = false;
+      let bytes = 0;
+      try {
+        const response = await cache?.match(new Request(url));
+        cached = Boolean(response);
+        bytes = Number(response?.headers?.get('content-length')) || 0;
+      } catch {}
+      const viewer = viewerState.viewers.get(tab);
+      collectResourceTimings(viewer?.iframe?.contentWindow, tab);
+      viewerCache.push({
+        tab,
+        file: String(book.file || ''),
+        cached,
+        cachedBytes: bytes,
+        loaded: Boolean(viewer?.loaded),
+        loading: Boolean(viewer?.loading || viewer?.readyPromise),
+        currentPage: viewer ? getCurrentDisplayPage(tab) : null,
+        retainedPages: Number(viewer?.app?.pdfViewer?._buffer?.size) || null,
+      });
+    }
+    let storage = null;
+    try { storage = await navigator.storage?.estimate?.(); } catch {}
+    collectResourceTimings(window, 'main');
+    const currentTab = viewerState.activeTab || getState().activeTab || null;
+    const currentViewer = currentTab ? viewerState.viewers.get(currentTab) : null;
+    return {
+      generatedAt: new Date().toISOString(),
+      browser: {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        online: navigator.onLine,
+        viewport: { width: innerWidth, height: innerHeight, devicePixelRatio },
+        screen: { width: screen.width, height: screen.height },
+        memory: performance.memory ? {
+          usedJSHeapSize: performance.memory.usedJSHeapSize,
+          totalJSHeapSize: performance.memory.totalJSHeapSize,
+          jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+        } : null,
+        storage,
+        serviceWorkerControlled: Boolean(navigator.serviceWorker?.controller),
+        serviceWorkerState: navigator.serviceWorker?.controller?.state || 'none',
+        cacheNames,
+      },
+      active: currentTab ? {
+        tab: currentTab,
+        file: currentViewer?.book?.file || '',
+        page: getCurrentDisplayPage(currentTab),
+      } : null,
+      viewers: viewerCache,
+      resourceTimings,
+      events: readPdfDiagnostics(),
+    };
+  }
+
+  async function downloadPdfDiagnostics() {
+    const report = await createPdfDiagnosticsReport();
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `gm-pdf-diagnostics-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+
+  const priorDiagnostics = readPdfDiagnostics();
+  const priorSessionStart = priorDiagnostics.map((event) => event.type).lastIndexOf('session-start');
+  const priorSessionEvents = priorDiagnostics.slice(priorSessionStart < 0 ? 0 : priorSessionStart + 1);
+  recordPdfDiagnostic('session-start', {
+    userAgent: navigator.userAgent,
+    viewport: `${innerWidth}x${innerHeight}`,
+    devicePixelRatio,
+    online: navigator.onLine,
+    previousSessionEndedWithPagehide: priorSessionEvents.length ? priorSessionEvents.some((event) => event.type === 'pagehide') : null,
+  });
+  window.addEventListener('pagehide', () => recordPdfDiagnostic('pagehide'));
+  document.addEventListener('visibilitychange', () => recordPdfDiagnostic('visibility', { state: document.visibilityState }));
+  window.addEventListener('offline', () => recordPdfDiagnostic('offline'));
+  window.addEventListener('online', () => recordPdfDiagnostic('online'));
+  window.addEventListener('error', (event) => recordPdfDiagnostic('app-error', {
+    message: String(event.message || '').slice(0, 500),
+    file: String(event.filename || '').slice(-300),
+    line: Number(event.lineno) || 0,
+    column: Number(event.colno) || 0,
+  }));
+  window.addEventListener('unhandledrejection', (event) => recordPdfDiagnostic('unhandled-rejection', diagnosticError(event.reason)));
+  document.addEventListener('securitypolicyviolation', (event) => recordPdfDiagnostic('security-policy-violation', {
+    directive: String(event.violatedDirective || '').slice(0, 120),
+    blockedURI: String(event.blockedURI || '').slice(0, 250),
+    sourceFile: String(event.sourceFile || '').slice(-250),
+    line: Number(event.lineNumber) || 0,
+  }));
 
   function getStorage() {
     const fallback = {
@@ -236,7 +385,7 @@
     // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
     const filePath = `../../../${book.file}`;
 
-    return `libs/pdfjs/web/viewer.html?v=6.5.438-0a4153349&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
+    return `libs/pdfjs/web/viewer.html?v=6.5.438-mobile-no-pdf-prefetch-20261127&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
       zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
     }`;
   }
@@ -283,6 +432,7 @@
       ignoreScaleEvents: true,
       programmaticDisplayPage: null,
       programmaticPdfPage: null,
+      lastUsed: ++viewerState.viewerUseSequence,
     };
 
     const activeTab = viewerState.activeTab || getState().activeTab || Object.keys(getBooks())[0] || null;
@@ -291,6 +441,7 @@
     }
 
     viewerState.viewers.set(tab, viewer);
+    trimMobileViewerCache(viewerState.activeTab || getState().activeTab || tab);
     return viewer;
   }
 
@@ -307,6 +458,12 @@
   function disposeViewer(tab) {
     const viewer = viewerState.viewers.get(tab);
     if (!viewer) return;
+
+    recordPdfDiagnostic('viewer-disposed', {
+      tab,
+      file: viewer.book?.file || '',
+      page: getCurrentDisplayPage(tab),
+    });
 
     try {
       const timers = viewerState.pageSyncTimers.get(tab);
@@ -335,6 +492,11 @@
       viewer._pinchZoomCleanup?.();
     } catch {}
     try {
+      viewer._diagnosticHandlers?.forEach(([name, handler]) => viewer.app?.eventBus?.off?.(name, handler));
+    } catch {}
+    try { viewer._diagnosticCleanup?.(); } catch {}
+    viewer.disposing = true;
+    try {
       if (viewer.iframe) viewer.iframe.src = 'about:blank';
     } catch {}
 
@@ -345,12 +507,25 @@
     viewerState.viewers.delete(tab);
   }
 
+  function trimMobileViewerCache(activeTab = viewerState.activeTab) {
+    if (!isMobileViewerMode()) return;
+    const keepCount = 2;
+    const inactive = [...viewerState.viewers.entries()]
+      .filter(([tab]) => tab !== activeTab)
+      .sort((a, b) => (a[1].lastUsed || 0) - (b[1].lastUsed || 0));
+    while (viewerState.viewers.size > keepCount && inactive.length) {
+      disposeViewer(inactive.shift()[0]);
+    }
+  }
+
   function showViewer(tab) {
     viewerState.viewers.forEach((viewer, key) => {
       viewer.wrapper.classList.toggle('active', key === tab);
     });
 
     viewerState.activeTab = tab;
+    const viewer = viewerState.viewers.get(tab);
+    if (viewer) viewer.lastUsed = ++viewerState.viewerUseSequence;
     const state = getState();
     if (state.activeTab !== tab) {
       state.activeTab = tab;
@@ -466,22 +641,6 @@
     viewerState.pageSyncTimers.set(tab, timer);
   }
 
-  function requestOfflinePdfCache(tab) {
-    const book = getBook(tab);
-    if (!book) return;
-    try {
-      const pdfUrl = new URL(book.file, document.baseURI).href;
-      if (navigator.serviceWorker?.controller) {
-        navigator.serviceWorker.controller.postMessage({
-          type: 'CACHE_PDF',
-          url: pdfUrl,
-        });
-      }
-    } catch {
-      /* Offline warming is best-effort. */
-    }
-  }
-
   async function waitForViewerApp(iframe, timeoutMs = 20000) {
     const start = performance.now();
 
@@ -574,6 +733,70 @@
       setStoredScale(tab, currentScale);
       window.GM.ui?.updateTabButtonLabels?.();
     });
+
+    const diagnosticHandlers = [];
+    const onPageRendered = (event) => {
+      const viewer = viewerState.viewers.get(tab);
+      const renderedAt = performance.now();
+      recordPdfDiagnostic('page-rendered', {
+        tab,
+        file: book.file,
+        page: Number(event?.pageNumber) || null,
+        elapsedMs: viewer?.pageRequestStartedAt ? Math.round(renderedAt - viewer.pageRequestStartedAt) : null,
+        renderError: event?.error ? String(event.error.message || event.error).slice(0, 300) : null,
+      });
+      if (viewer) viewer.lastRenderedAt = renderedAt;
+      if (event?.error) recordPdfDiagnostic('page-render-error', { tab, file: book.file, page: event.pageNumber, error: diagnosticError(event.error) });
+    };
+    const onDocumentError = (event) => recordPdfDiagnostic('pdf-document-error', {
+      tab,
+      file: book.file,
+      error: diagnosticError(event?.error || event?.message || event),
+    });
+    bus.on('pagerendered', onPageRendered);
+    bus.on('documenterror', onDocumentError);
+    diagnosticHandlers.push(['pagerendered', onPageRendered], ['documenterror', onDocumentError]);
+    const viewerForErrors = viewerState.viewers.get(tab);
+    if (viewerForErrors) viewerForErrors._diagnosticHandlers = diagnosticHandlers;
+
+    const childWindow = viewerForErrors?.iframe?.contentWindow;
+    if (childWindow) {
+      const onViewerError = (event) => recordPdfDiagnostic('pdf-viewer-error', {
+        tab,
+        file: book.file,
+        message: String(event?.message || '').slice(0, 500),
+        fileName: String(event?.filename || '').slice(-250),
+        line: Number(event?.lineno) || 0,
+      });
+      const onViewerRejection = (event) => recordPdfDiagnostic('pdf-viewer-rejection', {
+        tab,
+        file: book.file,
+        error: diagnosticError(event?.reason),
+      });
+      const onViewerCsp = (event) => recordPdfDiagnostic('pdf-security-policy-violation', {
+        tab,
+        file: book.file,
+        directive: String(event?.violatedDirective || '').slice(0, 120),
+        blockedURI: String(event?.blockedURI || '').slice(0, 250),
+        sourceFile: String(event?.sourceFile || '').slice(-250),
+        line: Number(event?.lineNumber) || 0,
+      });
+      const onViewerPageHide = () => recordPdfDiagnostic('pdf-viewer-pagehide', {
+        tab,
+        file: book.file,
+        disposing: Boolean(viewerForErrors?.disposing),
+      });
+      childWindow.addEventListener('error', onViewerError);
+      childWindow.addEventListener('unhandledrejection', onViewerRejection);
+      childWindow.addEventListener('pagehide', onViewerPageHide);
+      childWindow.document?.addEventListener('securitypolicyviolation', onViewerCsp);
+      viewerForErrors._diagnosticCleanup = () => {
+        childWindow.removeEventListener('error', onViewerError);
+        childWindow.removeEventListener('unhandledrejection', onViewerRejection);
+        childWindow.removeEventListener('pagehide', onViewerPageHide);
+        childWindow.document?.removeEventListener('securitypolicyviolation', onViewerCsp);
+      };
+    }
 
     const viewer = viewerState.viewers.get(tab);
     if (viewer) {
@@ -700,12 +923,17 @@
         const app = await waitForViewerApp(viewer.iframe);
         viewer.app = app || null;
         viewer.loaded = true;
-        requestOfflinePdfCache(tab);
 
         if (app) {
           installAppListeners(tab, app);
           installMobilePinchZoom(tab, app);
           viewer.lastSyncedPdfPage = Number(app?.pdfViewer?.currentPageNumber || app?.page || 1);
+          recordPdfDiagnostic('viewer-ready', {
+            tab,
+            file: viewer.book.file,
+            pages: Number(app?.pdfDocument?.numPages) || null,
+            pdfjsVersion: String(viewer.iframe.contentWindow?.pdfjsLib?.version || ''),
+          });
           if (viewer.pendingDisplayPage !== null && viewer.pendingDisplayPage !== undefined) {
             const pendingPage = Number(viewer.pendingDisplayPage) || getDisplayPage(tab);
             viewer.pendingDisplayPage = null;
@@ -715,6 +943,9 @@
         }
 
         return app;
+      } catch (error) {
+        recordPdfDiagnostic('viewer-load-error', { tab, file: viewer.book.file, error: diagnosticError(error) });
+        throw error;
       } finally {
         viewer.readyPromise = null;
         setViewerLoading(tab, false);
@@ -799,6 +1030,13 @@
 
   async function setPageInActiveViewer(tab, displayPage, options = {}) {
     const viewer = createViewer(tab);
+    viewer.pageRequestStartedAt = performance.now();
+    viewer.lastUsed = ++viewerState.viewerUseSequence;
+    recordPdfDiagnostic('page-requested', {
+      tab,
+      file: viewer.book.file,
+      page: Number(displayPage) || 1,
+    });
     viewer.pendingDisplayPage = Number(displayPage) || getDisplayPage(tab) || 1;
     const app = await ensureViewerLoaded(tab);
     if (!app) return null;
@@ -871,9 +1109,6 @@
 
     if (viewerState.activeTab && viewerState.activeTab !== tab) {
       captureRuntimeScale(viewerState.activeTab);
-      if (isMobileViewerMode()) {
-        disposeViewer(viewerState.activeTab);
-      }
     }
 
     window.GM.ui?.ensureBookVisible?.(tab);
@@ -902,6 +1137,7 @@
     window.GM.ui?.updateTabButtonLabels?.();
 
     await setPageInActiveViewer(tab, resolvedDisplayPage, options);
+    trimMobileViewerCache(tab);
 
     if (options.highlightText) {
       await highlightTextInActiveViewer(tab, options.highlightText, resolvedDisplayPage);
@@ -979,6 +1215,8 @@
     refreshActiveViewer,
     getCurrentDisplayPage,
     openActivePdfInBrowser,
+    downloadDiagnostics: downloadPdfDiagnostics,
+    getDiagnostics: createPdfDiagnosticsReport,
     highlightText: (query) => {
       const tab = viewerState.activeTab;
       if (!tab) return Promise.resolve();
