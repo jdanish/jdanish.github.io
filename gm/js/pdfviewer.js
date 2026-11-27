@@ -153,7 +153,12 @@
     previousSessionEndedWithPagehide: priorSessionEvents.length ? priorSessionEvents.some((event) => event.type === 'pagehide') : null,
   });
   window.addEventListener('pagehide', () => recordPdfDiagnostic('pagehide'));
-  document.addEventListener('visibilitychange', () => recordPdfDiagnostic('visibility', { state: document.visibilityState }));
+  document.addEventListener('visibilitychange', () => {
+    recordPdfDiagnostic('visibility', { state: document.visibilityState });
+    if (document.visibilityState === 'hidden' && isIosMobileViewerMode()) {
+      releaseMobilePdfViewers();
+    }
+  });
   window.addEventListener('offline', () => recordPdfDiagnostic('offline'));
   window.addEventListener('online', () => recordPdfDiagnostic('online'));
   window.addEventListener('error', (event) => recordPdfDiagnostic('app-error', {
@@ -211,6 +216,13 @@
     return window.matchMedia
       ? window.matchMedia('(max-width: 760px)').matches
       : window.innerWidth <= 760;
+  }
+
+  function isIosMobileViewerMode() {
+    if (!isMobileViewerMode()) return false;
+    const userAgent = navigator.userAgent || '';
+    return /iPhone|iPad|iPod/i.test(userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   }
 
   function getBookOrderMap() {
@@ -385,7 +397,7 @@
     // The viewer.html file lives in libs/pdfjs/web/, so this path resolves from there.
     const filePath = `../../../${book.file}`;
 
-    return `libs/pdfjs/web/viewer.html?v=6.5.438-mobile-no-pdf-prefetch-20261127&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
+    return `libs/pdfjs/web/viewer.html?v=6.5.438-ios-memory-release-20261127&file=${encodeURIComponent(filePath)}#page=${pdfPage}${
       zoom ? `&zoom=${encodeURIComponent(zoom)}` : ''
     }`;
   }
@@ -459,10 +471,13 @@
     const viewer = viewerState.viewers.get(tab);
     if (!viewer) return;
 
+    const displayPage = getCurrentDisplayPage(tab);
+    setStoredPage(tab, displayPage);
+
     recordPdfDiagnostic('viewer-disposed', {
       tab,
       file: viewer.book?.file || '',
-      page: getCurrentDisplayPage(tab),
+      page: displayPage,
     });
 
     try {
@@ -495,6 +510,10 @@
       viewer._diagnosticHandlers?.forEach(([name, handler]) => viewer.app?.eventBus?.off?.(name, handler));
     } catch {}
     try { viewer._diagnosticCleanup?.(); } catch {}
+    try {
+      const closing = viewer.app?.close?.();
+      closing?.catch?.(() => {});
+    } catch {}
     viewer.disposing = true;
     try {
       if (viewer.iframe) viewer.iframe.src = 'about:blank';
@@ -507,9 +526,19 @@
     viewerState.viewers.delete(tab);
   }
 
+  function releaseMobilePdfViewers() {
+    const tabs = [...viewerState.viewers.keys()];
+    if (!tabs.length) return;
+    tabs.forEach(disposeViewer);
+    recordPdfDiagnostic('mobile-viewers-released-on-hide', {
+      activeTab: viewerState.activeTab || null,
+      count: tabs.length,
+    });
+  }
+
   function trimMobileViewerCache(activeTab = viewerState.activeTab) {
     if (!isMobileViewerMode()) return;
-    const keepCount = 2;
+    const keepCount = isIosMobileViewerMode() ? 1 : 2;
     const inactive = [...viewerState.viewers.entries()]
       .filter(([tab]) => tab !== activeTab)
       .sort((a, b) => (a[1].lastUsed || 0) - (b[1].lastUsed || 0));
