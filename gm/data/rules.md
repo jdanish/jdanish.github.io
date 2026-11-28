@@ -21,6 +21,7 @@
       - Vigor check; ignore one wound per success or raise.
     - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace)
     - [[swade/99?highlight=Fatigue|Fatigue]]
+    - [[swade/95?highlight=Healing|Healing]]
 
 
 # Other Rules
