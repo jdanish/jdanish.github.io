@@ -176,44 +176,8 @@ window.BOOKS = {
       { label: "TOC", page: 2 }
     ]
   },
-  "chase_ref": {
-    order: 14,
-    title: "Chase Reference",
-    file: "pdfs/chase_ref.pdf",
-    pageOffset: 0,
-    defaultPage: 1,
-    defaultScale: 1,
-    defaultVisible: false,
-    preload: false,
-    pages: [
-    ]
-  },
-  "combat_ref": {
-    order: 15,
-    title: "Combat Reference",
-    file: "pdfs/combat_ref.pdf",
-    pageOffset: 0,
-    defaultPage: 1,
-    defaultScale: 1,
-    defaultVisible: false,
-    preload: true,
-    pages: [
-    ]
-  },
-  "combat_sg": {
-    order: 16,
-    title: "Combat Survival Guide",
-    file: "pdfs/combat_survival_guide.pdf",
-    pageOffset: 0,
-    defaultPage: 1,
-    defaultScale: 1.25,
-    defaultVisible: false,
-    preload: false,
-    pages: [
-    ]
-  },
   "rifts_tomorrow_legion": {
-    order: 17,
+    order: 13,
     title: "Rifts: The Tomorrow Legion Player’s Guide",
     file: "pdfs/RIFTS_TomorrowLegion.pdf",
     pageOffset: -2,
@@ -227,7 +191,7 @@ window.BOOKS = {
     ]
   },
   "rifts_gm_handbook": {
-    order: 18,
+    order: 14,
     title: "Rifts: Game Master’s Handbook",
     file: "pdfs/RIFTS_GM_Handbook.pdf",
     pageOffset: -2,
@@ -241,7 +205,7 @@ window.BOOKS = {
     ]
   },
   "rifts_na_foes": {
-    order: 19,
+    order: 15,
     title: "Rifts: Savage Foes of North America",
     file: "pdfs/RIFTS_NA_Foes.pdf",
     pageOffset: -2,
@@ -255,7 +219,7 @@ window.BOOKS = {
     ]
   },
   "rifts_atlantis": {
-    order: 20,
+    order: 16,
     title: "Rifts: Atlantis and the Demon Seas",
     file: "pdfs/RIFTS_Atlantis.pdf",
     pageOffset: -2,
@@ -269,7 +233,7 @@ window.BOOKS = {
     ]
   },
   "rifts_phase_world": {
-    order: 21,
+    order: 17,
     title: "Rifts: Phase World",
     file: "pdfs/RIFTS_PhaseWorld.pdf",
     pageOffset: 0,
@@ -280,7 +244,7 @@ window.BOOKS = {
     pages: []
   },
   "swpf_core": {
-    order: 22,
+    order: 18,
     title: "Savage Pathfinder Core Rules",
     file: "pdfs/SWPF_Core.pdf",
     pageOffset: -2,
@@ -294,7 +258,7 @@ window.BOOKS = {
     ]
   },
   "swpf_advanced_players_guide": {
-    order: 23,
+    order: 19,
     title: "Savage Pathfinder Advanced Player’s Guide",
     file: "pdfs/SWPF_AdvancedPlayersGuide.pdf",
     pageOffset: -2,
@@ -308,7 +272,7 @@ window.BOOKS = {
     ]
   },
   "swpf_advanced_players_guide_2": {
-    order: 24,
+    order: 20,
     title: "Savage Pathfinder Advanced Player’s Guide 2",
     file: "pdfs/SWPF_AdvancedPlayersGuide2.pdf",
     pageOffset: -2,
@@ -322,7 +286,7 @@ window.BOOKS = {
     ]
   },
   "swpf_bestiary": {
-    order: 25,
+    order: 21,
     title: "Savage Pathfinder Bestiary",
     file: "pdfs/SWPF_Bestiary.pdf",
     pageOffset: -2,
@@ -335,7 +299,7 @@ window.BOOKS = {
     ]
   },
   "swpf_bestiary_2": {
-    order: 26,
+    order: 22,
     title: "Savage Pathfinder Bestiary 2",
     file: "pdfs/SWPF_Bestiary2.pdf",
     pageOffset: -2,
@@ -345,6 +309,42 @@ window.BOOKS = {
     preload: false,
     pages: [
       { label: "TOC", page: 3 }
+    ]
+  },
+  "chase_ref": {
+    order: 23,
+    title: "Chase Reference",
+    file: "pdfs/chase_ref.pdf",
+    pageOffset: 0,
+    defaultPage: 1,
+    defaultScale: 1,
+    defaultVisible: false,
+    preload: false,
+    pages: [
+    ]
+  },
+  "combat_ref": {
+    order: 24,
+    title: "Combat Reference",
+    file: "pdfs/combat_ref.pdf",
+    pageOffset: 0,
+    defaultPage: 1,
+    defaultScale: 1,
+    defaultVisible: false,
+    preload: true,
+    pages: [
+    ]
+  },
+  "combat_sg": {
+    order: 25,
+    title: "Combat Survival Guide",
+    file: "pdfs/combat_survival_guide.pdf",
+    pageOffset: 0,
+    defaultPage: 1,
+    defaultScale: 1.25,
+    defaultVisible: false,
+    preload: false,
+    pages: [
     ]
   }
 };
