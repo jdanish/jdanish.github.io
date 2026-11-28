@@ -17,14 +17,14 @@
     - *If hit:* Roll damage; must equal or beat toughness.
       - Raise(s) add wounds.
   - **Damage**
-    - [[swade/95|Soaking]] to avoid damage.
+    - Spend a bennie to [[swade/95|Soak]] to avoid damage.
       - Vigor check; ignore one wound per success or raise.
     - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace)
     - [[swade/99?highlight=Fatigue|Fatigue]]
 
+
 # Other Rules
 
-- [Dice Roller App](https://immaterialplane.com/apps/swdr/)
 - [[swade/89|Bennies]]
 		1. 		Reroll trait
 		2. 		Recover from shaken
@@ -33,13 +33,14 @@
 		5. 		Reroll damage
 		6. 		Regain power points
 		7. 		Influence the story
-- [[swade/112?highlight=Chases%20%26%20Vehicles%20in%20SWADE|Chases & Vehicles]] ([[chase_ref/1|Chase Reference]])
-- [[swade/91?highlight=JOKERS|Jokers]]
-		1. 	Side gains Bennies ([[swade/88?highlight=JOKER%E2%80%99S+WILD|JOKER’S WILD]])
-		2. 	Player who drew it can hold and go whenever, interrupting
-			- Note: [[swade/101?highlight=Interrupting+Actions%3A|Interrupting Actions]]
-		3. 	Individual or group gets +2 to trait and damage rolls this turn
-		4. 	Reshuffle
+- [[swade/90?highlight=Initiative|Initiative]]
+  - [[swade/101?highlight=Hold|Holding action]]
+  - [[swade/91?highlight=JOKERS|Jokers]]
+      1. 	Side gains Bennies ([[swade/88?highlight=JOKER%E2%80%99S+WILD|JOKER’S WILD]])
+      2. 	Player who drew it can hold and go whenever, interrupting
+        - Note: [[swade/101?highlight=Interrupting+Actions%3A|Interrupting Actions]]
+      3. 	Individual or group gets +2 to trait and damage rolls this turn
+      4. 	Reshuffle
 - [[swade/146?highlight=Powers|Powers]]
   - [[swade/149?highlight=Trappings|Trappings]]
   - [[swade/150?highlight=Activation|Activation]]
@@ -55,11 +56,9 @@
 - [[swade/121?highlight=Dramatic+Tasks|Dramatic Tasks]]
 
 # Movement
+- [[swade/112?highlight=Chases%20%26%20Vehicles%20in%20SWADE|Chases & Vehicles]] ([[chase_ref/1|Chase Reference]])
 
-[[swade/9?highlight=Pace|Pace]] is how fast your character moves in tactical situations like combat. Standard Pace is 6, which means six tabletop inches per game round. **Each inch is two yards ** in the real world.
-
-[[swade/91?highlight=Movement|Movement]] In addition to their actions, characters can move a number of tabletop inches equal to their Pace each turn.
-
-Each inch of movement spent climbing, crawling, or swimming uses 2″ of Pace.
-
-**Running**: A hero can choose to “run”, increasing her Pace for the round by her Running die (a d6 by default) at the cost of a −2 penalty to all other actions that turn. Running dice never Ace.
+- [[swade/9?highlight=Pace|Pace]] is how fast your character moves in tactical situations like combat. Standard Pace is 6, which means six tabletop inches per game round. **Each inch is two yards ** in the real world.
+  - Each inch of movement spent climbing, crawling, or swimming uses 2″ of Pace.
+- [[swade/91?highlight=Movement|Movement]] In addition to their actions, characters can move a number of tabletop inches equal to their Pace each turn.
+  - **Running**: A hero can choose to “run”, increasing her Pace for the round by her Running die (a d6 by default) at the cost of a −2 penalty to all other actions that turn. Running dice never Ace.
