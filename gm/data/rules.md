@@ -13,13 +13,14 @@
     - *To hit:* Shooting die + wild die (-2 for medium, -4 long range); must equal or beat 4.
       - Raise(s) add 1d6 to the damage roll.
       - [[swade/96?highlight=Situational%20Rules|Situational Rules]] ([[combat_ref/1|reference]]) for [[swade/92?highlight=ranGe+PenaLtieS|range penalties]], [[swade/98?highlight=Cover+%26+Obstacles|cover & obstacles]], etc.
-    - *Note:* Don't forget to roll an extra die if ROF is above 1.
+    - *Note:* Don't forget to roll an extra die if [[swade/92?highlight=Rate+of+Fire|Rate of Fire (RoF)]] is above 1.
+      - NOTE: -2 to shooting roll due to [[swade/104?highlight=Recoil|Recoil]] unless only a single shot.
     - *If hit:* Roll damage; must equal or beat toughness.
       - Raise(s) add wounds.
   - **Damage**
     - Spend a bennie to [[swade/95|Soak]] to avoid damage.
       - Vigor check; ignore one wound per success or raise.
-    - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace)
+    - [[swade/93|Shaken or wounded]] (can't act if shaken, -1 to trait dice and pace per wound)
     - [[swade/99?highlight=Fatigue|Fatigue]]
     - [[swade/95?highlight=Healing|Healing]]
 
