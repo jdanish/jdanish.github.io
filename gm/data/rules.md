@@ -7,7 +7,7 @@
     - *To hit:* Fighting die + wild; must equal or beat the target's Parry.
       - Raise(s) add 1d6 to the damage roll.
       - [[swade/96?highlight=Situational%20Rules|Situational Rules]] ([[combat_ref/1|reference]]) for ganging up, flanking, prone, etc.
-    - *If hit:* Roll damage; must equal or beat toughness.
+    - *If hit:* Roll damage, and raises (regardless of number) add **1d6** to damage roll; must equal or beat toughness to cause a wound.
       - Raise(s) add wounds.
   - **Ranged**
     - *To hit:* Shooting die + wild die (-2 for medium, -4 long range); must equal or beat 4.
@@ -15,7 +15,7 @@
       - [[swade/96?highlight=Situational%20Rules|Situational Rules]] ([[combat_ref/1|reference]]) for [[swade/92?highlight=ranGe+PenaLtieS|range penalties]], [[swade/98?highlight=Cover+%26+Obstacles|cover & obstacles]], etc.
     - *Note:* Don't forget to roll an extra die if [[swade/92?highlight=Rate+of+Fire|Rate of Fire (RoF)]] is above 1.
       - NOTE: -2 to shooting roll due to [[swade/104?highlight=Recoil|Recoil]] unless only a single shot.
-    - *If hit:* Roll damage; must equal or beat toughness.
+    - *If hit:* Roll damage, and raises (regardless of number) add **1d6** to damage roll; must equal or beat toughness to cause a wound.
       - Raise(s) add wounds.
   - **Damage**
     - Spend a bennie to [[swade/95|Soak]] to avoid damage.
